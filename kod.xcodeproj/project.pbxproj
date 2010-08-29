@@ -11,7 +11,6 @@
 		3A92911B1229B96A00DA7E43 /* KTabContents.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A92911A1229B96A00DA7E43 /* KTabContents.mm */; };
 		3A92911E1229B9D500DA7E43 /* KToolbarController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A92911D1229B9D500DA7E43 /* KToolbarController.mm */; };
 		3A92917A1229BDF700DA7E43 /* ChromiumTabs.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A9291791229BDF700DA7E43 /* ChromiumTabs.framework */; };
-		3A9291921229BE0C00DA7E43 /* ChromiumTabs.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 3A9291701229BDAA00DA7E43 /* ChromiumTabs.framework */; };
 		3A9291C51229BF7500DA7E43 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A928C16122714E800DA7E43 /* main.m */; };
 		3A9291C61229BFAD00DA7E43 /* KAppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A928C15122714E800DA7E43 /* KAppDelegate.mm */; };
 		3A9291C71229BFB000DA7E43 /* KBrowser.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A928C18122714E800DA7E43 /* KBrowser.mm */; };
@@ -22,26 +21,19 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		3A92916F1229BDAA00DA7E43 /* PBXContainerItemProxy */ = {
+		3A9297E3122AB49D00DA7E43 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 3A92916A1229BDAA00DA7E43 /* chromium-tabs.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 3A3ED9831225E27E009E2908 /* ChromiumTabs.framework */;
 			remoteInfo = ChromiumTabs;
 		};
-		3A9291711229BDAA00DA7E43 /* PBXContainerItemProxy */ = {
+		3A9297E5122AB49D00DA7E43 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 3A92916A1229BDAA00DA7E43 /* chromium-tabs.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 8D1107320486CEB800E47090 /* Chromium Tabs.app */;
 			remoteInfo = "Chromium Tabs";
-		};
-		3A9291931229BE1500DA7E43 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 3A92916A1229BDAA00DA7E43 /* chromium-tabs.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 3A3ED9821225E27E009E2908 /* ChromiumTabs */;
-			remoteInfo = ChromiumTabs;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -52,7 +44,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				3A9291921229BE0C00DA7E43 /* ChromiumTabs.framework in Copy Frameworks */,
 			);
 			name = "Copy Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -74,7 +65,7 @@
 		3A92911C1229B9D500DA7E43 /* KToolbarController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KToolbarController.h; sourceTree = "<group>"; };
 		3A92911D1229B9D500DA7E43 /* KToolbarController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KToolbarController.mm; sourceTree = "<group>"; };
 		3A92912B1229BB5100DA7E43 /* prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = prefix.pch; sourceTree = "<group>"; };
-		3A92916A1229BDAA00DA7E43 /* chromium-tabs.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "chromium-tabs.xcodeproj"; path = "../chromium-tabs/chromium-tabs.xcodeproj"; sourceTree = SOURCE_ROOT; };
+		3A92916A1229BDAA00DA7E43 /* chromium-tabs.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "chromium-tabs.xcodeproj"; path = "chromium-tabs/chromium-tabs.xcodeproj"; sourceTree = "<group>"; };
 		3A9291791229BDF700DA7E43 /* ChromiumTabs.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ChromiumTabs.framework; path = "../chromium-tabs/build/Debug/ChromiumTabs.framework"; sourceTree = SOURCE_ROOT; };
 		3A9292971229D31200DA7E43 /* KBrowserWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KBrowserWindowController.h; sourceTree = "<group>"; };
 		3A9292981229D31200DA7E43 /* KBrowserWindowController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KBrowserWindowController.mm; sourceTree = "<group>"; };
@@ -156,11 +147,11 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		3A92916B1229BDAA00DA7E43 /* Products */ = {
+		3A9297DF122AB49D00DA7E43 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				3A9291701229BDAA00DA7E43 /* ChromiumTabs.framework */,
-				3A9291721229BDAA00DA7E43 /* Chromium Tabs.app */,
+				3A9297E4122AB49D00DA7E43 /* ChromiumTabs.framework */,
+				3A9297E6122AB49D00DA7E43 /* Chromium Tabs.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -180,7 +171,6 @@
 			buildRules = (
 			);
 			dependencies = (
-				3A9291941229BE1500DA7E43 /* PBXTargetDependency */,
 			);
 			name = Kod;
 			productName = Kod;
@@ -200,7 +190,7 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
-					ProductGroup = 3A92916B1229BDAA00DA7E43 /* Products */;
+					ProductGroup = 3A9297DF122AB49D00DA7E43 /* Products */;
 					ProjectRef = 3A92916A1229BDAA00DA7E43 /* chromium-tabs.xcodeproj */;
 				},
 			);
@@ -212,18 +202,18 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
-		3A9291701229BDAA00DA7E43 /* ChromiumTabs.framework */ = {
+		3A9297E4122AB49D00DA7E43 /* ChromiumTabs.framework */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.framework;
 			path = ChromiumTabs.framework;
-			remoteRef = 3A92916F1229BDAA00DA7E43 /* PBXContainerItemProxy */;
+			remoteRef = 3A9297E3122AB49D00DA7E43 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		3A9291721229BDAA00DA7E43 /* Chromium Tabs.app */ = {
+		3A9297E6122AB49D00DA7E43 /* Chromium Tabs.app */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.application;
 			path = "Chromium Tabs.app";
-			remoteRef = 3A9291711229BDAA00DA7E43 /* PBXContainerItemProxy */;
+			remoteRef = 3A9297E5122AB49D00DA7E43 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
@@ -257,14 +247,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
-
-/* Begin PBXTargetDependency section */
-		3A9291941229BE1500DA7E43 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = ChromiumTabs;
-			targetProxy = 3A9291931229BE1500DA7E43 /* PBXContainerItemProxy */;
-		};
-/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		3A928BF01227143800DA7E43 /* Debug */ = {
