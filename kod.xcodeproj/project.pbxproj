@@ -1,0 +1,376 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 42;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		3A9291181229B93C00DA7E43 /* Toolbar.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3A9291171229B93C00DA7E43 /* Toolbar.xib */; };
+		3A92911B1229B96A00DA7E43 /* KTabContents.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A92911A1229B96A00DA7E43 /* KTabContents.mm */; };
+		3A92911E1229B9D500DA7E43 /* KToolbarController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A92911D1229B9D500DA7E43 /* KToolbarController.mm */; };
+		3A92917A1229BDF700DA7E43 /* ChromiumTabs.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A9291791229BDF700DA7E43 /* ChromiumTabs.framework */; };
+		3A9291921229BE0C00DA7E43 /* ChromiumTabs.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 3A9291701229BDAA00DA7E43 /* ChromiumTabs.framework */; };
+		3A9291C51229BF7500DA7E43 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A928C16122714E800DA7E43 /* main.m */; };
+		3A9291C61229BFAD00DA7E43 /* KAppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A928C15122714E800DA7E43 /* KAppDelegate.mm */; };
+		3A9291C71229BFB000DA7E43 /* KBrowser.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A928C18122714E800DA7E43 /* KBrowser.mm */; };
+		3A9291DF1229BFCD00DA7E43 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3A928C1B122714EE00DA7E43 /* MainMenu.xib */; };
+		3A9292991229D31200DA7E43 /* KBrowserWindowController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A9292981229D31200DA7E43 /* KBrowserWindowController.mm */; };
+		3A9293671229E49A00DA7E43 /* NSError+KAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A9293661229E49A00DA7E43 /* NSError+KAdditions.m */; };
+		3A9293CC1229ED4C00DA7E43 /* KDocumentController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A9293CB1229ED4C00DA7E43 /* KDocumentController.mm */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		3A92916F1229BDAA00DA7E43 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 3A92916A1229BDAA00DA7E43 /* chromium-tabs.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 3A3ED9831225E27E009E2908 /* ChromiumTabs.framework */;
+			remoteInfo = ChromiumTabs;
+		};
+		3A9291711229BDAA00DA7E43 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 3A92916A1229BDAA00DA7E43 /* chromium-tabs.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8D1107320486CEB800E47090 /* Chromium Tabs.app */;
+			remoteInfo = "Chromium Tabs";
+		};
+		3A9291931229BE1500DA7E43 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 3A92916A1229BDAA00DA7E43 /* chromium-tabs.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 3A3ED9821225E27E009E2908 /* ChromiumTabs */;
+			remoteInfo = ChromiumTabs;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		3A9291381229BBB600DA7E43 /* Copy Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				3A9291921229BE0C00DA7E43 /* ChromiumTabs.framework in Copy Frameworks */,
+			);
+			name = "Copy Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		3A928C14122714E800DA7E43 /* KAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KAppDelegate.h; sourceTree = "<group>"; };
+		3A928C15122714E800DA7E43 /* KAppDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KAppDelegate.mm; sourceTree = "<group>"; };
+		3A928C16122714E800DA7E43 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		3A928C17122714E800DA7E43 /* KBrowser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KBrowser.h; sourceTree = "<group>"; };
+		3A928C18122714E800DA7E43 /* KBrowser.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KBrowser.mm; sourceTree = "<group>"; };
+		3A928C1A122714EE00DA7E43 /* Info.plist */ = {isa = PBXFileReference; explicitFileType = text.plist.xml; fileEncoding = 4; path = Info.plist; sourceTree = "<group>"; };
+		3A928C1B122714EE00DA7E43 /* MainMenu.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MainMenu.xib; sourceTree = "<group>"; };
+		3A928C201227151800DA7E43 /* Kod.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Kod.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		3A9291171229B93C00DA7E43 /* Toolbar.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = Toolbar.xib; sourceTree = "<group>"; };
+		3A9291191229B96A00DA7E43 /* KTabContents.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KTabContents.h; sourceTree = "<group>"; };
+		3A92911A1229B96A00DA7E43 /* KTabContents.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KTabContents.mm; sourceTree = "<group>"; };
+		3A92911C1229B9D500DA7E43 /* KToolbarController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KToolbarController.h; sourceTree = "<group>"; };
+		3A92911D1229B9D500DA7E43 /* KToolbarController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KToolbarController.mm; sourceTree = "<group>"; };
+		3A92912B1229BB5100DA7E43 /* prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = prefix.pch; sourceTree = "<group>"; };
+		3A92916A1229BDAA00DA7E43 /* chromium-tabs.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "chromium-tabs.xcodeproj"; path = "../chromium-tabs/chromium-tabs.xcodeproj"; sourceTree = SOURCE_ROOT; };
+		3A9291791229BDF700DA7E43 /* ChromiumTabs.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ChromiumTabs.framework; path = "../chromium-tabs/build/Debug/ChromiumTabs.framework"; sourceTree = SOURCE_ROOT; };
+		3A9292971229D31200DA7E43 /* KBrowserWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KBrowserWindowController.h; sourceTree = "<group>"; };
+		3A9292981229D31200DA7E43 /* KBrowserWindowController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KBrowserWindowController.mm; sourceTree = "<group>"; };
+		3A9293651229E49A00DA7E43 /* NSError+KAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSError+KAdditions.h"; sourceTree = "<group>"; };
+		3A9293661229E49A00DA7E43 /* NSError+KAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSError+KAdditions.m"; sourceTree = "<group>"; };
+		3A9293CA1229ED4C00DA7E43 /* KDocumentController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KDocumentController.h; sourceTree = "<group>"; };
+		3A9293CB1229ED4C00DA7E43 /* KDocumentController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KDocumentController.mm; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		3A928C1E1227151800DA7E43 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3A92917A1229BDF700DA7E43 /* ChromiumTabs.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		3A928BED1227143800DA7E43 = {
+			isa = PBXGroup;
+			children = (
+				3A92916A1229BDAA00DA7E43 /* chromium-tabs.xcodeproj */,
+				3A928C13122714E800DA7E43 /* src */,
+				3A928C19122714EE00DA7E43 /* resources */,
+				3A92914F1229BD5E00DA7E43 /* Frameworks */,
+				3A928C211227151800DA7E43 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		3A928C13122714E800DA7E43 /* src */ = {
+			isa = PBXGroup;
+			children = (
+				3A92912B1229BB5100DA7E43 /* prefix.pch */,
+				3A928C16122714E800DA7E43 /* main.m */,
+				3A928C14122714E800DA7E43 /* KAppDelegate.h */,
+				3A928C15122714E800DA7E43 /* KAppDelegate.mm */,
+				3A9293CA1229ED4C00DA7E43 /* KDocumentController.h */,
+				3A9293CB1229ED4C00DA7E43 /* KDocumentController.mm */,
+				3A928C17122714E800DA7E43 /* KBrowser.h */,
+				3A928C18122714E800DA7E43 /* KBrowser.mm */,
+				3A9292971229D31200DA7E43 /* KBrowserWindowController.h */,
+				3A9292981229D31200DA7E43 /* KBrowserWindowController.mm */,
+				3A9291191229B96A00DA7E43 /* KTabContents.h */,
+				3A92911A1229B96A00DA7E43 /* KTabContents.mm */,
+				3A92911C1229B9D500DA7E43 /* KToolbarController.h */,
+				3A92911D1229B9D500DA7E43 /* KToolbarController.mm */,
+				3A9293651229E49A00DA7E43 /* NSError+KAdditions.h */,
+				3A9293661229E49A00DA7E43 /* NSError+KAdditions.m */,
+			);
+			path = src;
+			sourceTree = "<group>";
+		};
+		3A928C19122714EE00DA7E43 /* resources */ = {
+			isa = PBXGroup;
+			children = (
+				3A928C1A122714EE00DA7E43 /* Info.plist */,
+				3A928C1B122714EE00DA7E43 /* MainMenu.xib */,
+				3A9291171229B93C00DA7E43 /* Toolbar.xib */,
+			);
+			path = resources;
+			sourceTree = "<group>";
+		};
+		3A928C211227151800DA7E43 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				3A928C201227151800DA7E43 /* Kod.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		3A92914F1229BD5E00DA7E43 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				3A9291791229BDF700DA7E43 /* ChromiumTabs.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		3A92916B1229BDAA00DA7E43 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				3A9291701229BDAA00DA7E43 /* ChromiumTabs.framework */,
+				3A9291721229BDAA00DA7E43 /* Chromium Tabs.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		3A928C1F1227151800DA7E43 /* Kod */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 3A928C261227151900DA7E43 /* Build configuration list for PBXNativeTarget "Kod" */;
+			buildPhases = (
+				3A928C1C1227151800DA7E43 /* Resources */,
+				3A928C1D1227151800DA7E43 /* Sources */,
+				3A928C1E1227151800DA7E43 /* Frameworks */,
+				3A9291381229BBB600DA7E43 /* Copy Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				3A9291941229BE1500DA7E43 /* PBXTargetDependency */,
+			);
+			name = Kod;
+			productName = Kod;
+			productReference = 3A928C201227151800DA7E43 /* Kod.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		3A928BEF1227143800DA7E43 /* Project object */ = {
+			isa = PBXProject;
+			buildConfigurationList = 3A928BF21227143800DA7E43 /* Build configuration list for PBXProject "kod" */;
+			compatibilityVersion = "Xcode 2.4";
+			hasScannedForEncodings = 0;
+			mainGroup = 3A928BED1227143800DA7E43;
+			productRefGroup = 3A928C211227151800DA7E43 /* Products */;
+			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = 3A92916B1229BDAA00DA7E43 /* Products */;
+					ProjectRef = 3A92916A1229BDAA00DA7E43 /* chromium-tabs.xcodeproj */;
+				},
+			);
+			projectRoot = "";
+			targets = (
+				3A928C1F1227151800DA7E43 /* Kod */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		3A9291701229BDAA00DA7E43 /* ChromiumTabs.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = ChromiumTabs.framework;
+			remoteRef = 3A92916F1229BDAA00DA7E43 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		3A9291721229BDAA00DA7E43 /* Chromium Tabs.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = "Chromium Tabs.app";
+			remoteRef = 3A9291711229BDAA00DA7E43 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
+
+/* Begin PBXResourcesBuildPhase section */
+		3A928C1C1227151800DA7E43 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3A9291DF1229BFCD00DA7E43 /* MainMenu.xib in Resources */,
+				3A9291181229B93C00DA7E43 /* Toolbar.xib in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		3A928C1D1227151800DA7E43 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3A9291C51229BF7500DA7E43 /* main.m in Sources */,
+				3A9291C61229BFAD00DA7E43 /* KAppDelegate.mm in Sources */,
+				3A9291C71229BFB000DA7E43 /* KBrowser.mm in Sources */,
+				3A92911B1229B96A00DA7E43 /* KTabContents.mm in Sources */,
+				3A92911E1229B9D500DA7E43 /* KToolbarController.mm in Sources */,
+				3A9292991229D31200DA7E43 /* KBrowserWindowController.mm in Sources */,
+				3A9293671229E49A00DA7E43 /* NSError+KAdditions.m in Sources */,
+				3A9293CC1229ED4C00DA7E43 /* KDocumentController.mm in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		3A9291941229BE1500DA7E43 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = ChromiumTabs;
+			targetProxy = 3A9291931229BE1500DA7E43 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		3A928BF01227143800DA7E43 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+			};
+			name = Debug;
+		};
+		3A928BF11227143800DA7E43 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+			};
+			name = Release;
+		};
+		3A928C241227151800DA7E43 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_2)",
+				);
+				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)\"";
+				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_2 = "\"$(SRCROOT)/../chromium-tabs/build/Debug\"";
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = src/prefix.pch;
+				INFOPLIST_FILE = resources/Info.plist;
+				INSTALL_PATH = "$(HOME)/Applications";
+				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				OTHER_LDFLAGS = (
+					"-framework",
+					Foundation,
+					"-framework",
+					AppKit,
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = Kod;
+				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.6.sdk";
+			};
+			name = Debug;
+		};
+		3A928C251227151800DA7E43 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_2)",
+				);
+				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)\"";
+				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_2 = "\"$(SRCROOT)/../chromium-tabs/build/Debug\"";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_MODEL_TUNING = G5;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = src/prefix.pch;
+				INFOPLIST_FILE = resources/Info.plist;
+				INSTALL_PATH = "$(HOME)/Applications";
+				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				OTHER_LDFLAGS = (
+					"-framework",
+					Foundation,
+					"-framework",
+					AppKit,
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = Kod;
+				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.6.sdk";
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		3A928BF21227143800DA7E43 /* Build configuration list for PBXProject "kod" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3A928BF01227143800DA7E43 /* Debug */,
+				3A928BF11227143800DA7E43 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		3A928C261227151900DA7E43 /* Build configuration list for PBXNativeTarget "Kod" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3A928C241227151800DA7E43 /* Debug */,
+				3A928C251227151800DA7E43 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 3A928BEF1227143800DA7E43 /* Project object */;
+}
