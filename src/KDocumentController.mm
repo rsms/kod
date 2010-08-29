@@ -9,7 +9,9 @@
 
 - (id)makeUntitledDocumentOfType:(NSString *)typeName error:(NSError **)error {
   DLOG_TRACE();
-  return [[KTabContents alloc] initWithBaseTabContents:nil];
+  KTabContents* tab = [[KTabContents alloc] initWithBaseTabContents:nil];
+  //tab.isUntitled = YES;
+  return tab;
 }
 
 - (id)openUntitledDocumentAndDisplay:(BOOL)display error:(NSError **)error {
@@ -21,6 +23,23 @@
     [self finalizeOpenDocument:tab inBrowser:(KBrowser*)[KBrowser mainBrowser]];
   }
   return tab;
+}
+
+
+- (void)addTabContents:(KTabContents*)tab inBrowser:(KBrowser*)browser {
+  // If there is one single, unmodified and empty document (i.e. a new window
+  // with a default empty document): remove the document first. This is a common
+  // use-case where you open a new window which comes with a new empty document,
+  // and then Open... one or more files.
+  if ([browser tabCount] == 1) {
+    KTabContents* tab0 = (KTabContents*)[browser tabContentsAtIndex:0];
+    assert(tab0);
+    if (![tab0 isDocumentEdited] && ![tab0 fileURL]) {
+      [browser replaceTabContentsAtIndex:0 withTabContents:tab];
+      return;
+    }
+  }
+  [browser addTabContents:tab];
 }
 
 
@@ -39,16 +58,20 @@
   if (!browser.windowController) {
     [browser createWindowControllerInstance];
   }
-  [browser addTabContents:tab];
+
+  [self addTabContents:tab inBrowser:browser];
+
   if (![[browser.windowController window] isVisible])
     [browser.windowController showWindow:self];
 }
+
 
 - (void)finalizeOpenDocument:(NSArray*)args {
   assert([NSThread isMainThread]);
   [self finalizeOpenDocument:[args objectAtIndex:0]
                    inBrowser:[args count] > 1 ? [args objectAtIndex:1] : nil];
 }
+
 
 - (id)openDocumentWithContentsOfURL:(NSURL *)absoluteURL
                             display:(BOOL)display
@@ -68,8 +91,9 @@
   KTabContents* tab = [[KTabContents alloc] initWithBaseTabContents:nil];
   if (tab) {
     if ([tab readFromURL:url ofType:@"txt" error:error] && !(*error)) {
-      // set tab title
+      // set tab title and url
       tab.title = [url lastPathComponent];
+      [tab setFileURL:url];
       
       // add the tab to |browser|
       if (![NSThread isMainThread]) {
@@ -91,13 +115,8 @@
   return nil;
 }
 
-- (id)makeDocumentWithContentsOfURL:(NSURL *)url ofType:(NSString *)typeName error:(NSError **)error {
-  DLOG_TRACE();
-  return [super makeDocumentWithContentsOfURL:url ofType:typeName error:error];
-}
 
 - (NSString *)defaultType {
-  DLOG_TRACE();
   return @"txt";
 }
 

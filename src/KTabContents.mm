@@ -1,9 +1,11 @@
 #import "KTabContents.h"
+#import "KBrowser.h"
 #import "NSError+KAdditions.h"
 #import <ChromiumTabs/common.h>
 
 @implementation KTabContents
 
+@synthesize browser = browser_;
 
 -(id)initWithBaseTabContents:(CTTabContents*)baseContents {
   if (!(self = [super init])) return nil;
@@ -60,8 +62,22 @@
 }
 
 
--(void)tabWillClose {
+// Called when this tab was inserted into a browser
+- (void)tabDidInsertIntoBrowser:(CTBrowser*)browser
+                        atIndex:(NSInteger)index
+                   inForeground:(bool)foreground {
+  self.browser = (KBrowser*)browser;
+}
+
+// Called when this tab is about to close
+- (void)tabWillCloseInBrowser:(CTBrowser*)browser atIndex:(NSInteger)index {
+  self.browser = nil;
   [[NSNotificationCenter defaultCenter] removeObserver: self];
+}
+
+// Called when this tab was removed from a browser
+- (void)tabDidDetachFromBrowser:(CTBrowser*)browser atIndex:(NSInteger)index {
+  self.browser = nil;
 }
 
 
@@ -80,6 +96,21 @@
 
 + (BOOL)canConcurrentlyReadDocumentsOfType:(NSString *)typeName {
   return YES;
+}
+
+- (NSString*)displayName {
+  return self.title;
+}
+
+- (NSWindow *)windowForSheet {
+  KBrowser* browser = self.browser;
+  if (browser) {
+    CTBrowserWindowController* windowController = browser.windowController;
+    if (windowController) {
+      return [windowController window];
+    }
+  }
+  return nil;
 }
 
 - (void)textStorageDidProcessEditing:(NSNotification*)notification {
