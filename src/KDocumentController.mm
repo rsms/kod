@@ -20,13 +20,18 @@
                                                  error:error];
   if (tab) {
     assert([NSThread isMainThread]);
-    [self finalizeOpenDocument:tab inBrowser:(KBrowser*)[KBrowser mainBrowser]];
+    [self finalizeOpenDocument:tab
+                     inBrowser:(KBrowser*)[KBrowser mainBrowser]
+                       display:display];
   }
   return tab;
 }
 
 
 - (void)addTabContents:(KTabContents*)tab inBrowser:(KBrowser*)browser {
+  // NOTE: if we want to add a tab in the background, we should not use this
+  // helper function (addTabContents:inBrowser:)
+
   // If there is one single, unmodified and empty document (i.e. a new window
   // with a default empty document): remove the document first. This is a common
   // use-case where you open a new window which comes with a new empty document,
@@ -39,11 +44,14 @@
       return;
     }
   }
+  // Append a new tab after the currently selected tab
   [browser addTabContents:tab];
 }
 
 
-- (void)finalizeOpenDocument:(KTabContents*)tab inBrowser:(KBrowser*)browser {
+- (void)finalizeOpenDocument:(KTabContents*)tab
+                   inBrowser:(KBrowser*)browser
+                     display:(BOOL)display {
   assert([NSThread isMainThread]);
   if (!browser) {
     // Try to get mainBrowser again, as it might have occured since we first got 
@@ -61,15 +69,21 @@
 
   [self addTabContents:tab inBrowser:browser];
 
-  if (![[browser.windowController window] isVisible])
+  if (display && ![[browser.windowController window] isVisible])
     [browser.windowController showWindow:self];
+
+  // Make sure the new tab gets focus
+  if (display && tab.isVisible)
+    [[tab.view window] makeFirstResponder:tab.view];
 }
 
 
 - (void)finalizeOpenDocument:(NSArray*)args {
+  // proxy to finalizeOpenDocument: for background threads
   assert([NSThread isMainThread]);
   [self finalizeOpenDocument:[args objectAtIndex:0]
-                   inBrowser:[args count] > 1 ? [args objectAtIndex:1] : nil];
+                   inBrowser:[args count] > 2 ? [args objectAtIndex:2] : nil
+                     display:[(NSNumber*)[args objectAtIndex:1] boolValue]];
 }
 
 
@@ -79,7 +93,7 @@
   DLOG_TRACE();
   return [self openDocumentWithContentsOfURL:absoluteURL
                                    inBrowser:(KBrowser*)[KBrowser mainBrowser]
-                                     display:NO
+                                     display:display
                                        error:error];
 }
 
@@ -91,21 +105,22 @@
   KTabContents* tab = [[KTabContents alloc] initWithBaseTabContents:nil];
   if (tab) {
     if ([tab readFromURL:url ofType:@"txt" error:error] && !(*error)) {
-      // set tab title and url
+      // set tab title, url, icon (implied by setting url), etc.
       tab.title = [url lastPathComponent];
       [tab setFileURL:url];
-      
+
       // add the tab to |browser|
       if (![NSThread isMainThread]) {
         // if we worked in a background thread
-        NSArray* args = [NSArray arrayWithObjects:tab, browser, nil];
+        NSArray* args = [NSArray arrayWithObjects:
+            tab, [NSNumber numberWithBool:display], browser, nil];
         [self performSelectorOnMainThread:@selector(finalizeOpenDocument:)
                                withObject:args
                             waitUntilDone:YES];
         // NODE: if we don't wait for the above to complete, we'll need to
         // manage the references of |args|. Now we just let it autorelease.
       } else {
-        [self finalizeOpenDocument:tab inBrowser:browser];
+        [self finalizeOpenDocument:tab inBrowser:browser display:display];
       }
       return tab;
     } else {

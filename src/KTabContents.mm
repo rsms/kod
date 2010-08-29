@@ -3,12 +3,25 @@
 #import "NSError+KAdditions.h"
 #import <ChromiumTabs/common.h>
 
+@interface KTabContents (Private)
+- (void)undoManagerCheckpoint:(NSNotification*)notification;
+@end
+
 @implementation KTabContents
 
-@synthesize browser = browser_;
+static NSImage* _kDefaultIcon = nil;
+
++ (void)initialize {
+  _kDefaultIcon =
+      [[[NSWorkspace sharedWorkspace] iconForFile:@"/no/such/file"] retain];
+}
 
 -(id)initWithBaseTabContents:(CTTabContents*)baseContents {
   if (!(self = [super init])) return nil;
+
+  // Default title and icon
+  self.title = @"Untitled";
+  self.icon = _kDefaultIcon;
 
   // Save a weak reference to the undo manager (performance reasons)
   undoManager_ = [self undoManager]; assert(undoManager_);
@@ -46,6 +59,12 @@
   // Set the NSScrollView as our view
   view_ = sv;
 
+  // Observe when the document is modified so we can update the UI accordingly
+	[nc addObserver:self
+         selector:@selector(undoManagerCheckpoint:)
+             name:NSUndoManagerCheckpointNotification
+					 object:undoManager_];
+
   return self;
 }
 
@@ -61,30 +80,32 @@
   return self;
 }
 
-
-// Called when this tab was inserted into a browser
-- (void)tabDidInsertIntoBrowser:(CTBrowser*)browser
-                        atIndex:(NSInteger)index
-                   inForeground:(bool)foreground {
-  self.browser = (KBrowser*)browser;
-}
-
-// Called when this tab is about to close
 - (void)tabWillCloseInBrowser:(CTBrowser*)browser atIndex:(NSInteger)index {
-  self.browser = nil;
-  [[NSNotificationCenter defaultCenter] removeObserver: self];
+  [super tabWillCloseInBrowser:browser atIndex:index];
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-// Called when this tab was removed from a browser
-- (void)tabDidDetachFromBrowser:(CTBrowser*)browser atIndex:(NSInteger)index {
-  self.browser = nil;
+
+- (void)undoManagerCheckpoint:(NSNotification*)notification {
+  DLOG_EXPR([self isDocumentEdited]);
+  BOOL isDirty = [self isDocumentEdited];
+  if (isDirty_ != isDirty) {
+    isDirty_ = isDirty;
+    [self documentDidChangeDirtyState];
+  }
+}
+
+
+- (void)documentDidChangeDirtyState {
+  DLOG("documentDidChangeDirtyState");
+  self.title = @"*";
 }
 
 
 #pragma mark -
 #pragma mark NSTextViewDelegate implementation
 
-// For some reason, this is called for _each edit_ to the text view, this need
+// For some reason, this is called for _each edit_ to the text view so it needs
 // to be fast.
 - (NSUndoManager *)undoManagerForTextView:(NSTextView *)aTextView {
   return undoManager_;
@@ -98,12 +119,17 @@
   return YES;
 }
 
+- (void)setFileURL:(NSURL *)absoluteURL {
+  [super setFileURL:absoluteURL];
+  self.icon = [[NSWorkspace sharedWorkspace] iconForFile:[absoluteURL path]];
+}
+
 - (NSString*)displayName {
   return self.title;
 }
 
 - (NSWindow *)windowForSheet {
-  KBrowser* browser = self.browser;
+  KBrowser* browser = (KBrowser*)self.browser;
   if (browser) {
     CTBrowserWindowController* windowController = browser.windowController;
     if (windowController) {
@@ -123,6 +149,14 @@
   DLOG_EXPR(range);
 	DLOG_EXPR(changeInLen);
 	DLOG_EXPR(wasInUndoRedo);
+
+  // mark as dirty if not already dirty
+  if (!isDirty_) {
+    [self updateChangeCount:NSChangeReadOtherContents];
+  }
+
+  // this makes each edit to the text storage an undoable entry
+  [textView_ breakUndoCoalescing];
 }
 
 // Generate data from text
@@ -146,6 +180,8 @@
     return NO;
   } else {
     [textView_ setString:text];
+    // TODO: restore selection(s), possibly by reading from ext. attrs.
+    [textView_ setSelectedRange:NSMakeRange(0, 0)];
     return YES;
   }
 }

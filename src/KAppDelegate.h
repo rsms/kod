@@ -11,7 +11,7 @@
 
 - (void)commandDispatch:(id)sender;
 
--(void)openDocumentInWindow:(KBrowserWindowController*)windowController
-                     sender:(id)sender;
+/*-(void)openDocumentInWindow:(KBrowserWindowController*)windowController
+                     sender:(id)sender;*/
 
 @end

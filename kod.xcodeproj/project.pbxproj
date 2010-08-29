@@ -10,7 +10,6 @@
 		3A9291181229B93C00DA7E43 /* Toolbar.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3A9291171229B93C00DA7E43 /* Toolbar.xib */; };
 		3A92911B1229B96A00DA7E43 /* KTabContents.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A92911A1229B96A00DA7E43 /* KTabContents.mm */; };
 		3A92911E1229B9D500DA7E43 /* KToolbarController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A92911D1229B9D500DA7E43 /* KToolbarController.mm */; };
-		3A92917A1229BDF700DA7E43 /* ChromiumTabs.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A9291791229BDF700DA7E43 /* ChromiumTabs.framework */; };
 		3A9291C51229BF7500DA7E43 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A928C16122714E800DA7E43 /* main.m */; };
 		3A9291C61229BFAD00DA7E43 /* KAppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A928C15122714E800DA7E43 /* KAppDelegate.mm */; };
 		3A9291C71229BFB000DA7E43 /* KBrowser.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A928C18122714E800DA7E43 /* KBrowser.mm */; };
@@ -18,6 +17,8 @@
 		3A9292991229D31200DA7E43 /* KBrowserWindowController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A9292981229D31200DA7E43 /* KBrowserWindowController.mm */; };
 		3A9293671229E49A00DA7E43 /* NSError+KAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A9293661229E49A00DA7E43 /* NSError+KAdditions.m */; };
 		3A9293CC1229ED4C00DA7E43 /* KDocumentController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A9293CB1229ED4C00DA7E43 /* KDocumentController.mm */; };
+		3A929886122AC38F00DA7E43 /* ChromiumTabs.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A9297E4122AB49D00DA7E43 /* ChromiumTabs.framework */; };
+		3A929887122AC39100DA7E43 /* ChromiumTabs.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 3A9297E4122AB49D00DA7E43 /* ChromiumTabs.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -44,6 +45,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				3A929887122AC39100DA7E43 /* ChromiumTabs.framework in Copy Frameworks */,
 			);
 			name = "Copy Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -66,7 +68,6 @@
 		3A92911D1229B9D500DA7E43 /* KToolbarController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KToolbarController.mm; sourceTree = "<group>"; };
 		3A92912B1229BB5100DA7E43 /* prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = prefix.pch; sourceTree = "<group>"; };
 		3A92916A1229BDAA00DA7E43 /* chromium-tabs.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "chromium-tabs.xcodeproj"; path = "chromium-tabs/chromium-tabs.xcodeproj"; sourceTree = "<group>"; };
-		3A9291791229BDF700DA7E43 /* ChromiumTabs.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ChromiumTabs.framework; path = "../chromium-tabs/build/Debug/ChromiumTabs.framework"; sourceTree = SOURCE_ROOT; };
 		3A9292971229D31200DA7E43 /* KBrowserWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KBrowserWindowController.h; sourceTree = "<group>"; };
 		3A9292981229D31200DA7E43 /* KBrowserWindowController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KBrowserWindowController.mm; sourceTree = "<group>"; };
 		3A9293651229E49A00DA7E43 /* NSError+KAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSError+KAdditions.h"; sourceTree = "<group>"; };
@@ -80,7 +81,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3A92917A1229BDF700DA7E43 /* ChromiumTabs.framework in Frameworks */,
+				3A929886122AC38F00DA7E43 /* ChromiumTabs.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -142,7 +143,6 @@
 		3A92914F1229BD5E00DA7E43 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				3A9291791229BDF700DA7E43 /* ChromiumTabs.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -252,6 +252,8 @@
 		3A928BF01227143800DA7E43 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
+				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
 				COPY_PHASE_STRIP = NO;
 			};
 			name = Debug;
@@ -259,6 +261,8 @@
 		3A928BF11227143800DA7E43 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
+				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
 				COPY_PHASE_STRIP = YES;
 			};
 			name = Release;
@@ -285,6 +289,7 @@
 				INSTALL_PATH = "$(HOME)/Applications";
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = (
 					"-framework",
 					Foundation,

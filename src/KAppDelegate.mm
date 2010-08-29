@@ -25,7 +25,7 @@
   [KBrowser executeCommand:[sender tag]];
 }
 
--(void)openDocumentInWindow:(KBrowserWindowController *)windowController
+/*-(void)openDocumentInWindow:(KBrowserWindowController *)windowController
                      sender:(id)sender {
   // Create and display a standard open panel
   NSOpenPanel* openPanel = [[NSOpenPanel openPanel] retain];
@@ -72,6 +72,6 @@
     }
     [openPanel release];
   }];
-}
+}*/
 
 @end

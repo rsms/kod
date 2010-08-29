@@ -11,7 +11,9 @@
                             display:(BOOL)displayDocument
                               error:(NSError **)outError;
 
-- (void)finalizeOpenDocument:(KTabContents*)tab inBrowser:(KBrowser*)browser;
+- (void)finalizeOpenDocument:(KTabContents*)tab
+                   inBrowser:(KBrowser*)browser
+                     display:(BOOL)display;
 - (void)finalizeOpenDocument:(NSArray*)args;
 
 @end

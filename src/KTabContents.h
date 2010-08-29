@@ -7,11 +7,10 @@
 @interface KTabContents : CTTabContents <NSTextViewDelegate> {
   __weak NSTextView* textView_; // Owned by NSScrollView which is our view_
   __weak NSUndoManager *undoManager_; // Owned by textView_
-  KBrowser *browser_;
+  BOOL isDirty_;
 }
 
-@property(retain, nonatomic) KBrowser *browser;
-
 - (void)textStorageDidProcessEditing:(NSNotification*)notification;
+- (void)documentDidChangeDirtyState; // when isDirty_ changed
 
 @end
