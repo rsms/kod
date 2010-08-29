@@ -1,58 +1,9 @@
 #import "KBrowser.h"
 #import "KTabContents.h"
 #import "KBrowserWindowController.h"
+#import <ChromiumTabs/common.h>
 
 @implementation KBrowser
-
-static KBrowser* _currentMain = nil; // weak
-
-+ (KBrowser*)mainBrowser {
-  return _currentMain;
-}
-
--(id)init {
-  if ((self = [super init])) {
-    if (!_currentMain) {
-      // TODO: potential race-condition since we can be called from background
-      //       threads.
-      _currentMain = self;
-    }
-  }
-  return self;
-}
-
--(void)dealloc {
-  if (_currentMain == self)
-    _currentMain = nil;
-  [super dealloc];
-}
-
--(void)finalize {
-  if (_currentMain == self) {
-      // TODO: potential race-condition since we can be called from a background
-      //       thread (gc collector).
-    _currentMain = nil;
-  }
-  [super finalize];
-}
-
--(void)windowDidBeginToClose {
-  [super windowDidBeginToClose];
-  if (_currentMain == self)
-    _currentMain = nil;
-}
-
-- (void)windowDidBecomeMain:(NSNotification*)notification {
-  assert([NSThread isMainThread]); // since we don't lock
-  _currentMain = self;
-}
-
-- (void)windowDidResignMain:(NSNotification*)notification {
-  if (_currentMain == self) {
-    assert([NSThread isMainThread]); // since we don't lock
-    _currentMain = nil;
-  }
-}
 
 // This method is called when a new tab is being created. We need to return a
 // new CTTabContents object which will represent the contents of the new tab.
@@ -71,6 +22,17 @@ static KBrowser* _currentMain = nil; // weak
                                              ofType:@"nib"];
   return [[KBrowserWindowController alloc] initWithWindowNibPath:windowNibPath
                                                          browser:self];
+}
+
+
+-(CTTabContents*)addTabContents:(CTTabContents*)tab
+                        atIndex:(int)index
+                   inForeground:(BOOL)foreground {
+  if (index == -1) {
+    // -1 means "append" -- we add it after the currently selected tab
+    index = [self selectedTabIndex] + 1;
+  }
+  return [super addTabContents:tab atIndex:index inForeground:foreground];
 }
 
 @end

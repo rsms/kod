@@ -14,10 +14,11 @@
 
 - (id)openUntitledDocumentAndDisplay:(BOOL)display error:(NSError **)error {
   DLOG_TRACE();
-  KTabContents* tab = [self makeUntitledDocumentOfType:@"text" error:error];
+  KTabContents* tab = [self makeUntitledDocumentOfType:[self defaultType]
+                                                 error:error];
   if (tab) {
     assert([NSThread isMainThread]);
-    [self finalizeOpenDocument:tab inBrowser:[KBrowser mainBrowser]];
+    [self finalizeOpenDocument:tab inBrowser:(KBrowser*)[KBrowser mainBrowser]];
   }
   return tab;
 }
@@ -28,7 +29,7 @@
   if (!browser) {
     // Try to get mainBrowser again, as it might have occured since we first got 
     // dispatched.
-    if (!(browser = [KBrowser mainBrowser])) {
+    if (!(browser = (KBrowser*)[KBrowser mainBrowser])) {
       // defering creation of a new browser (in the case it does not exist when
       // starting a read) makes the calls sequential, thus avoid race-conditions
       // which could create multiple new browser instances.
@@ -38,10 +39,6 @@
   if (!browser.windowController) {
     [browser createWindowControllerInstance];
   }
-  // TODO: if there is one single, unmodified and empty document (i.e. a new
-  // window with a default empty document): remove the document first.
-  // This is a common use-case where you open a new window which comes with a
-  // new empty document, and then Open... one or more files.
   [browser addTabContents:tab];
   if (![[browser.windowController window] isVisible])
     [browser.windowController showWindow:self];
@@ -58,7 +55,7 @@
                               error:(NSError **)error {
   DLOG_TRACE();
   return [self openDocumentWithContentsOfURL:absoluteURL
-                                   inBrowser:[KBrowser mainBrowser]
+                                   inBrowser:(KBrowser*)[KBrowser mainBrowser]
                                      display:NO
                                        error:error];
 }
@@ -70,7 +67,7 @@
   DLOG_TRACE();
   KTabContents* tab = [[KTabContents alloc] initWithBaseTabContents:nil];
   if (tab) {
-    if ([tab readFromURL:url ofType:@"text" error:error] && !(*error)) {
+    if ([tab readFromURL:url ofType:@"txt" error:error] && !(*error)) {
       // set tab title
       tab.title = [url lastPathComponent];
       
@@ -101,12 +98,12 @@
 
 - (NSString *)defaultType {
   DLOG_TRACE();
-  return @"KTabContents";
+  return @"txt";
 }
 
-- (NSArray*)documentClassNames {
+/*- (NSArray*)documentClassNames {
   DLOG_TRACE();
-  return [NSArray arrayWithObject:[self defaultType]];
+  return [NSArray arrayWithObject:@"KTabContents"];
 }
 
 - (Class)documentClassForType:(NSString *)documentTypeName {
@@ -122,7 +119,7 @@
 - (NSString *)typeForContentsOfURL:(NSURL *)url error:(NSError **)error {
   DLOG_TRACE();
   return [self defaultType];
-}
+}*/
 
 
 @end

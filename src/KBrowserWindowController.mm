@@ -6,18 +6,6 @@
 
 @implementation KBrowserWindowController
 
-// We forward windowDid{Become,Resign}Main to our browser instance so it can
-// help the KBrowser class to keep track of the current "main" browser.
-- (void)windowDidBecomeMain:(NSNotification*)notification {
-  [super windowDidBecomeMain:notification];
-  [(KBrowser*)browser_ windowDidBecomeMain:notification];
-}
-
-- (void)windowDidResignMain:(NSNotification*)notification {
-  [super windowDidResignMain:notification];
-  [(KBrowser*)browser_ windowDidResignMain:notification];
-}
-
 
 #pragma mark -
 #pragma mark Proxy for selected tab
