@@ -30,15 +30,25 @@
 
 @implementation KDocumentController
 
+
+
+- (NSSet*)windows {
+  NSArray* documents = [self documents];
+  NSMutableSet* windows = [NSMutableSet set];
+  for (KTabContents* tab in documents) {
+    [windows addObject:[tab.browser.windowController window]];
+  }
+  return windows;
+}
+
+
 - (id)makeUntitledDocumentOfType:(NSString *)typeName error:(NSError **)error {
-  DLOG_TRACE();
   KTabContents* tab = [[KTabContents alloc] initWithBaseTabContents:nil];
   //tab.isUntitled = YES;
   return tab;
 }
 
 - (id)openUntitledDocumentAndDisplay:(BOOL)display error:(NSError **)error {
-  DLOG_TRACE();
   KTabContents* tab = [self makeUntitledDocumentOfType:[self defaultType]
                                                  error:error];
   if (tab) {
@@ -113,7 +123,6 @@
 - (id)openDocumentWithContentsOfURL:(NSURL *)absoluteURL
                             display:(BOOL)display
                               error:(NSError **)error {
-  DLOG_TRACE();
   return [self openDocumentWithContentsOfURL:absoluteURL
                                    inBrowser:(KBrowser*)[KBrowser mainBrowser]
                                      display:display
@@ -166,7 +175,7 @@
 }
 
 
-- (void)addDocument:(NSDocument *)document {
+/*- (void)addDocument:(NSDocument *)document {
   [super addDocument:document];
   DLOG("addDocument:%@", document);
 }
@@ -175,7 +184,7 @@
 - (void)removeDocument:(NSDocument *)document {
   [super removeDocument:document];
   DLOG("removeDocument:%@", document);
-}
+}*/
 
 
 - (NSString *)defaultType {
@@ -203,6 +212,10 @@
 }*/
 
 
+#pragma mark -
+#pragma mark Document close cycle
+
+
 // Private method for initiating closing of the next document, or finalizing a
 // close cycle if no more documents are left in the close cycle.
 - (void)closeNextDocumentInCloseCycle {
@@ -212,32 +225,23 @@
     // Query next tab in the list
     KTabContents* tab = [closeCycleContext_->documents objectAtIndex:count-1];
     [closeCycleContext_->documents removeObjectAtIndex:count-1];
-    // make sure we receive notifications
-    NSWindow* window = [tab.browser.windowController window];
-    NSNotificationCenter* nc = [NSNotificationCenter defaultCenter];
-    [nc removeObserver:self
-                  name:NSWindowWillBeginSheetNotification
-                object:window];
-    [nc addObserver:self
-           selector:@selector(windowInCloseCycleWillBeginSheet:)
-               name:NSWindowWillBeginSheetNotification
-             object:window];
-    [nc removeObserver:self
-                  name:NSWindowDidEndSheetNotification
-                object:window];
-    [nc addObserver:self
-           selector:@selector(windowInCloseCycleDidEndSheet:)
-               name:NSWindowDidEndSheetNotification
-             object:window];
-    [window makeKeyAndOrderFront:self];
+    //NSWindow* window = [tab.browser.windowController window];
+    //[window makeKeyAndOrderFront:self];
     [tab canCloseDocumentWithDelegate:self
                   shouldCloseSelector:@selector(document:shouldClose:contextInfo:)
                           contextInfo:nil];
   } else {
-    DLOG("close cycle finalizing -- invoking closeCycleContext_->delegate");
-    DLOG_EXPR(closeCycleContext_->delegate);
-    DLOG_EXPR(closeCycleContext_->didCloseAllSelector);
-    DLOG_EXPR(closeCycleContext_->contextInfo);
+    DLOG("close cycle finalizing");
+    // Stop observing sheet notifications for windows which are still alive
+    NSNotificationCenter* nc = [NSNotificationCenter defaultCenter];
+    for (NSWindow* window in [self windows]) {
+      [nc removeObserver:self
+                    name:NSWindowWillBeginSheetNotification
+                  object:window];
+      [nc removeObserver:self
+                    name:NSWindowDidEndSheetNotification
+                  object:window];
+    }
     // Invoke |closeCycleContext_->didCloseAllSelector| on
     // |closeCycleContext_->delegate| which has the following signature:
     //documentController:(NSDocumentController *)docController
@@ -246,7 +250,7 @@
     id r = objc_msgSend(closeCycleContext_->delegate,
                         closeCycleContext_->didCloseAllSelector,
                         self,
-                        closeCycleContext_->stillOpenCount ? NO : YES,
+                        closeCycleContext_->stillOpenCount > 0 ? NO : YES,
                         closeCycleContext_->contextInfo);
     // Free our cycle context
     [closeCycleContext_ release];
@@ -254,24 +258,13 @@
   }
 }
 
-// private method we need to override
--(void)_documentController:(NSDocumentController *)docController
-           shouldTerminate:(BOOL)terminate
-                   context:(void *)contextInfo {
-  DLOG_TRACE();
-  // BUG: I think that this fails since there might be a lingering modal runloop
-  // mode still active. Investigate.
-  if (terminate) {
-    [NSApp terminate:self];
-  }
-  /*[super _documentController:docController
-             shouldTerminate:terminate
-                     context:contextInfo];*/
-}
 
+#if _DEBUG
 static int _closeCycleSheetDebugRefCount = 0;
+#endif
+
 - (void)windowInCloseCycleWillBeginSheet:(NSNotification*)notification {
-  DLOG_TRACE();
+  if (!closeCycleContext_) return;
   #if _DEBUG
   // refcount open sheets in debug builds -- this is a common death trap!
   if (_closeCycleSheetDebugRefCount > 0) {
@@ -285,33 +278,37 @@ static int _closeCycleSheetDebugRefCount = 0;
 }
 
 - (void)windowInCloseCycleDidEndSheet:(NSNotification*)notification {
-  DLOG_TRACE();
+  if (!closeCycleContext_) return;
   #if _DEBUG
   _closeCycleSheetDebugRefCount--;
   #endif // _DEBUG
   assert(closeCycleContext_->waitingForSheet == YES);
   closeCycleContext_->waitingForSheet = NO;
-  NSWindow* window = [notification object];
-  NSNotificationCenter* nc = [NSNotificationCenter defaultCenter];
-  [nc removeObserver:self
-                name:NSWindowWillBeginSheetNotification
-              object:window];
-  [nc removeObserver:self
-                name:NSWindowDidEndSheetNotification
-              object:window];
   if (closeCycleContext_) {
     // closeCycleContext_ is null here when we just finalized the cycle
     // schedule next call in the runloop to avoid blowing the stack
     [self performSelectorOnMainThread:@selector(closeNextDocumentInCloseCycle)
                            withObject:nil
                         waitUntilDone:YES];
-    //[self closeNextDocumentInCloseCycle];
   }
 }
 
 - (void)closeAllDocumentsWithDelegate:(id)delegate
                   didCloseAllSelector:(SEL)didCloseAllSelector
                           contextInfo:(void*)contextInfo {
+  // Observe sheet notifications for relevant windows
+  NSNotificationCenter* nc = [NSNotificationCenter defaultCenter];
+  for (NSWindow* window in [self windows]) {
+    [nc addObserver:self
+           selector:@selector(windowInCloseCycleWillBeginSheet:)
+               name:NSWindowWillBeginSheetNotification
+             object:window];
+    [nc addObserver:self
+           selector:@selector(windowInCloseCycleDidEndSheet:)
+               name:NSWindowDidEndSheetNotification
+             object:window];
+  }
+
   // Create a cycle context with the initial delegate, selector and context. We
   // pass around this until we have processed all documents, which happen
   // asynchronously.
@@ -327,26 +324,32 @@ static int _closeCycleSheetDebugRefCount = 0;
 }
 
 
-- (void)document:(NSDocument *)doc
+- (void)document:(NSDocument *)tab
      shouldClose:(BOOL)shouldClose
      contextInfo:(void*)contextInfo {
-  DLOG_TRACE();
-  DLOG_EXPR(shouldClose);
+  BOOL wasCleanClose = NO;
   if (shouldClose) {
-    [doc close];
     if (closeCycleContext_) {
       assert(closeCycleContext_->stillOpenCount > 0);
       closeCycleContext_->stillOpenCount--;
+      // We need to make this calculation here, since after calling [tab close]
+      // closeCycleContext_ might be invalid.
+      wasCleanClose = !closeCycleContext_->waitingForSheet;
     }
+    // NOTE: we need to call close _after_ we have accessed closeCycleContext_
+    // since it might lead to closeCycleContext_ being dealloced and assigned
+    // nil.
+    [tab close];
   }
-  if (closeCycleContext_ && !closeCycleContext_->waitingForSheet) {
+  if (wasCleanClose) {
+    // This happens when the closed document was 
     // schedule next call in the runloop to avoid blowing the stack
     [self performSelectorOnMainThread:@selector(closeNextDocumentInCloseCycle)
                            withObject:nil
                         waitUntilDone:YES];
-    //[self closeNextDocumentInCloseCycle];
   }
-  // instead, we wait for the sheet to complete and then continue
+  // else, we wait for the sheet to complete and then continue in
+  // windowInCloseCycleDidEndSheet
 }
 
 

@@ -9,6 +9,9 @@
   KCloseCycleContext *closeCycleContext_;
 }
 
+// Returns a set (unique) of all windows used by |documents|
+- (NSSet*)windows;
+
 - (id)openDocumentWithContentsOfURL:(NSURL *)absoluteURL
                           inBrowser:(KBrowser*)browser
                             display:(BOOL)displayDocument

@@ -107,6 +107,11 @@ static NSImage* _kDefaultIcon = nil;
 - (void)tabWillCloseInBrowser:(CTBrowser*)browser atIndex:(NSInteger)index {
   DLOG_TRACE();
   [super tabWillCloseInBrowser:browser atIndex:index];
+  NSWindowController *wc = browser.windowController;
+  if (wc) {
+    [self removeWindowController:wc];
+    [self setWindow:nil];
+  }
   [[NSDocumentController sharedDocumentController] removeDocument:self];
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
@@ -195,15 +200,10 @@ static NSImage* _kDefaultIcon = nil;
 #endif // _DEBUG
 
 
-// close immediately
+// close (without asking the user)
 - (void)close {
   DLOG_TRACE();
   if (browser_) {
-    NSWindowController *wc = browser_.windowController;
-    if (wc) {
-      [self removeWindowController:wc];
-      [self setWindow:nil];
-    }
     int index = [browser_ indexOfTabContents:self];
     // if we are associated with a browser, the browser should "have" us
     assert(index != -1);
