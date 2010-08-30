@@ -36,6 +36,13 @@
 			remoteGlobalIDString = 8D1107320486CEB800E47090 /* Chromium Tabs.app */;
 			remoteInfo = "Chromium Tabs";
 		};
+		3A929AEB122B1A0400DA7E43 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 3A92916A1229BDAA00DA7E43 /* chromium-tabs.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 3A3ED9821225E27E009E2908 /* ChromiumTabs */;
+			remoteInfo = ChromiumTabs;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -171,6 +178,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				3A929AEC122B1A0400DA7E43 /* PBXTargetDependency */,
 			);
 			name = Kod;
 			productName = Kod;
@@ -247,6 +255,14 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		3A929AEC122B1A0400DA7E43 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = ChromiumTabs;
+			targetProxy = 3A929AEB122B1A0400DA7E43 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		3A928BF01227143800DA7E43 /* Debug */ = {

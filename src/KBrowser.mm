@@ -35,4 +35,21 @@
   return [super addTabContents:tab atIndex:index inForeground:foreground];
 }
 
+
+/*-(void)newWindow {
+  [isa openEmptyWindow];
+}
+
+-(void)closeWindow {
+  [self.window orderOut:self];
+  [self.window performClose:self];  // Autoreleases the controller.
+}
+
+    case CTBrowserCommandNewWindow:            [self newWindow]; break;
+    //case CTBrowserCommandNewIncognitoWindow: break;
+    case CTBrowserCommandCloseWindow:          [self closeWindow]; break;
+    //case CTBrowserCommandAlwaysOnTop: break;
+    case CTBrowserCommandNewTab:               [self addBlankTab]; break;
+    case CTBrowserCommandCloseTab:             [self closeTab]; break;*/
+
 @end

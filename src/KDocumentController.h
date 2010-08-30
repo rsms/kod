@@ -4,6 +4,7 @@
 @class KTabContents;
 
 @interface KDocumentController : NSDocumentController {
+  void *closeCycleContext_;
 }
 
 - (id)openDocumentWithContentsOfURL:(NSURL *)absoluteURL

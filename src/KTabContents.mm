@@ -16,7 +16,16 @@ static NSImage* _kDefaultIcon = nil;
       [[[NSWorkspace sharedWorkspace] iconForFile:@"/no/such/file"] retain];
 }
 
--(id)initWithBaseTabContents:(CTTabContents*)baseContents {
+// DEBUG: intercepts and dumps selector queries
+/*- (BOOL)respondsToSelector:(SEL)selector {
+	BOOL y = [super respondsToSelector:selector];
+  DLOG("respondsToSelector %@ -> %@", NSStringFromSelector(selector), y?@"YES":@"NO");
+  return y;
+}*/
+
+
+- (id)initWithBaseTabContents:(CTTabContents*)baseContents {
+  // internal init mwthod which do not register delegates nor 
   if (!(self = [super init])) return nil;
 
   // Default title and icon
@@ -40,11 +49,15 @@ static NSImage* _kDefaultIcon = nil;
                           NSViewMinXMargin|NSViewWidthSizable|NSViewMaxXMargin|
                                            NSViewHeightSizable|
                                            NSViewMinYMargin];
+  [textView_ setUsesFindPanel:YES];
 
   // Create a NSScrollView to which we add the NSTextView
   NSScrollView *sv = [[NSScrollView alloc] initWithFrame:NSZeroRect];
   [sv setDocumentView:textView_];
   [sv setHasVerticalScroller:YES];
+
+  // Set the NSScrollView as our view
+  view_ = sv;
 
 	// Register for "text changed" notifications of our text storage:
   NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
@@ -53,17 +66,14 @@ static NSImage* _kDefaultIcon = nil;
              name:NSTextStorageDidProcessEditingNotification
 					 object:[textView_ textStorage]];
 
-  // Enable the standard find panel
-  [textView_ setUsesFindPanel:YES];
-
-  // Set the NSScrollView as our view
-  view_ = sv;
-
   // Observe when the document is modified so we can update the UI accordingly
 	[nc addObserver:self
          selector:@selector(undoManagerCheckpoint:)
              name:NSUndoManagerCheckpointNotification
 					 object:undoManager_];
+
+  // Let the global document controller know we came to life
+  [[NSDocumentController sharedDocumentController] addDocument:self];
 
   return self;
 }
@@ -72,6 +82,8 @@ static NSImage* _kDefaultIcon = nil;
 - (id)initWithContentsOfURL:(NSURL *)absoluteURL
                      ofType:(NSString *)typeName
                       error:(NSError **)outError {
+  // This may be called by a background thread
+  DLOG_TRACE();
   self = [self initWithBaseTabContents:nil];
   assert(self);
   self = [super initWithContentsOfURL:absoluteURL
@@ -80,9 +92,63 @@ static NSImage* _kDefaultIcon = nil;
   return self;
 }
 
+
+- (BOOL)validateMenuItem:(NSMenuItem *)item {
+  BOOL y;
+  if ([item action] == @selector(saveDocument:)) {
+    y = [self isDocumentEdited] || ![self fileURL];
+  } else {
+    y = [super validateMenuItem:item];
+  }
+  return y;
+}
+
+
 - (void)tabWillCloseInBrowser:(CTBrowser*)browser atIndex:(NSInteger)index {
+  DLOG_TRACE();
   [super tabWillCloseInBrowser:browser atIndex:index];
+  [[NSDocumentController sharedDocumentController] removeDocument:self];
   [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+
+/*- (void)tabDidInsertIntoBrowser:(CTBrowser*)browser
+                        atIndex:(NSInteger)index
+                   inForeground:(bool)foreground {
+  [super tabDidInsertIntoBrowser:browser atIndex:index inForeground:foreground];
+  assert(browser);
+  [self addWindowController:browser.windowController];
+}
+
+
+- (void)tabDidDetachFromBrowser:(CTBrowser*)browser atIndex:(NSInteger)index {
+  [super tabDidDetachFromBrowser:browser atIndex:index];
+  assert(browser);
+  [self removeWindowController:browser.windowController];
+}*/
+
+
+-(void)tabDidBecomeSelected {
+  [super tabDidBecomeSelected];
+  if (browser_) {
+    NSWindowController *wc = browser_.windowController;
+    if (wc) {
+      [self addWindowController:wc];
+      [self setWindow:[wc window]];
+    }
+  }
+}
+
+
+-(void)tabDidResignSelected {
+  [super tabDidResignSelected];
+  if (browser_) {
+    NSWindowController *wc = browser_.windowController;
+    if (wc) {
+      [self removeWindowController:wc];
+      [self setWindow:nil];
+    }
+  }
 }
 
 
@@ -98,7 +164,7 @@ static NSImage* _kDefaultIcon = nil;
 
 - (void)documentDidChangeDirtyState {
   DLOG("documentDidChangeDirtyState");
-  self.title = @"*";
+  //self.title = @"*";
 }
 
 
@@ -107,9 +173,9 @@ static NSImage* _kDefaultIcon = nil;
 
 // For some reason, this is called for _each edit_ to the text view so it needs
 // to be fast.
-- (NSUndoManager *)undoManagerForTextView:(NSTextView *)aTextView {
+/*- (NSUndoManager *)undoManagerForTextView:(NSTextView *)aTextView {
   return undoManager_;
-}
+}*/
 
 
 #pragma mark -
@@ -118,6 +184,33 @@ static NSImage* _kDefaultIcon = nil;
 + (BOOL)canConcurrentlyReadDocumentsOfType:(NSString *)typeName {
   return YES;
 }
+
+
+#if _DEBUG
+- (void)canCloseDocumentWithDelegate:(id)delegate shouldCloseSelector:(SEL)shouldCloseSelector contextInfo:(void *)contextInfo {
+  DLOG_TRACE();
+  Debugger();
+  [super canCloseDocumentWithDelegate:delegate shouldCloseSelector:shouldCloseSelector contextInfo:contextInfo];
+}
+#endif // _DEBUG
+
+
+// close immediately
+- (void)close {
+  DLOG_TRACE();
+  if (browser_) {
+    NSWindowController *wc = browser_.windowController;
+    if (wc) {
+      [self removeWindowController:wc];
+      [self setWindow:nil];
+    }
+    int index = [browser_ indexOfTabContents:self];
+    // if we are associated with a browser, the browser should "have" us
+    assert(index != -1);
+    [browser_ closeTabAtIndex:index makeHistory:YES];
+  }
+}
+
 
 - (void)setFileURL:(NSURL *)absoluteURL {
   [super setFileURL:absoluteURL];
@@ -182,6 +275,8 @@ static NSImage* _kDefaultIcon = nil;
     [textView_ setString:text];
     // TODO: restore selection(s), possibly by reading from ext. attrs.
     [textView_ setSelectedRange:NSMakeRange(0, 0)];
+    [self updateChangeCount:NSChangeCleared];
+    isDirty_ = NO;
     return YES;
   }
 }

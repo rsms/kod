@@ -7,6 +7,68 @@
 @implementation KBrowserWindowController
 
 
+- (void)saveAllDocuments:(id)sender {
+  [[NSDocumentController sharedDocumentController] saveAllDocuments:sender];
+}
+- (void)openDocument:(id)sender {
+  [[NSDocumentController sharedDocumentController] openDocument:sender];
+}
+- (void)newDocument:(id)sender {
+  [[NSDocumentController sharedDocumentController] newDocument:sender];
+}
+
+
+- (NSRect) window:(NSWindow *)window
+willPositionSheet:(NSWindow *)sheet
+        usingRect:(NSRect)rect {
+  rect.origin.y -= 20.0;
+  return rect;
+}
+
+
+/*- (void)setDocument:(NSDocument *)document {
+  DLOG_TRACE();
+  [super setDocument:document];
+}*/
+
+
+// Future trouble ahead...
+/*- (BOOL)windowShouldClose:(id)sender {
+  DLOG_TRACE();
+  return YES;
+  if (browser_ &&
+      browser_.windowController &&
+      [browser_.windowController window]) {
+    int tabCount = [browser_ tabCount];
+    NSMutableArray *modified = [NSMutableArray array];
+    for (int i = 0; i < tabCount; i++) {
+      KTabContents* tab = (KTabContents*)[browser_ tabContentsAtIndex:i];
+      if ([tab isDocumentEdited]) {
+        [modified addObject:tab];
+      }
+    }
+    if ([modified count] > 0) {
+      //// TODO: only if not in focus/key
+      //NSInteger attentionRequestId =
+      //    [NSApp requestUserAttention:NSCriticalRequest];
+      // TODO: display modal
+      [(KTabContents*)[modified objectAtIndex:0] showWindows];
+      NSInteger modalResult =
+          [NSApp runModalForWindow:[browser_.windowController window]];
+      DLOG("TODO: modal: %d unsaved documents -- really close?", [modified count]);
+      return NO;
+    }
+  }
+  return YES;
+}*/
+
+/*- (void)windowWillClose:(NSNotification*)notification {
+  DLOG_TRACE();
+  if (browser_) {
+    [browser_ closeAllTabs];
+  }
+}*/
+
 #pragma mark -
 #pragma mark Proxy for selected tab
 

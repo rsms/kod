@@ -25,6 +25,29 @@
   [KBrowser executeCommand:[sender tag]];
 }
 
+- (NSApplicationTerminateReply)applicationShouldTerminate:
+    (NSApplication*)sender {
+  DLOG_TRACE();
+  if (documentController_ && [documentController_ hasEditedDocuments]) {
+    SEL selector = @selector(documentController:didCloseAll:contextInfo:);
+    [documentController_ closeAllDocumentsWithDelegate:self
+                                   didCloseAllSelector:selector
+                                           contextInfo:nil];
+    return NSTerminateLater;
+  } else {
+    return NSTerminateNow;
+  }
+}
+
+- (void)documentController:(NSDocumentController *)docController
+               didCloseAll:(BOOL)didCloseAll
+               contextInfo:(void *)contextInfo {
+  // The document controller have given all documents a chance to close and
+  // possibly save themselves, or abort the termination cycle. If all documents
+  // have been closed, we know we can continue with out termination.
+  [NSApp replyToApplicationShouldTerminate:didCloseAll];
+}
+
 /*-(void)openDocumentInWindow:(KBrowserWindowController *)windowController
                      sender:(id)sender {
   // Create and display a standard open panel
