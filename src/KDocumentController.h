@@ -2,9 +2,11 @@
 
 @class KBrowser;
 @class KTabContents;
+@class KCloseCycleContext;
+
 
 @interface KDocumentController : NSDocumentController {
-  void *closeCycleContext_;
+  KCloseCycleContext *closeCycleContext_;
 }
 
 - (id)openDocumentWithContentsOfURL:(NSURL *)absoluteURL

@@ -25,7 +25,17 @@
   [KBrowser executeCommand:[sender tag]];
 }
 
-- (NSApplicationTerminateReply)applicationShouldTerminate:
+/*- (NSApplicationTerminateReply)applicationShouldTerminate:
+    (NSApplication*)sender {
+  DLOG_TRACE();
+  return NSTerminateNow;
+}
+
+- (void)applicationWillTerminate:(NSNotification *)aNotification {
+  DLOG_TRACE();
+}*/
+
+/*- (NSApplicationTerminateReply)applicationShouldTerminate:
     (NSApplication*)sender {
   DLOG_TRACE();
   if (documentController_ && [documentController_ hasEditedDocuments]) {
@@ -46,7 +56,7 @@
   // possibly save themselves, or abort the termination cycle. If all documents
   // have been closed, we know we can continue with out termination.
   [NSApp replyToApplicationShouldTerminate:didCloseAll];
-}
+}*/
 
 /*-(void)openDocumentInWindow:(KBrowserWindowController *)windowController
                      sender:(id)sender {

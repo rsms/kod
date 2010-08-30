@@ -6,6 +6,28 @@
 #import <ChromiumTabs/common.h>
 #import <objc/objc-runtime.h>
 
+
+// used for the asynchronous but sequential closing of documents cycle.
+@interface KCloseCycleContext : NSObject {
+ @public
+  id delegate;               // cycle invoker's finalize target
+  SEL didCloseAllSelector;   // cycle invoker's finalize selector
+  void *contextInfo;         // cycle invoker's context, passed to finalizer
+  NSUInteger stillOpenCount; // initially documents.count & decr for each close.
+  NSMutableArray* documents; // documents to close
+  BOOL waitingForSheet;
+}
+@end
+@implementation KCloseCycleContext
+- (void)dealloc {
+  [delegate release];
+  [documents release];
+  [super dealloc];
+}
+@end
+
+
+
 @implementation KDocumentController
 
 - (id)makeUntitledDocumentOfType:(NSString *)typeName error:(NSError **)error {
@@ -181,26 +203,15 @@
 }*/
 
 
-// Private struct used for the asynchronous but sequential closing of documents
-// cycle.
-typedef struct {
-  id delegate;               // cycle invoker's finalize target
-  SEL didCloseAllSelector;   // cycle invoker's finalize selector
-  void *contextInfo;         // cycle invoker's context, passed to finalizer
-  NSUInteger stillOpenCount; // initially documents.count & decr for each close.
-  NSMutableArray* documents; // documents to close
-  BOOL waitingForSheet;
-} KCloseCycleContext;
-
-
 // Private method for initiating closing of the next document, or finalizing a
 // close cycle if no more documents are left in the close cycle.
-- (void)closeNextDocumentWithCycleContext:(KCloseCycleContext*)cContext {
-  NSUInteger count = [cContext->documents count];
+- (void)closeNextDocumentInCloseCycle {
+  assert(closeCycleContext_ != nil);
+  NSUInteger count = [closeCycleContext_->documents count];
   if (count > 0) {
     // Query next tab in the list
-    KTabContents* tab = [cContext->documents objectAtIndex:count-1];
-    [cContext->documents removeObjectAtIndex:count-1];
+    KTabContents* tab = [closeCycleContext_->documents objectAtIndex:count-1];
+    [closeCycleContext_->documents removeObjectAtIndex:count-1];
     // make sure we receive notifications
     NSWindow* window = [tab.browser.windowController window];
     NSNotificationCenter* nc = [NSNotificationCenter defaultCenter];
@@ -221,25 +232,41 @@ typedef struct {
     [window makeKeyAndOrderFront:self];
     [tab canCloseDocumentWithDelegate:self
                   shouldCloseSelector:@selector(document:shouldClose:contextInfo:)
-                          contextInfo:(void*)cContext];
+                          contextInfo:nil];
   } else {
-    // Invoke |cContext->didCloseAllSelector| on |cContext->delegate| which has
-    // the following signature:
+    DLOG("close cycle finalizing -- invoking closeCycleContext_->delegate");
+    DLOG_EXPR(closeCycleContext_->delegate);
+    DLOG_EXPR(closeCycleContext_->didCloseAllSelector);
+    DLOG_EXPR(closeCycleContext_->contextInfo);
+    // Invoke |closeCycleContext_->didCloseAllSelector| on
+    // |closeCycleContext_->delegate| which has the following signature:
     //documentController:(NSDocumentController *)docController
     //       didCloseAll:(BOOL)didCloseAll
     //      contextInfo:(void *)contextInfo
-    id r = objc_msgSend(cContext->delegate,
-                        cContext->didCloseAllSelector,
+    id r = objc_msgSend(closeCycleContext_->delegate,
+                        closeCycleContext_->didCloseAllSelector,
                         self,
-                        cContext->stillOpenCount ? NO : YES,
-                        cContext->contextInfo);
+                        closeCycleContext_->stillOpenCount ? NO : YES,
+                        closeCycleContext_->contextInfo);
     // Free our cycle context
-    assert(closeCycleContext_ == cContext);
-    closeCycleContext_ = NULL;
-    [cContext->delegate release];
-    [cContext->documents release];
-    NSZoneFree(NSDefaultMallocZone(), cContext);
+    [closeCycleContext_ release];
+    closeCycleContext_ = nil;
   }
+}
+
+// private method we need to override
+-(void)_documentController:(NSDocumentController *)docController
+           shouldTerminate:(BOOL)terminate
+                   context:(void *)contextInfo {
+  DLOG_TRACE();
+  // BUG: I think that this fails since there might be a lingering modal runloop
+  // mode still active. Investigate.
+  if (terminate) {
+    [NSApp terminate:self];
+  }
+  /*[super _documentController:docController
+             shouldTerminate:terminate
+                     context:contextInfo];*/
 }
 
 static int _closeCycleSheetDebugRefCount = 0;
@@ -253,8 +280,8 @@ static int _closeCycleSheetDebugRefCount = 0;
   }
   _closeCycleSheetDebugRefCount++;
   #endif // _DEBUG
-  assert(((KCloseCycleContext*)closeCycleContext_)->waitingForSheet == NO);
-  ((KCloseCycleContext*)closeCycleContext_)->waitingForSheet = YES;
+  assert(closeCycleContext_->waitingForSheet == NO);
+  closeCycleContext_->waitingForSheet = YES;
 }
 
 - (void)windowInCloseCycleDidEndSheet:(NSNotification*)notification {
@@ -262,8 +289,8 @@ static int _closeCycleSheetDebugRefCount = 0;
   #if _DEBUG
   _closeCycleSheetDebugRefCount--;
   #endif // _DEBUG
-  assert(((KCloseCycleContext*)closeCycleContext_)->waitingForSheet == YES);
-  ((KCloseCycleContext*)closeCycleContext_)->waitingForSheet = NO;
+  assert(closeCycleContext_->waitingForSheet == YES);
+  closeCycleContext_->waitingForSheet = NO;
   NSWindow* window = [notification object];
   NSNotificationCenter* nc = [NSNotificationCenter defaultCenter];
   [nc removeObserver:self
@@ -272,7 +299,14 @@ static int _closeCycleSheetDebugRefCount = 0;
   [nc removeObserver:self
                 name:NSWindowDidEndSheetNotification
               object:window];
-  [self closeNextDocumentWithCycleContext:(KCloseCycleContext*)closeCycleContext_];
+  if (closeCycleContext_) {
+    // closeCycleContext_ is null here when we just finalized the cycle
+    // schedule next call in the runloop to avoid blowing the stack
+    [self performSelectorOnMainThread:@selector(closeNextDocumentInCloseCycle)
+                           withObject:nil
+                        waitUntilDone:YES];
+    //[self closeNextDocumentInCloseCycle];
+  }
 }
 
 - (void)closeAllDocumentsWithDelegate:(id)delegate
@@ -281,18 +315,15 @@ static int _closeCycleSheetDebugRefCount = 0;
   // Create a cycle context with the initial delegate, selector and context. We
   // pass around this until we have processed all documents, which happen
   // asynchronously.
-  KCloseCycleContext* cycleContext =
-      (KCloseCycleContext*)NSZoneCalloc(NSDefaultMallocZone(), 1,
-                                        sizeof(KCloseCycleContext));
-  cycleContext->delegate = [[delegate retain] retain];
-  cycleContext->didCloseAllSelector = didCloseAllSelector;
-  cycleContext->contextInfo = contextInfo;
-  cycleContext->documents =
+  assert(closeCycleContext_ == nil);
+  closeCycleContext_ = [[KCloseCycleContext alloc] init];
+  closeCycleContext_->delegate = [delegate retain];
+  closeCycleContext_->didCloseAllSelector = didCloseAllSelector;
+  closeCycleContext_->contextInfo = contextInfo;
+  closeCycleContext_->documents =
       [[NSMutableArray alloc] initWithArray:[self documents]];
-  cycleContext->stillOpenCount = [cycleContext->documents count];
-  assert(closeCycleContext_ == NULL);
-  closeCycleContext_ = cycleContext;
-  [self closeNextDocumentWithCycleContext:cycleContext];
+  closeCycleContext_->stillOpenCount = [closeCycleContext_->documents count];
+  [self closeNextDocumentInCloseCycle];
 }
 
 
@@ -301,14 +332,20 @@ static int _closeCycleSheetDebugRefCount = 0;
      contextInfo:(void*)contextInfo {
   DLOG_TRACE();
   DLOG_EXPR(shouldClose);
-  KCloseCycleContext* cycleContext = (KCloseCycleContext*)contextInfo;
   if (shouldClose) {
     [doc close];
-    assert(cycleContext->stillOpenCount > 0);
-    cycleContext->stillOpenCount--;
+    if (closeCycleContext_) {
+      assert(closeCycleContext_->stillOpenCount > 0);
+      closeCycleContext_->stillOpenCount--;
+    }
   }
-  if (!cycleContext->waitingForSheet)
-    [self closeNextDocumentWithCycleContext:cycleContext];
+  if (closeCycleContext_ && !closeCycleContext_->waitingForSheet) {
+    // schedule next call in the runloop to avoid blowing the stack
+    [self performSelectorOnMainThread:@selector(closeNextDocumentInCloseCycle)
+                           withObject:nil
+                        waitUntilDone:YES];
+    //[self closeNextDocumentInCloseCycle];
+  }
   // instead, we wait for the sheet to complete and then continue
 }
 
