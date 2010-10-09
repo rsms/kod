@@ -27,6 +27,10 @@ static NSFont* _kDefaultFont = nil;
 + (NSFont*)defaultFont {
   if (!_kDefaultFont) {
     _kDefaultFont = [[NSFont fontWithName:@"M+ 1m light" size:13.0] retain];
+    if (!_kDefaultFont) {
+      WLOG("unable to find default font \"M+\" -- using system default");
+      _kDefaultFont = [[NSFont userFixedPitchFontOfSize:13.0] retain];
+    }
   }
   return _kDefaultFont;
 }
@@ -104,6 +108,8 @@ static NSFont* _kDefaultFont = nil;
   DLOG_TRACE();
   self = [self initWithBaseTabContents:nil];
   assert(self);
+  DLOG_EXPR(absoluteURL);
+  DLOG_EXPR(typeName);
   self = [super initWithContentsOfURL:absoluteURL
                                ofType:typeName
                                 error:outError];
