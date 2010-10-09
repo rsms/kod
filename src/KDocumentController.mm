@@ -36,7 +36,8 @@
   NSArray* documents = [self documents];
   NSMutableSet* windows = [NSMutableSet set];
   for (KTabContents* tab in documents) {
-    [windows addObject:[tab.browser.windowController window]];
+    if (tab.browser && tab.browser.windowController) // FIXME! Should'nt happen
+      [windows addObject:[tab.browser.windowController window]];
   }
   return windows;
 }
