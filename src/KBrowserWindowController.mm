@@ -26,10 +26,10 @@ willPositionSheet:(NSWindow *)sheet
 }
 
 
-/*- (void)setDocument:(NSDocument *)document {
-  DLOG_TRACE();
+- (void)setDocument:(NSDocument *)document {
+  DLOG("%s %@", __func__, document);
   [super setDocument:document];
-}*/
+}
 
 
 // Future trouble ahead...

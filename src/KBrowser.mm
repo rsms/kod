@@ -9,7 +9,8 @@
 // new CTTabContents object which will represent the contents of the new tab.
 -(CTTabContents*)createBlankTabBasedOn:(CTTabContents*)baseContents {
   // Create a new instance of our tab type
-  return [[KTabContents alloc] initWithBaseTabContents:baseContents];
+  return [[[KTabContents alloc]
+      initWithBaseTabContents:baseContents] autorelease];
 }
 
 // Create a new window controller. The default implementation will create a
@@ -20,8 +21,10 @@
 -(CTBrowserWindowController *)createWindowController {
   NSString *windowNibPath = [CTUtil pathForResource:@"BrowserWindow"
                                              ofType:@"nib"];
-  return [[KBrowserWindowController alloc] initWithWindowNibPath:windowNibPath
-                                                         browser:self];
+  KBrowserWindowController* windowController =
+      [[KBrowserWindowController alloc] initWithWindowNibPath:windowNibPath
+                                                      browser:self];
+  return [windowController autorelease];
 }
 
 

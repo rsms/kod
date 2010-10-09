@@ -35,8 +35,8 @@
 			<string>Plain text document</string>
 			<key>CFBundleTypeExtensions</key>
 			<array>
-				<string>text</string>
 				<string>txt</string>
+				<string>text</string>
 				<string>utf8</string>
 			</array>
 			<key>CFBundleTypeIconFile</key>

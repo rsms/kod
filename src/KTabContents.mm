@@ -9,11 +9,15 @@
 
 @implementation KTabContents
 
+@synthesize isDirty = isDirty_;
+@synthesize textEncoding = textEncoding_;
+
 static NSImage* _kDefaultIcon = nil;
+static NSString* _kDefaultTitle = @"Untitled";
 
 + (void)initialize {
   _kDefaultIcon =
-      [[[NSWorkspace sharedWorkspace] iconForFile:@"/no/such/file"] retain];
+      [[[NSWorkspace sharedWorkspace] iconForFile:@"/dev/null"] retain];
 }
 
 // DEBUG: intercepts and dumps selector queries
@@ -29,8 +33,11 @@ static NSImage* _kDefaultIcon = nil;
   if (!(self = [super init])) return nil;
 
   // Default title and icon
-  self.title = @"Untitled";
+  self.title = _kDefaultTitle;
   self.icon = _kDefaultIcon;
+
+  // Set other default values
+  textEncoding_ = NSUTF8StringEncoding;
 
   // Save a weak reference to the undo manager (performance reasons)
   undoManager_ = [self undoManager]; assert(undoManager_);
@@ -105,7 +112,6 @@ static NSImage* _kDefaultIcon = nil;
 
 
 - (void)tabWillCloseInBrowser:(CTBrowser*)browser atIndex:(NSInteger)index {
-  DLOG_TRACE();
   [super tabWillCloseInBrowser:browser atIndex:index];
   NSWindowController *wc = browser.windowController;
   if (wc) {
@@ -158,7 +164,7 @@ static NSImage* _kDefaultIcon = nil;
 
 
 - (void)undoManagerCheckpoint:(NSNotification*)notification {
-  DLOG_EXPR([self isDocumentEdited]);
+  //DLOG_EXPR([self isDocumentEdited]);
   BOOL isDirty = [self isDocumentEdited];
   if (isDirty_ != isDirty) {
     isDirty_ = isDirty;
@@ -192,29 +198,34 @@ static NSImage* _kDefaultIcon = nil;
 
 
 #if _DEBUG
-- (void)canCloseDocumentWithDelegate:(id)delegate shouldCloseSelector:(SEL)shouldCloseSelector contextInfo:(void *)contextInfo {
+/*- (void)canCloseDocumentWithDelegate:(id)delegate shouldCloseSelector:(SEL)shouldCloseSelector contextInfo:(void *)contextInfo {
   DLOG_TRACE();
   Debugger();
   [super canCloseDocumentWithDelegate:delegate shouldCloseSelector:shouldCloseSelector contextInfo:contextInfo];
-}
+}*/
 #endif // _DEBUG
 
 
 // close (without asking the user)
 - (void)close {
-  DLOG_TRACE();
   if (browser_) {
     int index = [browser_ indexOfTabContents:self];
     // if we are associated with a browser, the browser should "have" us
-    assert(index != -1);
-    [browser_ closeTabAtIndex:index makeHistory:YES];
+    if (index != -1)
+      [browser_ closeTabAtIndex:index makeHistory:YES];
   }
 }
 
 
-- (void)setFileURL:(NSURL *)absoluteURL {
-  [super setFileURL:absoluteURL];
-  self.icon = [[NSWorkspace sharedWorkspace] iconForFile:[absoluteURL path]];
+- (void)setFileURL:(NSURL *)url {
+  [super setFileURL:url];
+  if (url && [url path]) {
+    self.icon = [[NSWorkspace sharedWorkspace] iconForFile:[url path]];
+    self.title = [url lastPathComponent];
+  } else {
+    self.title = _kDefaultTitle;
+    self.icon = _kDefaultIcon;
+  }
 }
 
 - (NSString*)displayName {
@@ -248,16 +259,16 @@ static NSImage* _kDefaultIcon = nil;
     [self updateChangeCount:NSChangeReadOtherContents];
   }
 
-  // this makes each edit to the text storage an undoable entry
+  // this makes the edit an undoable entry (otherwise each "group" of edits will
+  // be undoable, which is not fine-grained enough for our application)
   [textView_ breakUndoCoalescing];
 }
 
 // Generate data from text
 - (NSData*)dataOfType:(NSString*)typeName error:(NSError **)outError {
-  // TODO: enable text encoding to be set by the user
   DLOG_EXPR(typeName);
   [textView_ breakUndoCoalescing]; // preserves undo state
-  return [[textView_ string] dataUsingEncoding:NSUTF8StringEncoding
+  return [[textView_ string] dataUsingEncoding:textEncoding_
                           allowLossyConversion:NO];
 }
 
@@ -265,8 +276,7 @@ static NSImage* _kDefaultIcon = nil;
 - (BOOL)readFromData:(NSData *)data
               ofType:(NSString *)typeName
                error:(NSError **)outError {
-  NSString *text = [[NSString alloc] initWithData:data
-                                         encoding:NSUTF8StringEncoding];
+  NSString *text = [[NSString alloc] initWithData:data encoding:textEncoding_];
   if (!text) {
     WLOG("Failed to parse data. text => nil (data length: %u)", [data length]);
     *outError = [NSError kodErrorWithDescription:@"Failed to parse data"];
@@ -307,6 +317,7 @@ static NSImage* _kDefaultIcon = nil;
                                       forSaveOperation:saveOperation
                                    originalContentsURL:originalContentsURL
                                                  error:error];
+  DLOG_TRACE();
   NSMutableDictionary* d = [NSMutableDictionary dictionaryWithDictionary:sd];
   [d setObject:@"moset" forKey:@"KTabContentsCursorState"];
   return d;

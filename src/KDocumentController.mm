@@ -97,7 +97,7 @@
     }
   }
   if (!browser.windowController) {
-    [browser createWindowControllerInstance];
+    [browser setupWindowController];
   }
 
   [self addTabContents:tab inBrowser:browser];
@@ -139,7 +139,6 @@
                                                             error:error];
   if (tab && !(*error)) {
     // set tab title, url, icon (implied by setting url), etc.
-    tab.title = [url lastPathComponent];
     [tab setFileURL:url];
   } else {
     [tab release];
@@ -225,6 +224,12 @@
     // Query next tab in the list
     KTabContents* tab = [closeCycleContext_->documents objectAtIndex:count-1];
     [closeCycleContext_->documents removeObjectAtIndex:count-1];
+    
+    // Select the tab
+    if (tab.browser) {
+      [tab.browser selectTabAtIndex:[tab.browser indexOfTabContents:tab]];
+    }
+    
     //NSWindow* window = [tab.browser.windowController window];
     //[window makeKeyAndOrderFront:self];
     [tab canCloseDocumentWithDelegate:self
