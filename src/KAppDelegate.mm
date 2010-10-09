@@ -7,22 +7,30 @@
 
 @implementation KAppDelegate
 
-@synthesize documentController = documentController_;
+- (IBAction)newWindow:(id)sender {
+  KBrowserWindowController* windowController = (KBrowserWindowController*)
+      [[KBrowserWindowController browserWindowController] retain];
+  [windowController newDocument:sender];
+  [windowController showWindow:self];
+}
+
+- (IBAction)newDocument:(id)sender {
+  [self newWindow:sender];
+}
+
+- (IBAction)insertTab:(id)sender {
+  // When we receive "new tab" it means "gimme a new tab in a new window"
+  [self newDocument:sender];
+}
 
 - (void)applicationWillFinishLaunching:(NSNotification *)notification {
   // Create our document controller. We need to be the first who creates a
   // NSDocumentController type, since it's somewhat singleton.
-  documentController_ = [[KDocumentController alloc] init];
+  [[KDocumentController alloc] init];
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)notification {
   // NOTE: KDocumentController will create a new window & tab upon start
-}
-
-// When there are no windows in our application, this class (AppDelegate) will
-// become the first responder. We forward the command to the browser class.
-- (void)commandDispatch:(id)sender {
-  [KBrowser executeCommand:[sender tag]];
 }
 
 /*- (NSApplicationTerminateReply)applicationShouldTerminate:

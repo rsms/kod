@@ -1,9 +1,8 @@
 #import <Cocoa/Cocoa.h>
 
-@class KBrowser;
 @class KTabContents;
 @class KCloseCycleContext;
-
+@class KBrowserWindowController;
 
 @interface KDocumentController : NSDocumentController {
   KCloseCycleContext *closeCycleContext_;
@@ -13,12 +12,12 @@
 - (NSSet*)windows;
 
 - (id)openDocumentWithContentsOfURL:(NSURL *)absoluteURL
-                          inBrowser:(KBrowser*)browser
+               withWindowController:(KBrowserWindowController*)windowController
                             display:(BOOL)displayDocument
                               error:(NSError **)outError;
 
 - (void)finalizeOpenDocument:(KTabContents*)tab
-                   inBrowser:(KBrowser*)browser
+        withWindowController:(KBrowserWindowController*)windowController
                      display:(BOOL)display;
 - (void)finalizeOpenDocument:(NSArray*)args;
 

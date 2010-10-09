@@ -15,9 +15,20 @@
 static NSImage* _kDefaultIcon = nil;
 static NSString* _kDefaultTitle = @"Untitled";
 
-+ (void)initialize {
++ (void)load {
+  NSAutoreleasePool* pool = [NSAutoreleasePool new];
   _kDefaultIcon =
       [[[NSWorkspace sharedWorkspace] iconForFile:@"/dev/null"] retain];
+  [pool drain];
+}
+
+static NSFont* _kDefaultFont = nil;
+
++ (NSFont*)defaultFont {
+  if (!_kDefaultFont) {
+    _kDefaultFont = [[NSFont fontWithName:@"M+ 1m light" size:13.0] retain];
+  }
+  return _kDefaultFont;
 }
 
 // DEBUG: intercepts and dumps selector queries
@@ -27,7 +38,7 @@ static NSString* _kDefaultTitle = @"Untitled";
   return y;
 }*/
 
-
+// This is the main initialization method
 - (id)initWithBaseTabContents:(CTTabContents*)baseContents {
   // internal init mwthod which do not register delegates nor 
   if (!(self = [super init])) return nil;
@@ -42,11 +53,11 @@ static NSString* _kDefaultTitle = @"Untitled";
   // Save a weak reference to the undo manager (performance reasons)
   undoManager_ = [self undoManager]; assert(undoManager_);
 
-  // Create a simple NSTextView
+  // Create a NSTextView
   textView_ = [[NSTextView alloc] initWithFrame:NSZeroRect];
   [textView_ setDelegate:self];
   [textView_ setAllowsUndo:YES];
-  [textView_ setFont:[NSFont userFixedPitchFontOfSize:13.0]];
+  [textView_ setFont:[isa defaultFont]];
   [textView_ setBackgroundColor:
       [NSColor colorWithCalibratedWhite:0.1 alpha:1.0]];
   [textView_ setTextColor:[NSColor whiteColor]];

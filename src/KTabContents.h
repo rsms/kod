@@ -14,6 +14,8 @@
 @property(assign, nonatomic) BOOL isDirty;
 @property(assign, nonatomic) NSStringEncoding textEncoding;
 
++ (NSFont*)defaultFont;
+
 - (void)textStorageDidProcessEditing:(NSNotification*)notification;
 - (void)documentDidChangeDirtyState; // when isDirty_ changed
 

@@ -7,17 +7,6 @@
 @implementation KBrowserWindowController
 
 
-- (void)saveAllDocuments:(id)sender {
-  [[NSDocumentController sharedDocumentController] saveAllDocuments:sender];
-}
-- (void)openDocument:(id)sender {
-  [[NSDocumentController sharedDocumentController] openDocument:sender];
-}
-- (void)newDocument:(id)sender {
-  [[NSDocumentController sharedDocumentController] newDocument:sender];
-}
-
-
 - (NSRect) window:(NSWindow *)window
 willPositionSheet:(NSWindow *)sheet
         usingRect:(NSRect)rect {

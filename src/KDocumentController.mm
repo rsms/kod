@@ -48,20 +48,32 @@
   return tab;
 }
 
-- (id)openUntitledDocumentAndDisplay:(BOOL)display error:(NSError **)error {
+- (id)openUntitledDocumentWithWindowController:(NSWindowController*)windowController
+                                       display:(BOOL)display
+                                         error:(NSError **)error {
   KTabContents* tab = [self makeUntitledDocumentOfType:[self defaultType]
                                                  error:error];
   if (tab) {
     assert([NSThread isMainThread]);
+    if (!windowController) {
+      windowController = [KBrowserWindowController mainBrowserWindowController];
+    }
     [self finalizeOpenDocument:tab
-                     inBrowser:(KBrowser*)[KBrowser mainBrowser]
+          withWindowController:(KBrowserWindowController*)windowController
                        display:display];
   }
   return tab;
 }
 
+- (id)openUntitledDocumentAndDisplay:(BOOL)display error:(NSError **)error {
+  return [self openUntitledDocumentWithWindowController:nil
+                                                display:display
+                                                  error:error];
+}
 
-- (void)addTabContents:(KTabContents*)tab inBrowser:(KBrowser*)browser {
+
+- (void)addTabContents:(KTabContents*)tab
+  withWindowController:(KBrowserWindowController*)windowController {
   // NOTE: if we want to add a tab in the background, we should not use this
   // helper function (addTabContents:inBrowser:)
 
@@ -69,10 +81,13 @@
   // with a default empty document): remove the document first. This is a common
   // use-case where you open a new window which comes with a new empty document,
   // and then Open... one or more files.
+  KBrowser* browser = (KBrowser*)windowController.browser;
   if ([browser tabCount] == 1) {
     KTabContents* tab0 = (KTabContents*)[browser tabContentsAtIndex:0];
     assert(tab0);
-    if (![tab0 isDocumentEdited] && ![tab0 fileURL]) {
+    BOOL existingTabIsVirgin = ![tab0 isDocumentEdited] && ![tab0 fileURL];
+    BOOL newTabIsVirgin = ![tab isDocumentEdited] && ![tab fileURL];
+    if (existingTabIsVirgin && !newTabIsVirgin) {
       [browser replaceTabContentsAtIndex:0 withTabContents:tab];
       return;
     }
@@ -83,27 +98,28 @@
 
 
 - (void)finalizeOpenDocument:(KTabContents*)tab
-                   inBrowser:(KBrowser*)browser
+        withWindowController:(KBrowserWindowController*)windowController
                      display:(BOOL)display {
   assert([NSThread isMainThread]);
-  if (!browser) {
-    // Try to get mainBrowser again, as it might have occured since we first got 
-    // dispatched.
-    if (!(browser = (KBrowser*)[KBrowser mainBrowser])) {
+  if (!windowController) {
+    // Try to get main controller again, as it might have occured since we first
+    // got dispatched.
+    windowController = (KBrowserWindowController*)
+        [KBrowserWindowController mainBrowserWindowController];
+    if (!windowController) {
       // defering creation of a new browser (in the case it does not exist when
       // starting a read) makes the calls sequential, thus avoid race-conditions
       // which could create multiple new browser instances.
-      browser = [[[KBrowser alloc] init] autorelease];
+      windowController = (KBrowserWindowController*)
+          [[KBrowserWindowController browserWindowController] retain];
     }
   }
-  if (!browser.windowController) {
-    [browser setupWindowController];
+
+  [self addTabContents:tab withWindowController:windowController];
+
+  if (display && ![[windowController window] isVisible]) {
+    [windowController showWindow:self];
   }
-
-  [self addTabContents:tab inBrowser:browser];
-
-  if (display && ![[browser.windowController window] isVisible])
-    [browser.windowController showWindow:self];
 
   // Make sure the new tab gets focus
   if (display && tab.isVisible)
@@ -115,7 +131,7 @@
   // proxy to finalizeOpenDocument: for background threads
   assert([NSThread isMainThread]);
   [self finalizeOpenDocument:[args objectAtIndex:0]
-                   inBrowser:[args count] > 2 ? [args objectAtIndex:2] : nil
+        withWindowController:[args count] > 2 ? [args objectAtIndex:2] : nil
                      display:[(NSNumber*)[args objectAtIndex:1] boolValue]];
 }
 
@@ -123,8 +139,10 @@
 - (id)openDocumentWithContentsOfURL:(NSURL *)absoluteURL
                             display:(BOOL)display
                               error:(NSError **)error {
+  KBrowserWindowController *windowController = (KBrowserWindowController *)
+      [KBrowserWindowController mainBrowserWindowController];
   return [self openDocumentWithContentsOfURL:absoluteURL
-                                   inBrowser:(KBrowser*)[KBrowser mainBrowser]
+                        withWindowController:windowController
                                      display:display
                                        error:error];
 }
@@ -149,7 +167,7 @@
 
 
 - (id)openDocumentWithContentsOfURL:(NSURL *)url
-                          inBrowser:(KBrowser*)browser
+               withWindowController:(KBrowserWindowController*)windowController
                             display:(BOOL)display
                               error:(NSError **)error {
   KTabContents* tab = [self makeDocumentWithContentsOfURL:url
@@ -160,14 +178,16 @@
     if (![NSThread isMainThread]) {
       // if we worked in a background thread
       NSArray* args = [NSArray arrayWithObjects:
-          tab, [NSNumber numberWithBool:display], browser, nil];
+          tab, [NSNumber numberWithBool:display], windowController, nil];
       [self performSelectorOnMainThread:@selector(finalizeOpenDocument:)
                              withObject:args
                           waitUntilDone:YES];
       // NODE: if we don't wait for the above to complete, we'll need to
       // manage the references of |args|. Now we just let it autorelease.
     } else {
-      [self finalizeOpenDocument:tab inBrowser:browser display:display];
+      [self finalizeOpenDocument:tab
+            withWindowController:windowController
+                         display:display];
     }
   }
   return tab;

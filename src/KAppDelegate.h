@@ -1,15 +1,10 @@
 #import <Cocoa/Cocoa.h>
 
-@class KBrowserWindowController;
-@class KDocumentController;
-
 @interface KAppDelegate : NSObject <NSApplicationDelegate> {
-  KDocumentController* documentController_;
 }
 
-@property(readonly, nonatomic) KDocumentController* documentController;
-
-- (void)commandDispatch:(id)sender;
+- (IBAction)newWindow:(id)sender;
+- (IBAction)newDocument:(id)sender;  // "New tab"
 
 /*-(void)openDocumentInWindow:(KBrowserWindowController*)windowController
                      sender:(id)sender;*/
