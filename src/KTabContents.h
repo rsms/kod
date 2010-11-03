@@ -1,6 +1,7 @@
 #import <ChromiumTabs/ChromiumTabs.h>
 
 @class KBrowser;
+@class KSyntaxHighlighter;
 
 // This class represents a tab. In this example application a tab contains a
 // simple scrollable text area.
@@ -9,6 +10,7 @@
   __weak NSUndoManager *undoManager_; // Owned by textView_
   BOOL isDirty_;
   NSStringEncoding textEncoding_;
+  KSyntaxHighlighter *syntaxHighlighter_;
 }
 
 @property(assign, nonatomic) BOOL isDirty;

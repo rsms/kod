@@ -7,11 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		3A25E479128194B400B6A33E /* SyntaxHighlighter.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A25E478128194B400B6A33E /* SyntaxHighlighter.mm */; };
+		3A25E479128194B400B6A33E /* KSyntaxHighlighter.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A25E478128194B400B6A33E /* KSyntaxHighlighter.mm */; };
 		3A25E47B1281A6A200B6A33E /* libboost_regex-mt.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A25E47A1281A6A200B6A33E /* libboost_regex-mt.dylib */; };
 		3A25E47D1281A6A700B6A33E /* libsource-highlight.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A25E47C1281A6A700B6A33E /* libsource-highlight.dylib */; };
 		3A25E4971281A9D300B6A33E /* libsource-highlight.dylib in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 3A25E47C1281A6A700B6A33E /* libsource-highlight.dylib */; };
 		3A25E4981281A9D500B6A33E /* libboost_regex-mt.dylib in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 3A25E47A1281A6A200B6A33E /* libboost_regex-mt.dylib */; };
+		3A25E4B71281AE3700B6A33E /* KTextFormatter.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A25E4B61281AE3700B6A33E /* KTextFormatter.mm */; };
+		3A25E5351281B9DA00B6A33E /* KTextFormatterFactory.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A25E5341281B9DA00B6A33E /* KTextFormatterFactory.mm */; };
 		3A9291181229B93C00DA7E43 /* Toolbar.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3A9291171229B93C00DA7E43 /* Toolbar.xib */; };
 		3A92911B1229B96A00DA7E43 /* KTabContents.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A92911A1229B96A00DA7E43 /* KTabContents.mm */; };
 		3A92911E1229B9D500DA7E43 /* KToolbarController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A92911D1229B9D500DA7E43 /* KToolbarController.mm */; };
@@ -67,10 +69,15 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		3A25E477128194B400B6A33E /* SyntaxHighlighter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SyntaxHighlighter.h; sourceTree = "<group>"; };
-		3A25E478128194B400B6A33E /* SyntaxHighlighter.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = SyntaxHighlighter.mm; sourceTree = "<group>"; };
+		3A25E477128194B400B6A33E /* KSyntaxHighlighter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSyntaxHighlighter.h; sourceTree = "<group>"; };
+		3A25E478128194B400B6A33E /* KSyntaxHighlighter.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KSyntaxHighlighter.mm; sourceTree = "<group>"; };
 		3A25E47A1281A6A200B6A33E /* libboost_regex-mt.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libboost_regex-mt.dylib"; path = "deps/srchilight/libboost_regex-mt.dylib"; sourceTree = "<group>"; };
 		3A25E47C1281A6A700B6A33E /* libsource-highlight.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libsource-highlight.dylib"; path = "deps/srchilight/libsource-highlight.dylib"; sourceTree = "<group>"; };
+		3A25E4B51281AE3700B6A33E /* KTextFormatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KTextFormatter.h; sourceTree = "<group>"; };
+		3A25E4B61281AE3700B6A33E /* KTextFormatter.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KTextFormatter.mm; sourceTree = "<group>"; };
+		3A25E4FC1281B3D500B6A33E /* KHighlightStateData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KHighlightStateData.h; sourceTree = "<group>"; };
+		3A25E5331281B9DA00B6A33E /* KTextFormatterFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KTextFormatterFactory.h; sourceTree = "<group>"; };
+		3A25E5341281B9DA00B6A33E /* KTextFormatterFactory.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KTextFormatterFactory.mm; sourceTree = "<group>"; };
 		3A928C14122714E800DA7E43 /* KAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KAppDelegate.h; sourceTree = "<group>"; };
 		3A928C15122714E800DA7E43 /* KAppDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KAppDelegate.mm; sourceTree = "<group>"; };
 		3A928C16122714E800DA7E43 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -138,8 +145,13 @@
 				3A92911D1229B9D500DA7E43 /* KToolbarController.mm */,
 				3A9293651229E49A00DA7E43 /* NSError+KAdditions.h */,
 				3A9293661229E49A00DA7E43 /* NSError+KAdditions.m */,
-				3A25E477128194B400B6A33E /* SyntaxHighlighter.h */,
-				3A25E478128194B400B6A33E /* SyntaxHighlighter.mm */,
+				3A25E4FC1281B3D500B6A33E /* KHighlightStateData.h */,
+				3A25E477128194B400B6A33E /* KSyntaxHighlighter.h */,
+				3A25E478128194B400B6A33E /* KSyntaxHighlighter.mm */,
+				3A25E4B51281AE3700B6A33E /* KTextFormatter.h */,
+				3A25E4B61281AE3700B6A33E /* KTextFormatter.mm */,
+				3A25E5331281B9DA00B6A33E /* KTextFormatterFactory.h */,
+				3A25E5341281B9DA00B6A33E /* KTextFormatterFactory.mm */,
 			);
 			path = src;
 			sourceTree = "<group>";
@@ -275,7 +287,9 @@
 				3A9292991229D31200DA7E43 /* KBrowserWindowController.mm in Sources */,
 				3A9293671229E49A00DA7E43 /* NSError+KAdditions.m in Sources */,
 				3A9293CC1229ED4C00DA7E43 /* KDocumentController.mm in Sources */,
-				3A25E479128194B400B6A33E /* SyntaxHighlighter.mm in Sources */,
+				3A25E479128194B400B6A33E /* KSyntaxHighlighter.mm in Sources */,
+				3A25E4B71281AE3700B6A33E /* KTextFormatter.mm in Sources */,
+				3A25E5351281B9DA00B6A33E /* KTextFormatterFactory.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -1,5 +1,6 @@
 #import "KTabContents.h"
 #import "KBrowser.h"
+#import "KSyntaxHighlighter.h"
 #import "NSError+KAdditions.h"
 #import <ChromiumTabs/common.h>
 
@@ -80,6 +81,10 @@ static NSFont* _kDefaultFont = nil;
 
   // Set the NSScrollView as our view
   view_ = sv;
+  
+  // Setup KSyntaxHighlighter
+  syntaxHighlighter_ =
+      [[KSyntaxHighlighter alloc] initWithDefinitionFile:@"c.lang"];
 
 	// Register for "text changed" notifications of our text storage:
   NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
@@ -279,6 +284,11 @@ static NSFont* _kDefaultFont = nil;
   // this makes the edit an undoable entry (otherwise each "group" of edits will
   // be undoable, which is not fine-grained enough for our application)
   [textView_ breakUndoCoalescing];
+  
+  // Syntax highlight
+  KHighlightStateData *state = nil;
+  [syntaxHighlighter_ highlightLine:@"void foo(char *bar) { return 6; }"
+                          stateData:state];
 }
 
 // Generate data from text
