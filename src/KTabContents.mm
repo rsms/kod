@@ -84,7 +84,8 @@ static NSFont* _kDefaultFont = nil;
   
   // Setup KSyntaxHighlighter
   syntaxHighlighter_ =
-      [[KSyntaxHighlighter alloc] initWithDefinitionFile:@"c.lang"];
+      [[KSyntaxHighlighter alloc] initWithDefinitionsFromFile:@"c.lang"
+                                                styleFromFile:@"sh_emacs.css"];
 
 	// Register for "text changed" notifications of our text storage:
   NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];

@@ -29,6 +29,8 @@
   srchilite::FormatterManager *formatterManager_;
 }
 
+@property(retain, nonatomic) NSString *styleFile;
+
 /**
  * Returns the the lang def file name by using the file name for detecting
  * the syntax of the file (e.g., <em>foo.cpp</em> brings to <em>cpp.lang</em>,
@@ -51,10 +53,18 @@
  * @param file the lang file of Source-highlight
  * @throws srchilite::ParserException
  */
-- (id)initWithDefinitionFile:(NSString*)file;
+- (id)initWithDefinitionsFromFile:(NSString*)file
+                    styleFromFile:(NSString*)styleFile;
 
 /// Setup with definition |file|
-- (void)loadDefinitionFile:(NSString*)file;
+- (void)loadDefinitionsFromFile:(NSString*)file;
+
+/// Load style from file (causes |reloadFormatting|)
+- (void)loadStyleFromFile:(NSString*)file;
+
+/// Optimized method for loading both language definition and style
+- (void)loadDefinitionsFromFile:(NSString*)definitionFile
+                  styleFromFile:(NSString*)styleFile;
 
 #pragma mark -
 #pragma mark Formatting

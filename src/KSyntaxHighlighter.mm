@@ -6,6 +6,8 @@
 
 @implementation KSyntaxHighlighter
 
+@synthesize styleFile = styleFile_;
+
 
 + (srchilite::LangMap*)definitionMap {
     // make sure the lang map is loaded before returning it
@@ -82,7 +84,7 @@
 
 /**
  * Creates formatters (and use them to initialize the formatter manager),
- * by using the passed TextFormatterMap.  This can be called only after
+ * by using the passed TextFormatterMap. This can be called only after
  * the highlighter was initialized through init().
  * @param formatterMap
  */
@@ -104,43 +106,76 @@
 }
 
 
-- (id)initWithDefinitionFile:(NSString*)file {
+- (id)initWithDefinitionsFromFile:(NSString*)file
+                    styleFromFile:(NSString*)styleFile {
   if ((self = [super init])) {
-    styleFile_ = [[NSString alloc] initWithString:@"sh_emacs.css"]; // TODO
-    [self loadDefinitionFile:file];
+    [self loadDefinitionsFromFile:file styleFromFile:styleFile];
   }
   return self;
 }
 
 
-- (void)loadDefinitionFile:(NSString*)file {
-  // setup FormatterManager
-  if (!formatterManager_) {
-    NSLog(@"setting up FormatterManager");
-    KTextFormatter *defaultFormatter = new KTextFormatter("normal");
-    defaultFormatter->setSyntaxHighlighter(self);
-    formatterManager_ =
-        new srchilite::FormatterManager(KTextFormatterPtr(defaultFormatter));
-    KTextFormatterFactory f;
-    //f.setDefaultToMonospace(isDefaultToMonospace());
-    [self setFormatters:
-        [isa textFormatterMapForFormatterFactory:f styleFile:styleFile_]];
-  }
-
-  // delete the possible previous highlighter
-  if (sourceHighlighter_) {
+- (void)dealloc {
+  if (formatterManager_)
+    delete formatterManager_;
+  if (sourceHighlighter_)
     delete sourceHighlighter_;
-    sourceHighlighter_ = NULL;
+  [super dealloc];
+}
+
+
+- (void)reloadFormatting {  // internal
+  NSLog(@"reloading FormatterManager");
+  if (formatterManager_) {
+    if (sourceHighlighter_ &&
+        sourceHighlighter_->getFormatterManager() == formatterManager_) {
+      sourceHighlighter_->setFormatterManager(NULL);
+    }
+    delete formatterManager_;
   }
+  KTextFormatter *defaultFormatter = new KTextFormatter("normal");
+  defaultFormatter->setSyntaxHighlighter(self);
+  formatterManager_ =
+      new srchilite::FormatterManager(KTextFormatterPtr(defaultFormatter));
+  KTextFormatterFactory f;
+  //f.setDefaultToMonospace(isDefaultToMonospace());
+  [self setFormatters:
+      [isa textFormatterMapForFormatterFactory:f styleFile:styleFile_]];
+  if (sourceHighlighter_)
+    sourceHighlighter_->setFormatterManager(formatterManager_);
+}
+
+
+- (void)loadDefinitionsFromFile:(NSString*)definitionFile
+                  styleFromFile:(NSString*)styleFile {
+  self.styleFile = styleFile;
+  [self loadDefinitionsFromFile:definitionFile];  // implies reloadFormatting
+}
+
+
+- (void)loadDefinitionsFromFile:(NSString*)file {
+  // delete any previous highlighter
+  if (sourceHighlighter_)
+    delete sourceHighlighter_;
   srchilite::HighlightStatePtr mainState =
       [isa highlightStateForDefinitionFile:file];
   sourceHighlighter_ = new srchilite::SourceHighlighter(mainState);
-  sourceHighlighter_->setFormatterManager(formatterManager_);
   sourceHighlighter_->setFormatterParams(&formatterParams_);
   sourceHighlighter_->setOptimize(false);
+  
+  // reload FormatterManager
+  if (!formatterManager_)
+    [self reloadFormatting];
 
   definitionFile_ = [file retain];
 }
+
+
+- (void)loadStyleFromFile:(NSString*)file {
+  self.styleFile = file;
+  [self reloadFormatting];
+}
+
 
 #pragma mark -
 #pragma mark Formatting

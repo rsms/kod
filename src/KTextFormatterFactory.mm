@@ -41,7 +41,7 @@ bool KTextFormatterFactory::createFormatter(const std::string &key,
   
   formatter->setStyle(styleconstants);
   if (color.size())
-    formatter->setTextColor(color);
+    formatter->setForegroundColor(color);
   if (bgcolor.size())
     formatter->setBackgroundColor(bgcolor);
   return true;

@@ -6,44 +6,55 @@
 @class KSyntaxHighlighter;
 
 /**
- * A specialization of srchilite::Formatter in order to format parts of
- * a document, instead of outputting the formatted text.
- */
+* A specialization of srchilite::Formatter in order to format parts of
+* a document, instead of outputting the formatted text.
+*/
 class KTextFormatter: public srchilite::Formatter {
-protected:
-    /// the language element represented by this formatter
-    std::string elem_;
-    
-    /// reference to related KSyntaxHighlighter
-    KSyntaxHighlighter *syntaxHighlighter_;
+ protected:
+  /// the language element represented by this formatter
+  std::string elem_;
+  
+  /// reference to related KSyntaxHighlighter
+  KSyntaxHighlighter *syntaxHighlighter_;
+  
+  NSMutableDictionary *textAttributes_;
 
-public:
-    KTextFormatter(const std::string &elem = "normal");
-    virtual ~KTextFormatter();
+ public:
+  static NSFont *baseFont();
+  
+  KTextFormatter(const std::string &elem = "normal");
+  virtual ~KTextFormatter();
 
-    /// the language element represented by this formatter
-    const std::string &getElem() const { return elem_; }
-    void setElem(const std::string &e) { elem_ = e; }
+  /// the language element represented by this formatter
+  const std::string &getElem() const { return elem_; }
+  void setElem(const std::string &e) { elem_ = e; }
 
-    inline void setSyntaxHighlighter(KSyntaxHighlighter *syntaxHighlighter) {
-      id old = syntaxHighlighter_;
-      syntaxHighlighter_ = [syntaxHighlighter retain];
-      if (old) [old release];
-    }
-    
-    /// Set the style of this formatter
-    void setStyle(srchilite::StyleConstantsPtr style);
-    void setTextColor(const std::string &color);
-    void setBackgroundColor(const std::string &color);
+  inline void setSyntaxHighlighter(KSyntaxHighlighter *syntaxHighlighter) {
+    id old = syntaxHighlighter_;
+    syntaxHighlighter_ = [syntaxHighlighter retain];
+    if (old) [old release];
+  }
+  
+  /// Set the style of this formatter
+  void setStyle(srchilite::StyleConstantsPtr style);
+  inline NSDictionary *textAttributes() { return textAttributes_; }
 
-    /**
-     * Formats the passed string.
-     *
-     * @param the string to format
-     * @param params possible additional parameters for the formatter
-     */
-    void format(const std::string &s,
-                const srchilite::FormatterParams *params = 0);
+  void setForegroundColor(const std::string &color);
+  void setForegroundColor(NSColor *color);
+  NSColor *foregroundColor();
+
+  void setBackgroundColor(const std::string &color);
+  void setBackgroundColor(NSColor *color);
+  NSColor *backgroundColor();
+
+  /**
+   * Formats the passed string.
+   *
+   * @param the string to format
+   * @param params possible additional parameters for the formatter
+   */
+  void format(const std::string &s,
+              const srchilite::FormatterParams *params = 0);
 };
 
 /// shared pointer for KTextFormatter
