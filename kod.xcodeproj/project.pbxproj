@@ -7,6 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3A25E479128194B400B6A33E /* SyntaxHighlighter.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A25E478128194B400B6A33E /* SyntaxHighlighter.mm */; };
+		3A25E47B1281A6A200B6A33E /* libboost_regex-mt.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A25E47A1281A6A200B6A33E /* libboost_regex-mt.dylib */; };
+		3A25E47D1281A6A700B6A33E /* libsource-highlight.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A25E47C1281A6A700B6A33E /* libsource-highlight.dylib */; };
+		3A25E4971281A9D300B6A33E /* libsource-highlight.dylib in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 3A25E47C1281A6A700B6A33E /* libsource-highlight.dylib */; };
+		3A25E4981281A9D500B6A33E /* libboost_regex-mt.dylib in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 3A25E47A1281A6A200B6A33E /* libboost_regex-mt.dylib */; };
 		3A9291181229B93C00DA7E43 /* Toolbar.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3A9291171229B93C00DA7E43 /* Toolbar.xib */; };
 		3A92911B1229B96A00DA7E43 /* KTabContents.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A92911A1229B96A00DA7E43 /* KTabContents.mm */; };
 		3A92911E1229B9D500DA7E43 /* KToolbarController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A92911D1229B9D500DA7E43 /* KToolbarController.mm */; };
@@ -52,6 +57,8 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				3A25E4981281A9D500B6A33E /* libboost_regex-mt.dylib in Copy Frameworks */,
+				3A25E4971281A9D300B6A33E /* libsource-highlight.dylib in Copy Frameworks */,
 				3A929887122AC39100DA7E43 /* ChromiumTabs.framework in Copy Frameworks */,
 			);
 			name = "Copy Frameworks";
@@ -60,6 +67,10 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		3A25E477128194B400B6A33E /* SyntaxHighlighter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SyntaxHighlighter.h; sourceTree = "<group>"; };
+		3A25E478128194B400B6A33E /* SyntaxHighlighter.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = SyntaxHighlighter.mm; sourceTree = "<group>"; };
+		3A25E47A1281A6A200B6A33E /* libboost_regex-mt.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libboost_regex-mt.dylib"; path = "deps/srchilight/libboost_regex-mt.dylib"; sourceTree = "<group>"; };
+		3A25E47C1281A6A700B6A33E /* libsource-highlight.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libsource-highlight.dylib"; path = "deps/srchilight/libsource-highlight.dylib"; sourceTree = "<group>"; };
 		3A928C14122714E800DA7E43 /* KAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KAppDelegate.h; sourceTree = "<group>"; };
 		3A928C15122714E800DA7E43 /* KAppDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KAppDelegate.mm; sourceTree = "<group>"; };
 		3A928C16122714E800DA7E43 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -89,6 +100,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				3A929886122AC38F00DA7E43 /* ChromiumTabs.framework in Frameworks */,
+				3A25E47B1281A6A200B6A33E /* libboost_regex-mt.dylib in Frameworks */,
+				3A25E47D1281A6A700B6A33E /* libsource-highlight.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -125,6 +138,8 @@
 				3A92911D1229B9D500DA7E43 /* KToolbarController.mm */,
 				3A9293651229E49A00DA7E43 /* NSError+KAdditions.h */,
 				3A9293661229E49A00DA7E43 /* NSError+KAdditions.m */,
+				3A25E477128194B400B6A33E /* SyntaxHighlighter.h */,
+				3A25E478128194B400B6A33E /* SyntaxHighlighter.mm */,
 			);
 			path = src;
 			sourceTree = "<group>";
@@ -150,6 +165,8 @@
 		3A92914F1229BD5E00DA7E43 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				3A25E47A1281A6A200B6A33E /* libboost_regex-mt.dylib */,
+				3A25E47C1281A6A700B6A33E /* libsource-highlight.dylib */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -192,7 +209,14 @@
 			isa = PBXProject;
 			buildConfigurationList = 3A928BF21227143800DA7E43 /* Build configuration list for PBXProject "kod" */;
 			compatibilityVersion = "Xcode 2.4";
+			developmentRegion = English;
 			hasScannedForEncodings = 0;
+			knownRegions = (
+				English,
+				Japanese,
+				French,
+				German,
+			);
 			mainGroup = 3A928BED1227143800DA7E43;
 			productRefGroup = 3A928C211227151800DA7E43 /* Products */;
 			projectDirPath = "";
@@ -251,6 +275,7 @@
 				3A9292991229D31200DA7E43 /* KBrowserWindowController.mm in Sources */,
 				3A9293671229E49A00DA7E43 /* NSError+KAdditions.m in Sources */,
 				3A9293CC1229ED4C00DA7E43 /* KDocumentController.mm in Sources */,
+				3A25E479128194B400B6A33E /* SyntaxHighlighter.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -301,9 +326,19 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = src/prefix.pch;
+				HEADER_SEARCH_PATHS = (
+					"$(HEADER_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
+					/opt/local/include,
+				);
+				HEADER_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/deps/srchilight/include\"";
 				INFOPLIST_FILE = resources/Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
+				);
+				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/deps/srchilight\"";
 				MACOSX_DEPLOYMENT_TARGET = 10.6;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = (
@@ -335,9 +370,19 @@
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = src/prefix.pch;
+				HEADER_SEARCH_PATHS = (
+					"$(HEADER_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
+					/opt/local/include,
+				);
+				HEADER_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/deps/srchilight/include\"";
 				INFOPLIST_FILE = resources/Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
+				);
+				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/deps/srchilight\"";
 				MACOSX_DEPLOYMENT_TARGET = 10.6;
 				OTHER_LDFLAGS = (
 					"-framework",
