@@ -45,7 +45,8 @@ NSFont* KTextFormatter::baseFont() {
 KTextFormatter::KTextFormatter(const std::string &elem)
     : elem_(elem)
     , syntaxHighlighter_(NULL) {
-  textAttributes_ = [NSMutableDictionary new];
+  textAttributes_ = [[NSMutableDictionary alloc] initWithObjectsAndKeys:
+      baseFont(), NSFontAttributeName, nil];
 }
 
 KTextFormatter::~KTextFormatter() {
@@ -130,6 +131,7 @@ NSColor *KTextFormatter::backgroundColor() {
  */
 void KTextFormatter::format(const std::string &s,
                             const srchilite::FormatterParams *params) {
-  //syntaxHighlighter_->formatString(params->start, s.size(), textFormat);
-  NSLog(@"s='%s', elem='%s'", s.c_str(), elem_.c_str());
+  //NSLog(@"format: s='%s', elem='%s'", s.c_str(), elem_.c_str());
+  [syntaxHighlighter_ setFormat:this
+                        inRange:NSMakeRange(params->start, s.size())];
 }

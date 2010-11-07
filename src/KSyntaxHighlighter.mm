@@ -1,8 +1,12 @@
 #import "KSyntaxHighlighter.h"
 #import "KTextFormatter.h"
+#import "NSString-utf8-range-conv.h"
 
-#include <srchilite/langelems.h>
-#include <srchilite/stylefileparser.h>
+#import <srchilite/langelems.h>
+#import <srchilite/stylefileparser.h>
+#import <srchilite/parserexception.h>
+#import <ChromiumTabs/common.h>
+
 
 @implementation KSyntaxHighlighter
 
@@ -61,12 +65,18 @@
   if (styleFile) {
     NSLog(@"loading style from %@", styleFile);
     std::string styleFileStdStr = [styleFile UTF8String];
-    if (srchilite::get_file_extension(styleFileStdStr) == "css") {
-      srchilite::StyleFileParser::parseCssStyleFile(styleFileStdStr,
-                                                    &formatterFactory, bgcolor);
-    } else {
-      srchilite::StyleFileParser::parseStyleFile(styleFileStdStr,
-                                                 &formatterFactory, bgcolor);
+    try {
+      if (srchilite::get_file_extension(styleFileStdStr) == "css") {
+        srchilite::StyleFileParser::parseCssStyleFile(styleFileStdStr,
+                                                      &formatterFactory, bgcolor);
+      } else {
+        srchilite::StyleFileParser::parseStyleFile(styleFileStdStr,
+                                                   &formatterFactory, bgcolor);
+      }
+    } catch (srchilite::ParserException *e) {
+      NSLog(@"style parse error: %s -- %s (%s:%u)", e->message.c_str(),
+            e->additional.c_str(), e->filename.c_str(), e->line);
+      throw e;
     }
   }
   
@@ -96,13 +106,9 @@
     KTextFormatter *formatter = it->second.get();
     formatter->setSyntaxHighlighter(self);
     formatterManager_->addFormatter(it->first, it->second);
+    if (it->first == "normal")
+      formatterManager_->setDefaultFormatter(it->second);
   }
-  // now store the color for the normal font, and set the highlighter for the formatter
-  /*Qt4TextFormatter *formatter =
-      dynamic_cast<Qt4TextFormatter *> (formatterManager->getFormatter("normal").get());
-  if (formatter) {
-    setForegroundColor(formatter->getQTextCharFormat().foreground().color().name());
-  }*/
 }
 
 
@@ -180,26 +186,9 @@
 #pragma mark -
 #pragma mark Formatting
 
-/**
- * Highlights the passed line.
- * This method assumes that all the fields are already initialized (e.g.,
- * the FormatterManager).
- *
- * The passed KHighlightStateData is used to configure the SourceHighlighter
- * with info like the current highlighting state and the state stack.
- * If it is null, we simply ignore it.
- *
- * This method can modify the bassed pointer and even make it NULL
- * (after deleting it).
- *
- * @param line
- * @param stateData the highlight state data to use
- * @return in case after highlighting the stack changed we return either the original
- * stateData (after updating) or a new KHighlightStateData (again with the updated
- * information)
- */
-- (void)highlightLine:(NSString*)line
-            stateData:(KHighlightStateData *&)state {
+
+- (void)_highlightLine:(const std::string &)line
+             stateData:(KHighlightStateData *&)state {
   if (state) {
     sourceHighlighter_->setCurrentState(state->currentState);
     sourceHighlighter_->setStateStack(state->stateStack);
@@ -210,7 +199,9 @@
   }
 
   // this does all the highlighting
-  sourceHighlighter_->highlightParagraph([line UTF8String]);
+  currentUTF8String_ = &line;
+  sourceHighlighter_->highlightParagraph(line);
+  currentUTF8String_ = nil;
 
   // if we're not in the main initial state...
   if (!sourceHighlighter_->getStateStack()->empty()) {
@@ -225,6 +216,70 @@
       delete state;
       state = NULL;
     }
+  }
+}
+
+
+- (void)highlightLine:(NSString*)line {
+  KHighlightStateData *state = NULL;
+  [self _highlightLine:[line UTF8String] stateData:state];
+  assert(state == NULL); // TODO reentrant block state (stack)
+}
+
+
+/*- (void)highlightTextStorage:(NSTextStorage*)textStorage
+                     inRange:(NSRange)range {
+  assert(currentTextStorage_ == nil);
+  currentTextStorage_ = [textStorage retain];
+  currentTextStorageOffset_ = range.location;
+  KHighlightStateData *state = NULL;
+  NSString *text = [[textStorage string] substringWithRange:range];
+  const char *utf8str = [text UTF8String];
+  const char *ptr = utf8str;
+  size_t len = 0;
+  //NSLog(@"utf8len: %zd, unilen: %zd", strlen(utf8str), [text length]);
+  while (*ptr) {
+    while (*(++ptr) && *ptr != '\n') {};
+    len = ptr-utf8str;
+    std::string line(utf8str, len);
+    //NSLog(@"<string(%zd) \"%s\">", len, line.c_str());
+    [self _highlightLine:line stateData:state];
+    utf8str = ptr+1;
+    currentTextStorageOffset_ += len+1;
+  }
+  assert(state == NULL); // TODO reentrant block state (stack)
+  [currentTextStorage_ release];
+  currentTextStorage_ = nil;
+}*/
+
+
+- (void)highlightTextStorage:(NSTextStorage*)textStorage
+                     inRange:(NSRange)range {
+  assert(currentTextStorage_ == nil);
+  currentTextStorage_ = [textStorage retain];
+  currentTextStorageOffset_ = range.location;
+  NSString *text = [[textStorage string] substringWithRange:range];
+  [text enumerateLinesUsingBlock:^(NSString *line, BOOL *stop) {
+    KHighlightStateData *state = NULL;
+    [self _highlightLine:[line UTF8String] stateData:state];
+    WLOG("TODO reentrant block state (stack)");
+    currentTextStorageOffset_ += [line length] + 1;
+  }];
+  [currentTextStorage_ release];
+  currentTextStorage_ = nil;
+}
+
+
+- (void)setFormat:(KTextFormatter*)format inRange:(NSRange)range {
+  if (currentTextStorage_) {
+    NSDictionary *attrs = format->textAttributes();
+    //sourceHighlighter_->getStateStack()
+    range = [NSString UTF16RangeFromUTF8Range:range
+                                 inUTF8String:currentUTF8String_->c_str()
+                                     ofLength:currentUTF8String_->size()];
+    range.location += currentTextStorageOffset_;
+    //NSLog(@"setFormat %@ <-- %@", NSStringFromRange(range), attrs);
+    [currentTextStorage_ setAttributes:attrs range:range];
   }
 }
 

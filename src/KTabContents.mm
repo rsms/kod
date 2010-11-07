@@ -1,6 +1,7 @@
 #import "KTabContents.h"
 #import "KBrowser.h"
 #import "KSyntaxHighlighter.h"
+#import "KBrowserWindowController.h"
 #import "NSError+KAdditions.h"
 #import <ChromiumTabs/common.h>
 
@@ -84,8 +85,8 @@ static NSFont* _kDefaultFont = nil;
   
   // Setup KSyntaxHighlighter
   syntaxHighlighter_ =
-      [[KSyntaxHighlighter alloc] initWithDefinitionsFromFile:@"c.lang"
-                                                styleFromFile:@"sh_emacs.css"];
+      [[KSyntaxHighlighter alloc] initWithDefinitionsFromFile:@"cpp.lang"
+                                                styleFromFile:@"sh_bipolar.css"];
 
 	// Register for "text changed" notifications of our text storage:
   NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
@@ -187,7 +188,7 @@ static NSFont* _kDefaultFont = nil;
 
 
 - (void)undoManagerCheckpoint:(NSNotification*)notification {
-  //DLOG_EXPR([self isDocumentEdited]);
+  DLOG_EXPR([self isDocumentEdited]);
   BOOL isDirty = [self isDocumentEdited];
   if (isDirty_ != isDirty) {
     isDirty_ = isDirty;
@@ -255,6 +256,13 @@ static NSFont* _kDefaultFont = nil;
   return self.title;
 }
 
+- (KBrowserWindowController*)windowController {
+  NSArray *v = self.windowControllers;
+  if (v && [v count] == 1)
+    return (KBrowserWindowController*)[v objectAtIndex:0];
+  return nil;
+}
+
 - (NSWindow *)windowForSheet {
   KBrowser* browser = (KBrowser*)self.browser;
   if (browser) {
@@ -287,9 +295,8 @@ static NSFont* _kDefaultFont = nil;
   [textView_ breakUndoCoalescing];
   
   // Syntax highlight
-  KHighlightStateData *state = nil;
-  [syntaxHighlighter_ highlightLine:@"void foo(char *bar) { return 6; }"
-                          stateData:state];
+  NSRange highlightRange = NSMakeRange(0, [textStorage length]); // FIXME
+  [syntaxHighlighter_ highlightTextStorage:textStorage inRange:highlightRange];
 }
 
 // Generate data from text
@@ -354,9 +361,11 @@ static NSFont* _kDefaultFont = nil;
 
 #pragma mark CTTabContents implementation
 
+
 -(void)viewFrameDidChange:(NSRect)newFrame {
   // We need to recalculate the frame of the NSTextView when the frame changes.
   // This happens when a tab is created and when it's moved between windows.
+  //NSLog(@"viewFrameDidChange:%@", NSStringFromRect(newFrame));
   [super viewFrameDidChange:newFrame];
   NSClipView* clipView = [[view_ subviews] objectAtIndex:0];
   NSTextView* tv = [[clipView subviews] objectAtIndex:0];

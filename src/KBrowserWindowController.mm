@@ -1,10 +1,45 @@
+#import <ChromiumTabs/common.h>
+
 #import "KBrowserWindowController.h"
 #import "KAppDelegate.h"
 #import "KBrowser.h"
 #import "KTabContents.h"
-#import <ChromiumTabs/common.h>
+#import "KFileTreeController.h"
+
 
 @implementation KBrowserWindowController
+
+@synthesize
+    verticalSplitView = verticalSplitView_,
+    leftmostSubviewOfVerticalSplitView = leftmostSubviewOfVerticalSplitView_;
+
+
+- (id)initWithWindowNibPath:(NSString *)windowNibPath
+                    browser:(CTBrowser*)browser {
+  self = [super initWithWindowNibPath:windowNibPath browser:browser];
+
+  // Setup file tree view
+  [fileOutlineView_ registerForDraggedTypes:
+      [NSArray arrayWithObject:NSFilenamesPboardType]];
+  //[fileOutlineView_ setDraggingSourceOperationMask:NSDragOperationEvery forLocal:YES];
+  //[fileOutlineView_ setDraggingSourceOperationMask:NSDragOperationEvery forLocal:NO];
+  //[fileOutlineView_ setAutoresizesOutlineColumn:NO];
+
+  // Setup file tree controller
+  fileTreeController_ =
+      [[KFileTreeController alloc] initWithOutlineView:fileOutlineView_];
+
+  return self;
+}
+
+
+- (BOOL)splitView:(NSSplitView*)sv shouldAdjustSizeOfSubview:(NSView*)subview {
+  if (sv == verticalSplitView_ &&
+      subview == leftmostSubviewOfVerticalSplitView_) {
+    return NO;
+  }
+  return YES;
+}
 
 
 - (NSRect) window:(NSWindow *)window
@@ -21,42 +56,14 @@ willPositionSheet:(NSWindow *)sheet
 }
 
 
-// Future trouble ahead...
-/*- (BOOL)windowShouldClose:(id)sender {
-  DLOG_TRACE();
-  return YES;
-  if (browser_ &&
-      browser_.windowController &&
-      [browser_.windowController window]) {
-    int tabCount = [browser_ tabCount];
-    NSMutableArray *modified = [NSMutableArray array];
-    for (int i = 0; i < tabCount; i++) {
-      KTabContents* tab = (KTabContents*)[browser_ tabContentsAtIndex:i];
-      if ([tab isDocumentEdited]) {
-        [modified addObject:tab];
-      }
-    }
-    if ([modified count] > 0) {
-      //// TODO: only if not in focus/key
-      //NSInteger attentionRequestId =
-      //    [NSApp requestUserAttention:NSCriticalRequest];
-      // TODO: display modal
-      [(KTabContents*)[modified objectAtIndex:0] showWindows];
-      NSInteger modalResult =
-          [NSApp runModalForWindow:[browser_.windowController window]];
-      DLOG("TODO: modal: %d unsaved documents -- really close?", [modified count]);
-      return NO;
-    }
-  }
-  return YES;
-}*/
+- (void)layoutTabContentArea:(NSRect)newFrame {
+  // Adjust height after the tabstrip have been introduced to the window top
+  NSRect splitViewFrame = verticalSplitView_.frame;
+  splitViewFrame.size.height = newFrame.size.height;
+  [verticalSplitView_ setFrame:splitViewFrame];
+  [super layoutTabContentArea:newFrame];
+}
 
-/*- (void)windowWillClose:(NSNotification*)notification {
-  DLOG_TRACE();
-  if (browser_) {
-    [browser_ closeAllTabs];
-  }
-}*/
 
 #pragma mark -
 #pragma mark Proxy for selected tab

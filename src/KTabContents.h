@@ -2,6 +2,7 @@
 
 @class KBrowser;
 @class KSyntaxHighlighter;
+@class KBrowserWindowController;
 
 // This class represents a tab. In this example application a tab contains a
 // simple scrollable text area.
@@ -15,6 +16,7 @@
 
 @property(assign, nonatomic) BOOL isDirty;
 @property(assign, nonatomic) NSStringEncoding textEncoding;
+@property(readonly) KBrowserWindowController* windowController;
 
 + (NSFont*)defaultFont;
 

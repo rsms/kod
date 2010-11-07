@@ -27,6 +27,11 @@
 
   /// table of formatters
   srchilite::FormatterManager *formatterManager_;
+  
+  // Parser state. FIXME reentrant
+  NSUInteger currentTextStorageOffset_;
+  NSTextStorage *currentTextStorage_;
+  __weak const std::string *currentUTF8String_;
 }
 
 @property(retain, nonatomic) NSString *styleFile;
@@ -69,25 +74,25 @@
 #pragma mark -
 #pragma mark Formatting
 
+- (void)highlightLine:(NSString*)line;
+
+- (void)highlightTextStorage:(NSTextStorage*)textStorage inRange:(NSRange)range;
+
 /**
- * Highlights the passed line.
+ * This function is applied to the syntax highlighter's current text block
+ * (i.e. the text that is passed to the highlightBlock() method).
  *
- * This method assumes that all the fields are already initialized (e.g.,
- * the FormatterManager).
+ * The specified format is applied to the text from the start position
+ * for a length of count characters
+ * (if count is 0, nothing is done).
+ * The formatting properties set in format are merged at display
+ * time with the formatting information stored directly in the document,
+ * for example as previously set with QTextCursor's functions.
  *
- * The passed KHighlightStateData is used to configure the SourceHighlighter
- * with info like the current highlighting state and the state stack.
- * If it is null, we simply ignore it.
- *
- * This method can modify the bassed pointer and even make it NULL
- * (after deleting it).
- *
- * @param line
- * @param stateData the highlight state data to use
- * @return in case after highlighting the stack changed we return either the original
- * stateData (after updating) or a new KHighlightStateData (again with the updated
- * information)
+ * Note that this helper function will be called by the corresponding
+ * TextFormatter, from Source-highglight library code, and relies on
+ * the corresponding protected method of QSyntaxHighlighter: setFormat).
  */
-- (void)highlightLine:(NSString*)line stateData:(KHighlightStateData *&)state;
+- (void)setFormat:(KTextFormatter*)format inRange:(NSRange)range;
 
 @end
