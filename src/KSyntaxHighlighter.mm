@@ -551,6 +551,11 @@ static void _debugDumpHighlightEvent(const srchilite::HighlightEvent &event) {
       DLOG("STATE+");
       tempStackDepthDelta_++;
       [self _updateCurrentState:NO];
+      // never set state on first char of state opening
+      if (lastFormattedRange_.length > 0) {
+        lastFormattedRange_.location++;
+        lastFormattedRange_.length--;
+      }
       [self _applyCurrentStateToLastFormattedRange];
       break;
     }
@@ -595,27 +600,6 @@ static void _debugDumpHighlightEvent(const srchilite::HighlightEvent &event) {
   if (!currentTextStorage_) return;
   NSDictionary *attrs = format->textAttributes();
   
-  #if 0
-  KHighlightStateData *stateData = new KHighlightStateData();
-  stateData->currentState = sourceHighlighter_->getCurrentState();
-  stateData->stateStack = sourceHighlighter_->getStateStack();
-  KHighlightState *state =
-      [[KHighlightState alloc] initWithData:(NSData*)stateData];
-  attrs = [NSMutableDictionary dictionaryWithDictionary:attrs];
-  [(NSMutableDictionary*)attrs setObject:state forKey:@"KHighlightState"];
-  #endif
-  
-  
-  #if 0
-  srchilite::HighlightStatePtr currentState =
-      sourceHighlighter_->getCurrentState();
-  attrs = [NSMutableDictionary dictionaryWithDictionary:attrs];
-  NSNumber *stateIdNumber = [NSNumber numberWithInt:currentState->getId()];
-  [(NSMutableDictionary*)attrs setObject:stateIdNumber
-                                  forKey:@"KHighlightStateId"];
-  #endif
-  
-  
   NSRange utf8Range = range;
   range = [NSString UTF16RangeFromUTF8Range:range
                                inUTF8String:currentUTF8String_->data()
@@ -623,7 +607,7 @@ static void _debugDumpHighlightEvent(const srchilite::HighlightEvent &event) {
   range.location += currentTextStorageOffset_;
   lastFormattedRange_ = range;
   lastFormattedState_ = nil; // temporal
-  #if 1
+  #if 0
   DLOG("setFormat:%s inRange:%@ (\"%@\") <-- %@",
        format->getElem().c_str(), NSStringFromRange(range),
        [[currentTextStorage_ string] substringWithRange:range],

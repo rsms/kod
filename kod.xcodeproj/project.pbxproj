@@ -9,6 +9,10 @@
 /* Begin PBXBuildFile section */
 		3A025A971288B2A300206ECF /* KHighlightState.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A025A961288B2A300206ECF /* KHighlightState.mm */; };
 		3A1585681289791200339E6E /* KHighlightEventListener.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A1585671289791200339E6E /* KHighlightEventListener.mm */; };
+		3A158ADB128A09D300339E6E /* ICUMatcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A158AD5128A09D300339E6E /* ICUMatcher.m */; };
+		3A158ADC128A09D300339E6E /* ICUPattern.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A158AD7128A09D300339E6E /* ICUPattern.m */; };
+		3A158ADE128A09D300339E6E /* NSStringICUAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A158ADA128A09D300339E6E /* NSStringICUAdditions.m */; };
+		3A158AFF128A0A3700339E6E /* libicucore.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A158AFE128A0A3700339E6E /* libicucore.dylib */; };
 		3A25E479128194B400B6A33E /* KSyntaxHighlighter.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A25E478128194B400B6A33E /* KSyntaxHighlighter.mm */; };
 		3A25E47B1281A6A200B6A33E /* libboost_regex-mt.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A25E47A1281A6A200B6A33E /* libboost_regex-mt.dylib */; };
 		3A25E47D1281A6A700B6A33E /* libsource-highlight.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A25E47C1281A6A700B6A33E /* libsource-highlight.dylib */; };
@@ -84,6 +88,13 @@
 		3A025A961288B2A300206ECF /* KHighlightState.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KHighlightState.mm; sourceTree = "<group>"; };
 		3A1585661289791200339E6E /* KHighlightEventListener.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KHighlightEventListener.h; sourceTree = "<group>"; };
 		3A1585671289791200339E6E /* KHighlightEventListener.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KHighlightEventListener.mm; sourceTree = "<group>"; };
+		3A158AD4128A09D300339E6E /* ICUMatcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ICUMatcher.h; sourceTree = "<group>"; };
+		3A158AD5128A09D300339E6E /* ICUMatcher.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ICUMatcher.m; sourceTree = "<group>"; };
+		3A158AD6128A09D300339E6E /* ICUPattern.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ICUPattern.h; sourceTree = "<group>"; };
+		3A158AD7128A09D300339E6E /* ICUPattern.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ICUPattern.m; sourceTree = "<group>"; };
+		3A158AD9128A09D300339E6E /* NSStringICUAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NSStringICUAdditions.h; sourceTree = "<group>"; };
+		3A158ADA128A09D300339E6E /* NSStringICUAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NSStringICUAdditions.m; sourceTree = "<group>"; };
+		3A158AFE128A0A3700339E6E /* libicucore.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libicucore.dylib; path = usr/lib/libicucore.dylib; sourceTree = SDKROOT; };
 		3A25E477128194B400B6A33E /* KSyntaxHighlighter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSyntaxHighlighter.h; sourceTree = "<group>"; };
 		3A25E478128194B400B6A33E /* KSyntaxHighlighter.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KSyntaxHighlighter.mm; sourceTree = "<group>"; };
 		3A25E47A1281A6A200B6A33E /* libboost_regex-mt.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libboost_regex-mt.dylib"; path = "deps/srchilight/libboost_regex-mt.dylib"; sourceTree = "<group>"; };
@@ -141,12 +152,26 @@
 				3A929886122AC38F00DA7E43 /* ChromiumTabs.framework in Frameworks */,
 				3A25E47B1281A6A200B6A33E /* libboost_regex-mt.dylib in Frameworks */,
 				3A25E47D1281A6A700B6A33E /* libsource-highlight.dylib in Frameworks */,
+				3A158AFF128A0A3700339E6E /* libicucore.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		3A158AD3128A09D300339E6E /* ICU */ = {
+			isa = PBXGroup;
+			children = (
+				3A158AD4128A09D300339E6E /* ICUMatcher.h */,
+				3A158AD5128A09D300339E6E /* ICUMatcher.m */,
+				3A158AD6128A09D300339E6E /* ICUPattern.h */,
+				3A158AD7128A09D300339E6E /* ICUPattern.m */,
+				3A158AD9128A09D300339E6E /* NSStringICUAdditions.h */,
+				3A158ADA128A09D300339E6E /* NSStringICUAdditions.m */,
+			);
+			path = ICU;
+			sourceTree = "<group>";
+		};
 		3A7E717C1286F40600D85E4C /* file-tree */ = {
 			isa = PBXGroup;
 			children = (
@@ -218,6 +243,7 @@
 				3A7E74A612873A7100D85E4C /* KScroller.m */,
 				3A7E751D1287403100D85E4C /* KScrollView.h */,
 				3A7E751E1287403100D85E4C /* KScrollView.m */,
+				3A158AD3128A09D300339E6E /* ICU */,
 				3A7E717D1286F41C00D85E4C /* syntax-highlight */,
 				3A7E717C1286F40600D85E4C /* file-tree */,
 			);
@@ -248,6 +274,7 @@
 			children = (
 				3A25E47A1281A6A200B6A33E /* libboost_regex-mt.dylib */,
 				3A25E47C1281A6A700B6A33E /* libsource-highlight.dylib */,
+				3A158AFE128A0A3700339E6E /* libicucore.dylib */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -370,6 +397,9 @@
 				3A7E751F1287403100D85E4C /* KScrollView.m in Sources */,
 				3A025A971288B2A300206ECF /* KHighlightState.mm in Sources */,
 				3A1585681289791200339E6E /* KHighlightEventListener.mm in Sources */,
+				3A158ADB128A09D300339E6E /* ICUMatcher.m in Sources */,
+				3A158ADC128A09D300339E6E /* ICUPattern.m in Sources */,
+				3A158ADE128A09D300339E6E /* NSStringICUAdditions.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -424,6 +454,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = src/prefix.pch;
 				HEADER_SEARCH_PATHS = (
+					src/ICU/include,
 					"$(HEADER_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
 					/opt/local/include,
 				);
@@ -472,6 +503,7 @@
 				GCC_PREFIX_HEADER = src/prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = "NDEBUG=1";
 				HEADER_SEARCH_PATHS = (
+					src/ICU/include,
 					"$(HEADER_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
 					/opt/local/include,
 				);

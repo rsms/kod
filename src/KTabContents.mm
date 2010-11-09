@@ -68,6 +68,42 @@ static NSFont* _kDefaultFont = nil;
          selector:@selector(undoManagerCheckpoint:)
              name:NSUndoManagerCheckpointNotification
 					 object:undoManager_];
+
+  // XXX DEBUG
+  [self performSelectorOnMainThread:@selector(simulateTextAppending:)
+                         withObject:self
+                      waitUntilDone:NO];
+}
+
+
+static int simulateTextAppendingIteration = 0;
+
+- (void)simulateTextAppending:(id)x {
+  #if 0
+  [textView_ insertText:@"void foo(int arg) {\n  return 5;\n}\n"
+                        @"/* multi\nline\ncomment */ bool bar;\n"
+                        @"string s = \"this is a \\\"string\\\" yes\";\n"];
+  return;
+  #endif
+  switch (simulateTextAppendingIteration) {
+    case 0:
+      [textView_ insertText:@"void foo(int arg) {\n  return 5;\n}\n"];
+      break;
+    case 1:
+      [textView_ insertText:@"/* multi\nline"];
+      break;
+    case 2:
+      [textView_ insertText:@"\ncomment */ bool bar;\n"];
+      break;
+    case 3:
+      [textView_ insertText:@"string s = \"this is a \\\"string\\\" yes\";\n"];
+      break;
+  }
+  if (++simulateTextAppendingIteration < 4) {
+    [self performSelector:@selector(simulateTextAppending:)
+               withObject:self
+               afterDelay:0.1];
+  }
 }
 
 
@@ -354,6 +390,7 @@ static NSFont* _kDefaultFont = nil;
     [self updateChangeCount:NSChangeReadOtherContents];
   }
   
+  
   // Syntax highlight
   KSyntaxHighlighter *syntaxHighlighter = self.syntaxHighlighter;
   if (syntaxHighlighter && syntaxHighlighter.currentTextStorage == nil) {
@@ -364,12 +401,32 @@ static NSFont* _kDefaultFont = nil;
       highlightRange = NSMakeRange(NSNotFound, 0); // whole document
       deltaRange = highlightRange;
     } else {
-      if (range.length != 1 || [text characterAtIndex:range.location] != '\n') {
+      /*if (range.length != 1 || [text characterAtIndex:range.location] != '\n') {
         // unless newline
         highlightRange = [text lineRangeForRange:range];
       } else {
         highlightRange = range;
+      }*/
+      NSRange maxRange = NSMakeRange(0, text.length);
+      NSUInteger index = range.location;
+      if (index > 0) index--;
+      //[textStorage ensureAttributesAreFixedInRange:range];
+      [textStorage attribute:KTextFormatter::ClassAttributeName
+                     atIndex:index
+       longestEffectiveRange:&highlightRange
+                     inRange:maxRange];
+      highlightRange = NSUnionRange(range, highlightRange);
+      
+      if (range.location > 0 && range.location < maxRange.length-1) {
+        index = range.location + 1;
+        NSRange highlightRange2;
+        [textStorage attribute:KTextFormatter::ClassAttributeName
+                       atIndex:index
+         longestEffectiveRange:&highlightRange2
+                       inRange:maxRange];
+        highlightRange = NSUnionRange(highlightRange, highlightRange2);
       }
+      
       deltaRange = range;
     }
     DLOG("highlightRange: %@", highlightRange.location == NSNotFound
@@ -381,6 +438,7 @@ static NSFont* _kDefaultFont = nil;
       nextRange = [syntaxHighlighter highlightTextStorage:textStorage
                                                   inRange:highlightRange
                                                deltaRange:deltaRange];
+      //[textStorage ensureAttributesAreFixedInRange:highlightRange];
       if (nextRange.location == textEnd) {
         DLOG("info: code tree is incomplete (open state at end of document)");
         break;
@@ -401,9 +459,10 @@ static NSFont* _kDefaultFont = nil;
       highlightRange = deltaRange;
     }
   }
-
+  
+  
   // this makes the edit an undoable entry (otherwise each "group" of edits will
-  // be undoable, which is not fine-grained enough for our application)
+  // be undoable, which is not fine-grained enough for us)
   [textView_ breakUndoCoalescing];
 }
 
