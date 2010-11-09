@@ -38,6 +38,7 @@
   __weak KHighlightState *currentState_;
   __weak KHighlightState *lastFormattedState_; // temporal per format call
   NSRange lastFormattedRange_;
+  int tempStackDepthDelta_;
 }
 
 @property(retain, nonatomic) NSString *styleFile;
@@ -88,8 +89,9 @@
  * of the last character highlighted is returned to indicate what should be
  * re-evaluated.
  */
-- (NSUInteger)highlightTextStorage:(NSTextStorage*)textStorage
-                           inRange:(NSRange)range;
+- (NSRange)highlightTextStorage:(NSTextStorage*)textStorage
+                        inRange:(NSRange)range
+                     deltaRange:(NSRange)deltaRange;
 
 /**
  * This function is applied to the syntax highlighter's current text block

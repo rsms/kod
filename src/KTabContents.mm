@@ -355,25 +355,43 @@ static NSFont* _kDefaultFont = nil;
   // Syntax highlight
   KSyntaxHighlighter *syntaxHighlighter = self.syntaxHighlighter;
   if (syntaxHighlighter && syntaxHighlighter.currentTextStorage == nil) {
-    NSRange highlightRange;
+    NSRange highlightRange, deltaRange;
+    NSString *text = [textStorage string];
     if (completeDocument) {
-      NSLog(@"COMPLETE");
+      //DLOG(@"COMPLETE");
       highlightRange = NSMakeRange(NSNotFound, 0); // whole document
+      deltaRange = highlightRange;
     } else {
-      //NSString *text = [textStorage string];
-      //highlightRange = [text lineRangeForRange:range];
-      highlightRange = range;
+      if (range.length != 1 || [text characterAtIndex:range.location] != '\n') {
+        // unless newline
+        highlightRange = [text lineRangeForRange:range];
+      } else {
+        highlightRange = range;
+      }
+      deltaRange = range;
     }
     DLOG("highlightRange: %@", highlightRange.location == NSNotFound
                         ? @"{NSNotFound, 0}"
                         : NSStringFromRange(highlightRange));
-    NSUInteger end = 0, textEnd = [textStorage length];
-    while (end != textEnd) {
-      end = [syntaxHighlighter highlightTextStorage:textStorage
-                                            inRange:highlightRange];
-      if (end == NSNotFound)
+    NSRange nextRange = NSMakeRange(0, 0);
+    NSUInteger textEnd = [textStorage length];
+    while (nextRange.location != textEnd) {
+      nextRange = [syntaxHighlighter highlightTextStorage:textStorage
+                                                  inRange:highlightRange
+                                               deltaRange:deltaRange];
+      if (nextRange.location == textEnd) {
+        DLOG("info: code tree is incomplete (open state at end of document)");
         break;
-      highlightRange = NSMakeRange(end, 0);
+      } else if (nextRange.location == NSNotFound) {
+        break;
+      }
+      deltaRange = nextRange;
+      if (deltaRange.length == 0) {
+        deltaRange = [text lineRangeForRange:deltaRange];
+        //DLOG("adjusted deltaRange to line: %@", NSStringFromRange(deltaRange));
+      }
+      DLOG_EXPR(deltaRange);
+      highlightRange = deltaRange;
     }
   }
 

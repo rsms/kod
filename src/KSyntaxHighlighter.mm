@@ -92,7 +92,7 @@
   std::string bgcolor;
   
   if (styleFile) {
-    NSLog(@"loading style from %@", styleFile);
+    DLOG("loading style from %@", styleFile);
     std::string styleFileStdStr = [styleFile UTF8String];
     try {
       if (srchilite::get_file_extension(styleFileStdStr) == "css") {
@@ -103,8 +103,8 @@
                                                    &formatterFactory, bgcolor);
       }
     } catch (srchilite::ParserException *e) {
-      NSLog(@"style parse error: %s -- %s (%s:%u)", e->message.c_str(),
-            e->additional.c_str(), e->filename.c_str(), e->line);
+      WLOG("style parse error: %s -- %s (%s:%u)", e->message.c_str(),
+           e->additional.c_str(), e->filename.c_str(), e->line);
       throw e;
     }
   }
@@ -160,7 +160,7 @@
 
 
 - (void)reloadFormatting {  // internal
-  NSLog(@"reloading FormatterManager");
+  DLOG("reloading FormatterManager");
   if (formatterManager_) {
     if (sourceHighlighter_ &&
         sourceHighlighter_->getFormatterManager() == formatterManager_) {
@@ -256,72 +256,91 @@
 }
 
 
-- (NSUInteger)highlightTextStorage:(NSTextStorage*)textStorage
-                           inRange:(NSRange)range {
+- (NSRange)highlightTextStorage:(NSTextStorage*)textStorage
+                        inRange:(NSRange)range
+                     deltaRange:(NSRange)deltaRange {
+  #if !NDEBUG
   fprintf(stderr,
       "----------------------- highlightTextStorage -----------------------\n");
+  #endif
   assert(currentTextStorage_ == nil);
   currentTextStorage_ = [textStorage retain];
   NSString *text = [textStorage string];
-  NSRange	originalRange = range;
+  NSUInteger documentLength = [text length];
   
   // Adjust range
   if (range.location == NSNotFound) {
     // highlight all lines
-    range = NSMakeRange(0, [text length]);
+    range = NSMakeRange(0, documentLength);
   } else {
     // highlight minimal part
-    if (range.length != 1 || [text characterAtIndex:range.location] != '\n') {
-      // unless newline
-      //range = [text lineRangeForRange:range];
-      range = [text paragraphRangeForRange:range];
-    }
     DLOG("range: %@", NSStringFromRange(range));
   }
   
   // get previous state
+  NSRange effectiveRange = range;
+  BOOL didBreakState = NO;
+  BOOL isCompleteDocument = range.location == NSNotFound;
+  BOOL wasCausedByDeleteEvent = deltaRange.length == 0;
+  BOOL isBeginningOfDocument = range.location == 0;
+  BOOL isZeroPointOfDocument = isBeginningOfDocument && wasCausedByDeleteEvent;
+  BOOL shouldTryToRestoreState = YES;
+  if (isBeginningOfDocument && range.length == documentLength) {
+    isCompleteDocument = YES;
+  }
+  
+  if (isCompleteDocument) {
+    shouldTryToRestoreState = NO;
+  } else if (isBeginningOfDocument && !wasCausedByDeleteEvent) {
+    shouldTryToRestoreState = NO;
+  }
+  
+  DLOG_EXPR(isCompleteDocument);
+  DLOG_EXPR(wasCausedByDeleteEvent);
+  DLOG_EXPR(isBeginningOfDocument);
+  DLOG_EXPR(isZeroPointOfDocument);
+  DLOG_EXPR(shouldTryToRestoreState);
+  
   assert(currentState_ == nil);
-  if (range.location != NSNotFound && range.location != 0) {
-    DLOG("finding previous state");
-    NSRange effectiveRange;
-    NSUInteger previousIndex = range.location-1;
+  if (shouldTryToRestoreState) {
+    //DLOG("finding previous state");
+    NSUInteger previousIndex = 0;
+    if (range.location != 0 && range.location != NSNotFound)
+      previousIndex = range.location - 1;
     
     // get stored state
-    currentState_ = [currentTextStorage_ attribute:@"KHighlightState"
-                                           atIndex:previousIndex
-                                    effectiveRange:&effectiveRange];
-    if (currentState_) {
-      //stateData = new KHighlightStateData(*(currentState_->data));
-      //[currentState_ replaceData:stateData];
-      assert(currentState_->data != NULL);
-      srchilite::HighlightStatePtr cs = currentState_->data->currentState;
-      DLOG("found previous state: %d",
-           currentState_->data->currentState->getId());
-      
-      // if effectiveRange extends beyond our editing point, include the
-      // remainder.
-      // Use-case: multiline C-comment
-      //   /* foo
-      //   bar
-      //   baz */
-      // Now, imagine we insert "*/" after "bar":
-      //   /* foo
-      //   bar */
-      //   baz */
-      // We need to extend our range to include "baz */"
-      NSUInteger rangeEnd = range.location + range.length;
-      NSUInteger effectiveRangeEnd = effectiveRange.location + effectiveRange.length;
-      if (rangeEnd < effectiveRangeEnd) {
-        range.length += effectiveRangeEnd - rangeEnd;
+    int tries = 2;
+    while (tries--) {
+      currentState_ = [currentTextStorage_ attribute:@"KHighlightState"
+                                             atIndex:previousIndex
+                                      effectiveRange:&effectiveRange];
+      if (currentState_) {
+        //stateData = new KHighlightStateData(*(currentState_->data));
+        //[currentState_ replaceData:stateData];
+        assert(currentState_->data != NULL);
+        srchilite::HighlightStatePtr cs = currentState_->data->currentState;
+        DLOG("found previous state: %d at index %u",
+             currentState_->data->currentState->getId(),
+             previousIndex);
+        if (tries == 0 && deltaRange.length == 0)
+          didBreakState = YES;
+        break;
+      } else {
+        DLOG("no previous state");
+        if ([currentTextStorage_ length]-range.location > 1) {
+          previousIndex = range.location+1;
+        } else {
+          break;
+        }
+
       }
-      DLOG("effectiveRange of currentState_: %@",
-           NSStringFromRange(effectiveRange));
-    } else {
-      DLOG("no previous state");
     }
   }
   
+  DLOG("didBreakState = %s", didBreakState?"YES":"NO");
+  
   // restore state
+  //int stateIdAtStart = 0;
   if (currentState_) {
     [currentState_ retain]; // our ref, released just before we return
     // we need to make a copy of the state stack here, since sourceHighlighter_
@@ -330,13 +349,16 @@
       new srchilite::HighlightStateStack(*(currentState_->data->stateStack));
     sourceHighlighter_->setCurrentState(currentState_->data->currentState);
     sourceHighlighter_->setStateStack(srchilite::HighlightStateStackPtr(stateStack));
+    //stateIdAtStart = currentState_->data->currentState->getId();
   } else {
     // we must make sure to reset the highlighter to the initial state
     sourceHighlighter_->setCurrentState(sourceHighlighter_->getMainState());
     sourceHighlighter_->clearStateStack();
+    //stateIdAtStart = sourceHighlighter_->getMainState()->getId();
   }
   
   currentTextStorageOffset_ = range.location;
+  tempStackDepthDelta_ = 0;
   
   // for each line ...
   [text enumerateSubstringsInRange:range
@@ -363,11 +385,59 @@
   [currentTextStorage_ release];
   currentTextStorage_ = nil;
   
-  if (!sourceHighlighter_->getStateStack()->empty()) {
-    DLOG("highlightTextStorage returned with lingering state");
-    return range.location + range.length;
+  //DLOG("tempStackDepthDelta_: %d", tempStackDepthDelta_);
+  BOOL stateStackIsEmpty = sourceHighlighter_->getStateStack()->empty();
+  if (didBreakState) {
+    DLOG("highlightTextStorage returned with lingering state (0)");
+    NSRange nextRange = NSUnionRange(range, effectiveRange);
+    
+    DLOG("nextRange: %@", NSStringFromRange(nextRange));
+    return nextRange;
+  } else if (tempStackDepthDelta_ != 0) {
+    DLOG("highlightTextStorage returned with lingering state (1)");
+  
+    // if effectiveRange extends beyond our editing point, include the
+    // remainder.
+    // Use-case: multiline C-comment
+    //   /* foo
+    //   bar
+    //   baz */
+    // Now, imagine we insert "*/" after "bar":
+    //   /* foo
+    //   bar */
+    //   baz */
+    // We need to extend our range to include "baz */"
+    //
+    // TODO: optimize this by recording state change and only returning
+    //       |end| if the state changed.
+    //
+    NSRange nextRange;
+    NSUInteger end1 = range.location + range.length;
+    NSUInteger end2 = effectiveRange.location + effectiveRange.length;
+    
+    nextRange.location = end1;
+    if (end2 > end1) {
+      nextRange.length = end2 - end1;
+    } else {
+      nextRange.length = 0;
+    }
+    
+    DLOG("range: %@, effectiveRange: %@, nextRange: %@",
+         NSStringFromRange(range),
+         NSStringFromRange(effectiveRange), NSStringFromRange(nextRange));
+    return nextRange;
+  } else if (!stateStackIsEmpty) {
+    if (deltaRange.length == 0) {
+      DLOG("highlightTextStorage returned with lingering state (2)");
+      // we are dealing with a DELETE edit which possibly caused dirty content
+      // below the edited point.
+      return NSMakeRange(range.location + range.length, 0);
+    } else {
+      DLOG("highlightTextStorage returned with lingering state (3)");
+      return NSMakeRange(range.location + range.length, 0);
+    }
   }
-  return NSNotFound;
+  return NSMakeRange(NSNotFound, 0);
 }
 
 
@@ -446,9 +516,16 @@ static void _debugDumpHighlightEvent(const srchilite::HighlightEvent &event) {
            currentState_->data->currentState->getId(),
            NSStringFromRange(lastFormattedRange_),
            [[currentTextStorage_ string] substringWithRange:lastFormattedRange_]);
-      [currentTextStorage_ addAttribute:@"KHighlightState"
-                                  value:currentState_
-                                  range:lastFormattedRange_];
+      NSRange range = lastFormattedRange_;
+      if (range.location == 0 && range.length > 0) {
+        range.location++;
+        range.length--;
+      }
+      if (range.length) {
+        [currentTextStorage_ addAttribute:@"KHighlightState"
+                                    value:currentState_
+                                    range:lastFormattedRange_];
+      }
       lastFormattedState_ = currentState_;
     }
   } else {
@@ -466,6 +543,7 @@ static void _debugDumpHighlightEvent(const srchilite::HighlightEvent &event) {
     case srchilite::HighlightEvent::ENTERSTATE: {
       // DID enter state
       DLOG("STATE+");
+      tempStackDepthDelta_++;
       [self _updateCurrentState:NO];
       [self _applyCurrentStateToLastFormattedRange];
       break;
@@ -473,6 +551,7 @@ static void _debugDumpHighlightEvent(const srchilite::HighlightEvent &event) {
     case srchilite::HighlightEvent::EXITSTATE: {
       // DID exit state
       DLOG("STATE-");
+      tempStackDepthDelta_--;
       // The token we just formatted was the last part of the state
       [self _applyCurrentStateToLastFormattedRange];
       // Clear currentState_?
@@ -529,10 +608,10 @@ static void _debugDumpHighlightEvent(const srchilite::HighlightEvent &event) {
   lastFormattedRange_ = range;
   lastFormattedState_ = nil; // temporal
   #if 1
-  NSLog(@"setFormat:%s inRange:%@ (\"%@\") <-- %@",
-        format->getElem().c_str(), NSStringFromRange(range),
-        [[currentTextStorage_ string] substringWithRange:range],
-        attrs);
+  DLOG("setFormat:%s inRange:%@ (\"%@\") <-- %@",
+       format->getElem().c_str(), NSStringFromRange(range),
+       [[currentTextStorage_ string] substringWithRange:range],
+       attrs);
   #endif
   [currentTextStorage_ setAttributes:attrs range:range];
 }
