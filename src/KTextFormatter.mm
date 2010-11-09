@@ -42,11 +42,17 @@ NSFont* KTextFormatter::baseFont() {
 }
 
 
+NSString *KTextFormatter::ClassAttributeName = @"ktfclass";
+
+
 KTextFormatter::KTextFormatter(const std::string &elem)
     : elem_(elem)
     , syntaxHighlighter_(NULL) {
   textAttributes_ = [[NSMutableDictionary alloc] initWithObjectsAndKeys:
-      baseFont(), NSFontAttributeName, nil];
+      baseFont(), NSFontAttributeName,
+      [NSString stringWithUTF8String:elem.c_str()],
+      ClassAttributeName,
+      nil];
 }
 
 KTextFormatter::~KTextFormatter() {
@@ -56,7 +62,7 @@ KTextFormatter::~KTextFormatter() {
 
 
 void KTextFormatter::setStyle(srchilite::StyleConstantsPtr style) {
-  NSNumber *underlined = [NSNumber numberWithInt:0];
+  BOOL underlined = NO;
   NSFont *font = baseFont();
   NSFontTraitMask fontTraitMask = 0;
   if (style.get()) {
@@ -70,7 +76,7 @@ void KTextFormatter::setStyle(srchilite::StyleConstantsPtr style) {
           fontTraitMask |= NSItalicFontMask;
           break;
         case srchilite::ISUNDERLINE:
-          underlined = [NSNumber numberWithInt:1];
+          underlined = YES;
           break;
         /*case srchilite::ISFIXED:
           formatter->setMonospace(true);
@@ -91,8 +97,15 @@ void KTextFormatter::setStyle(srchilite::StyleConstantsPtr style) {
       if (font2)
         font = font2;
     }
+    
     [textAttributes_ setObject:font forKey:NSFontAttributeName];
-    [textAttributes_ setObject:underlined forKey:NSUnderlineStyleAttributeName];
+    
+    if (underlined) {
+      [textAttributes_ setObject:[NSNumber numberWithBool:YES]
+                          forKey:NSUnderlineStyleAttributeName];
+    } else {
+      [textAttributes_ removeObjectForKey:NSUnderlineStyleAttributeName];
+    }
   }
 }
 

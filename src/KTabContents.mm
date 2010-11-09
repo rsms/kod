@@ -2,6 +2,9 @@
 #import "KBrowser.h"
 #import "KSyntaxHighlighter.h"
 #import "KBrowserWindowController.h"
+#import "KScroller.h"
+#import "KScrollView.h"
+
 #import "NSError+KAdditions.h"
 #import <ChromiumTabs/common.h>
 
@@ -44,9 +47,34 @@ static NSFont* _kDefaultFont = nil;
   return y;
 }*/
 
+
+- (void)_initOnMain:(id)_ {
+  if (![NSThread isMainThread]) {
+    [self performSelectorOnMainThread:@selector(_initOnMain:)
+                           withObject:_
+                        waitUntilDone:NO];
+    return;
+  }
+
+	// Register for "text changed" notifications of our text storage:
+  NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
+	[nc addObserver:self
+         selector:@selector(textStorageDidProcessEditing:)
+             name:NSTextStorageDidProcessEditingNotification
+					 object:[textView_ textStorage]];
+
+  // Observe when the document is modified so we can update the UI accordingly
+	[nc addObserver:self
+         selector:@selector(undoManagerCheckpoint:)
+             name:NSUndoManagerCheckpointNotification
+					 object:undoManager_];
+}
+
+
 // This is the main initialization method
 - (id)initWithBaseTabContents:(CTTabContents*)baseContents {
-  // internal init mwthod which do not register delegates nor 
+  // Note: This might be called from a background thread and must thus be
+  // thread-safe.
   if (!(self = [super init])) return nil;
 
   // Default title and icon
@@ -76,35 +104,29 @@ static NSFont* _kDefaultFont = nil;
   [textView_ setUsesFindPanel:YES];
 
   // Create a NSScrollView to which we add the NSTextView
-  NSScrollView *sv = [[NSScrollView alloc] initWithFrame:NSZeroRect];
+  KScrollView *sv = [[KScrollView alloc] initWithFrame:NSZeroRect];
   [sv setDocumentView:textView_];
   [sv setHasVerticalScroller:YES];
 
   // Set the NSScrollView as our view
   view_ = sv;
-  
-  // Setup KSyntaxHighlighter
-  syntaxHighlighter_ =
-      [[KSyntaxHighlighter alloc] initWithDefinitionsFromFile:@"cpp.lang"
-                                                styleFromFile:@"sh_bipolar.css"];
-
-	// Register for "text changed" notifications of our text storage:
-  NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
-	[nc addObserver:self
-         selector:@selector(textStorageDidProcessEditing:)
-             name:NSTextStorageDidProcessEditingNotification
-					 object:[textView_ textStorage]];
-
-  // Observe when the document is modified so we can update the UI accordingly
-	[nc addObserver:self
-         selector:@selector(undoManagerCheckpoint:)
-             name:NSUndoManagerCheckpointNotification
-					 object:undoManager_];
 
   // Let the global document controller know we came to life
   [[NSDocumentController sharedDocumentController] addDocument:self];
+  
+  [self _initOnMain:nil];
 
   return self;
+}
+
+
+- (KSyntaxHighlighter*)syntaxHighlighter {
+  if (!syntaxHighlighter_ && [NSThread isMainThread]) {
+    syntaxHighlighter_ = [[KSyntaxHighlighter alloc]
+        initWithDefinitionsFromFile:@"cpp.lang"
+                      styleFromFile:@"sh_bipolar.css"];
+  }
+  return syntaxHighlighter_;
 }
 
 
@@ -120,6 +142,12 @@ static NSFont* _kDefaultFont = nil;
   self = [super initWithContentsOfURL:absoluteURL
                                ofType:typeName
                                 error:outError];
+
+  // Defer highlighting to next tick and also make sure it's run in main
+  [self performSelectorOnMainThread:@selector(highlightCompleteDocument:)
+                         withObject:self
+                      waitUntilDone:NO];
+
   return self;
 }
 
@@ -274,29 +302,66 @@ static NSFont* _kDefaultFont = nil;
   return nil;
 }
 
+- (void)highlightCompleteDocument:(id)sender {
+  NSTextStorage *textStorage = textView_.textStorage;
+  if ([textStorage length]) {
+    KSyntaxHighlighter *syntaxHighlighter = self.syntaxHighlighter;
+    if (syntaxHighlighter) {
+      [syntaxHighlighter highlightTextStorage:textStorage
+                                      inRange:NSMakeRange(NSNotFound, 0)];
+    }
+  }
+}
+
 - (void)textStorageDidProcessEditing:(NSNotification*)notification {
 	// invoked when editing occured
+
+  // We sometimes initialize documents on background threads where the initial
+  // "filling" causes this method to be called. We're a noop in that case.
+  if (![NSThread isMainThread]) return;
+
   NSTextStorage	*textStorage = [notification object];
 	NSRange	range = [textStorage editedRange];
 	int	changeInLen = [textStorage changeInLength];
-	BOOL wasInUndoRedo = [[self undoManager] isUndoing] ||
+  if (changeInLen == 0) {
+    // text attributes changed -- not interesting for this code branch
+    return;
+  }
+  BOOL completeDocument = (range.location == 0 &&
+                           changeInLen == [textStorage length]);
+  BOOL wasInUndoRedo = [[self undoManager] isUndoing] ||
                        [[self undoManager] isRedoing];
-  DLOG_EXPR(range);
-	DLOG_EXPR(changeInLen);
-	DLOG_EXPR(wasInUndoRedo);
+  DLOG("range: %@, changeInLen: %d, wasInUndoRedo: %@",
+       NSStringFromRange(range), changeInLen, wasInUndoRedo ? @"YES":@"NO");
 
   // mark as dirty if not already dirty
   if (!isDirty_) {
     [self updateChangeCount:NSChangeReadOtherContents];
   }
+  
+  // Syntax highlight
+  KSyntaxHighlighter *syntaxHighlighter = self.syntaxHighlighter;
+  if (syntaxHighlighter && syntaxHighlighter.currentTextStorage == nil) {
+    NSRange highlightRange;
+    if (completeDocument) {
+      NSLog(@"COMPLETE");
+      highlightRange = NSMakeRange(NSNotFound, 0); // whole document
+    } else {
+      NSString *text = [textStorage string];
+      highlightRange = [text lineRangeForRange:range];
+    }
+    if (highlightRange.length != 0) {
+      DLOG("highlightRange: %@", highlightRange.location == NSNotFound
+                          ? @"{NSNotFound, 0}"
+                          : NSStringFromRange(highlightRange));
+      [self.syntaxHighlighter highlightTextStorage:textStorage
+                                           inRange:highlightRange];
+    }
+  }
 
   // this makes the edit an undoable entry (otherwise each "group" of edits will
   // be undoable, which is not fine-grained enough for our application)
   [textView_ breakUndoCoalescing];
-  
-  // Syntax highlight
-  NSRange highlightRange = NSMakeRange(0, [textStorage length]); // FIXME
-  [syntaxHighlighter_ highlightTextStorage:textStorage inRange:highlightRange];
 }
 
 // Generate data from text

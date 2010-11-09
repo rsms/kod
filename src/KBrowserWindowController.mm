@@ -5,6 +5,8 @@
 #import "KBrowser.h"
 #import "KTabContents.h"
 #import "KFileTreeController.h"
+#import "KFileOutlineView.h"
+#import "KScroller.h"
 
 
 @implementation KBrowserWindowController
@@ -21,13 +23,23 @@
   // Setup file tree view
   [fileOutlineView_ registerForDraggedTypes:
       [NSArray arrayWithObject:NSFilenamesPboardType]];
-  //[fileOutlineView_ setDraggingSourceOperationMask:NSDragOperationEvery forLocal:YES];
-  //[fileOutlineView_ setDraggingSourceOperationMask:NSDragOperationEvery forLocal:NO];
-  //[fileOutlineView_ setAutoresizesOutlineColumn:NO];
+  [fileOutlineView_ setBackgroundColor:KFileOutlineViewBackgroundColor];
 
   // Setup file tree controller
   fileTreeController_ =
       [[KFileTreeController alloc] initWithOutlineView:fileOutlineView_];
+
+  // Setup scrollers
+  NSScrollView *fileTreeScrollView =
+      (NSScrollView*)[[fileOutlineView_ superview] superview];
+  NSLog(@"fileTreeScrollView => %@", fileTreeScrollView);
+  KScroller *hScroller = [[KScroller alloc] initWithFrame:NSZeroRect];
+  /*[fileTreeScrollView setHasHorizontalScroller:YES];
+  [fileTreeScrollView setAutohidesScrollers:NO];
+  [fileTreeScrollView setHorizontalScroller:hScroller];*/
+  //[fileTreeScrollView setHasHorizontalScroller:YES];
+  //[fileTreeScrollView setHasVerticalScroller:YES];
+  //[fileTreeScrollView setAutohidesScrollers:NO];
 
   return self;
 }

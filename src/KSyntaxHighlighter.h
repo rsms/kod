@@ -35,6 +35,7 @@
 }
 
 @property(retain, nonatomic) NSString *styleFile;
+@property(readonly, nonatomic) NSTextStorage *currentTextStorage;
 
 /**
  * Returns the the lang def file name by using the file name for detecting
@@ -76,6 +77,7 @@
 
 - (void)highlightLine:(NSString*)line;
 
+- (void)highlightTextStorage:(NSTextStorage*)textStorage;
 - (void)highlightTextStorage:(NSTextStorage*)textStorage inRange:(NSRange)range;
 
 /**

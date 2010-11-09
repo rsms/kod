@@ -21,6 +21,7 @@ class KTextFormatter: public srchilite::Formatter {
 
  public:
   static NSFont *baseFont();
+  static NSString *ClassAttributeName;
   
   KTextFormatter(const std::string &elem = "normal");
   virtual ~KTextFormatter();

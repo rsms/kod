@@ -3,6 +3,10 @@
 - (void)setSelectedItems:(NSArray *)items;
 @end
 
+extern NSColor *KFileOutlineViewBackgroundColor;
+extern NSColor *KFileOutlineViewRowBackgroundColorBlur;
+extern NSColor *KFileOutlineViewRowBackgroundColorFocus;
+
 @interface KFileOutlineView : NSOutlineView {
   BOOL firstResponder_;
 }

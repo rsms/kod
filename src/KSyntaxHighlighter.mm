@@ -1,4 +1,5 @@
 #import "KSyntaxHighlighter.h"
+#import "KHighlightState.h"
 #import "KTextFormatter.h"
 #import "NSString-utf8-range-conv.h"
 
@@ -8,15 +9,43 @@
 #import <ChromiumTabs/common.h>
 
 
+@interface NSString (cpp)
+- (NSUInteger)populateStdString:(std::string*)str
+                  usingEncoding:(NSStringEncoding)encoding
+                          range:(NSRange)range;
+@end
+@implementation NSString (cpp)
+
+- (NSUInteger)populateStdString:(std::string*)str
+                  usingEncoding:(NSStringEncoding)encoding
+                          range:(NSRange)range {
+  *str = std::string(range.length, '0');
+  char *pch = (char*)str->data();
+  NSUInteger usedBufferCount = 0;
+  [self getBytes:pch
+       maxLength:range.length
+      usedLength:&usedBufferCount
+        encoding:encoding
+         options:0
+           range:range
+  remainingRange:NULL];
+  return usedBufferCount;
+}
+
+@end
+
+
+
 @implementation KSyntaxHighlighter
 
-@synthesize styleFile = styleFile_;
+@synthesize styleFile = styleFile_,
+            currentTextStorage = currentTextStorage_;
 
 
 + (srchilite::LangMap*)definitionMap {
-    // make sure the lang map is loaded before returning it
-    srchilite::Instances::getLangMap()->open();
-    return srchilite::Instances::getLangMap();
+  // make sure the lang map is loaded before returning it
+  srchilite::Instances::getLangMap()->open();
+  return srchilite::Instances::getLangMap();
 }
 
 
@@ -205,7 +234,7 @@
 
   // if we're not in the main initial state...
   if (!sourceHighlighter_->getStateStack()->empty()) {
-    // communicate this information to the QSyntaxHighlighter
+    // communicate this information to parent
     if (!state)
       state = new KHighlightStateData();
     state->currentState = sourceHighlighter_->getCurrentState();
@@ -227,44 +256,92 @@
 }
 
 
-/*- (void)highlightTextStorage:(NSTextStorage*)textStorage
-                     inRange:(NSRange)range {
-  assert(currentTextStorage_ == nil);
-  currentTextStorage_ = [textStorage retain];
-  currentTextStorageOffset_ = range.location;
-  KHighlightStateData *state = NULL;
-  NSString *text = [[textStorage string] substringWithRange:range];
-  const char *utf8str = [text UTF8String];
-  const char *ptr = utf8str;
-  size_t len = 0;
-  //NSLog(@"utf8len: %zd, unilen: %zd", strlen(utf8str), [text length]);
-  while (*ptr) {
-    while (*(++ptr) && *ptr != '\n') {};
-    len = ptr-utf8str;
-    std::string line(utf8str, len);
-    //NSLog(@"<string(%zd) \"%s\">", len, line.c_str());
-    [self _highlightLine:line stateData:state];
-    utf8str = ptr+1;
-    currentTextStorageOffset_ += len+1;
-  }
-  assert(state == NULL); // TODO reentrant block state (stack)
-  [currentTextStorage_ release];
-  currentTextStorage_ = nil;
-}*/
+- (void)highlightTextStorage:(NSTextStorage*)textStorage {
+  static NSRange r = (NSRange){NSNotFound, 0};
+  [self highlightTextStorage:textStorage inRange:r];
+}
 
 
 - (void)highlightTextStorage:(NSTextStorage*)textStorage
                      inRange:(NSRange)range {
   assert(currentTextStorage_ == nil);
   currentTextStorage_ = [textStorage retain];
-  currentTextStorageOffset_ = range.location;
-  NSString *text = [[textStorage string] substringWithRange:range];
-  [text enumerateLinesUsingBlock:^(NSString *line, BOOL *stop) {
-    KHighlightStateData *state = NULL;
-    [self _highlightLine:[line UTF8String] stateData:state];
-    WLOG("TODO reentrant block state (stack)");
-    currentTextStorageOffset_ += [line length] + 1;
+  NSString *text = [textStorage string];
+  NSRange	effectiveRange;
+  
+  if (range.location == NSNotFound) {
+    // highlight all lines
+    effectiveRange = NSMakeRange(0, [text length]);
+  } else {
+    // highlight minimal part
+    NSString *elem = [currentTextStorage_ attribute:KTextFormatter::ClassAttributeName
+                                            atIndex:range.location
+                                     effectiveRange:&effectiveRange];
+    effectiveRange = NSUnionRange(effectiveRange, range);
+    DLOG("effectiveRange: %@, elem: %@",NSStringFromRange(effectiveRange),elem);
+  }
+  
+  currentTextStorageOffset_ = effectiveRange.location;
+  __block KHighlightStateData *stateData = NULL;
+  
+  // get stored state
+  KHighlightState *state = nil;
+  if (range.location != NSNotFound) {
+    
+    NSDictionary *attrs = [currentTextStorage_ attributesAtIndex:range.location
+                                             effectiveRange:NULL];
+    DLOG("attrs{%u, %u} => %@", range.location, range.location, attrs);
+    
+    state = [currentTextStorage_ attribute:@"KHighlightState"
+                                   atIndex:range.location
+                            effectiveRange:NULL];
+    if (state) {
+      assert(state->data != NULL);
+      DLOG("prev stateId: %d", state->data->currentState->getId());
+      stateData = new KHighlightStateData(*(state->data));
+    }
+  }
+  
+  // for each line ...
+  [text enumerateSubstringsInRange:effectiveRange
+                           options:NSStringEnumerationByLines
+                                  |NSStringEnumerationSubstringNotRequired
+                           usingBlock:^(NSString *_, NSRange substringRange,
+                                        NSRange enclosingRange, BOOL *stop) {
+    //DLOG("substringRange: %@", NSStringFromRange(substringRange));
+    std::string str;
+    [text populateStdString:&str
+              usingEncoding:NSUTF8StringEncoding
+                      range:enclosingRange];
+    //NSLog(@"%s", str.c_str());
+    [self _highlightLine:str stateData:stateData];
+    //WLOG("TODO reentrant block state (stack)");
+    currentTextStorageOffset_ += enclosingRange.length;
   }];
+  
+  // clear any previous KHighlightState attribute(s)
+  [currentTextStorage_ removeAttribute:@"KHighlightState" range:effectiveRange];
+  
+  int stateId = 0;
+  if (stateData) {
+    // we changed the highlighting state
+    stateId = stateData->currentState->getId();
+    if (!state) {
+      state = [[KHighlightState alloc] initWithData:(NSData*)stateData];
+    } else {
+      [state replaceData:stateData];
+    }
+    // store state
+    [currentTextStorage_ addAttribute:@"KHighlightState"
+                                value:state
+                                range:effectiveRange];
+
+    // this is crucial for QSyntaxHighlighter to know whether other parts
+    // of the document must be re-highlighted
+    //setCurrentBlockState(stateId);
+    DLOG("currentBlockState: %d", stateId);
+  }
+
   [currentTextStorage_ release];
   currentTextStorage_ = nil;
 }
@@ -273,12 +350,27 @@
 - (void)setFormat:(KTextFormatter*)format inRange:(NSRange)range {
   if (currentTextStorage_) {
     NSDictionary *attrs = format->textAttributes();
-    //sourceHighlighter_->getStateStack()
+    
+    #if 0
+    KHighlightStateData *stateData = new KHighlightStateData();
+    stateData->currentState = sourceHighlighter_->getCurrentState();
+    stateData->stateStack = sourceHighlighter_->getStateStack();
+    KHighlightState *state =
+        [[KHighlightState alloc] initWithData:(NSData*)stateData];
+    attrs = [NSMutableDictionary dictionaryWithDictionary:attrs];
+    [(NSMutableDictionary*)attrs setObject:state forKey:@"KHighlightState"];
+    #endif
+    
+    NSRange utf8Range = range;
     range = [NSString UTF16RangeFromUTF8Range:range
-                                 inUTF8String:currentUTF8String_->c_str()
+                                 inUTF8String:currentUTF8String_->data()
                                      ofLength:currentUTF8String_->size()];
     range.location += currentTextStorageOffset_;
-    //NSLog(@"setFormat %@ <-- %@", NSStringFromRange(range), attrs);
+    #if 0
+    NSLog(@"setFormat '%@' %@ (%@) <-- %@ ",
+          [[currentTextStorage_ string] substringWithRange:range],
+          NSStringFromRange(range), NSStringFromRange(utf8Range), attrs);
+    #endif
     [currentTextStorage_ setAttributes:attrs range:range];
   }
 }

@@ -35,19 +35,23 @@
 
 @end
 
+
 @implementation KFileOutlineView
 
 
-static NSColor *kRowBackgroundColorBlur;
-static NSColor *kRowBackgroundColorFocus;
+NSColor *KFileOutlineViewBackgroundColor;
+NSColor *KFileOutlineViewRowBackgroundColorBlur;
+NSColor *KFileOutlineViewRowBackgroundColorFocus;
 static Class KFileTextFieldCellClass;
 
 
 + (void)load {
   NSAutoreleasePool *pool = [NSAutoreleasePool new];
-  kRowBackgroundColorBlur =
+  KFileOutlineViewBackgroundColor =
+    [[NSColor colorWithCalibratedWhite:0.225 alpha:1.0] retain];
+  KFileOutlineViewRowBackgroundColorBlur =
     [[NSColor colorWithCalibratedWhite:1.0 alpha:0.2] retain];
-  kRowBackgroundColorFocus =
+  KFileOutlineViewRowBackgroundColorFocus =
     [[NSColor colorWithCalibratedRed:0.6 green:0.8 blue:1.0 alpha:0.9] retain];
   KFileTextFieldCellClass = [KFileTextFieldCell class];
   [pool drain];
@@ -112,8 +116,10 @@ operation. For any other operation, pass the message to the superclass.
 
 - (id)_highlightColorForCell:(NSCell*)cell; {
   if (![cell isKindOfClass:KFileTextFieldCellClass])
-    return firstResponder_ ? kRowBackgroundColorFocus : kRowBackgroundColorBlur;
+    return firstResponder_ ? KFileOutlineViewRowBackgroundColorFocus
+                           : KFileOutlineViewRowBackgroundColorBlur;
   return nil;
 }
+
 
 @end

@@ -1,6 +1,6 @@
 #import <ChromiumTabs/ChromiumTabs.h>
-#import "KFileOutlineView.h"
 
+@class KFileOutlineView;
 @class KFileTreeController;
 
 @interface KBrowserWindowController : CTBrowserWindowController {
