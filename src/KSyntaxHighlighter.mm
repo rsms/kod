@@ -256,8 +256,8 @@
 }
 
 
-- (void)highlightTextStorage:(NSTextStorage*)textStorage
-                     inRange:(NSRange)range {
+- (NSUInteger)highlightTextStorage:(NSTextStorage*)textStorage
+                           inRange:(NSRange)range {
   fprintf(stderr,
       "----------------------- highlightTextStorage -----------------------\n");
   assert(currentTextStorage_ == nil);
@@ -285,17 +285,11 @@
     DLOG("finding previous state");
     NSRange effectiveRange;
     NSUInteger previousIndex = range.location-1;
-    //NSDictionary *attrs = [currentTextStorage_ attributesAtIndex:previousIndex
-    //                                              effectiveRange:&effectiveRange];
-    //DLOG("attributesAtIndex:%u effectiveRange:%@ => %@",
-    //     range.location, NSStringFromRange(effectiveRange), attrs);
-    //range = NSUnionRange(effectiveRange, range);
     
     // get stored state
-    //state = [attrs objectForKey:@"KHighlightState"];
     currentState_ = [currentTextStorage_ attribute:@"KHighlightState"
                                            atIndex:previousIndex
-                                    effectiveRange:NULL];
+                                    effectiveRange:&effectiveRange];
     if (currentState_) {
       //stateData = new KHighlightStateData(*(currentState_->data));
       //[currentState_ replaceData:stateData];
@@ -303,6 +297,25 @@
       srchilite::HighlightStatePtr cs = currentState_->data->currentState;
       DLOG("found previous state: %d",
            currentState_->data->currentState->getId());
+      
+      // if effectiveRange extends beyond our editing point, include the
+      // remainder.
+      // Use-case: multiline C-comment
+      //   /* foo
+      //   bar
+      //   baz */
+      // Now, imagine we insert "*/" after "bar":
+      //   /* foo
+      //   bar */
+      //   baz */
+      // We need to extend our range to include "baz */"
+      NSUInteger rangeEnd = range.location + range.length;
+      NSUInteger effectiveRangeEnd = effectiveRange.location + effectiveRange.length;
+      if (rangeEnd < effectiveRangeEnd) {
+        range.length += effectiveRangeEnd - rangeEnd;
+      }
+      DLOG("effectiveRange of currentState_: %@",
+           NSStringFromRange(effectiveRange));
     } else {
       DLOG("no previous state");
     }
@@ -311,12 +324,11 @@
   // restore state
   if (currentState_) {
     [currentState_ retain]; // our ref, released just before we return
-    
+    // we need to make a copy of the state stack here, since sourceHighlighter_
+    // will "steal" it and possibly free the object.
     srchilite::HighlightStateStack *stateStack =
       new srchilite::HighlightStateStack(*(currentState_->data->stateStack));
-    
     sourceHighlighter_->setCurrentState(currentState_->data->currentState);
-    //sourceHighlighter_->setStateStack(currentState_->data->stateStack);
     sourceHighlighter_->setStateStack(srchilite::HighlightStateStackPtr(stateStack));
   } else {
     // we must make sure to reset the highlighter to the initial state
@@ -338,7 +350,7 @@
               usingEncoding:NSUTF8StringEncoding
                       range:enclosingRange];
     currentUTF8String_ = &str;
-    fprintf(stderr, "** \"%s\"\n", str.c_str());
+    //fprintf(stderr, "** \"%s\"\n", str.c_str());
     sourceHighlighter_->highlightParagraph(str);
     currentTextStorageOffset_ += enclosingRange.length;
   }];
@@ -350,6 +362,12 @@
 
   [currentTextStorage_ release];
   currentTextStorage_ = nil;
+  
+  if (!sourceHighlighter_->getStateStack()->empty()) {
+    DLOG("highlightTextStorage returned with lingering state");
+    return range.location + range.length;
+  }
+  return NSNotFound;
 }
 
 
@@ -423,13 +441,20 @@ static void _debugDumpHighlightEvent(const srchilite::HighlightEvent &event) {
 
 -(void)_applyCurrentStateToLastFormattedRange {
   if (currentState_) {
-    DLOG("set state #%d %@", currentState_->data->currentState->getId(),
-         NSStringFromRange(lastFormattedRange_));
-    [currentTextStorage_ addAttribute:@"KHighlightState"
-                                value:currentState_
-                                range:lastFormattedRange_];
+    if (currentState_ != lastFormattedState_) {
+      DLOG("set state #%d %@ \"%@\"",
+           currentState_->data->currentState->getId(),
+           NSStringFromRange(lastFormattedRange_),
+           [[currentTextStorage_ string] substringWithRange:lastFormattedRange_]);
+      [currentTextStorage_ addAttribute:@"KHighlightState"
+                                  value:currentState_
+                                  range:lastFormattedRange_];
+      lastFormattedState_ = currentState_;
+    }
   } else {
-    DLOG("clear state %@", NSStringFromRange(lastFormattedRange_));
+    DLOG("clear state %@ \"%@\"",
+         NSStringFromRange(lastFormattedRange_),
+         [[currentTextStorage_ string] substringWithRange:lastFormattedRange_]);
     [currentTextStorage_ removeAttribute:@"KHighlightState"
                                    range:lastFormattedRange_];
   }
@@ -451,15 +476,14 @@ static void _debugDumpHighlightEvent(const srchilite::HighlightEvent &event) {
       // The token we just formatted was the last part of the state
       [self _applyCurrentStateToLastFormattedRange];
       // Clear currentState_?
-      /*if (sourceHighlighter_->getStateStack()->empty()) {
+      if (sourceHighlighter_->getStateStack()->empty()) {
         if (currentState_) {
-          DLOG("currentState_ = nil");
           [currentState_ release];
           currentState_ = nil;
         }
       } else {
-        //[self _updateCurrentState:YES];
-      }*/
+        [self _updateCurrentState:YES];
+      }
       break;
     }
     default: if (currentState_) {
@@ -503,6 +527,7 @@ static void _debugDumpHighlightEvent(const srchilite::HighlightEvent &event) {
                                    ofLength:currentUTF8String_->size()];
   range.location += currentTextStorageOffset_;
   lastFormattedRange_ = range;
+  lastFormattedState_ = nil; // temporal
   #if 1
   NSLog(@"setFormat:%s inRange:%@ (\"%@\") <-- %@",
         format->getElem().c_str(), NSStringFromRange(range),

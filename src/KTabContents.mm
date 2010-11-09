@@ -367,8 +367,14 @@ static NSFont* _kDefaultFont = nil;
     DLOG("highlightRange: %@", highlightRange.location == NSNotFound
                         ? @"{NSNotFound, 0}"
                         : NSStringFromRange(highlightRange));
-    [self.syntaxHighlighter highlightTextStorage:textStorage
-                                         inRange:highlightRange];
+    NSUInteger end = 0, textEnd = [textStorage length];
+    while (end != textEnd) {
+      end = [syntaxHighlighter highlightTextStorage:textStorage
+                                            inRange:highlightRange];
+      if (end == NSNotFound)
+        break;
+      highlightRange = NSMakeRange(end, 0);
+    }
   }
 
   // this makes the edit an undoable entry (otherwise each "group" of edits will

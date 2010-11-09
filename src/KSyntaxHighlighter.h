@@ -36,6 +36,7 @@
   NSTextStorage *currentTextStorage_;
   __weak const std::string *currentUTF8String_;
   __weak KHighlightState *currentState_;
+  __weak KHighlightState *lastFormattedState_; // temporal per format call
   NSRange lastFormattedRange_;
 }
 
@@ -81,7 +82,14 @@
 #pragma mark Formatting
 
 - (void)highlightTextStorage:(NSTextStorage*)textStorage;
-- (void)highlightTextStorage:(NSTextStorage*)textStorage inRange:(NSRange)range;
+
+/**
+ * Returns NSNotFound if the highlight state is stable, otherwise the position
+ * of the last character highlighted is returned to indicate what should be
+ * re-evaluated.
+ */
+- (NSUInteger)highlightTextStorage:(NSTextStorage*)textStorage
+                           inRange:(NSRange)range;
 
 /**
  * This function is applied to the syntax highlighter's current text block
