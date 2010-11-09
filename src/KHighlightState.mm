@@ -8,6 +8,15 @@
   return self;
 }
 
+- (void) dealloc {
+  if (data) {
+    delete data;
+    data = NULL;
+  }
+  [super dealloc];
+}
+
+
 - (void)replaceData:(KHighlightStateData*)d {
   if (data) delete data;
   data = d;

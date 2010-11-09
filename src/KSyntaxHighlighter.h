@@ -1,7 +1,8 @@
 #import <Cocoa/Cocoa.h>
-#import "KHighlightStateData.h"
 #import "KTextFormatter.h"
 #import "KTextFormatterFactory.h"
+#import "KHighlightStateData.h"
+#import "KHighlightEventListener.h"
 
 #import <srchilite/highlightstate.h>
 #import <srchilite/formattermanager.h>
@@ -11,7 +12,9 @@
 #import <srchilite/langmap.h>
 #import <srchilite/instances.h>
 
-@interface KSyntaxHighlighter : NSObject {
+@class KHighlightState;
+
+@interface KSyntaxHighlighter : NSObject <KHighlightEventListener> {
   /// current definition and style files (or nil)
   NSString *definitionFile_;
   NSString *styleFile_;
@@ -32,6 +35,8 @@
   NSUInteger currentTextStorageOffset_;
   NSTextStorage *currentTextStorage_;
   __weak const std::string *currentUTF8String_;
+  __weak KHighlightState *currentState_;
+  NSRange lastFormattedRange_;
 }
 
 @property(retain, nonatomic) NSString *styleFile;
@@ -74,8 +79,6 @@
 
 #pragma mark -
 #pragma mark Formatting
-
-- (void)highlightLine:(NSString*)line;
 
 - (void)highlightTextStorage:(NSTextStorage*)textStorage;
 - (void)highlightTextStorage:(NSTextStorage*)textStorage inRange:(NSRange)range;

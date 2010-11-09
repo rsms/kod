@@ -22,6 +22,9 @@
 
 + (NSFont*)defaultFont;
 
+// xxx debug
+- (IBAction)debugDumpAttributesAtCursor:(id)sender;
+
 - (void)highlightCompleteDocument:(id)sender;
 - (void)textStorageDidProcessEditing:(NSNotification*)notification;
 - (void)documentDidChangeDirtyState; // when isDirty_ changed

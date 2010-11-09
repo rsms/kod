@@ -197,6 +197,7 @@
   sourceHighlighter_ = new srchilite::SourceHighlighter(mainState);
   sourceHighlighter_->setFormatterParams(&formatterParams_);
   sourceHighlighter_->setOptimize(false);
+  sourceHighlighter_->addListener(new KHighlightEventListenerProxy(self));
   
   // reload FormatterManager
   if (!formatterManager_)
@@ -216,7 +217,7 @@
 #pragma mark Formatting
 
 
-- (void)_highlightLine:(const std::string &)line
+/*- (void)_highlightLine:(const std::string &)line
              stateData:(KHighlightStateData *&)state {
   if (state) {
     sourceHighlighter_->setCurrentState(state->currentState);
@@ -246,14 +247,7 @@
       state = NULL;
     }
   }
-}
-
-
-- (void)highlightLine:(NSString*)line {
-  KHighlightStateData *state = NULL;
-  [self _highlightLine:[line UTF8String] stateData:state];
-  assert(state == NULL); // TODO reentrant block state (stack)
-}
+}*/
 
 
 - (void)highlightTextStorage:(NSTextStorage*)textStorage {
@@ -264,46 +258,76 @@
 
 - (void)highlightTextStorage:(NSTextStorage*)textStorage
                      inRange:(NSRange)range {
+  fprintf(stderr,
+      "----------------------- highlightTextStorage -----------------------\n");
   assert(currentTextStorage_ == nil);
   currentTextStorage_ = [textStorage retain];
   NSString *text = [textStorage string];
-  NSRange	effectiveRange;
+  NSRange	originalRange = range;
   
+  // Adjust range
   if (range.location == NSNotFound) {
     // highlight all lines
-    effectiveRange = NSMakeRange(0, [text length]);
+    range = NSMakeRange(0, [text length]);
   } else {
     // highlight minimal part
-    NSString *elem = [currentTextStorage_ attribute:KTextFormatter::ClassAttributeName
-                                            atIndex:range.location
-                                     effectiveRange:&effectiveRange];
-    effectiveRange = NSUnionRange(effectiveRange, range);
-    DLOG("effectiveRange: %@, elem: %@",NSStringFromRange(effectiveRange),elem);
+    if (range.length != 1 || [text characterAtIndex:range.location] != '\n') {
+      // unless newline
+      //range = [text lineRangeForRange:range];
+      range = [text paragraphRangeForRange:range];
+    }
+    DLOG("range: %@", NSStringFromRange(range));
   }
   
-  currentTextStorageOffset_ = effectiveRange.location;
-  __block KHighlightStateData *stateData = NULL;
-  
-  // get stored state
-  KHighlightState *state = nil;
-  if (range.location != NSNotFound) {
+  // get previous state
+  assert(currentState_ == nil);
+  if (range.location != NSNotFound && range.location != 0) {
+    DLOG("finding previous state");
+    NSRange effectiveRange;
+    NSUInteger previousIndex = range.location-1;
+    //NSDictionary *attrs = [currentTextStorage_ attributesAtIndex:previousIndex
+    //                                              effectiveRange:&effectiveRange];
+    //DLOG("attributesAtIndex:%u effectiveRange:%@ => %@",
+    //     range.location, NSStringFromRange(effectiveRange), attrs);
+    //range = NSUnionRange(effectiveRange, range);
     
-    NSDictionary *attrs = [currentTextStorage_ attributesAtIndex:range.location
-                                             effectiveRange:NULL];
-    DLOG("attrs{%u, %u} => %@", range.location, range.location, attrs);
-    
-    state = [currentTextStorage_ attribute:@"KHighlightState"
-                                   atIndex:range.location
-                            effectiveRange:NULL];
-    if (state) {
-      assert(state->data != NULL);
-      DLOG("prev stateId: %d", state->data->currentState->getId());
-      stateData = new KHighlightStateData(*(state->data));
+    // get stored state
+    //state = [attrs objectForKey:@"KHighlightState"];
+    currentState_ = [currentTextStorage_ attribute:@"KHighlightState"
+                                           atIndex:previousIndex
+                                    effectiveRange:NULL];
+    if (currentState_) {
+      //stateData = new KHighlightStateData(*(currentState_->data));
+      //[currentState_ replaceData:stateData];
+      assert(currentState_->data != NULL);
+      srchilite::HighlightStatePtr cs = currentState_->data->currentState;
+      DLOG("found previous state: %d",
+           currentState_->data->currentState->getId());
+    } else {
+      DLOG("no previous state");
     }
   }
   
+  // restore state
+  if (currentState_) {
+    [currentState_ retain]; // our ref, released just before we return
+    
+    srchilite::HighlightStateStack *stateStack =
+      new srchilite::HighlightStateStack(*(currentState_->data->stateStack));
+    
+    sourceHighlighter_->setCurrentState(currentState_->data->currentState);
+    //sourceHighlighter_->setStateStack(currentState_->data->stateStack);
+    sourceHighlighter_->setStateStack(srchilite::HighlightStateStackPtr(stateStack));
+  } else {
+    // we must make sure to reset the highlighter to the initial state
+    sourceHighlighter_->setCurrentState(sourceHighlighter_->getMainState());
+    sourceHighlighter_->clearStateStack();
+  }
+  
+  currentTextStorageOffset_ = range.location;
+  
   // for each line ...
-  [text enumerateSubstringsInRange:effectiveRange
+  [text enumerateSubstringsInRange:range
                            options:NSStringEnumerationByLines
                                   |NSStringEnumerationSubstringNotRequired
                            usingBlock:^(NSString *_, NSRange substringRange,
@@ -313,66 +337,179 @@
     [text populateStdString:&str
               usingEncoding:NSUTF8StringEncoding
                       range:enclosingRange];
-    //NSLog(@"%s", str.c_str());
-    [self _highlightLine:str stateData:stateData];
-    //WLOG("TODO reentrant block state (stack)");
+    currentUTF8String_ = &str;
+    fprintf(stderr, "** \"%s\"\n", str.c_str());
+    sourceHighlighter_->highlightParagraph(str);
     currentTextStorageOffset_ += enclosingRange.length;
   }];
   
-  // clear any previous KHighlightState attribute(s)
-  [currentTextStorage_ removeAttribute:@"KHighlightState" range:effectiveRange];
+  currentUTF8String_ = nil;
   
-  int stateId = 0;
-  if (stateData) {
-    // we changed the highlighting state
-    stateId = stateData->currentState->getId();
-    if (!state) {
-      state = [[KHighlightState alloc] initWithData:(NSData*)stateData];
-    } else {
-      [state replaceData:stateData];
-    }
-    // store state
-    [currentTextStorage_ addAttribute:@"KHighlightState"
-                                value:state
-                                range:effectiveRange];
-
-    // this is crucial for QSyntaxHighlighter to know whether other parts
-    // of the document must be re-highlighted
-    //setCurrentBlockState(stateId);
-    DLOG("currentBlockState: %d", stateId);
-  }
+  [currentState_ release];
+  currentState_ = nil;
 
   [currentTextStorage_ release];
   currentTextStorage_ = nil;
 }
 
 
-- (void)setFormat:(KTextFormatter*)format inRange:(NSRange)range {
-  if (currentTextStorage_) {
-    NSDictionary *attrs = format->textAttributes();
-    
-    #if 0
-    KHighlightStateData *stateData = new KHighlightStateData();
-    stateData->currentState = sourceHighlighter_->getCurrentState();
-    stateData->stateStack = sourceHighlighter_->getStateStack();
-    KHighlightState *state =
-        [[KHighlightState alloc] initWithData:(NSData*)stateData];
-    attrs = [NSMutableDictionary dictionaryWithDictionary:attrs];
-    [(NSMutableDictionary*)attrs setObject:state forKey:@"KHighlightState"];
-    #endif
-    
-    NSRange utf8Range = range;
-    range = [NSString UTF16RangeFromUTF8Range:range
-                                 inUTF8String:currentUTF8String_->data()
-                                     ofLength:currentUTF8String_->size()];
-    range.location += currentTextStorageOffset_;
-    #if 0
-    NSLog(@"setFormat '%@' %@ (%@) <-- %@ ",
-          [[currentTextStorage_ string] substringWithRange:range],
-          NSStringFromRange(range), NSStringFromRange(utf8Range), attrs);
-    #endif
-    [currentTextStorage_ setAttributes:attrs range:range];
+static void _debugDumpHighlightEvent(const srchilite::HighlightEvent &event) {
+  const char *name = "?";
+  switch (event.type) {
+    case srchilite::HighlightEvent::FORMAT:
+      name = "FORMAT"; break;
+    case srchilite::HighlightEvent::FORMATDEFAULT:
+      name = "FORMATDEFAULT"; break;
+    case srchilite::HighlightEvent::ENTERSTATE:
+      name = "ENTERSTATE"; break;
+    case srchilite::HighlightEvent::EXITSTATE:
+      name = "EXITSTATE"; break;
   }
+  
+  const srchilite::HighlightRule *rule = event.token.rule;
+  
+  DLOG("hlevent %s:"
+       "\n  prefix: %s"
+       "\n  prefixOnlySpaces: %s"
+       "\n  suffix: %s"
+       "\n  matchedSize: %u"
+       "\n  rule: %s"
+       "\n  ruleinfo: %s"
+       ,
+       name,
+       event.token.prefix.c_str(),
+       event.token.prefixOnlySpaces ? "YES":"NO",
+       event.token.suffix.c_str(),
+       event.token.matchedSize,
+       rule ? rule->toString().c_str() : "(null)",
+       rule ? rule->getAdditionalInfo().c_str() : "(null)"
+       );
+
+  if (event.type == srchilite::HighlightEvent::FORMAT) {
+    for (srchilite::MatchedElements::const_iterator it =
+         event.token.matched.begin(); it != event.token.matched.end(); ++it) {
+      // first = the element name, second = the actual program string
+      fprintf(stderr, "  >>format \"%s\" as %s\n",
+              it->second.c_str(), it->first.c_str());
+    }
+  }
+}
+
+
+- (void)_updateCurrentState:(BOOL)didExit {
+  assert(!sourceHighlighter_->getStateStack()->empty());
+  // typedef std::stack<HighlightStatePtr> HighlightStateStack;
+  KHighlightStateData *stateData = new KHighlightStateData();
+  
+  srchilite::HighlightStateStack *stateStack =
+      new srchilite::HighlightStateStack(*(sourceHighlighter_->getStateStack()));
+  stateData->stateStack = srchilite::HighlightStateStackPtr(stateStack);
+  
+  if (didExit) {
+    // if the state was just exited, current state is now the last one on the
+    // stack.
+    // Note: We never get here unless the stack is non-empty, so this is safe.
+    // As we already made a copy of the stack, no need to make another copy
+    stateData->currentState = stateData->stateStack->top();
+  } else {
+    srchilite::HighlightState *currentState =
+        new srchilite::HighlightState(*(sourceHighlighter_->getCurrentState()));
+    stateData->currentState = srchilite::HighlightStatePtr(currentState);
+  }
+  
+  objc_exch(&currentState_,
+            [[KHighlightState alloc] initWithData:(NSData*)stateData]);
+}
+
+-(void)_applyCurrentStateToLastFormattedRange {
+  if (currentState_) {
+    DLOG("set state #%d %@", currentState_->data->currentState->getId(),
+         NSStringFromRange(lastFormattedRange_));
+    [currentTextStorage_ addAttribute:@"KHighlightState"
+                                value:currentState_
+                                range:lastFormattedRange_];
+  } else {
+    DLOG("clear state %@", NSStringFromRange(lastFormattedRange_));
+    [currentTextStorage_ removeAttribute:@"KHighlightState"
+                                   range:lastFormattedRange_];
+  }
+}
+
+- (void)handleHighlightEvent:(const srchilite::HighlightEvent &)event {
+  //_debugDumpHighlightEvent(event);
+  switch (event.type) {
+    case srchilite::HighlightEvent::ENTERSTATE: {
+      // DID enter state
+      DLOG("STATE+");
+      [self _updateCurrentState:NO];
+      [self _applyCurrentStateToLastFormattedRange];
+      break;
+    }
+    case srchilite::HighlightEvent::EXITSTATE: {
+      // DID exit state
+      DLOG("STATE-");
+      // The token we just formatted was the last part of the state
+      [self _applyCurrentStateToLastFormattedRange];
+      // Clear currentState_?
+      /*if (sourceHighlighter_->getStateStack()->empty()) {
+        if (currentState_) {
+          DLOG("currentState_ = nil");
+          [currentState_ release];
+          currentState_ = nil;
+        }
+      } else {
+        //[self _updateCurrentState:YES];
+      }*/
+      break;
+    }
+    default: if (currentState_) {
+      DLOG("STATE=");
+      [self _applyCurrentStateToLastFormattedRange];
+      break;
+    }
+  }
+  
+}
+
+
+- (void)setFormat:(KTextFormatter*)format inRange:(NSRange)range {
+  if (!currentTextStorage_) return;
+  NSDictionary *attrs = format->textAttributes();
+  
+  #if 0
+  KHighlightStateData *stateData = new KHighlightStateData();
+  stateData->currentState = sourceHighlighter_->getCurrentState();
+  stateData->stateStack = sourceHighlighter_->getStateStack();
+  KHighlightState *state =
+      [[KHighlightState alloc] initWithData:(NSData*)stateData];
+  attrs = [NSMutableDictionary dictionaryWithDictionary:attrs];
+  [(NSMutableDictionary*)attrs setObject:state forKey:@"KHighlightState"];
+  #endif
+  
+  
+  #if 0
+  srchilite::HighlightStatePtr currentState =
+      sourceHighlighter_->getCurrentState();
+  attrs = [NSMutableDictionary dictionaryWithDictionary:attrs];
+  NSNumber *stateIdNumber = [NSNumber numberWithInt:currentState->getId()];
+  [(NSMutableDictionary*)attrs setObject:stateIdNumber
+                                  forKey:@"KHighlightStateId"];
+  #endif
+  
+  
+  NSRange utf8Range = range;
+  range = [NSString UTF16RangeFromUTF8Range:range
+                               inUTF8String:currentUTF8String_->data()
+                                   ofLength:currentUTF8String_->size()];
+  range.location += currentTextStorageOffset_;
+  lastFormattedRange_ = range;
+  #if 1
+  NSLog(@"setFormat:%s inRange:%@ (\"%@\") <-- %@",
+        format->getElem().c_str(), NSStringFromRange(range),
+        [[currentTextStorage_ string] substringWithRange:range],
+        attrs);
+  #endif
+  [currentTextStorage_ setAttributes:attrs range:range];
 }
 
 @end

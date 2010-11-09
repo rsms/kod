@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		3A025A971288B2A300206ECF /* KHighlightState.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A025A961288B2A300206ECF /* KHighlightState.mm */; };
+		3A1585681289791200339E6E /* KHighlightEventListener.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A1585671289791200339E6E /* KHighlightEventListener.mm */; };
 		3A25E479128194B400B6A33E /* KSyntaxHighlighter.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A25E478128194B400B6A33E /* KSyntaxHighlighter.mm */; };
 		3A25E47B1281A6A200B6A33E /* libboost_regex-mt.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A25E47A1281A6A200B6A33E /* libboost_regex-mt.dylib */; };
 		3A25E47D1281A6A700B6A33E /* libsource-highlight.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A25E47C1281A6A700B6A33E /* libsource-highlight.dylib */; };
@@ -81,6 +82,8 @@
 /* Begin PBXFileReference section */
 		3A025A951288B2A300206ECF /* KHighlightState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KHighlightState.h; sourceTree = "<group>"; };
 		3A025A961288B2A300206ECF /* KHighlightState.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KHighlightState.mm; sourceTree = "<group>"; };
+		3A1585661289791200339E6E /* KHighlightEventListener.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KHighlightEventListener.h; sourceTree = "<group>"; };
+		3A1585671289791200339E6E /* KHighlightEventListener.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KHighlightEventListener.mm; sourceTree = "<group>"; };
 		3A25E477128194B400B6A33E /* KSyntaxHighlighter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSyntaxHighlighter.h; sourceTree = "<group>"; };
 		3A25E478128194B400B6A33E /* KSyntaxHighlighter.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KSyntaxHighlighter.mm; sourceTree = "<group>"; };
 		3A25E47A1281A6A200B6A33E /* libboost_regex-mt.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libboost_regex-mt.dylib"; path = "deps/srchilight/libboost_regex-mt.dylib"; sourceTree = "<group>"; };
@@ -162,6 +165,8 @@
 		3A7E717D1286F41C00D85E4C /* syntax-highlight */ = {
 			isa = PBXGroup;
 			children = (
+				3A1585661289791200339E6E /* KHighlightEventListener.h */,
+				3A1585671289791200339E6E /* KHighlightEventListener.mm */,
 				3A25E4FC1281B3D500B6A33E /* KHighlightStateData.h */,
 				3A025A951288B2A300206ECF /* KHighlightState.h */,
 				3A025A961288B2A300206ECF /* KHighlightState.mm */,
@@ -364,6 +369,7 @@
 				3A7E74A712873A7100D85E4C /* KScroller.m in Sources */,
 				3A7E751F1287403100D85E4C /* KScrollView.m in Sources */,
 				3A025A971288B2A300206ECF /* KHighlightState.mm in Sources */,
+				3A1585681289791200339E6E /* KHighlightEventListener.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -302,6 +302,19 @@ static NSFont* _kDefaultFont = nil;
   return nil;
 }
 
+- (IBAction)debugDumpAttributesAtCursor:(id)sender {
+  NSTextStorage *textStorage = textView_.textStorage;
+  NSRange selectedRange = [textView_ selectedRange];
+  NSUInteger index = selectedRange.location;
+  if (index >= textStorage.length) index = textStorage.length-1;
+  NSDictionary *attrs = [textStorage attributesAtIndex:index
+                                        effectiveRange:&selectedRange];
+  [textView_ setSelectedRange:selectedRange];
+  fprintf(stderr, "ATTRS%s => %s\n",
+          [NSStringFromRange(selectedRange) UTF8String],
+          [[attrs description] UTF8String]);
+}
+
 - (void)highlightCompleteDocument:(id)sender {
   NSTextStorage *textStorage = textView_.textStorage;
   if ([textStorage length]) {
@@ -347,16 +360,15 @@ static NSFont* _kDefaultFont = nil;
       NSLog(@"COMPLETE");
       highlightRange = NSMakeRange(NSNotFound, 0); // whole document
     } else {
-      NSString *text = [textStorage string];
-      highlightRange = [text lineRangeForRange:range];
+      //NSString *text = [textStorage string];
+      //highlightRange = [text lineRangeForRange:range];
+      highlightRange = range;
     }
-    if (highlightRange.length != 0) {
-      DLOG("highlightRange: %@", highlightRange.location == NSNotFound
-                          ? @"{NSNotFound, 0}"
-                          : NSStringFromRange(highlightRange));
-      [self.syntaxHighlighter highlightTextStorage:textStorage
-                                           inRange:highlightRange];
-    }
+    DLOG("highlightRange: %@", highlightRange.location == NSNotFound
+                        ? @"{NSNotFound, 0}"
+                        : NSStringFromRange(highlightRange));
+    [self.syntaxHighlighter highlightTextStorage:textStorage
+                                         inRange:highlightRange];
   }
 
   // this makes the edit an undoable entry (otherwise each "group" of edits will
