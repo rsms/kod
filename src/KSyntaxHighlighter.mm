@@ -252,7 +252,7 @@
 
 - (void)highlightTextStorage:(NSTextStorage*)textStorage {
   static NSRange r = (NSRange){NSNotFound, 0};
-  [self highlightTextStorage:textStorage inRange:r];
+  [self highlightTextStorage:textStorage inRange:r deltaRange:r];
 }
 
 
@@ -274,7 +274,8 @@
     range = NSMakeRange(0, documentLength);
   } else {
     // highlight minimal part
-    DLOG("range: %@", NSStringFromRange(range));
+    DLOG("range: %@  \"%@\"", NSStringFromRange(range),
+         [text substringWithRange:range]);
   }
   
   // get previous state
@@ -309,7 +310,7 @@
       previousIndex = range.location - 1;
     
     // get stored state
-    int tries = 2;
+    int tries = wasCausedByDeleteEvent ? 2 : 1;
     while (tries--) {
       currentState_ = [currentTextStorage_ attribute:@"KHighlightState"
                                              atIndex:previousIndex
@@ -356,6 +357,11 @@
     sourceHighlighter_->clearStateStack();
     //stateIdAtStart = sourceHighlighter_->getMainState()->getId();
   }
+  
+  // clear state (trick since we will never act on linebreaks, but they are
+  // important)
+  [currentTextStorage_ removeAttribute:@"KHighlightState"
+                                 range:range];
   
   currentTextStorageOffset_ = range.location;
   tempStackDepthDelta_ = 0;
@@ -552,8 +558,6 @@ static void _debugDumpHighlightEvent(const srchilite::HighlightEvent &event) {
       // DID exit state
       DLOG("STATE-");
       tempStackDepthDelta_--;
-      // The token we just formatted was the last part of the state
-      [self _applyCurrentStateToLastFormattedRange];
       // Clear currentState_?
       if (sourceHighlighter_->getStateStack()->empty()) {
         if (currentState_) {
@@ -562,6 +566,18 @@ static void _debugDumpHighlightEvent(const srchilite::HighlightEvent &event) {
         }
       } else {
         [self _updateCurrentState:YES];
+      }
+      // The token we just formatted was the last part of the state
+      if (lastFormattedRange_.length != 0) {
+        // never set state on the last char of a block since it will "taint"
+        // any preceeding text. Clear state on the last char.
+        NSRange range =
+            NSMakeRange(lastFormattedRange_.location +
+                        lastFormattedRange_.length-1, 1);
+        [currentTextStorage_ removeAttribute:@"KHighlightState" range:range];
+        DLOG("clear state %@ \"%@\"",
+             NSStringFromRange(range),
+             [[currentTextStorage_ string] substringWithRange:range]);
       }
       break;
     }

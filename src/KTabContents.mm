@@ -320,8 +320,10 @@ static NSFont* _kDefaultFont = nil;
   if ([textStorage length]) {
     KSyntaxHighlighter *syntaxHighlighter = self.syntaxHighlighter;
     if (syntaxHighlighter) {
+      NSRange range = NSMakeRange(NSNotFound, 0);
       [syntaxHighlighter highlightTextStorage:textStorage
-                                      inRange:NSMakeRange(NSNotFound, 0)];
+                                      inRange:range
+                                   deltaRange:range];
     }
   }
 }
@@ -389,6 +391,11 @@ static NSFont* _kDefaultFont = nil;
       if (deltaRange.length == 0) {
         deltaRange = [text lineRangeForRange:deltaRange];
         //DLOG("adjusted deltaRange to line: %@", NSStringFromRange(deltaRange));
+      }
+      // adjust one line break backward
+      if (deltaRange.location > 1) {
+        deltaRange.location -= 1;
+        deltaRange.length += 1;
       }
       DLOG_EXPR(deltaRange);
       highlightRange = deltaRange;
