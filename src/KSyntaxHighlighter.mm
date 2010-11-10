@@ -39,8 +39,9 @@
 @implementation KSyntaxHighlighter
 
 @synthesize styleFile = styleFile_,
-            currentTextStorage = currentTextStorage_;
-
+            currentTextStorage = currentTextStorage_,
+            definitionFileSearchPath = definitionFileSearchPath_,
+            styleFileSearchPath = styleFileSearchPath_;
 
 + (srchilite::LangMap*)definitionMap {
   // make sure the lang map is loaded before returning it
@@ -121,6 +122,42 @@
 }
 
 
+- (id)init {
+  self = [super init];
+  NSBundle *mainBundle = [NSBundle mainBundle];
+  NSString *builtinLangDir = nil, *builtinStyleDir = nil;
+  if (mainBundle) {
+    builtinLangDir =
+        [[mainBundle resourcePath] stringByAppendingPathComponent:@"lang"];
+    builtinStyleDir =
+        [[mainBundle resourcePath] stringByAppendingPathComponent:@"style"];
+  }
+  definitionFileSearchPath_ =
+      [[NSMutableArray alloc] initWithObjects:builtinLangDir, nil];
+  styleFileSearchPath_ =
+      [[NSMutableArray alloc] initWithObjects:builtinStyleDir, nil];
+  return self;
+}
+
+
+- (id)initWithDefinitionsFromFile:(NSString*)file
+                    styleFromFile:(NSString*)styleFile {
+  if ((self = [self init])) {
+    [self loadDefinitionsFromFile:file styleFromFile:styleFile];
+  }
+  return self;
+}
+
+
+- (void)dealloc {
+  if (formatterManager_)
+    delete formatterManager_;
+  if (sourceHighlighter_)
+    delete sourceHighlighter_;
+  [super dealloc];
+}
+
+
 /**
  * Creates formatters (and use them to initialize the formatter manager),
  * by using the passed TextFormatterMap. This can be called only after
@@ -138,24 +175,6 @@
     if (it->first == "normal")
       formatterManager_->setDefaultFormatter(it->second);
   }
-}
-
-
-- (id)initWithDefinitionsFromFile:(NSString*)file
-                    styleFromFile:(NSString*)styleFile {
-  if ((self = [super init])) {
-    [self loadDefinitionsFromFile:file styleFromFile:styleFile];
-  }
-  return self;
-}
-
-
-- (void)dealloc {
-  if (formatterManager_)
-    delete formatterManager_;
-  if (sourceHighlighter_)
-    delete sourceHighlighter_;
-  [super dealloc];
 }
 
 
@@ -217,37 +236,31 @@
 #pragma mark Formatting
 
 
-/*- (void)_highlightLine:(const std::string &)line
-             stateData:(KHighlightStateData *&)state {
-  if (state) {
-    sourceHighlighter_->setCurrentState(state->currentState);
-    sourceHighlighter_->setStateStack(state->stateStack);
-  } else {
-    // we must make sure to reset the highlighter to the initial state
-    sourceHighlighter_->setCurrentState(sourceHighlighter_->getMainState());
-    sourceHighlighter_->clearStateStack();
-  }
-
-  // this does all the highlighting
-  currentUTF8String_ = &line;
-  sourceHighlighter_->highlightParagraph(line);
-  currentUTF8String_ = nil;
-
-  // if we're not in the main initial state...
-  if (!sourceHighlighter_->getStateStack()->empty()) {
-    // communicate this information to parent
-    if (!state)
-      state = new KHighlightStateData();
-    state->currentState = sourceHighlighter_->getCurrentState();
-    state->stateStack = sourceHighlighter_->getStateStack();
-  } else {
-    // simply update the previous user data information
-    if (state) {
-      delete state;
-      state = NULL;
+- (void)recolorTextStorage:(NSTextStorage*)textStorage {
+  NSRange textRange = NSMakeRange(0, textStorage.length);
+  NSAttributedStringEnumerationOptions opts = 0;
+  //opts = NSAttributedStringEnumerationLongestEffectiveRangeNotRequired;
+  [textStorage enumerateAttribute:KTextFormatter::ClassAttributeName
+                          inRange:textRange
+                          options:opts
+                       usingBlock:^(id value, NSRange range, BOOL *stop) {
+    std::string elem;
+    [value populateStdString:&elem
+               usingEncoding:NSUTF8StringEncoding
+                       range:NSMakeRange(0, [value length])];
+    
+    // clear any formatter attributes
+    KTextFormatter::clearAttributes(textStorage, range);
+    // find current formatter for |elem|
+    KTextFormatter* formatter = dynamic_cast<KTextFormatter*>(
+        formatterManager_->getFormatter(elem).get());
+    // apply the formatters' style to |range|
+    if (formatter) {
+      formatter->applyAttributes(textStorage, range);
     }
-  }
-}*/
+    //DLOG("%s %@", elem.c_str(), NSStringFromRange(range));
+  }];
+}
 
 
 - (void)highlightTextStorage:(NSTextStorage*)textStorage {

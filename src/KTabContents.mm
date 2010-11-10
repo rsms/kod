@@ -70,22 +70,24 @@ static NSFont* _kDefaultFont = nil;
 					 object:undoManager_];
 
   // XXX DEBUG
-  [self performSelectorOnMainThread:@selector(simulateTextAppending:)
+  #if !NDEBUG
+  [self performSelectorOnMainThread:@selector(debugSimulateTextAppending:)
                          withObject:self
                       waitUntilDone:NO];
+  #endif
 }
 
 
-static int simulateTextAppendingIteration = 0;
-
-- (void)simulateTextAppending:(id)x {
+// XXX DEBUG
+static int debugSimulateTextAppendingIteration = 0;
+- (void)debugSimulateTextAppending:(id)x {
   #if 0
   [textView_ insertText:@"void foo(int arg) {\n  return 5;\n}\n"
                         @"/* multi\nline\ncomment */ bool bar;\n"
                         @"string s = \"this is a \\\"string\\\" yes\";\n"];
   return;
   #endif
-  switch (simulateTextAppendingIteration) {
+  switch (debugSimulateTextAppendingIteration) {
     case 0:
       [textView_ insertText:@"void foo(int arg) {\n  return 5;\n}\n"];
       break;
@@ -99,11 +101,22 @@ static int simulateTextAppendingIteration = 0;
       [textView_ insertText:@"string s = \"this is a \\\"string\\\" yes\";\n"];
       break;
   }
-  if (++simulateTextAppendingIteration < 4) {
-    [self performSelector:@selector(simulateTextAppending:)
+  if (++debugSimulateTextAppendingIteration < 4) {
+    [self performSelector:@selector(debugSimulateTextAppending:)
                withObject:self
                afterDelay:0.1];
+  } else {
+    [self performSelector:@selector(debugSimulateSwitchStyle:)
+               withObject:self
+               afterDelay:2.0];
   }
+}
+
+
+- (void)debugSimulateSwitchStyle:(id)x {
+  KSyntaxHighlighter* syntaxHighlighter = self.syntaxHighlighter;  // lazy
+  [syntaxHighlighter loadStyleFromFile:@"default.css"];
+  [syntaxHighlighter recolorTextStorage:textView_.textStorage];
 }
 
 
@@ -410,7 +423,6 @@ static int simulateTextAppendingIteration = 0;
       NSRange maxRange = NSMakeRange(0, text.length);
       NSUInteger index = range.location;
       if (index > 0) index--;
-      //[textStorage ensureAttributesAreFixedInRange:range];
       [textStorage attribute:KTextFormatter::ClassAttributeName
                      atIndex:index
        longestEffectiveRange:&highlightRange

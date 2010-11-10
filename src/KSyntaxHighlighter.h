@@ -39,10 +39,16 @@
   __weak KHighlightState *lastFormattedState_; // temporal per format call
   NSRange lastFormattedRange_;
   int tempStackDepthDelta_;
+  
+  // Search paths
+  NSMutableArray *definitionFileSearchPath_;
+  NSMutableArray *styleFileSearchPath_;
 }
 
 @property(retain, nonatomic) NSString *styleFile;
 @property(readonly, nonatomic) NSTextStorage *currentTextStorage;
+@property(readonly, nonatomic) NSMutableArray *definitionFileSearchPath;
+@property(readonly, nonatomic) NSMutableArray *styleFileSearchPath;
 
 /**
  * Returns the the lang def file name by using the file name for detecting
@@ -82,7 +88,11 @@
 #pragma mark -
 #pragma mark Formatting
 
-- (void)highlightTextStorage:(NSTextStorage*)textStorage;
+/**
+ * Update colors (call this after calling loadStyleFromFile: on an already
+ * managed NSTextStorage.
+ */
+- (void)recolorTextStorage:(NSTextStorage*)textStorage;
 
 /**
  * Returns NSNotFound if the highlight state is stable, otherwise the position
@@ -92,6 +102,9 @@
 - (NSRange)highlightTextStorage:(NSTextStorage*)textStorage
                         inRange:(NSRange)range
                      deltaRange:(NSRange)deltaRange;
+
+/// Convenience method to highlight a complete NSTextStorage
+- (void)highlightTextStorage:(NSTextStorage*)textStorage;
 
 /**
  * This function is applied to the syntax highlighter's current text block

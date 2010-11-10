@@ -23,6 +23,10 @@ class KTextFormatter: public srchilite::Formatter {
   static NSFont *baseFont();
   static NSString *ClassAttributeName;
   
+  static void clearAttributes(NSMutableAttributedString *astr,
+                              NSRange range,
+                              bool removeSpecials=false);
+  
   KTextFormatter(const std::string &elem = "normal");
   virtual ~KTextFormatter();
 
@@ -47,6 +51,14 @@ class KTextFormatter: public srchilite::Formatter {
   void setBackgroundColor(const std::string &color);
   void setBackgroundColor(NSColor *color);
   NSColor *backgroundColor();
+  
+  /**
+   * Applies attributes to |astr| in |range|. If |replace| is true, any existing
+   * atributes will be removed (replaced with my attributes).
+   */
+  void applyAttributes(NSMutableAttributedString *astr,
+                       NSRange range,
+                       bool replace=false);
 
   /**
    * Formats the passed string.
