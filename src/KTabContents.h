@@ -12,6 +12,9 @@
   BOOL isDirty_;
   NSStringEncoding textEncoding_;
   KSyntaxHighlighter *syntaxHighlighter_;
+  
+  // Internal state
+  BOOL hasPendingInitialHighlighting_;
 }
 
 @property(assign, nonatomic) BOOL isDirty;
@@ -21,10 +24,14 @@
 
 + (NSFont*)defaultFont;
 
-// xxx debug
+// actions
 - (IBAction)debugDumpAttributesAtCursor:(id)sender;
+- (IBAction)selectNextElement:(id)sender;
+- (IBAction)selectPreviousElement:(id)sender;
 
 - (void)highlightCompleteDocument:(id)sender;
+- (void)queueCompleteHighlighting:(id)sender;
+
 - (void)textStorageDidProcessEditing:(NSNotification*)notification;
 - (void)documentDidChangeDirtyState; // when isDirty_ changed
 

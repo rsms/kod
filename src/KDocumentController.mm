@@ -45,7 +45,7 @@
 
 - (id)makeUntitledDocumentOfType:(NSString *)typeName error:(NSError **)error {
   KTabContents* tab = [[KTabContents alloc] initWithBaseTabContents:nil];
-  //tab.isUntitled = YES;
+  assert(tab); // since we don't set error
   return tab;
 }
 
@@ -62,6 +62,8 @@
     [self finalizeOpenDocument:tab
           withWindowController:(KBrowserWindowController*)windowController
                        display:display];
+  } else {
+    assert(!error || *error);
   }
   return tab;
 }
@@ -156,13 +158,14 @@
   KTabContents* tab = [[KTabContents alloc] initWithContentsOfURL:url
                                                            ofType:typeName
                                                             error:error];
-  if (tab && !(*error)) {
-    // set tab title, url, icon (implied by setting url), etc.
-    [tab setFileURL:url];
-  } else {
+  if (error && *error) {
     [tab release];
     tab = nil;
+  } else if (tab) {
+    // set tab title, url, icon (implied by setting url), etc.
+    [tab setFileURL:url];
   }
+  if (!tab) assert(error && *error);
   return tab;
 }
 
@@ -171,8 +174,9 @@
                withWindowController:(KBrowserWindowController*)windowController
                             display:(BOOL)display
                               error:(NSError **)error {
+  NSString *typeName = [self typeForContentsOfURL:url error:nil];
   KTabContents* tab = [self makeDocumentWithContentsOfURL:url
-                                                   ofType:@"txt"
+                                                   ofType:typeName
                                                     error:error];
   if (tab) {
     // add the tab to |browser|
@@ -190,8 +194,13 @@
             withWindowController:windowController
                          display:display];
     }
-  }
+  } else assert(error && *error);
   return tab;
+}
+
+
+- (NSString*)defaultType {
+  return @"txt";  // FIXME
 }
 
 
@@ -205,11 +214,6 @@
   [super removeDocument:document];
   DLOG("removeDocument:%@", document);
 }*/
-
-
-- (NSString *)defaultType {
-  return @"txt";
-}
 
 /*- (NSArray*)documentClassNames {
   DLOG_TRACE();
@@ -225,11 +229,39 @@
   DLOG_TRACE();
   return documentTypeName;
 }
+*/
 
-- (NSString *)typeForContentsOfURL:(NSURL *)url error:(NSError **)error {
+/*- (id)localizedFailureReason {
   DLOG_TRACE();
-  return [self defaultType];
-}*/
+  DLOG("%@", [NSThread callStackSymbols]);
+}
+2010-11-10 17:49:57.875 Kod[57952:a0f] D [src/KDocumentController.mm:233] (
+	0   Kod                                 0x0000000100006ebf -[KDocumentController localizedFailureReason] + 139
+	1   AppKit                              0x00007fff857238b6 -[NSDocumentController(NSInternal) _fixedFailureReasonFromError:] + 27
+	2   AppKit                              0x00007fff85725a7f -[NSDocumentController _willPresentOpeningError:forURL:] + 56
+	3   AppKit                              0x00007fff85727d9e -[NSDocumentController _openDocumentsWithContentsOfURLs:display:presentErrors:] + 661
+	4   ChromiumTabs                        0x000000010009bc08 -[CTBrowserWindowController openDocument:] + 88
+	5   AppKit                              0x00007fff85546152 -[NSApplication sendAction:to:from:] + 95
+	6   AppKit                              0x00007fff8556a6be -[NSMenuItem _corePerformAction] + 365
+	7   AppKit                              0x00007fff8556a428 -[NSCarbonMenuImpl performActionWithHighlightingForItemAtIndex:] + 121
+	8   AppKit                              0x00007fff855500c1 -[NSMenu performKeyEquivalent:] + 272
+	9   AppKit                              0x00007fff8554ee69 -[NSApplication _handleKeyEquivalent:] + 559
+	10  AppKit                              0x00007fff8541faa1 -[NSApplication sendEvent:] + 3630
+	11  AppKit                              0x00007fff853b6922 -[NSApplication run] + 474
+	12  AppKit                              0x00007fff853af5f8 NSApplicationMain + 364
+	13  Kod                                 0x0000000100001265 main + 33
+	14  Kod                                 0x000000010000123c start + 52
+	15  ???                                 0x0000000000000001 0x0 + 1
+)
+*/
+
+- (NSString *)typeForContentsOfURL:(NSURL*)url error:(NSError**)error {
+  NSString *uti = nil;
+  [url getResourceValue:&uti forKey:NSURLTypeIdentifierKey error:error];
+  //DLOG("typeForContentsOfURL:%@ -> %@", url, uti);
+  //DLOG("%@", [NSThread callStackSymbols]);
+  return uti;
+}
 
 
 #pragma mark -

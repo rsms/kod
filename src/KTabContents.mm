@@ -4,9 +4,41 @@
 #import "KBrowserWindowController.h"
 #import "KScroller.h"
 #import "KScrollView.h"
+#import "NSString-ranges.h"
 
 #import "NSError+KAdditions.h"
 #import <ChromiumTabs/common.h>
+#import <dispatch/dispatch.h>
+
+#define K_DISPATCH_MAIN_ASYNC(code)\
+  dispatch_async(dispatch_get_main_queue(),^{ \
+    NSAutoreleasePool *__arpool = [NSAutoreleasePool new]; \
+    code \
+    [__arpool drain]; \
+  })
+
+#define K_DISPATCH_MAIN_SYNC(code)\
+  dispatch_sync(dispatch_get_main_queue(),^{ \
+    NSAutoreleasePool *__arpool = [NSAutoreleasePool new]; \
+    code \
+    [__arpool drain]; \
+  })
+
+#define K_DISPATCH_BG_ASYNC(code)\
+  dispatch_async(dispatch_get_global_queue(0,0),^{ \
+    NSAutoreleasePool *__arpool = [NSAutoreleasePool new]; \
+    code \
+    [__arpool drain]; \
+  })
+
+
+
+#define DLOG_RANGE(r, str) do { \
+    NSString *s = @"<index out of bounds>"; \
+    @try{ s = [str substringWithRange:(r)]; }@catch(id e){} \
+    DLOG( #r " %@ \"%@\"", NSStringFromRange(r), s); \
+  } while (0)
+
 
 @interface KTabContents (Private)
 - (void)undoManagerCheckpoint:(NSNotification*)notification;
@@ -48,11 +80,12 @@ static NSFont* _kDefaultFont = nil;
 }*/
 
 
-- (void)_initOnMain:(id)_ {
+
+
+
+- (void)_initOnMain {
   if (![NSThread isMainThread]) {
-    [self performSelectorOnMainThread:@selector(_initOnMain:)
-                           withObject:_
-                        waitUntilDone:NO];
+    K_DISPATCH_MAIN_ASYNC({ [self _initOnMain]; });
     return;
   }
 
@@ -71,9 +104,7 @@ static NSFont* _kDefaultFont = nil;
 
   // XXX DEBUG
   #if !NDEBUG
-  [self performSelectorOnMainThread:@selector(debugSimulateTextAppending:)
-                         withObject:self
-                      waitUntilDone:NO];
+  //[self debugSimulateTextAppending:self];
   #endif
 }
 
@@ -179,29 +210,9 @@ static int debugSimulateTextAppendingIteration = 0;
   // Let the global document controller know we came to life
   [[NSDocumentController sharedDocumentController] addDocument:self];
   
-  [self _initOnMain:nil];
+  [self _initOnMain];
 
   return self;
-}
-
-
-- (KSyntaxHighlighter*)syntaxHighlighter {
-  if (!syntaxHighlighter_ && [NSThread isMainThread]) {
-    NSString *lang = nil;
-    NSURL *url = [self fileURL];
-    if (url) {
-      NSString *filename = [[url path] lastPathComponent];
-      lang = [KSyntaxHighlighter languageFileForFilename:filename];
-    }
-    // default lang file
-    if (!lang || lang.length == 0) {
-      lang = @"default";
-    }
-    syntaxHighlighter_ =
-        [[KSyntaxHighlighter alloc] initWithLanguageFile:lang
-                                               styleFile:@"default"];
-  }
-  return syntaxHighlighter_;
 }
 
 
@@ -217,13 +228,41 @@ static int debugSimulateTextAppendingIteration = 0;
   self = [super initWithContentsOfURL:absoluteURL
                                ofType:typeName
                                 error:outError];
-
-  // Defer highlighting to next tick and also make sure it's run in main
-  [self performSelectorOnMainThread:@selector(highlightCompleteDocument:)
-                         withObject:self
-                      waitUntilDone:NO];
-
+  if (self) {
+    // Defer highlighting
+    // TODO: only if highlighting is active
+    K_DISPATCH_MAIN_ASYNC({
+      [self queueCompleteHighlighting:self];
+    });
+  } else assert(outError && *outError);
+  
   return self;
+}
+
+
+- (KSyntaxHighlighter*)syntaxHighlighter {
+  if (!syntaxHighlighter_) {
+    if (![NSThread isMainThread]) {
+      // have the code run in the main thread
+      K_DISPATCH_MAIN_SYNC({ [self syntaxHighlighter]; });
+      // return the object created on main
+      return syntaxHighlighter_;
+    }
+    NSString *lang = nil;
+    NSURL *url = [self fileURL];
+    if (url) {
+      NSString *filename = [[url path] lastPathComponent];
+      lang = [KSyntaxHighlighter languageFileForFilename:filename];
+    }
+    // default lang file
+    if (!lang || lang.length == 0) {
+      lang = @"default";
+    }
+    syntaxHighlighter_ =
+        [[KSyntaxHighlighter alloc] initWithLanguageFile:lang
+                                               styleFile:@"default"];
+  }
+  return syntaxHighlighter_;
 }
 
 
@@ -390,23 +429,228 @@ static int debugSimulateTextAppendingIteration = 0;
           [[attrs description] UTF8String]);
 }
 
-- (void)highlightCompleteDocument:(id)sender {
-  NSTextStorage *textStorage = textView_.textStorage;
-  if ([textStorage length]) {
-    KSyntaxHighlighter *syntaxHighlighter = self.syntaxHighlighter;
-    if (syntaxHighlighter) {
-      // TODO: gracefully colorize first part of the document and
-      //   then perform small chunks of colorization queued in each tick on the
-      //   main runloop.
-      //
-      // NSRange range = NSMakeRange(0, MIN(4000, textStorage.length));
-      NSRange range = NSMakeRange(NSNotFound, 0);
-      [syntaxHighlighter highlightTextStorage:textStorage
-                                      inRange:range
-                                   deltaRange:range];
+/*- (IBAction)selectNextElement:(id)sender {
+  NSMutableAttributedString *mastr = textView_.textStorage;
+  NSString *text = [mastr string];
+  NSCharacterSet *cs = [NSCharacterSet whitespaceAndNewlineCharacterSet];
+  NSRange range = [textView_ selectedRange];
+  range.location += range.length;
+  range.length = mastr.length - range.location;
+  [mastr enumerateAttribute:KTextFormatter::ClassAttributeName
+                    inRange:range
+                    options:0
+                 usingBlock:^(id value, NSRange range, BOOL *stop) {
+    
+    NSRange r = [text rangeOfCharacterFromSet:cs options:0 range:range];
+    if (r.location == range.location) {
+      if (r.length == range.length) {
+        // all characters where SP|TAB|CR|LF
+        DLOG("all blanks");
+        return;
+      }
+      range.location += r.length;
+      range.length -= r.length;
     }
+    DLOG("find last in range %@ \"%@\"",
+         NSStringFromRange(range), [text substringWithRange:range]);
+    r = [text rangeOfCharacterFromSet:cs options:NSBackwardsSearch range:range];
+    DLOG("r = %@ \"%@\"",
+         NSStringFromRange(r), [text substringWithRange:r]);
+    if (r.location != NSNotFound) {
+      NSUInteger end = r.location + r.length;
+      DLOG("A");
+      if (end == range.location + range.length) {
+        DLOG("B");
+        //range.length -= MIN(r.length, range.length);
+        range.length -= r.length;
+      } else DLOG("C");
+    }
+    
+    DLOG("[2] %@ %@ => \"%@\"", value,
+         NSStringFromRange(range), [text substringWithRange:range]);
+    
+    [textView_ setSelectedRange:range];
+    *stop = YES;
+  }];
+}*/
+
+
+- (IBAction)selectNextElement:(id)sender {
+  NSMutableAttributedString *mastr = textView_.textStorage;
+  NSString *text = mastr.string;
+  NSCharacterSet *cs = [NSCharacterSet whitespaceAndNewlineCharacterSet];
+  NSRange selectedRange = [textView_ selectedRange];
+  NSRange range = selectedRange;
+  NSUInteger index = range.location + range.length;
+  
+  while (YES) {
+    NSUInteger maxLength = mastr.length;
+    NSDictionary *attrs = [mastr attributesAtIndex:index
+                             longestEffectiveRange:&range
+                                           inRange:NSMakeRange(0, maxLength)];
+    
+    // trim left
+    NSRange r = [text rangeOfCharactersFromSet:cs
+                                       options:NSAnchoredSearch
+                                         range:range];
+    if (r.location == range.location) {
+      if (r.length == range.length) {
+        // all characters where SP|TAB|CR|LF
+        index = range.location + range.length;
+        continue;
+      }
+      range.location += r.length;
+      range.length -= r.length;
+    }
+    
+    // trim right
+    r = [text rangeOfCharactersFromSet:cs
+                               options:NSAnchoredSearch|NSBackwardsSearch
+                                 range:range];
+    if (r.location != NSNotFound) {
+      NSUInteger end = r.location + r.length;
+      if (end == range.location + range.length) {
+        if (range.location == selectedRange.location &&
+            (range.length - r.length) == selectedRange.length) {
+          index = range.location + range.length;
+          continue;
+        } else {
+          range.length -= r.length;
+        }
+      }
+    }
+    [textView_ setSelectedRange:range];
+    return;
   }
 }
+
+
+- (IBAction)selectPreviousElement:(id)sender {
+  NSMutableAttributedString *mastr = textView_.textStorage;
+  NSString *text = mastr.string;
+  NSCharacterSet *cs = [NSCharacterSet whitespaceAndNewlineCharacterSet];
+  NSRange selectedRange = [textView_ selectedRange];
+  NSRange range = selectedRange;
+  NSUInteger index = range.location == 0 ? 0 : range.location-1;
+
+  while (YES) {
+    NSUInteger maxLength = mastr.length;
+    NSDictionary *attrs = [mastr attributesAtIndex:index
+                             longestEffectiveRange:&range
+                                           inRange:NSMakeRange(0, maxLength)];
+
+    // beginning of document?
+    if (selectedRange.location == 0 && range.location == 0 &&
+        selectedRange.length == range.length) {
+      // wrap around
+      index = text.length-1;
+      continue;
+    }
+
+    // trim left
+    NSRange L = [text rangeOfCharactersFromSet:cs
+                                       options:NSAnchoredSearch
+                                         range:range];
+    if (L.location == range.location) {
+      if (L.length == range.length) {
+        // all characters where SP|TAB|CR|LF
+        index = range.location - 1;
+        continue;
+      }
+      range.location += L.length;
+      range.length -= L.length;
+      if (range.location == selectedRange.location &&
+          range.length == selectedRange.length) {
+        index = range.location - (1 + L.length);
+        continue;
+      }
+    }
+
+    // trim right
+    NSRange R = [text rangeOfCharactersFromSet:cs
+                                       options:NSAnchoredSearch
+                                              |NSBackwardsSearch
+                                         range:range];
+    if (R.location != NSNotFound) {
+      NSUInteger end = R.location + R.length;
+      if (end == range.location + range.length) {
+        if (range.location == selectedRange.location &&
+            (range.length - R.length) == selectedRange.length) {
+          // this will never happen, right?
+          index = range.location - (1 + L.length);
+          continue;
+        } else {
+          range.length -= R.length;
+        }
+      }
+    }
+
+    [textView_ setSelectedRange:range];
+    return;
+  }
+}
+
+
+- (void)queueCompleteHighlighting:(id)sender {
+  assert(hasPendingInitialHighlighting_ == NO);
+  hasPendingInitialHighlighting_ = YES;
+  DLOG("queueCompleteHighlighting");
+  K_DISPATCH_BG_ASYNC({ [self highlightCompleteDocument:sender]; });
+}
+
+
+- (void)highlightCompleteDocument:(id)sender {
+  NSAutoreleasePool *pool = [NSAutoreleasePool new];
+  NSTextStorage *textStorage = textView_.textStorage;
+  NSMutableAttributedString *mastr = textStorage;
+  
+  // if we are not on main we need to create a copy of the text storage to avoid
+  // pthread mutex deadlocks.
+  if (![NSThread isMainThread]) {
+    mastr = [[NSMutableAttributedString alloc] initWithAttributedString:mastr];
+  }
+  
+  if ([textStorage length]) {
+    KSyntaxHighlighter *syntaxHighlighter = self.syntaxHighlighter;
+    assert(syntaxHighlighter != nil);
+    NSRange range = NSMakeRange(NSNotFound, 0);
+    [syntaxHighlighter highlightMAString:mastr
+                                 inRange:range
+                              deltaRange:range];
+  }
+  
+  // if we where forced to make a copy of the text, swap it back
+  if (mastr != textStorage) {
+    K_DISPATCH_MAIN_ASYNC({
+      NSArray *selectedRanges = textView_.selectedRanges;
+      [textStorage replaceCharactersInRange:NSMakeRange(0, textStorage.length)
+                       withAttributedString:mastr];
+      @try {
+        textView_.selectedRanges = selectedRanges;
+      } @catch (id e) {
+        WLOG("gracefully failed to restore selections after hardcore "
+             "background highlighting action");
+        // in this case the text changed length which is a used action and not
+        // a serious error. Just the selection which is (partially) lost.
+      }
+      hasPendingInitialHighlighting_ = NO;
+      //[mastr release];
+    });
+  } else if (hasPendingInitialHighlighting_) {
+    K_DISPATCH_MAIN_ASYNC({
+      hasPendingInitialHighlighting_ = NO; // FIXME run in main
+    });
+    
+    //NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
+    // NSObject emit, on ...
+    
+    //[self on:@"highlightComplete", ^{
+    //  hasPendingInitialHighlighting_ = NO;
+    //}]
+  }
+  [pool drain];
+}
+
 
 - (void)textStorageDidProcessEditing:(NSNotification*)notification {
 	// invoked when editing occured
@@ -436,70 +680,72 @@ static int debugSimulateTextAppendingIteration = 0;
   
   
   // Syntax highlight
-  KSyntaxHighlighter *syntaxHighlighter = self.syntaxHighlighter;
-  if (syntaxHighlighter && syntaxHighlighter.currentTextStorage == nil) {
-    NSRange highlightRange, deltaRange;
-    NSString *text = [textStorage string];
-    if (completeDocument) {
-      //DLOG(@"COMPLETE");
-      highlightRange = NSMakeRange(NSNotFound, 0); // whole document
-      deltaRange = highlightRange;
-    } else {
-      /*if (range.length != 1 || [text characterAtIndex:range.location] != '\n') {
-        // unless newline
-        highlightRange = [text lineRangeForRange:range];
+  if (!hasPendingInitialHighlighting_) {
+    KSyntaxHighlighter *syntaxHighlighter = self.syntaxHighlighter;
+    if (syntaxHighlighter && syntaxHighlighter.currentMAString == nil) {
+      NSRange highlightRange, deltaRange;
+      NSString *text = [textStorage string];
+      if (completeDocument) {
+        //DLOG(@"COMPLETE");
+        highlightRange = NSMakeRange(NSNotFound, 0); // whole document
+        deltaRange = highlightRange;
       } else {
-        highlightRange = range;
-      }*/
-      NSRange maxRange = NSMakeRange(0, text.length);
-      NSUInteger index = range.location;
-      if (index > 0) index--;
-      [textStorage attribute:KTextFormatter::ClassAttributeName
-                     atIndex:index
-       longestEffectiveRange:&highlightRange
-                     inRange:maxRange];
-      highlightRange = NSUnionRange(range, highlightRange);
-      
-      if (range.location > 0 && range.location < maxRange.length-1) {
-        index = range.location + 1;
-        NSRange highlightRange2;
+        /*if (range.length != 1 || [text characterAtIndex:range.location] != '\n') {
+          // unless newline
+          highlightRange = [text lineRangeForRange:range];
+        } else {
+          highlightRange = range;
+        }*/
+        NSRange maxRange = NSMakeRange(0, text.length);
+        NSUInteger index = range.location;
+        if (index > 0) index--;
         [textStorage attribute:KTextFormatter::ClassAttributeName
                        atIndex:index
-         longestEffectiveRange:&highlightRange2
+         longestEffectiveRange:&highlightRange
                        inRange:maxRange];
-        highlightRange = NSUnionRange(highlightRange, highlightRange2);
+        highlightRange = NSUnionRange(range, highlightRange);
+        
+        if (range.location > 0 && range.location < maxRange.length-1) {
+          index = range.location + 1;
+          NSRange highlightRange2;
+          [textStorage attribute:KTextFormatter::ClassAttributeName
+                         atIndex:index
+           longestEffectiveRange:&highlightRange2
+                         inRange:maxRange];
+          highlightRange = NSUnionRange(highlightRange, highlightRange2);
+        }
+        
+        deltaRange = range;
       }
-      
-      deltaRange = range;
-    }
-    DLOG("highlightRange: %@", highlightRange.location == NSNotFound
-                        ? @"{NSNotFound, 0}"
-                        : NSStringFromRange(highlightRange));
-    NSRange nextRange = NSMakeRange(0, 0);
-    NSUInteger textEnd = [textStorage length];
-    while (nextRange.location != textEnd) {
-      nextRange = [syntaxHighlighter highlightTextStorage:textStorage
-                                                  inRange:highlightRange
-                                               deltaRange:deltaRange];
-      //[textStorage ensureAttributesAreFixedInRange:highlightRange];
-      if (nextRange.location == textEnd) {
-        DLOG("info: code tree is incomplete (open state at end of document)");
-        break;
-      } else if (nextRange.location == NSNotFound) {
-        break;
+      DLOG("highlightRange: %@", highlightRange.location == NSNotFound
+                          ? @"{NSNotFound, 0}"
+                          : NSStringFromRange(highlightRange));
+      NSRange nextRange = NSMakeRange(0, 0);
+      NSUInteger textEnd = [textStorage length];
+      while (nextRange.location != textEnd) {
+        nextRange = [syntaxHighlighter highlightMAString:textStorage
+                                                 inRange:highlightRange
+                                              deltaRange:deltaRange];
+        //[textStorage ensureAttributesAreFixedInRange:highlightRange];
+        if (nextRange.location == textEnd) {
+          DLOG("info: code tree is incomplete (open state at end of document)");
+          break;
+        } else if (nextRange.location == NSNotFound) {
+          break;
+        }
+        deltaRange = nextRange;
+        if (deltaRange.length == 0) {
+          deltaRange = [text lineRangeForRange:deltaRange];
+          //DLOG("adjusted deltaRange to line: %@", NSStringFromRange(deltaRange));
+        }
+        // adjust one line break backward
+        if (deltaRange.location > 1) {
+          deltaRange.location -= 1;
+          deltaRange.length += 1;
+        }
+        DLOG_EXPR(deltaRange);
+        highlightRange = deltaRange;
       }
-      deltaRange = nextRange;
-      if (deltaRange.length == 0) {
-        deltaRange = [text lineRangeForRange:deltaRange];
-        //DLOG("adjusted deltaRange to line: %@", NSStringFromRange(deltaRange));
-      }
-      // adjust one line break backward
-      if (deltaRange.location > 1) {
-        deltaRange.location -= 1;
-        deltaRange.length += 1;
-      }
-      DLOG_EXPR(deltaRange);
-      highlightRange = deltaRange;
     }
   }
   
@@ -513,8 +759,12 @@ static int debugSimulateTextAppendingIteration = 0;
 - (NSData*)dataOfType:(NSString*)typeName error:(NSError **)outError {
   DLOG_EXPR(typeName);
   [textView_ breakUndoCoalescing]; // preserves undo state
-  return [[textView_ string] dataUsingEncoding:textEncoding_
-                          allowLossyConversion:NO];
+  NSData *data = [[textView_ string] dataUsingEncoding:textEncoding_
+                                  allowLossyConversion:NO];
+  if (!data) {
+    *outError = [NSError kodErrorWithDescription:@"Failed to parse data"];
+  }
+  return data;
 }
 
 // Generate text from data

@@ -36,7 +36,7 @@ bool KTextFormatterFactory::createFormatter(const std::string &key,
   if (hasFormatter(key))
     return false;
   
-  DLOG("Creating KTextFormatter '%s'", key.c_str());
+  //DLOG("Creating KTextFormatter '%s'", key.c_str());
   KTextFormatter *formatter = new KTextFormatter(key);
   addFormatter(key, KTextFormatterPtr(formatter));
   

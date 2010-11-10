@@ -180,10 +180,12 @@ void KTextFormatter::applyAttributes(NSMutableAttributedString *astr,
 
 void KTextFormatter::format(const std::string &s,
                             const srchilite::FormatterParams *params) {
+  #if 0
   if ( (elem_ != "normal" || !s.size()) && params ) {
     DLOG("<%s>format(\"%s\", start=%d)",
          elem_.c_str(), s.c_str(), params->start);
   }
+  #endif
   //NSLog(@"format: s='%s', elem='%s'", s.c_str(), elem_.c_str());
   [syntaxHighlighter_ setFormat:this
                         inRange:NSMakeRange(params->start, s.size())];

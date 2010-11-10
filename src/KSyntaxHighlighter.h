@@ -14,6 +14,8 @@
 
 @class KHighlightState;
 
+extern const NSString *KHighlightStateAttribute;
+
 @interface KSyntaxHighlighter : NSObject <KHighlightEventListener> {
   /// current definition and style files (or nil)
   NSString *definitionFile_;
@@ -32,8 +34,8 @@
   srchilite::FormatterManager *formatterManager_;
   
   /// Parser state
-  NSUInteger currentTextStorageOffset_;
-  NSTextStorage *currentTextStorage_;
+  NSUInteger currentMAStringOffset_;
+  NSMutableAttributedString *currentMAString_;
   __weak const std::string *currentUTF8String_;
   __weak KHighlightState *currentState_;
   __weak KHighlightState *lastFormattedState_; // temporal per format call
@@ -42,7 +44,7 @@
 }
 
 @property(retain, nonatomic) NSString *styleFile;
-@property(readonly, nonatomic) NSTextStorage *currentTextStorage;
+@property(readonly, nonatomic) NSMutableAttributedString *currentMAString;
 
 /**
  * Returns the the lang def file name by using the file name for detecting
@@ -93,21 +95,21 @@
 
 /**
  * Update colors (call this after calling loadStyleFromFile: on an already
- * managed NSTextStorage.
+ * managed NSMutableAttributedString.
  */
-- (void)recolorTextStorage:(NSTextStorage*)textStorage;
+- (void)recolorMAString:(NSMutableAttributedString*)mastr;
 
 /**
  * Returns NSNotFound if the highlight state is stable, otherwise the position
  * of the last character highlighted is returned to indicate what should be
  * re-evaluated.
  */
-- (NSRange)highlightTextStorage:(NSTextStorage*)textStorage
-                        inRange:(NSRange)range
-                     deltaRange:(NSRange)deltaRange;
+- (NSRange)highlightMAString:(NSMutableAttributedString*)mastr
+                     inRange:(NSRange)range
+                  deltaRange:(NSRange)deltaRange;
 
-/// Convenience method to highlight a complete NSTextStorage
-- (void)highlightTextStorage:(NSTextStorage*)textStorage;
+/// Convenience method to highlight a complete NSMutableAttributedString
+- (void)highlightMAString:(NSMutableAttributedString*)mastr;
 
 /**
  * This function is applied to the syntax highlighter's current text block

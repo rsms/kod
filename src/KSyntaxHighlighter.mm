@@ -9,8 +9,11 @@
 #import <srchilite/parserexception.h>
 #import <srchilite/ioexception.h>
 #import <srchilite/settings.h>
-#import <ChromiumTabs/common.h>
 
+#ifndef NDEBUG
+#define NDEBUG 1
+#endif
+#import <ChromiumTabs/common.h>
 
 @interface NSString (cpp)
 - (NSUInteger)populateStdString:(std::string*)str
@@ -42,11 +45,13 @@
 @implementation KSyntaxHighlighter
 
 @synthesize styleFile = styleFile_,
-            currentTextStorage = currentTextStorage_;
+            currentMAString = currentMAString_;
 
 
 static NSMutableArray *gLanguageFileSearchPath_;
 static NSMutableArray *gStyleFileSearchPath_;
+
+const NSString *KHighlightStateAttribute = (const NSString *)CFSTR("KHighlightState");
 
 
 + (void)load {
@@ -338,49 +343,49 @@ static NSMutableArray *gStyleFileSearchPath_;
 #pragma mark Formatting
 
 
-- (void)recolorTextStorage:(NSTextStorage*)textStorage {
-  NSRange textRange = NSMakeRange(0, textStorage.length);
+- (void)recolorMAString:(NSMutableAttributedString*)mastr {
+  NSRange textRange = NSMakeRange(0, mastr.length);
   NSAttributedStringEnumerationOptions opts = 0;
   //opts = NSAttributedStringEnumerationLongestEffectiveRangeNotRequired;
-  [textStorage enumerateAttribute:KTextFormatter::ClassAttributeName
-                          inRange:textRange
-                          options:opts
-                       usingBlock:^(id value, NSRange range, BOOL *stop) {
+  [mastr enumerateAttribute:KTextFormatter::ClassAttributeName
+                    inRange:textRange
+                    options:opts
+                 usingBlock:^(id value, NSRange range, BOOL *stop) {
     std::string elem;
     [value populateStdString:&elem
                usingEncoding:NSUTF8StringEncoding
                        range:NSMakeRange(0, [value length])];
     
     // clear any formatter attributes
-    KTextFormatter::clearAttributes(textStorage, range);
+    KTextFormatter::clearAttributes(mastr, range);
     // find current formatter for |elem|
     KTextFormatter* formatter = dynamic_cast<KTextFormatter*>(
         formatterManager_->getFormatter(elem).get());
     // apply the formatters' style to |range|
     if (formatter) {
-      formatter->applyAttributes(textStorage, range);
+      formatter->applyAttributes(mastr, range);
     }
     //DLOG("%s %@", elem.c_str(), NSStringFromRange(range));
   }];
 }
 
 
-- (void)highlightTextStorage:(NSTextStorage*)textStorage {
+- (void)highlightMAString:(NSMutableAttributedString*)mastr {
   static NSRange r = (NSRange){NSNotFound, 0};
-  [self highlightTextStorage:textStorage inRange:r deltaRange:r];
+  [self highlightMAString:mastr inRange:r deltaRange:r];
 }
 
 
-- (NSRange)highlightTextStorage:(NSTextStorage*)textStorage
-                        inRange:(NSRange)range
-                     deltaRange:(NSRange)deltaRange {
+- (NSRange)highlightMAString:(NSMutableAttributedString*)mastr
+                     inRange:(NSRange)range
+                  deltaRange:(NSRange)deltaRange {
   #if !NDEBUG
   fprintf(stderr,
-      "----------------------- highlightTextStorage -----------------------\n");
+      "------------------ highlight:inRange:deltaRange: ------------------\n");
   #endif
-  assert(currentTextStorage_ == nil);
-  currentTextStorage_ = [textStorage retain];
-  NSString *text = [textStorage string];
+  assert(currentMAString_ == nil);
+  currentMAString_ = [mastr retain];
+  NSString *text = [mastr string];
   NSUInteger documentLength = [text length];
   
   // Adjust range
@@ -427,9 +432,9 @@ static NSMutableArray *gStyleFileSearchPath_;
     // get stored state
     int tries = wasCausedByDeleteEvent ? 2 : 1;
     while (tries--) {
-      currentState_ = [currentTextStorage_ attribute:@"KHighlightState"
-                                             atIndex:previousIndex
-                                      effectiveRange:&effectiveRange];
+      currentState_ = [currentMAString_ attribute:KHighlightStateAttribute
+                                          atIndex:previousIndex
+                                   effectiveRange:&effectiveRange];
       if (currentState_) {
         //stateData = new KHighlightStateData(*(currentState_->data));
         //[currentState_ replaceData:stateData];
@@ -443,7 +448,7 @@ static NSMutableArray *gStyleFileSearchPath_;
         break;
       } else {
         DLOG("no previous state");
-        if ([currentTextStorage_ length]-range.location > 1) {
+        if ([currentMAString_ length]-range.location > 1) {
           previousIndex = range.location+1;
         } else {
           break;
@@ -475,10 +480,10 @@ static NSMutableArray *gStyleFileSearchPath_;
   
   // clear state (trick since we will never act on linebreaks, but they are
   // important)
-  [currentTextStorage_ removeAttribute:@"KHighlightState"
-                                 range:range];
+  [currentMAString_ removeAttribute:KHighlightStateAttribute
+                              range:range];
   
-  currentTextStorageOffset_ = range.location;
+  currentMAStringOffset_ = range.location;
   tempStackDepthDelta_ = 0;
   
   // for each line ...
@@ -495,7 +500,7 @@ static NSMutableArray *gStyleFileSearchPath_;
     currentUTF8String_ = &str;
     //fprintf(stderr, "** \"%s\"\n", str.c_str());
     sourceHighlighter_->highlightParagraph(str);
-    currentTextStorageOffset_ += enclosingRange.length;
+    currentMAStringOffset_ += enclosingRange.length;
   }];
   
   currentUTF8String_ = nil;
@@ -503,19 +508,18 @@ static NSMutableArray *gStyleFileSearchPath_;
   [currentState_ release];
   currentState_ = nil;
 
-  [currentTextStorage_ release];
-  currentTextStorage_ = nil;
+  [currentMAString_ release];
+  currentMAString_ = nil;
   
   //DLOG("tempStackDepthDelta_: %d", tempStackDepthDelta_);
   BOOL stateStackIsEmpty = sourceHighlighter_->getStateStack()->empty();
   if (didBreakState) {
-    DLOG("highlightTextStorage returned with lingering state (0)");
+    DLOG("highlightMAString returned with open state (0)");
     NSRange nextRange = NSUnionRange(range, effectiveRange);
-    
-    DLOG("nextRange: %@", NSStringFromRange(nextRange));
+    //DLOG("nextRange: %@", NSStringFromRange(nextRange));
     return nextRange;
   } else if (tempStackDepthDelta_ != 0) {
-    DLOG("highlightTextStorage returned with lingering state (1)");
+    DLOG("highlightMAString returned with open state (1)");
   
     // if effectiveRange extends beyond our editing point, include the
     // remainder.
@@ -549,12 +553,12 @@ static NSMutableArray *gStyleFileSearchPath_;
     return nextRange;
   } else if (!stateStackIsEmpty) {
     if (deltaRange.length == 0) {
-      DLOG("highlightTextStorage returned with lingering state (2)");
+      DLOG("highlightMAString returned with open state (2)");
       // we are dealing with a DELETE edit which possibly caused dirty content
       // below the edited point.
       return NSMakeRange(range.location + range.length, 0);
     } else {
-      DLOG("highlightTextStorage returned with lingering state (3)");
+      DLOG("highlightMAString returned with open state (3)");
       return NSMakeRange(range.location + range.length, 0);
     }
   }
@@ -636,25 +640,25 @@ static void _debugDumpHighlightEvent(const srchilite::HighlightEvent &event) {
       DLOG("set state #%d %@ \"%@\"",
            currentState_->data->currentState->getId(),
            NSStringFromRange(lastFormattedRange_),
-           [[currentTextStorage_ string] substringWithRange:lastFormattedRange_]);
+           [[currentMAString_ string] substringWithRange:lastFormattedRange_]);
       NSRange range = lastFormattedRange_;
       if (range.location == 0 && range.length > 0) {
         range.location++;
         range.length--;
       }
       if (range.length) {
-        [currentTextStorage_ addAttribute:@"KHighlightState"
-                                    value:currentState_
-                                    range:lastFormattedRange_];
+        [currentMAString_ addAttribute:KHighlightStateAttribute
+                                 value:currentState_
+                                 range:lastFormattedRange_];
       }
       lastFormattedState_ = currentState_;
     }
   } else {
     DLOG("clear state %@ \"%@\"",
          NSStringFromRange(lastFormattedRange_),
-         [[currentTextStorage_ string] substringWithRange:lastFormattedRange_]);
-    [currentTextStorage_ removeAttribute:@"KHighlightState"
-                                   range:lastFormattedRange_];
+         [[currentMAString_ string] substringWithRange:lastFormattedRange_]);
+    [currentMAString_ removeAttribute:KHighlightStateAttribute
+                                range:lastFormattedRange_];
   }
 }
 
@@ -694,10 +698,10 @@ static void _debugDumpHighlightEvent(const srchilite::HighlightEvent &event) {
         NSRange range =
             NSMakeRange(lastFormattedRange_.location +
                         lastFormattedRange_.length-1, 1);
-        [currentTextStorage_ removeAttribute:@"KHighlightState" range:range];
+        [currentMAString_ removeAttribute:KHighlightStateAttribute range:range];
         DLOG("clear state %@ \"%@\"",
              NSStringFromRange(range),
-             [[currentTextStorage_ string] substringWithRange:range]);
+             [[currentMAString_ string] substringWithRange:range]);
       }
       break;
     }
@@ -712,23 +716,23 @@ static void _debugDumpHighlightEvent(const srchilite::HighlightEvent &event) {
 
 
 - (void)setFormat:(KTextFormatter*)format inRange:(NSRange)range {
-  if (!currentTextStorage_) return;
+  if (!currentMAString_) return;
   NSDictionary *attrs = format->textAttributes();
   
   NSRange utf8Range = range;
   range = [NSString UTF16RangeFromUTF8Range:range
                                inUTF8String:currentUTF8String_->data()
                                    ofLength:currentUTF8String_->size()];
-  range.location += currentTextStorageOffset_;
+  range.location += currentMAStringOffset_;
   lastFormattedRange_ = range;
   lastFormattedState_ = nil; // temporal
   #if 0
   DLOG("setFormat:%s inRange:%@ (\"%@\") <-- %@",
        format->getElem().c_str(), NSStringFromRange(range),
-       [[currentTextStorage_ string] substringWithRange:range],
+       [[currentMAString_ string] substringWithRange:range],
        attrs);
   #endif
-  [currentTextStorage_ setAttributes:attrs range:range];
+  [currentMAString_ setAttributes:attrs range:range];
 }
 
 @end

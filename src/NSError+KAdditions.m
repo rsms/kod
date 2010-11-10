@@ -11,6 +11,7 @@ static NSString *KErrorDomain = nil; // TODO: centralize this
 + (NSError *)kodErrorWithDescription:(NSString *)msg code:(NSInteger)code {
   NSDictionary *info = [NSDictionary dictionaryWithObject:msg
       forKey:NSLocalizedDescriptionKey];
+  NSLog(@"KOD ERROR: %@", msg);
 	return [NSError errorWithDomain:KErrorDomain code:code userInfo:info];
 }
 
