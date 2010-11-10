@@ -600,7 +600,6 @@ static int debugSimulateTextAppendingIteration = 0;
 
 
 - (void)highlightCompleteDocument:(id)sender {
-  NSAutoreleasePool *pool = [NSAutoreleasePool new];
   NSTextStorage *textStorage = textView_.textStorage;
   NSMutableAttributedString *mastr = textStorage;
   
@@ -648,7 +647,6 @@ static int debugSimulateTextAppendingIteration = 0;
     //  hasPendingInitialHighlighting_ = NO;
     //}]
   }
-  [pool drain];
 }
 
 
