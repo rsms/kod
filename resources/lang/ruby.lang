@@ -1,0 +1,32 @@
+preproc = "require"
+
+include "number.lang"
+
+string delim "\"" "\"" escape "\\"
+string delim "'" "'"  escape "\\"
+string delim "<" ">"
+regexp = '/[^\n]*/'
+(symbol,regexp) = `(%r)(\{(?:\\\}|#\{[[:alnum:]]+\}|[^}])*\})`
+
+keyword = "alias|begin|BEGIN|break|case|defined|do|else|elsif|end|END|ensure|for|if|in|include|loop|next|raise|redo|rescue|retry|return|super|then|undef|unless|until|when|while|yield|false|nil|self|true|__FILE__|__LINE__|and|not|or|def|class|module|catch|fail|load|throw"
+
+comment delim '(^\=begin)' '^(\=end)' multiline
+
+type = '(\$[#]?|@@|@)([[:word:]]+|\'|\"|/)'
+
+# don't highlight ? and ! as symbols if they are part of a method call
+normal = '[[:alnum:]]+(\?|!)'
+
+include "symbols.lang"
+
+# for variable interpolation, #{ is not a comment
+(symbol,cbracket) = `(#)(\{)`
+
+include "script_comment.lang"
+
+cbracket = "{|}"
+
+# no function highlighting for Ruby, since a method invocation
+# can be written even without parenthesis
+# include "function.lang"
+

@@ -114,9 +114,25 @@ static int debugSimulateTextAppendingIteration = 0;
 
 
 - (void)debugSimulateSwitchStyle:(id)x {
+  #if 0  // load an alternative style
   KSyntaxHighlighter* syntaxHighlighter = self.syntaxHighlighter;  // lazy
-  [syntaxHighlighter loadStyleFromFile:@"default.css"];
+  [syntaxHighlighter loadStyleFile:@"bright"];
   [syntaxHighlighter recolorTextStorage:textView_.textStorage];
+  #endif
+  
+  #if 0  // reload style every 2 seconds
+  [self performSelector:@selector(debugReloadStyle:)
+             withObject:self
+             afterDelay:2.0];
+  #endif
+}
+
+
+- (void)debugReloadStyle:(id)x {
+  [self.syntaxHighlighter reloadStyle];
+  [self performSelector:@selector(debugReloadStyle:)
+             withObject:self
+             afterDelay:2.0];
 }
 
 
@@ -171,9 +187,19 @@ static int debugSimulateTextAppendingIteration = 0;
 
 - (KSyntaxHighlighter*)syntaxHighlighter {
   if (!syntaxHighlighter_ && [NSThread isMainThread]) {
-    syntaxHighlighter_ = [[KSyntaxHighlighter alloc]
-        initWithDefinitionsFromFile:@"cpp.lang"
-                      styleFromFile:@"sh_bipolar.css"];
+    NSString *lang = nil;
+    NSURL *url = [self fileURL];
+    if (url) {
+      NSString *filename = [[url path] lastPathComponent];
+      lang = [KSyntaxHighlighter languageFileForFilename:filename];
+    }
+    // default lang file
+    if (!lang || lang.length == 0) {
+      lang = @"default";
+    }
+    syntaxHighlighter_ =
+        [[KSyntaxHighlighter alloc] initWithLanguageFile:lang
+                                               styleFile:@"default"];
   }
   return syntaxHighlighter_;
 }
@@ -369,6 +395,11 @@ static int debugSimulateTextAppendingIteration = 0;
   if ([textStorage length]) {
     KSyntaxHighlighter *syntaxHighlighter = self.syntaxHighlighter;
     if (syntaxHighlighter) {
+      // TODO: gracefully colorize first part of the document and
+      //   then perform small chunks of colorization queued in each tick on the
+      //   main runloop.
+      //
+      // NSRange range = NSMakeRange(0, MIN(4000, textStorage.length));
       NSRange range = NSMakeRange(NSNotFound, 0);
       [syntaxHighlighter highlightTextStorage:textStorage
                                       inRange:range

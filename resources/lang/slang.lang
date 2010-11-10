@@ -1,0 +1,25 @@
+# slang.lang
+# written by John E. Davis
+# modified by Lorenzo Bettini
+
+include "script_comment.lang"
+
+keyword = "ERROR_BLOCK|EXECUTE_ERROR_BLOCK|EXIT_BLOCK|NULL|__tmp|_for|and",
+	"break|case|catch|chs|continue|define|do|else|else|exch|finally|for",
+	"foreach|forever|if|ifnot|loop|mod|mul2|not|or|orelse|pop|private",
+	"public|return|shl|shr|sign|sqr|static|struct|switch|then|throw|try",
+	"typedef|using|variable|while|xor"
+
+comment start "%"
+
+string delim "\"" "\"" escape "\\" 
+string delim "'" "'" escape "\\" 
+
+include "number.lang"
+
+symbol = "~","!","^","*","(",")","-","+","=","[",
+	"]","\\",":",";",",",".","/","&","<",">","\|"
+
+preproc = "require"
+
+include "function.lang"

@@ -1,0 +1,14 @@
+# language definition for Manifest files
+
+include "script_comment.lang"
+
+comment start "!"
+
+(type,normal,symbol) = `([^="+:;]+)([[:blank:]]*)(:=)`
+
+include "number.lang"
+include "url.lang"
+
+(string,symbol) = `(^[^:;]+)(:)`
+
+regexp = '%([[:alnum:]]+)'

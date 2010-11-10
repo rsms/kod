@@ -1,0 +1,8 @@
+# highlighting for (Java) properties files
+
+include "script_comment.lang"
+
+comment start "!"
+
+(type,normal,symbol) = `([^="+]+)([[:blank:]]*)(\+?=)`
+

@@ -1,0 +1,53 @@
+vardef basic_time = '[[:digit:]]{2}:[[:digit:]]{2}:[[:digit:]]{2}'
+vardef time = '\<' + $basic_time + '\>'
+vardef ip = '[[:digit:]]{1,3}\.[[:digit:]]{1,3}\.[[:digit:]]{1,3}\.[[:digit:]]{1,3}\>'
+vardef non_empty = '[^[:blank:]]+'
+
+state date start '^[[:alpha:]]{3}[[:blank:]]{1,2}[[:digit:]]{1,2}(?=[[:blank:]]' + $basic_time + ')' begin
+  state time start $time begin
+    state symbol start $non_empty begin
+      normal = ":" exitall
+      function = '[^:\(\[]+'
+      number delim "[" "]"
+      number delim "(" ")"
+    end
+  end
+end
+
+state ip start '^' + $ip begin
+  string = '[[:alnum:]]+(?=[[:blank:]]\[[[:digit:]]{2}/[[:alpha:]]{3}/[[:digit:]]{4})'
+  date = '[[:digit:]]{2}/[[:alpha:]]{3}/[[:digit:]]{4}(?=:' + $basic_time + ')'
+  time = $basic_time + '[[:blank:]][+-][[:digit:]]{4}'
+  twonumbers = '[1-5][[:digit:]]{2}[[:blank:]][-0-9]+'
+  state webmethod = "OPTIONS|GET|HEAD|POST|PUT|DELETE|TRACE|CONNECT|PROPFIND|MKCOL|COPY|MOVE|LOCK|UNLOCK" begin
+    string = $non_empty exit
+  end
+end
+
+vardef weekday_date = '\[[[:alpha:]]{3}[[:blank:]][[:alpha:]]{3}[[:blank:]]{1,2}[[:digit:]]{1,2}[[:blank:]](?=' + $basic_time + ')'
+
+state date start '^' + $weekday_date begin
+  time = $time
+  date = '[[:digit:]]{4}\]'
+  date = $weekday_date
+  string = "[error]"
+  comment = "[notice]"
+  ip = $ip
+end
+
+ip = $ip
+
+string = "root","failure"
+
+(normal,port) = `((?:port|pid)[[:blank:]])([[:digit:]]+)`
+
+state normal start '[[:blank:]](?=(IN|OUT)=)' begin
+  state normal = '(IN|OUT|PROTO)=(?=[^[:blank:]]+)' begin
+    string = $non_empty exit
+  end
+  state normal = '(SPT|DPT|TYPE|SEQ)=(?=[^[:blank:]]+)' begin
+    cbracket = $non_empty exit
+  end
+  number = "CWR|ECE|URG|ACK|PSH|RST|SYN|FIN"
+  ip = $ip
+end

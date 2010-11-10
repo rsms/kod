@@ -1,0 +1,37 @@
+state preproc delim '^%\{' '^%\}' multiline begin
+  include "cpp.lang"
+end
+
+state preproc start '^%[sx]' begin
+  function = '[[:alpha:]_][[:alnum:]_-]*'
+end
+
+state preproc start '^%option' begin
+  keyword = '[[:alpha:]_][[:alnum:]_-]*'
+  string delim "\"" "\""
+  symbol = "="
+end
+
+preproc = '^%(array|pointer|[aceknopr])'
+
+state preproc start '[[:alpha:]_][[:alnum:]_-]*' begin
+  type = '\{[[:alpha:]_][[:alnum:]_-]*\}'
+  string delim "\"" "\"" escape "\\"
+  include "symbols.lang"
+end
+
+state preproc = '^%%' begin
+  state preproc = '^%%' begin
+    include "cpp.lang"
+  end
+  function = '<[[:alpha:]_][[:alnum:]_-]*>'
+  string delim "\"" "\"" escape "\\"
+  preproc = '\\.'
+  type = '\{[[:alpha:]_][[:alnum:]_-]*\}'
+  comment delim "/*" "*/" multiline nested
+  state cbracket delim "{" "}" multiline nested begin
+    variable = '\$.'
+    include "cpp.lang"
+  end
+  include "symbols.lang"
+end

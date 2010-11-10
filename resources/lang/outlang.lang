@@ -1,0 +1,16 @@
+# this is the language definition for the
+# language definition syntax itself
+comment start "#"
+
+preproc = "include"
+
+string delim "\"" "\"" escape "\\" multiline
+string delim "'" "'" escape "\\" multiline
+
+keyword = 
+   "nodoctemplate|doctemplate|styletemplate|styleseparator|bold|italics",
+   "underline|notfixed|fixed|colormap|color|default|onestyle",
+   "extension|anchor|inline_reference|postline_reference",
+   "postdoc_reference|reference|lineprefix|translations|begin|end"
+
+symbol = "=|+|,"

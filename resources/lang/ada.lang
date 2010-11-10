@@ -1,0 +1,38 @@
+# definitions for Ada, by Reto Buerki
+
+preproc = "with|use"
+
+keyword = "abort|abs|abstract|accept|access|aliased|all|and|array|at",
+          "begin|body",
+          "case|constant",
+          "declare|delay|delta|digits|do",
+          "else|elsif|end|entry|exception|exit",
+          "for|function",
+          "generic|goto",
+          "if|in|interface|is",
+          "limited|loop",
+          "mod",
+          "new|not|null",
+          "of|or|others|out|overriding",
+          "package|pragma|private|procedure|protected",
+          "raise|range|record|rem|renames|requeue",
+          "return|reverse",
+          "select|separate|subtype|synchronized",
+          "tagged|task|terminate|then|type",
+          "until",
+          "when|while",
+          "xor"
+          nonsensitive
+
+comment start "--"
+
+include "number.lang"
+
+string delim "\"" "\"" escape "\\"
+string delim "'" "'"  escape "\\"
+
+type = "Integer|Float|Duration|Character|String|Wide_String|Boolean" nonsensitive
+
+include "symbols.lang"
+
+include "function.lang"

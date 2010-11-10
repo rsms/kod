@@ -1,0 +1,23 @@
+comment delim "#\|" "\|#" multiline nested
+comment start ";"
+
+vardef SPECIALCHAR = '\\.'
+
+environment string delim "\"" "\"" begin
+  specialchar = $SPECIALCHAR
+end
+
+number = '(\#(x|o|b|X|O|B))?[+-]?((0x[[:xdigit:]]+)|(([[:digit:]]*\.)?
+[[:digit:]]+([eE][+-]?[[:digit:]]+)?))u?((int(?:8|16|32|64))|L)?'
+
+type = '#?\'(\b|\/|\+|\?|\*|\-)[[:alnum:]_\/\-\+\*\?:]+(\+|\?|\*|\-|\/|\b)'
+
+preproc = ':[[:alnum:]\-]+'
+
+variable = '(\+|\*)[[:alnum:]_\-\+\*\?:]+(\+|\*)'
+
+normal = '(\b|\+|\?|\*|\-)[[:alnum:]_\-\+\*\?:]+(\+|\?|\*|\-|\b)'
+
+(cbracket,keyword) = `(\()(defconstant|defvar|defparameter|case|cond|in-package|deftype|list|definline|declare|when|defgeneric|defmethod|defpackage|defstruct|defclass|defun|defmacro|loop|let\*|let|progn|push|pop|cons|car|setf|getf|cdr|if|equal|eql|eq|\+|\*|\-)`
+
+cbracket = "(|)"

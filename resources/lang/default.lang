@@ -1,0 +1,8 @@
+# this is the language definition file to which source-highlight
+# reverts (when in failsafe mode) if not language definition is
+# found for the current input file.
+
+# Thus, basically, no highlight is performed (unless you customize
+# this file).
+
+# However, your input file will be formatted in the output format.

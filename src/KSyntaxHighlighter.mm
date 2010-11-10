@@ -2,10 +2,13 @@
 #import "KHighlightState.h"
 #import "KTextFormatter.h"
 #import "NSString-utf8-range-conv.h"
+#import "NSError+KAdditions.h"
 
 #import <srchilite/langelems.h>
 #import <srchilite/stylefileparser.h>
 #import <srchilite/parserexception.h>
+#import <srchilite/ioexception.h>
+#import <srchilite/settings.h>
 #import <ChromiumTabs/common.h>
 
 
@@ -39,9 +42,35 @@
 @implementation KSyntaxHighlighter
 
 @synthesize styleFile = styleFile_,
-            currentTextStorage = currentTextStorage_,
-            definitionFileSearchPath = definitionFileSearchPath_,
-            styleFileSearchPath = styleFileSearchPath_;
+            currentTextStorage = currentTextStorage_;
+
+
+static NSMutableArray *gLanguageFileSearchPath_;
+static NSMutableArray *gStyleFileSearchPath_;
+
+
++ (void)load {
+  NSAutoreleasePool *pool = [NSAutoreleasePool new];
+  NSBundle *mainBundle = [NSBundle mainBundle];
+  NSString *builtinLangDir = nil, *builtinStyleDir = nil;
+  if (mainBundle) {
+    builtinLangDir =
+        [[mainBundle resourcePath] stringByAppendingPathComponent:@"lang"];
+    builtinStyleDir =
+        [[mainBundle resourcePath] stringByAppendingPathComponent:@"style"];
+    srchilite::Settings::setGlobalDataDir([builtinLangDir UTF8String]);
+  }
+  gLanguageFileSearchPath_ =
+      [[NSMutableArray alloc] initWithObjects:builtinLangDir, nil];
+  gStyleFileSearchPath_ =
+      [[NSMutableArray alloc] initWithObjects:builtinStyleDir, nil];
+  [pool drain];
+}
+
+
++ (NSMutableArray *)languageFileSearchPath { return gLanguageFileSearchPath_; }
++ (NSMutableArray *)styleFileSearchPath { return gStyleFileSearchPath_; }
+
 
 + (srchilite::LangMap*)definitionMap {
   // make sure the lang map is loaded before returning it
@@ -50,7 +79,8 @@
 }
 
 
-+ (NSString*)definitionFileForFilename:(NSString*)filename {
+// guess language file based on filename
++ (NSString*)languageFileForFilename:(NSString*)filename {
   srchilite::LangMap* langMap = [self definitionMap];
   const char *pch =
       langMap->getMappedFileNameFromFileName([filename UTF8String]).c_str();
@@ -59,6 +89,48 @@
   }
   return nil;
 }
+
+
++ (NSString *)_pathForResourceFile:(NSString*)file
+                            ofType:(NSString*)type
+                     inSearchPaths:(NSArray*)searchPaths
+                             error:(NSError**)error {
+  if (file && file.length) {
+    if ([file isAbsolutePath]) {
+      return file;
+    } else if ([searchPaths count] > 0) { 
+      if (type && type.length && ![[file pathExtension] isEqualToString:type]) {
+        file = [file stringByAppendingPathExtension:type];
+      }
+      NSFileManager *fm = [NSFileManager defaultManager];
+      for (NSString *path in searchPaths) {
+        path = [path stringByAppendingPathComponent:file];
+        if ([fm fileExistsAtPath:path])
+          return path;
+      }
+    }
+  }
+  if (error)
+    *error = [NSError kodErrorWithFormat:@"File not found: \"%@\"", file];
+  return nil;
+}
+
+
++ (NSString *)pathForLanguageFile:(NSString*)file error:(NSError**)error {
+  return [self _pathForResourceFile:file
+                             ofType:@"lang"
+                      inSearchPaths:gLanguageFileSearchPath_
+                              error:error];
+}
+
+
++ (NSString *)pathForStyleFile:(NSString*)file error:(NSError**)error {
+  return [self _pathForResourceFile:file
+                             ofType:@"css"
+                      inSearchPaths:gStyleFileSearchPath_
+                              error:error];
+}
+
 
 
 + (NSString*)canonicalContentOfDefinitionFile:(NSString*)file {
@@ -77,8 +149,16 @@
 + (srchilite::HighlightStatePtr)highlightStateForDefinitionFile:(NSString*)file{
   srchilite::LangDefManager *langDefManager =
       srchilite::Instances::getLangDefManager();
-  const std::string path = "/opt/local/share/source-highlight";
-  return langDefManager->getHighlightState(path, [file UTF8String]);
+  if ([file isAbsolutePath]) {
+    NSString *dirname = [file stringByDeletingLastPathComponent];
+    file = [file lastPathComponent];
+    DLOG("loading lang from %@/%@", dirname, file);
+    return langDefManager->getHighlightState([dirname UTF8String],
+                                             [file UTF8String]);
+  } else {
+    DLOG("loading lang from %@", file);
+    return langDefManager->getHighlightState([file UTF8String]);
+  }
 }
 
 
@@ -90,7 +170,7 @@
     return formatterFactory.getTextFormatterMap();
   }
   
-  std::string bgcolor;
+  std::string bgcolor = "";
   
   if (styleFile) {
     DLOG("loading style from %@", styleFile);
@@ -98,7 +178,8 @@
     try {
       if (srchilite::get_file_extension(styleFileStdStr) == "css") {
         srchilite::StyleFileParser::parseCssStyleFile(styleFileStdStr,
-                                                      &formatterFactory, bgcolor);
+                                                      &formatterFactory,
+                                                      bgcolor);
       } else {
         srchilite::StyleFileParser::parseStyleFile(styleFileStdStr,
                                                    &formatterFactory, bgcolor);
@@ -110,40 +191,29 @@
     }
   }
   
-  // make sure we default background to a standard color
-  if (bgcolor == "")
-    bgcolor = "white";
-  
-  // we need to transform the color string
-  // since it might be in source-highlight format and not html one
-  //backgroundColor_ = TextFormatterFactory::colorMap.getColor(bgcolor).c_str()); TODO
-  
+  if (bgcolor != "") {
+    DLOG("TODO: bgcolor = %s", bgcolor.c_str());
+    // TODO: clean up this mess and move all style things to a separate class
+    // with proper caching of {style_id => KTextFormatterMap}
+  }
+  // Idea: We should fetch the "normal" formatter and:
+  // 1. if bgcolor is set but no fgcolor, deduce a good fgcolor based on bgcolor
+  // 2. if fgcolor is set but no ... (vice versa)
+  // 3. use default colors
+
   return formatterFactory.getTextFormatterMap();
 }
 
 
 - (id)init {
   self = [super init];
-  NSBundle *mainBundle = [NSBundle mainBundle];
-  NSString *builtinLangDir = nil, *builtinStyleDir = nil;
-  if (mainBundle) {
-    builtinLangDir =
-        [[mainBundle resourcePath] stringByAppendingPathComponent:@"lang"];
-    builtinStyleDir =
-        [[mainBundle resourcePath] stringByAppendingPathComponent:@"style"];
-  }
-  definitionFileSearchPath_ =
-      [[NSMutableArray alloc] initWithObjects:builtinLangDir, nil];
-  styleFileSearchPath_ =
-      [[NSMutableArray alloc] initWithObjects:builtinStyleDir, nil];
   return self;
 }
 
 
-- (id)initWithDefinitionsFromFile:(NSString*)file
-                    styleFromFile:(NSString*)styleFile {
+- (id)initWithLanguageFile:(NSString*)langFile styleFile:(NSString*)styleFile {
   if ((self = [self init])) {
-    [self loadDefinitionsFromFile:file styleFromFile:styleFile];
+    [self loadLanguageFile:langFile styleFile:styleFile];
   }
   return self;
 }
@@ -178,7 +248,7 @@
 }
 
 
-- (void)reloadFormatting {  // internal
+- (void)reloadStyle {
   DLOG("reloading FormatterManager");
   if (formatterManager_) {
     if (sourceHighlighter_ &&
@@ -193,26 +263,64 @@
       new srchilite::FormatterManager(KTextFormatterPtr(defaultFormatter));
   KTextFormatterFactory f;
   //f.setDefaultToMonospace(isDefaultToMonospace());
-  [self setFormatters:
-      [isa textFormatterMapForFormatterFactory:f styleFile:styleFile_]];
+  
+  NSError *error = nil;
+  NSString *file = [isa pathForStyleFile:styleFile_ error:&error];
+  if (error) {
+    [NSApp presentError:error];
+  } else {
+    if (file)
+      self.styleFile = file;
+    [self setFormatters:
+        [isa textFormatterMapForFormatterFactory:f styleFile:styleFile_]];
+  }
+  
   if (sourceHighlighter_)
     sourceHighlighter_->setFormatterManager(formatterManager_);
 }
 
 
-- (void)loadDefinitionsFromFile:(NSString*)definitionFile
-                  styleFromFile:(NSString*)styleFile {
-  self.styleFile = styleFile;
-  [self loadDefinitionsFromFile:definitionFile];  // implies reloadFormatting
+- (void)loadStyleFile:(NSString*)file {
+  self.styleFile = file;
+  [self reloadStyle];
 }
 
 
-- (void)loadDefinitionsFromFile:(NSString*)file {
-  // delete any previous highlighter
+- (void)loadLanguageFile:(NSString*)langFile styleFile:(NSString*)styleFile {
+  self.styleFile = styleFile;
+  [self loadLanguageFile:langFile];  // implies reloadStyle
+}
+
+
+- (void)loadLanguageFile:(NSString*)file {
+  NSError *error = nil;
+  srchilite::HighlightStatePtr mainState;
+  
+  // try to load language file
+  file = [isa pathForLanguageFile:file error:&error];
+  if (!error) {
+    try {
+      mainState = [isa highlightStateForDefinitionFile:file];
+    } catch (const srchilite::ParserException &e) {
+      DLOG("ParserException when loading lang file \"%@\": %s", file, e.what());
+      error = [NSError kodErrorWithFormat:
+               @"Error when loading language file \"%@\": %s", file, e.what()];
+    }
+  }
+  
+  // handle error
+  if (error) {
+    if (!sourceHighlighter_) {
+      // make sure sourceHighlighter_ is valid
+      mainState.reset(new srchilite::HighlightState());
+      sourceHighlighter_ = new srchilite::SourceHighlighter(mainState);
+    }
+    [NSApp presentError:error]; // FIXME pass by reference or something
+    return;
+  }
+  
   if (sourceHighlighter_)
     delete sourceHighlighter_;
-  srchilite::HighlightStatePtr mainState =
-      [isa highlightStateForDefinitionFile:file];
   sourceHighlighter_ = new srchilite::SourceHighlighter(mainState);
   sourceHighlighter_->setFormatterParams(&formatterParams_);
   sourceHighlighter_->setOptimize(false);
@@ -220,15 +328,9 @@
   
   // reload FormatterManager
   if (!formatterManager_)
-    [self reloadFormatting];
+    [self reloadStyle];
 
   definitionFile_ = [file retain];
-}
-
-
-- (void)loadStyleFromFile:(NSString*)file {
-  self.styleFile = file;
-  [self reloadFormatting];
 }
 
 

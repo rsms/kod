@@ -1,0 +1,11 @@
+# highlighting for (KDE) desktop files
+
+include "script_comment.lang"
+
+section start '\[.*\]'
+
+(type,paren,normal,symbol) = `([^="\[]+)((?:\[.+\])*)([[:blank:]]*)(=)`
+
+include "number.lang"
+include "symbols.lang"
+include "c_string.lang"

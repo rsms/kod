@@ -1,0 +1,16 @@
+# highlighting for key="string", used in HTML and XML
+
+string delim "\"" "\"" escape "\\" multiline
+string delim "'" "'" escape "\\" multiline
+
+# this is valid <p foo=/bar/> and equivalent to <p foo="bar">
+string delim "/" "/"
+
+# this is for HTML5 style for <a h=specification without quotes>
+(type,normal,symbol,normal,string) = `([^="[:blank:]>]+)([[:blank:]]*)(=)([[:blank:]]*)([^="'>]+)`
+
+# this is for the case where we expect " " or ' ' after the =
+(type,normal,symbol) = `([^="[:blank:]>]+)([[:blank:]]*)(=)`
+
+# everything else is highlighted as type
+type = '[[:alnum:]]+'

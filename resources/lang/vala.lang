@@ -1,0 +1,37 @@
+# definitions for Vala
+# by Luca Bruno.
+
+string delim "\"\"\"" "\"\"\"" multiline
+#preproc = '^[[:blank:]]*\[.+\]'
+
+include "csharp.lang"
+
+subst keyword = "abstract|new|struct",
+ "as|null|switch|inline",
+ "base|extern|this|owned|unowned|weak",
+ "false|throw|throws",
+ "break|finally|out|true|volatile",
+ "override|errordomain|try",
+ "case|params|typeof|dynamic",
+ "catch|for",
+ "foreach|protected|async",
+ "public|private",
+ "class|if",
+ "const|ref",
+ "continue|in|return",
+ "virtual",
+ "default|interface",
+ "delegate|internal|delete",
+ "do|is|sizeof|while",
+ "lock|ensures|requires",
+ "else|static",
+ "enum|namespace",
+ "get|set|construct",
+ "yield|signal"
+
+subst type = "bool|char|uchar|unichar|double|float",
+ "int|int8|int16|int32|int64",
+ "uint|uint8|uint16|uint32|uint64",
+ "long|ulong",
+ "short|ushort|string|void",
+ "var|size_t|ssize_t|time_t|va_list"

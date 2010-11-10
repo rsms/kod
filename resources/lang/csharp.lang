@@ -1,0 +1,36 @@
+# definitions for C-sharp
+# by S. HEMMI, updated by L. Bettini.
+preproc = "using"
+
+number = 
+'\<[+-]?((0x[[:xdigit:]]+)|(([[:digit:]]*\.)?
+[[:digit:]]+([eE][+-]?[[:digit:]]+)?))([FfDdMmUulL]+)?\>'
+
+include "cpp.lang"
+
+subst keyword = "abstract|event|new|struct",
+ "as|explicit|null|switch",
+ "base|extern|this",
+ "false|operator|throw",
+ "break|finally|out|true",
+ "fixed|override|try",
+ "case|params|typeof",
+ "catch|for|private",
+ "foreach|protected",
+ "checked|goto|public|unchecked",
+ "class|if|readonly|unsafe",
+ "const|implicit|ref",
+ "continue|in|return",
+ "virtual",
+ "default|interface|sealed|volatile",
+ "delegate|internal",
+ "do|is|sizeof|while",
+ "lock|stackalloc",
+ "else|static",
+ "enum|namespace",
+ "get|partial|set",
+ "value|where|yield"
+
+subst type = "bool|byte|sbyte|char|decimal|double",
+ "float|int|uint|long|ulong|object",
+ "short|ushort|string|void"

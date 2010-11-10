@@ -1,0 +1,42 @@
+# Author: Maurizio Loreti, aka MLO or (HAM) I3NOO
+# WWW:    http://www.pd.infn.it/~loreti/mlo.html
+#
+######################################################################
+# Language definitions for Makefiles; intended for source-highlight
+# (see http://www.gnu.org/software/src-highlite).
+######################################################################
+
+# Modified by Lorenzo Bettini, http://www.lorenzobettini.it
+
+# Declared symbols; e.g.:
+# SOURCE = foo.c
+# ^^^^^^^^ will be highlighted as "type" (default: dark green)
+
+type = '^[a-zA-Z0-9_-]+[[:space:]]*='
+
+# Special statements; e.g.:
+# .PHONY: clean
+# ^^^^^^^ will be highlighted as "preproc" (default: dark blue)
+
+preproc = '^\.[a-zA-Z0-9_-]+[[:space:]]*:'
+
+# automake/autoconf variables
+preproc = '@(.+)@'
+
+# Dependencies; e.g.:
+# foo.o foo.z: foo.c
+# ^^^^^^^^^^^^ will be highlighted as "symbol" (default: dark red)
+
+symbol = '^([[:word:].[:space:]-])+:'
+
+# Rules; e.g.:
+# %.o:%.c
+# ^^^^^^^ will be highlighted as "string" (default: red)
+
+string = '%[a-zA-Z0-9_.-]+:%[a-zA-Z0-9_.-]+'
+
+# filenames
+normal = '([[:word:]-]*)\.([[:word:]-]+)'
+
+# The statements following dependencies are for /bin/sh; so:
+include "sh.lang"

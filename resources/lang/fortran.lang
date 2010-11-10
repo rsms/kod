@@ -1,0 +1,57 @@
+# Fortran language definition file for GNU Source-highlight
+
+keyword = "ACCESS|ASSIGN|BACKSPACE|BLANK|BLOCK|CALL",
+      "CLOSE|COMMON|CONTINUE|DATA|DIMENSION|DIRECT|DO",
+      "ELSE|ENDIF|ENDDO|END",
+      "ENTRY|EOF|EQUIVALENCE|ERR|EXIST|EXTERNAL|FILE|FMT|FORM",
+      "FORMAT|FORMATTED|FUNCTION|GO|TO|IF|IMPLICIT|INCLUDE|INQUIRE",
+      "INTRINSIC|IOSTAT|LOGICAL|NAMED|NAMELIST|NEXTREC|NUMBER|OPEN|OPENED",
+      "PARAMETER|PAUSE|PRINT|PROGRAM|READ|REC|RECL",
+      "RETURN|REWIND|SEQUENTIAL|STATUS|STOP|SUBROUTINE|THEN|TYPE",
+      "UNFORMATTED|UNIT|WRITE|SAVE"
+        nonsensitive
+
+# Fortran 90
+keyword = "ALLOCATE|ALLOCATABLE|CASE|CONTAINS|CYCLE|DEALLOCATE",
+      "ELSEWHERE|EXIT|INTERFACE|INTENT|MODULE|ONLY|OPERATOR",
+      "OPTIONAL|POINTER|PRIVATE|PROCEDURE|PUBLIC|RESULT|RECURSIVE",
+      "SELECT|SEQUENCE|TARGET|USE|WHILE|WHERE"
+      nonsensitive
+
+# Fortran 95
+keyword = "ELEMENTAL|FORALL|PURE"
+      nonsensitive
+
+# Fortran 2003
+keyword = "ABSTRACT|CLASS|DELEGATE|STATIC|REFERENCE|ROUND",
+      "DECIMAL|SIGN|ENCODING|IOMSG|ENDFILE|NEXTREC|PENDING",
+      "PASS|ASSOCIATE|FLUSH|DECORATE|EXTENDS|EXTENSIBLE|GENERIC",
+      "NON_OVERRIDABLE|ENUM|ENUMERATOR|TYPEALIAS|MOVE_ALLOC"
+      nonsensitive
+
+keyword = "ASYNCHRONOUS|BIND|PROTECTED|VOLATILE"
+      nonsensitive
+
+# Continuation character
+specialchar = "&"
+
+comment start "!"
+
+# Real constants
+number = '[+-]?\<([[:digit:]]*\.)?[[:digit:]]*([eEdDqQ][+-]?[[:digit:]]+)?(_[[:digit:][:alpha:]]+)?\>'
+
+# Binary, octal, and hexadecimal constants
+number = 'b\'\<[01]+\>\''
+number = 'o\'\<[0-7]+\>\''
+number = 'z\'\<[A-Fa-f0-9]+\>\''
+
+# fortran strings have no \ escape char
+string delim "\"" "\""
+string delim "'" "'"
+
+type = "CHARACTER|DOUBLE|INTEGER|REAL|PRECISION",
+       "COMPLEX" nonsensitive
+
+include "symbols.lang"
+
+include "function.lang"

@@ -12,7 +12,6 @@
   BOOL isDirty_;
   NSStringEncoding textEncoding_;
   KSyntaxHighlighter *syntaxHighlighter_;
-  
 }
 
 @property(assign, nonatomic) BOOL isDirty;

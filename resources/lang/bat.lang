@@ -1,0 +1,36 @@
+# DOS batch files
+
+comment start '[Rr][Ee][Mm]'
+comment start "::"
+
+label start '^[[:blank:]]*:'
+
+path = '[[:alpha:]]:([[:alnum:]\\_])*'
+
+keyword = "do|else|end|errorlevel|exist|exit|for|goto|if|not|pause|return",
+	"say|select|then|when" nonsensitive
+
+function = "ansi|append|assign|attrib|autofail|backup|basedev|boot|break",
+"buffers|cache|call|cd|chcp|chdir|chkdsk|choice|cls|cmd|codepage|command|comp",
+"copy|country|date|ddinstal|debug|del|detach|device|devicehigh|devinfo|dir",
+"diskcoache|diskcomp|diskcopy|doskey|dpath|dumpprocess|eautil|endlocal|erase",
+"exit_vdm|extproc|fcbs|fdisk|fdiskpm|files|find|format|fsaccess|fsfilter",
+"graftabl|iopl|join|keyb|keys|label|lastdrive|libpath|lh|loadhigh|makeini",
+"maxwait|md|mem|memman|mkdir|mode|move|net|patch|path|pauseonerror|picview",
+"pmrexx|print|printmonbufsize|priority|priority_disk_io|prompt|protectonly",
+"protshell|pstat|rd|recover|reipl|ren|rename|replace|restore|rmdir|rmsize|run",
+"set|setboot|setlocal|shell|shift|sort|spool|start|subst|suppresspopups|swappath",
+"syslevel|syslog|threads|time|timeslice|trace|tracebuf|tracefmt|trapdump|tree",
+"type|undelete|unpack|use|ver|verify|view|vmdisk|vol|xcopy|xcopy32|xdfcopy",
+"echo|cur-date" nonsensitive
+
+environment string delim "\"" "\"" escape "\\" begin
+  specialchar = '%.'
+end
+
+variable = '%[[:digit:]]+'
+variable = '%%[[:alpha:]]'
+
+include "symbols.lang"
+include "number.lang"
+

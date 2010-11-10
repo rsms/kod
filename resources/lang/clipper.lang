@@ -1,0 +1,22 @@
+# lang def file for good ol' clipper  :-)
+
+include "c_comment.lang"
+
+keyword = "announce|begin|break|case|declare|do|elseif|else|endif|enddo|end",
+"endcase|exit|external|field|for|if|local|loop|memvar|next|otherwise|parameters",
+"private|public|recover|request|return|sequence|step|static|using|while|with",
+"accept|append|all|alternate|box|blank|bell|call|cancel|clear|close|commit",
+"continue|copy|count|create|century|color|confirm|console|cursor|delete|dir",
+"display|date|decimals|default|deleted|delimiters|device|eject|erase|extended",
+"epoch|escape|exact|exclusive|file|find|form|from|filter|fixed|format|function",
+"get|gets|go|index|init|input|intensity|join|keyboard|key|label|list|locate",
+"memory|menu|margin|message|note|order|pack|procedure|prompt|path|printer|quit",
+"read|recall|reindex|release|rename|replace|report|restore|run|relation|say",
+"screen|structure|save|seek|select|set|scoreboard|softseek|skip|sort|store|sum",
+"to|typeahead|text|total|type|unique|unlock|update|use|wrap|wait|zap"
+nonsensitive
+
+include "symbols.lang"
+include "c_string.lang"
+include "number.lang"
+include "function.lang"

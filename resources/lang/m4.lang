@@ -1,0 +1,27 @@
+# language definition for m4 files
+
+state keyword start "dnl" begin
+  # avoid spaces in front of urls or @[[:alpha:]]+ be caputured as prefixes
+  comment = '[[:blank:]]+'
+  include "url.lang"
+  include "html_simple.lang"
+  type = '@[[:alpha:]]+'
+  # everything else is a comment
+  comment = '.+'
+end
+
+comment start "#"
+
+string delim "\"" "\"" escape "\\"
+
+variable = '\$[[:digit:]]+'
+
+# it's better not to rely on sh.lang, otherwise, too many things
+# will be highlighted, and often not correctly: better to highlight less
+# like emacs does
+
+# since ## is not a comment in shell scripts, but it is in m4
+# we kind of redefine multiple #'s as comments
+# comment start '#+'
+
+# include "sh.lang"

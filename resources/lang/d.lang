@@ -1,0 +1,39 @@
+# D language definition, http://www.digitalmars.com/d/2.0/index.html
+# most is reused from cpp.lang
+
+preproc = '\<__[[:alpha:]]+__\>'
+preproc = "import"
+
+# sh style syntax script syntax
+comment start '^#!'
+
+# nested comments
+environment comment delim "/+" "+/" multiline nested begin
+  include "url.lang"
+  include "todo.lang"
+end
+
+# Wysiwyg Strings (\ is not a special char)
+string delim '(r|x)\"' "\"" 
+string delim "`" "`"
+
+# string literal postfix characters
+string = '\".*\"(c|w|d)'
+
+include "cpp.lang"
+
+type = "byte|cdouble|cent|cfloat|creal|dchar|idouble|ifloat|ireal",
+	"real|ubyte|ucent|uint|ulong|ushort|wchar"
+
+subst keyword = "abstract|alias|align|asm|assert|auto|body",
+"break|case|cast|catch|class|const|continue|debug|default",
+"delegate|delete|deprecated|do|else|enum|export|extern",
+"false|final|finally|for|foreach_reverse|foreach|function",
+"goto|if|in|inout|interface|invariant|is|lazy",
+"macro|mixin|module|new|nothrow|null|out|override",
+"package|pragma|private|protected|public|pure",
+"ref|return|scope|shared|static|struct|super|switch",
+"synchronized|template|this|throw|true|try|typedef|typeid",
+"typeof|union|unittest|version|void|volatile",
+"while|with|__gshared|__thread|__traits"
+

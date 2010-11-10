@@ -1,0 +1,14 @@
+# highlight errors like compiler output errors, e.g.
+# filename:line:col: warning: etc...
+
+# the path can also start with a drive letter and :
+state (path,symbol,function,symbol,function,symbol) = 
+`((?:[[:alpha:]]:)?[^[:blank:]:]+)(:)([[:digit:]]+)(:?)([[:digit:]]*)(:?)` begin
+
+	warning = "warning:"
+	error = "error:"
+	string delim "\"" "\""
+	string delim "`" "'"
+	string delim "'" "'"
+	normal = '\z' exit
+end

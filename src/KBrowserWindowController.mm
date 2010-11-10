@@ -32,7 +32,7 @@
   // Setup scrollers
   NSScrollView *fileTreeScrollView =
       (NSScrollView*)[[fileOutlineView_ superview] superview];
-  NSLog(@"fileTreeScrollView => %@", fileTreeScrollView);
+  DLOG("fileTreeScrollView => %@", fileTreeScrollView);
   KScroller *hScroller = [[KScroller alloc] initWithFrame:NSZeroRect];
   /*[fileTreeScrollView setHasHorizontalScroller:YES];
   [fileTreeScrollView setAutohidesScrollers:NO];

@@ -1,0 +1,20 @@
+# deal with embedded CSS
+state keyword = "<style" nonsensitive begin
+    include "key_string.lang"
+    state keyword = '>' begin
+    	keyword = "</style>" nonsensitive exit 2
+	include "css.lang"
+    end
+end
+
+# deal with embedded Javascript
+state keyword = "<script" nonsensitive begin
+    include "key_string.lang"
+    state keyword = '>' begin
+    	keyword = "</script>" nonsensitive exit 2
+	include "javascript.lang"
+    end
+end
+
+include "html_simple.lang"
+

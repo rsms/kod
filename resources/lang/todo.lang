@@ -1,0 +1,3 @@
+vardef TODO = '(TODO|FIXME|BUG)([:]?)'
+
+todo = $TODO

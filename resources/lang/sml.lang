@@ -1,0 +1,5 @@
+include "caml.lang"
+
+redef keyword = "abstraction|abstype|and|andalso|as|before|case|datatype|do|else|end|eqtype|exception|fn|fun|functor|handle|if|in|include|infix|infixr|let|local|nonfix|o|of|op|open|orelse|overload|raise|rec|sharing|sig|signature|struct|structure|then|type|val|where|while|with|withtype"
+
+redef type = "int|byte|boolean|char|long|float|double|short|void"

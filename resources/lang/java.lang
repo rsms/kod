@@ -1,0 +1,26 @@
+preproc = "import","package"
+
+include "c_comment.lang"
+
+include "number.lang"
+
+include "c_string.lang"
+
+(keyword,normal,classname) = `(\<(?:class|interface))([[:blank:]]+)([$[:alnum:]_]+)`
+
+keyword = "abstract|assert|break|case|catch|class|const",
+          "continue|default|do|else|extends|false|final",
+          "finally|for|goto|if|implements|instanceof|interface"
+keyword = "native|new|null|private|protected|public|return",
+          "static|strictfp|super|switch|synchronized|throw",
+          "throws|true|this|transient|try|volatile|while"
+
+type = "int|byte|boolean|char|long|float|double|short|void"
+
+include "symbols.lang"
+
+cbracket = "{|}"
+
+include "function.lang"
+
+include "clike_vardeclaration.lang"

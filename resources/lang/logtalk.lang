@@ -1,0 +1,86 @@
+# highlighting for Logtalk source files (http://logtalk.org/)
+#
+#	written by Paulo Moura (pmoura@logtalk.org)
+#	last revised on 5 December 2009
+
+comment start "%"
+comment delim "/*" "*/" multiline nested
+
+string delim "\"" "\"" escape "\\"
+
+environment string delim "'" "'" begin
+	specialchar = '\\([\\abfnrtv"\']|(x[a-fA-F0-9]+|[0-7]+)\\)'
+end
+
+keyword =	'\<(abolish|c(urrent|reate))_(object|protocol|category)(?=\()',
+			'\<(object|protocol|category)_property(?=\()',
+			'\<complements_object(?=\()',
+			'\<extends_(object|protocol|category)(?=\()',
+			'\<imp(lements_protocol|orts_category)(?=\()',
+			'\<(instantiat|specializ)es_class(?=\()',
+			'\<(current_event|(abolish|define)_events)(?=\()',
+			'\<(current|set)_logtalk_flag(?=\()',
+			'\<logtalk_(compile|l(oad|ibrary_path))(?=\()'
+
+keyword =	'\<(after|before)(?=\()',
+			'\<(parameter|this|se(lf|nder))(?=\()',
+			'\<(current_predicate|predicate_property)(?=\()',
+			'\<(expand_(goal|term)|(goal|term)_expansion|phrase)(?=\()',
+			'\<(clause|retract(all)?)(?=\()',
+			'\<a(bolish|ssert(a|z))(?=\()',
+			'\<(ca(ll|tch)|throw)(?=\()',
+			'\<((bag|set)of|f(ind|or)all)(?=\()',
+			'\<threaded(_(call|once|ignore|exit|peek|wait|notify))?(?=\()',
+			'\<unify_with_occurs_check(?=\()',
+			'\<(functor|arg|copy_term)(?=\()',
+			'\<(rem|mod|abs|sign)(?=\()',
+			'\<(float_(integer|fractional)_part|float)(?=\()',
+			'\<(floor|truncate|round|ceiling)(?=\()',
+			'\<(cos|atan|exp|log|s(in|qrt))(?=\()',
+			'\<(var|atom(ic)?|integer|float|compound|n(onvar|umber))(?=\()',
+			'\<(curren|se)t_(in|out)put(?=\()',
+			'\<(open|close)(?=\()',
+			'\<flush_output(?=\()',
+			'\<(flush_output|at_end_of_stream)\>',
+			'\<(stream_property|at_end_of_stream|set_stream_position)(?=\()',
+			'\<(get|p(eek|ut))_(byte|c(har|ode))(?=\()',
+			'\<nl(?=\()', '\<(nl)\>',
+			'\<(read(_term)?)(?=\()',
+			'\<(write(q|_(canonical|term))?)(?=\()',
+			'\<(op|current_op)(?=\()',
+			'\<((current_)?char_conversion)(?=\()',
+			'\<atom_(length|c(hars|o(ncat|des)))(?=\()',
+			'\<(char_code|sub_atom)(?=\()',
+			'\<number_(c(har|ode)s)(?=\()',
+			'\<(set|current)_prolog_flag(?=\()',
+			'\<halt(?=\()', '\<(halt)\>',
+			'\<once(?=\()',
+			'\<(true|fail|repeat)\>',
+			'\<(is|rem|mod)\>'
+
+
+variable =	'\<[A-Z_][A-Za-z0-9_]*'
+
+cbracket =	"{|}"
+
+preproc =	'^[[:blank:]]*:-[[:blank:]](ca(lls|tegory)|p(ublic|r(ot(ocol|ected)|ivate))|e(l(if|se)|n(coding|sure_loaded)|xport)|i(f|n(fo|itialization))|alias|d(ynamic|iscontiguous)|m(eta_predicate|od(e|ule)|ultifile)|reexport|s(et_(logtalk|prolog)_flag|ynchronized)|o(bject|p)|use(s|_module))(?=\()',
+			'^[[:blank:]]*:-[[:blank:]](end(if|_(category|object|protocol))|dynamic|synchronized|threaded)\.'
+
+preproc =	'\<(complements|extends|i(nstantiates|mp(lements|orts))|specializes)(?=\()'
+
+normal =	'\<[a-z][A-Za-z0-9_]*'
+
+number =	'0\'.|0b[0-1]+|0o[0-7]+|0x[0-9a-fA-F]+|[0-9]+(\.[0-9]+)?([eE]([-+])?[0-9]+)?'
+
+symbol =	"^",
+			"::", "^^", ":",
+			">>", "<<", "/\\", "\\/", "\\",
+			"=:=", "=\\=", "<", "=<", ">", ">=",
+			"=..",
+			"\\==", "==", "@=<", "@<", "@>=", "@>",
+			"=", "\\=",
+			"+", "-", "**", "*", "//", "/",
+			"-->",
+			"!", "->", ";", "\\+",
+			"?", "@",
+			":-"

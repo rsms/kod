@@ -1,0 +1,24 @@
+# David Bremners, http://www.cs.unb.ca/~bremner/
+
+keyword = "andthen|at|attr|case|catch|choice|class|cond",
+          "declare|define|dis|div|do|else|elsecase",
+          "elseif|elseof|end|fail|false|feat|finally|for",
+          "from|fun|functor|if|import|in|local|lock|meth",
+          "mod|not|of|or|orelse|prepare|proc|prop|raise",
+          "require|self|skip|then|thread|true|try|unit"
+
+meta delim "<" ">"
+cbracket = "{|}"
+comment start "%"
+
+symbol = "~","*","(",")","-","+","=","[","]","#",":",
+       ",",".","/","?","&","<",">","\|"
+
+atom delim "'" "'"  escape "\\"
+
+atom = '[a-z][[:alpha:][:digit:]]*'
+
+variable delim "`" "`"  escape "\\"
+variable = '[A-Z][[:alpha:][:digit:]]*'
+
+string delim "\"" "\"" escape "\\"

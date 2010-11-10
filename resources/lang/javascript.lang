@@ -1,0 +1,27 @@
+# Javascript lang definition file
+
+# first check if the input matches a comment
+include "c_comment.lang"
+
+keyword =
+"abstract|break|case|catch|class|const|continue|debugger|default|delete|do|else|enum|export|extends|false|final|finally|for|function|goto|if|implements|in|instanceof|interface|native|new|null|private|protected|prototype|public|return|static|super|switch|synchronized|throw|throws|this|transient|true|try|typeof|var|volatile|while|with"
+
+# next check if it matches a division operator, which can occur only
+# after a number, an identifier, or certain symbols
+(symbol,normal,symbol) = `(\+\+|--|\)|\])(\s*)(/=?(?![*/]))`
+(number,normal,symbol) =
+`(0x[[:xdigit:]]+|(?:[[:digit:]]*\.)?[[:digit:]]+(?:[eE][+-]?[[:digit:]]+)?)(\s*)(/(?![*/]))`
+(normal,symbol) = `([[:alpha:]$_][[:alnum:]$_]*\s*)(/=?(?![*/]))`
+
+# finally check if it matches a regular expression 
+regexp = '/(\\.|[^*\\/])(\\.|[^\\/])*/[gim]*'
+
+include "number.lang"
+
+include "c_string.lang"
+
+include "symbols.lang"
+
+cbracket = "{|}"
+
+include "function.lang" 

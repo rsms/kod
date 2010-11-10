@@ -1,0 +1,12 @@
+# rpm .spec files
+
+include "script_comment.lang"
+
+keyword = '^[[:word:]-]+:'
+
+include "url.lang"
+include "number.lang"
+
+variable = '\$[[:word:]]+'
+
+preproc = '%(\{?)[[:word:]]+(\}?)'

@@ -1,0 +1,38 @@
+preproc = "import"
+
+#number = '(?<=-)([[:digit:]]+)'
+
+include "number.lang"
+
+normal = '\\"'
+normal = '\\\''
+
+include "c_string.lang"
+
+function = 'function[[:blank:]]+([[:alpha:]]|_)[[:word:]]*[[:blank:]]*(\(\))?'
+function = '([[:alpha:]]|_)[[:word:]]*[[:blank:]]*\(\)'
+
+# avoids, in things such as --bind, that words are highlighted as keywords
+normal = '([[:alpha:]]*[-/]+[[:alpha:]]+)+'
+
+keyword = "alias|bg|bind|break|builtin|caller|case|command|compgen",
+          "complete|continue|declare|dirs|disown|do|done|elif|else|enable",
+          "esac|eval|exec|exit|export|false|fc|fg|fi|for|getopts|hash|help",
+          "history|if|in|jobs|let|local|logout|popd|printf|pushd|read",
+          "readonly|return|select|set|shift|shopt|source|suspend|test|then",
+          "times|trap|true|type|typeset|umask|unalias|unset|until|wait|while"
+
+# it is considered a variable if there's a =, which is discarded anyway
+variable = '([[:alpha:]]|_)[[:word:]]*(?==)'
+variable = '\$\{([^[:blank:]]+)\}'
+variable = '\$\(([^[:blank:]]+)\)'
+variable = '\$([[:alpha:]]|_)[[:word:]]*'
+variable = '\$([^[:blank:]]{1})'
+
+# notice that - is not a symbol since it can be used in command line parameters
+symbol = "~","!","%","^","*","(",")","+","=","[",
+        "]","\\",":",";",",",".","/","?","&","<",">","\|","%%"
+symbol = '(##){2}(?!#)'
+
+include "script_comment.lang"
+

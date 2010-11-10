@@ -31,7 +31,7 @@
   /// table of formatters
   srchilite::FormatterManager *formatterManager_;
   
-  // Parser state. FIXME reentrant
+  /// Parser state
   NSUInteger currentTextStorageOffset_;
   NSTextStorage *currentTextStorage_;
   __weak const std::string *currentUTF8String_;
@@ -39,16 +39,10 @@
   __weak KHighlightState *lastFormattedState_; // temporal per format call
   NSRange lastFormattedRange_;
   int tempStackDepthDelta_;
-  
-  // Search paths
-  NSMutableArray *definitionFileSearchPath_;
-  NSMutableArray *styleFileSearchPath_;
 }
 
 @property(retain, nonatomic) NSString *styleFile;
 @property(readonly, nonatomic) NSTextStorage *currentTextStorage;
-@property(readonly, nonatomic) NSMutableArray *definitionFileSearchPath;
-@property(readonly, nonatomic) NSMutableArray *styleFileSearchPath;
 
 /**
  * Returns the the lang def file name by using the file name for detecting
@@ -58,7 +52,15 @@
  * @param filename
  * @return the lang def file name or the empty string if no mapping exists
  */
-+ (NSString*)definitionFileForFilename:(NSString*)filename;
++ (NSString*)languageFileForFilename:(NSString*)filename;
+
+/// Resolve path for |file|, passing |error|.
++ (NSString *)pathForLanguageFile:(NSString*)file error:(NSError**)error;
++ (NSString *)pathForStyleFile:(NSString*)file error:(NSError**)error;
+
+/// Search paths
++ (NSMutableArray *)languageFileSearchPath;
++ (NSMutableArray *)styleFileSearchPath;
 
 /// Canonical rep of the content of |file|
 + (NSString*)canonicalContentOfDefinitionFile:(NSString*)file;
@@ -72,18 +74,19 @@
  * @param file the lang file of Source-highlight
  * @throws srchilite::ParserException
  */
-- (id)initWithDefinitionsFromFile:(NSString*)file
-                    styleFromFile:(NSString*)styleFile;
-
-/// Setup with definition |file|
-- (void)loadDefinitionsFromFile:(NSString*)file;
+- (id)initWithLanguageFile:(NSString*)langFile styleFile:(NSString*)styleFile;
 
 /// Load style from file (causes |reloadFormatting|)
-- (void)loadStyleFromFile:(NSString*)file;
+- (void)loadStyleFile:(NSString*)file;
+
+/// Setup with definition |file|
+- (void)loadLanguageFile:(NSString*)file;
 
 /// Optimized method for loading both language definition and style
-- (void)loadDefinitionsFromFile:(NSString*)definitionFile
-                  styleFromFile:(NSString*)styleFile;
+- (void)loadLanguageFile:(NSString*)langFile styleFile:(NSString*)styleFile;
+
+/// Reload style
+- (void)reloadStyle;
 
 #pragma mark -
 #pragma mark Formatting

@@ -1,0 +1,38 @@
+# Erlang lang definition file
+# by Caolan McMahon
+# from: http://caolanmcmahon.com/erlang_syntax_highlighting
+# patched by Miklos Vajna
+# further modifications by Lorenzo Bettini
+
+keyword = "div|rem|or|xor|bor|bxor|bsl|bsr|and|band|not|bnot|abs|alive|apply|atom_to_list|binary_to_list|binary_to_term|concat_binary|date|disconnect_node|element|erase|exit|float|float_to_list|get|get_keys|group_leader|halt|hd|integer_to_list|is_alive|length|link|list_to_atom|list_to_binary|list_to_float|list_to_integer|list_to_pid|list_to_tuple|load_module|make_ref|monitor_node|node|nodes|now|open_port|pid_to_list|process_flag|process_info|process|put|register|registered|round|self|setelement|size|spawn|spawn_link|split_binary|statistics|term_to_binary|throw|time|tl|trunc|tuple_to_list|unlink|unregister|whereis|atom|binary|constant|function|integer|list|number|pid|ports|port_close|port_info|reference|record|check_process_code|delete_module|get_cookie|hash|math|module_loaded|preloaded|processes|purge_module|set_cookie|set_node|acos|asin|atan|atan2|cos|cosh|exp|log|log10|pi|pow|power|sin|sinh|sqrt|tan|tanh|call|module_info|parse_transform|undefined_function|error_handler|after|begin|case|catch|cond|end|fun|if|let|of|query|receive|when|creation|current_function|dictionary|group_leader|heap_size|high|initial_call|linked|low|memory_in_use|message_queue|net_kernel|node|normal|priority|reductions|registered_name|runnable|running|stack_trace|status|timer|trap_exit|waiting|command|count_in|count_out|creation|in|in_format|linked|node|out|owner|packeting|atom_tables|communicating|creation|current_gc|current_reductions|current_runtime|current_wall_clock|distribution_port|entry_points|error_handler|friends|garbage_collection|magic_cookie|magic_cookies|module_table|monitored_nodes|name|next_ref|ports|preloaded|processes|reductions|ref_state|registry|runtime|wall_clock|apply_lambda|module_info|module_lambdas|record|record_index|record_info|badarg|nocookie|false|fun|true|badsig|kill|killed|exit|normal"
+
+environment comment start "%" begin
+  include "url.lang"
+  include "html_simple.lang"
+  type = '@[[:alpha:]]+'
+  include "todo.lang"
+end
+
+
+normal = "(|)|{|}|[|]|\||;|,|?|#"
+
+include "number.lang"
+
+#hex numbers
+number = '\$\\x+'
+
+string delim "\"" "\"" escape "\\" multiline
+string delim "'" "'" escape "\\" multiline
+
+function = '\w+(\s+)?[:@]?(\s+)?\w+(?=[[:blank:]]*\()'
+
+state preproc start "-author" begin
+	include "url.lang"
+	normal = ")" exit
+end
+
+preproc = '-[[:alpha:]_]+'
+
+symbol = "+|-|*|/|==|=|=:=|=/=|<|=<|>|>=|++|--|=|!|<-|->"
+symbol = ':|_|@|\\|\"|\.'
+

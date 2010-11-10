@@ -1,0 +1,6 @@
+state bibtex = '@[[:alpha:]]+(?=\{)' begin
+	argument = '(?<=\{)[[:alnum:]]+'
+	normal = "," exit
+end
+
+string = '[[:alpha:]]+(?=[[:blank:]]*=)'

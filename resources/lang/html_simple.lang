@@ -1,0 +1,45 @@
+# this contains only html stuff, no javascript nor css
+# thus it can be used for inclusions in contexts such as javadoc
+# to avoid possible recursion problems
+# e.g., html uses javascript which uses doxygen which uses html...
+
+vardef SPECIAL=
+'(([sS][tT][yY][lL][eE])|(([nN][oO])?[sS][cC][rR][iI][pP][tT])|'+
+'([xX][mM][pP])|([iI][fF][rR][aA][mM][eE])|'+
+'([nN][oO][eE][mM][bB][eE][dD])|([nN][oO][fF][rR][aA][mM][eE][sS]))'
+
+vardef SPECIAL2=
+'(([tT][iI][tT][lL][eE])|([tT][eE][xX][tT][aA][rR][eE][aA]))'
+
+# we need to treat these differently because these elements
+# can't contain elements and entities
+# however, they can have attributes so we need to use
+# nested states
+# example <style foo="bar"> &amp; <br> not highlighted </style>
+state keyword = '<'+$SPECIAL begin
+    include "key_string.lang"
+    state keyword = '>' begin
+    	keyword = '</'+$SPECIAL+'>' exit 2
+		normal = '[^<[:blank:]]+'
+	end
+end
+
+# title and textarea are similar, but entities are allowed
+state keyword delim '<'+$SPECIAL2+'>' '</'+$SPECIAL2+'>' multiline begin
+	preproc = '&([[:alnum:]]+);'
+	normal = '[^<[:blank:]]+'
+end
+
+# if we encounter <plaintext> everything else (up to the end of file)
+# will be highlighted as normal
+state keyword = '<[pP][lL][aA][iI][nN][tT][eE][xX][tT]>' begin
+	normal = '.+'
+end
+
+include "xml.lang"
+
+keyword = '<(/)?[[:alpha:]][[:alnum:]]*(/)?>'
+
+state keyword delim '<(/)?[[:alpha:]][[:alnum:]]*' '(/)?>' multiline begin
+	include "key_string.lang"
+end

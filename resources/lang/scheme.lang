@@ -1,0 +1,27 @@
+comment delim "#\|" "\|#" multiline nested
+comment start ";"
+
+environment string delim "\"" "\"" begin
+  specialchar = '\\.'
+end
+
+type = '#t|#f|#\\[[:alnum:]]+' nonsensitive
+
+vardef words = '(define|define-syntax|syntax-case|syntax-rules|lambda|let|let\*|letrec|let-syntax|letrec-syntax|if|else|cond|case|and|not|or|begin|for-each|map|delay|do|dynamic-wind|call/cc|call-with-current-continuation|call-with-input-file|call-with-output-file)'
+
+# Match keywords as long as they aren't just a prefix of an identifier
+keyword = $words + '(?![[:alnum:]!$%&*+./:<=>?@^_~-])'
+
+# Make any identifier that doen't start with a keyword be normal
+normal = '(?!' + $words +')' + '[[:alpha:]!$%&*+./:<=>?@^_~-][[:alnum:]!$%&*+./:<=>?@^_~-]*'
+
+# Highlight the named let expressions
+(cbracket,keyword,normal,function) = `(\()(let)([[:blank:]]+)([[:alpha:]!$%&*+./:<=>?@^_~-][[:alnum:]!$%&*+./:<=>?@^_~-]*)`
+
+# Highlight the names of defined forms
+(cbracket,keyword,normal,function) = `(\()(define(?:-syntax)?)([[:blank:]]+)([[:alpha:]!$%&*+./:<=>?@^_~-][[:alnum:]!$%&*+./:<=>?@^_~-]*)`
+(cbracket,keyword,normal,cbracket,function) = `(\()(define)([[:blank:]]+)(\()([[:alpha:]!$%&*+./:<=>?@^_~-][[:alnum:]!$%&*+./:<=>?@^_~-]*)`
+
+number = '(\#(x|o|b|X|O|B))?[+-]?((0x[[:xdigit:]]+)|(([[:digit:]]*\.)?[[:digit:]]+([eE][+-]?[[:digit:]]+)?))'
+
+cbracket = "(|)"

@@ -1,0 +1,14 @@
+# language awk
+
+regexp = '/([^/]*)/'
+
+keyword = "begin|break|close|continue|delete|do|else|end|exit|for", 
+"getline|gsub|if|index|length|match|next|print|printf|return|split",
+"sprintf|sub|substr|system|tolower|toupper|while" nonsensitive
+
+cbracket = "{|}"
+
+include "sh.lang"
+
+include "function.lang"
+

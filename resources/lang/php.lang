@@ -1,0 +1,26 @@
+state symbol delim "<?php" "?>" multiline begin
+
+  preproc = "include|include_once|require|require_once"
+
+  comment start "//"
+  include "script_comment.lang"
+
+  include "number.lang"
+
+  string delim "\"" "\"" escape "\\" multiline
+  string delim "'" "'"  escape "\\" multiline
+
+  keyword = "and|or|xor|__FILE__|exception|php_user_filter|__LINE__|abstract|array|as|break|case|catch|cfunction|class|clone|const|continue|declare|default|die|do|each|echo|else|elseif|empty|enddeclare|endfor|endforeach|endif|endswitch|endwhile|eval|exit|extends|final|for|foreach|function|global|goto|if|implements|interface|instanceof|isset|list|namespace|new|old_function|print|private|protected|public|return|static|switch|throw|try|unset|use|var|while|__FUNCTION__|__CLASS__|__METHOD__|__DIR__|__NAMESPACE__|null|false|true"
+
+  include "c_comment.lang"
+
+  variable = '(?:\$[#]?|@|%)[[:word:]]+'
+
+  include "symbols.lang"
+
+  cbracket = "{|}"
+
+  include "function.lang"
+end
+
+include "html.lang"

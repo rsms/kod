@@ -1,0 +1,32 @@
+# language definition for files created with 'diff'
+
+# diff created with -u option
+state oldfile = '(?=^[-]{3})' begin
+  oldfile start '^[-]{3}'
+  oldfile start '^[-]'
+  newfile start '^[+]'
+  difflines start '^@@'
+end
+
+# diff created with -c option
+state oldfile = '(?=^[*]{3})' begin
+  environment oldfile = '^[*]{3}[[:blank:]]+[[:digit:]]' begin
+    normal start '^[[:space:]]'
+    newfile = '(?=^[-]{3})' exit
+  end
+  oldfile start '^[*]{3}'
+
+  environment newfile = '^[-]{3}[[:blank:]]+[[:digit:]]' begin
+    normal start '^[[:space:]]'
+    newfile = '(?=^[*]{3})' exit
+    normal start '^diff' exit
+  end
+  newfile start '^[-]{3}'
+end
+
+# otherwise, created without options
+state difflines = '(?=^[[:digit:]])' begin
+  difflines start '^[[:digit:]]'
+  oldfile start '^[<]'
+  newfile start '^[>]'
+end

@@ -1,0 +1,10 @@
+# highlighting for pkg-config files
+
+include "properties.lang"
+
+variable = '\$\{([^[:blank:]]+)\}'
+
+include "number.lang"
+include "url.lang"
+
+(string,symbol) = `(^[^:]+)(:)`

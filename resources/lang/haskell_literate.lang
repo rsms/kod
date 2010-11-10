@@ -1,0 +1,10 @@
+# Haskel literate programming
+# both Bird and Latex style
+
+state code start '^>' begin
+  include "haskell.lang"
+end
+
+state code delim "\\begin{code}" "\\end{code}" multiline begin
+  include "haskell.lang"
+end

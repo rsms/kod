@@ -1,0 +1,17 @@
+state preproc delim "<?xml" "?>" multiline begin
+	include "key_string.lang"
+end
+
+state preproc delim '<![[:alpha:]]+' ">" multiline begin
+	include "key_string.lang"
+end
+
+comment delim "<!--" "-->" multiline nested
+
+keyword = '<(/)?[[:alpha:]]([[:word:]:.-]*)(/)?>'
+
+state keyword delim '<(/)?[[:alpha:]]([[:word:]:.-]*)' '(/)?>' multiline begin
+	include "key_string.lang"
+end
+
+preproc = '&([[:alnum:]]+);'

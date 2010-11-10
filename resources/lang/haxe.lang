@@ -1,0 +1,7 @@
+preproc = '^[[:blank:]]*#((if|else)[[:blank:]]*[[:word:]]*|end)'
+
+include "java.lang"
+
+subst keyword = "abstract|assert|break|case|cast|catch|class|continue|default|do|else|enum|extends|extern|false|final|finally|for|function|if|implements|in|inline|interface|new|null|override|private|protected|public|return|static|super|switch|synchronized|this|throw|throws|true|try|typedef|untyped|var|while"
+
+subst type = "Bool|Dynamic|Float|Int|Void"

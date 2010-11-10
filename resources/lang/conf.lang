@@ -1,0 +1,11 @@
+# highlighting for generic configuration files
+
+include "properties.lang"
+include "desktop.lang"
+include "xorg.lang"
+
+variable = '([[:alpha:]]|_)[[:word:]]*(?==)'
+variable = '\$\{([^[:blank:]]+)\}'
+variable = '\$\(([^[:blank:]]+)\)'
+variable = '\$([[:alpha:]]|_)[[:word:]]*'
+variable = '\$([^[:blank:]]{1})'

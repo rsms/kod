@@ -13,91 +13,8 @@
 		3A158ADC128A09D300339E6E /* ICUPattern.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A158AD7128A09D300339E6E /* ICUPattern.m */; };
 		3A158ADE128A09D300339E6E /* NSStringICUAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A158ADA128A09D300339E6E /* NSStringICUAdditions.m */; };
 		3A158AFF128A0A3700339E6E /* libicucore.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A158AFE128A0A3700339E6E /* libicucore.dylib */; };
-		3A158D98128A27E100339E6E /* ada.lang in Copy lang files */ = {isa = PBXBuildFile; fileRef = 3A158D43128A27DB00339E6E /* ada.lang */; };
-		3A158D99128A27E100339E6E /* applescript.lang in Copy lang files */ = {isa = PBXBuildFile; fileRef = 3A158D44128A27DB00339E6E /* applescript.lang */; };
-		3A158D9A128A27E100339E6E /* asm.lang in Copy lang files */ = {isa = PBXBuildFile; fileRef = 3A158D45128A27DB00339E6E /* asm.lang */; };
-		3A158D9B128A27E100339E6E /* awk.lang in Copy lang files */ = {isa = PBXBuildFile; fileRef = 3A158D46128A27DB00339E6E /* awk.lang */; };
-		3A158D9C128A27E100339E6E /* bat.lang in Copy lang files */ = {isa = PBXBuildFile; fileRef = 3A158D47128A27DB00339E6E /* bat.lang */; };
-		3A158D9D128A27E100339E6E /* bib.lang in Copy lang files */ = {isa = PBXBuildFile; fileRef = 3A158D48128A27DB00339E6E /* bib.lang */; };
-		3A158D9E128A27E100339E6E /* bison.lang in Copy lang files */ = {isa = PBXBuildFile; fileRef = 3A158D49128A27DB00339E6E /* bison.lang */; };
-		3A158D9F128A27E100339E6E /* c.lang in Copy lang files */ = {isa = PBXBuildFile; fileRef = 3A158D4A128A27DB00339E6E /* c.lang */; };
-		3A158DA0128A27E100339E6E /* c_comment.lang in Copy lang files */ = {isa = PBXBuildFile; fileRef = 3A158D4B128A27DB00339E6E /* c_comment.lang */; };
-		3A158DA1128A27E100339E6E /* c_string.lang in Copy lang files */ = {isa = PBXBuildFile; fileRef = 3A158D4C128A27DB00339E6E /* c_string.lang */; };
-		3A158DA2128A27E100339E6E /* caml.lang in Copy lang files */ = {isa = PBXBuildFile; fileRef = 3A158D4D128A27DB00339E6E /* caml.lang */; };
-		3A158DA3128A27E100339E6E /* changelog.lang in Copy lang files */ = {isa = PBXBuildFile; fileRef = 3A158D4E128A27DB00339E6E /* changelog.lang */; };
-		3A158DA4128A27E100339E6E /* clike_vardeclaration.lang in Copy lang files */ = {isa = PBXBuildFile; fileRef = 3A158D4F128A27DB00339E6E /* clike_vardeclaration.lang */; };
-		3A158DA5128A27E100339E6E /* clipper.lang in Copy lang files */ = {isa = PBXBuildFile; fileRef = 3A158D50128A27DB00339E6E /* clipper.lang */; };
-		3A158DA6128A27E100339E6E /* cobol.lang in Copy lang files */ = {isa = PBXBuildFile; fileRef = 3A158D51128A27DB00339E6E /* cobol.lang */; };
-		3A158DA7128A27E100339E6E /* conf.lang in Copy lang files */ = {isa = PBXBuildFile; fileRef = 3A158D52128A27DB00339E6E /* conf.lang */; };
-		3A158DA8128A27E100339E6E /* cpp.lang in Copy lang files */ = {isa = PBXBuildFile; fileRef = 3A158D53128A27DB00339E6E /* cpp.lang */; };
-		3A158DA9128A27E100339E6E /* csharp.lang in Copy lang files */ = {isa = PBXBuildFile; fileRef = 3A158D54128A27DB00339E6E /* csharp.lang */; };
-		3A158DAA128A27E100339E6E /* css.lang in Copy lang files */ = {isa = PBXBuildFile; fileRef = 3A158D55128A27DB00339E6E /* css.lang */; };
-		3A158DAB128A27E100339E6E /* d.lang in Copy lang files */ = {isa = PBXBuildFile; fileRef = 3A158D56128A27DB00339E6E /* d.lang */; };
-		3A158DAC128A27E100339E6E /* default.lang in Copy lang files */ = {isa = PBXBuildFile; fileRef = 3A158D57128A27DB00339E6E /* default.lang */; };
-		3A158DAD128A27E100339E6E /* desktop.lang in Copy lang files */ = {isa = PBXBuildFile; fileRef = 3A158D58128A27DB00339E6E /* desktop.lang */; };
-		3A158DAE128A27E100339E6E /* diff.lang in Copy lang files */ = {isa = PBXBuildFile; fileRef = 3A158D59128A27DB00339E6E /* diff.lang */; };
-		3A158DAF128A27E100339E6E /* erlang.lang in Copy lang files */ = {isa = PBXBuildFile; fileRef = 3A158D5A128A27DB00339E6E /* erlang.lang */; };
-		3A158DB0128A27E100339E6E /* errors.lang in Copy lang files */ = {isa = PBXBuildFile; fileRef = 3A158D5B128A27DB00339E6E /* errors.lang */; };
-		3A158DB1128A27E100339E6E /* extreme_comment.lang in Copy lang files */ = {isa = PBXBuildFile; fileRef = 3A158D5C128A27DB00339E6E /* extreme_comment.lang */; };
-		3A158DB2128A27E100339E6E /* extreme_comment2.lang in Copy lang files */ = {isa = PBXBuildFile; fileRef = 3A158D5D128A27DB00339E6E /* extreme_comment2.lang */; };
-		3A158DB3128A27E100339E6E /* extreme_comment3.lang in Copy lang files */ = {isa = PBXBuildFile; fileRef = 3A158D5E128A27DB00339E6E /* extreme_comment3.lang */; };
-		3A158DB4128A27E100339E6E /* extreme_comment4.lang in Copy lang files */ = {isa = PBXBuildFile; fileRef = 3A158D5F128A27DB00339E6E /* extreme_comment4.lang */; };
-		3A158DB5128A27E100339E6E /* fixed-fortran.lang in Copy lang files */ = {isa = PBXBuildFile; fileRef = 3A158D60128A27DB00339E6E /* fixed-fortran.lang */; };
-		3A158DB6128A27E100339E6E /* flex.lang in Copy lang files */ = {isa = PBXBuildFile; fileRef = 3A158D61128A27DB00339E6E /* flex.lang */; };
-		3A158DB7128A27E100339E6E /* fortran.lang in Copy lang files */ = {isa = PBXBuildFile; fileRef = 3A158D62128A27DB00339E6E /* fortran.lang */; };
-		3A158DB8128A27E100339E6E /* function.lang in Copy lang files */ = {isa = PBXBuildFile; fileRef = 3A158D63128A27DB00339E6E /* function.lang */; };
-		3A158DB9128A27E100339E6E /* glsl.lang in Copy lang files */ = {isa = PBXBuildFile; fileRef = 3A158D64128A27DB00339E6E /* glsl.lang */; };
-		3A158DBA128A27E100339E6E /* haskell.lang in Copy lang files */ = {isa = PBXBuildFile; fileRef = 3A158D65128A27DB00339E6E /* haskell.lang */; };
-		3A158DBB128A27E100339E6E /* haskell_literate.lang in Copy lang files */ = {isa = PBXBuildFile; fileRef = 3A158D66128A27DB00339E6E /* haskell_literate.lang */; };
-		3A158DBC128A27E100339E6E /* haxe.lang in Copy lang files */ = {isa = PBXBuildFile; fileRef = 3A158D67128A27DB00339E6E /* haxe.lang */; };
-		3A158DBD128A27E100339E6E /* html.lang in Copy lang files */ = {isa = PBXBuildFile; fileRef = 3A158D68128A27DB00339E6E /* html.lang */; };
-		3A158DBE128A27E100339E6E /* html_simple.lang in Copy lang files */ = {isa = PBXBuildFile; fileRef = 3A158D69128A27DB00339E6E /* html_simple.lang */; };
-		3A158DBF128A27E100339E6E /* java.lang in Copy lang files */ = {isa = PBXBuildFile; fileRef = 3A158D6A128A27DB00339E6E /* java.lang */; };
-		3A158DC0128A27E100339E6E /* javascript.lang in Copy lang files */ = {isa = PBXBuildFile; fileRef = 3A158D6B128A27DB00339E6E /* javascript.lang */; };
-		3A158DC1128A27E100339E6E /* key_string.lang in Copy lang files */ = {isa = PBXBuildFile; fileRef = 3A158D6C128A27DB00339E6E /* key_string.lang */; };
-		3A158DC2128A27E100339E6E /* langdef.lang in Copy lang files */ = {isa = PBXBuildFile; fileRef = 3A158D6D128A27DB00339E6E /* langdef.lang */; };
-		3A158DC3128A27E100339E6E /* latex.lang in Copy lang files */ = {isa = PBXBuildFile; fileRef = 3A158D6E128A27DB00339E6E /* latex.lang */; };
-		3A158DC4128A27E100339E6E /* ldap.lang in Copy lang files */ = {isa = PBXBuildFile; fileRef = 3A158D6F128A27DB00339E6E /* ldap.lang */; };
-		3A158DC5128A27E100339E6E /* lisp.lang in Copy lang files */ = {isa = PBXBuildFile; fileRef = 3A158D70128A27DB00339E6E /* lisp.lang */; };
-		3A158DC6128A27E100339E6E /* log.lang in Copy lang files */ = {isa = PBXBuildFile; fileRef = 3A158D71128A27DB00339E6E /* log.lang */; };
-		3A158DC7128A27E100339E6E /* logtalk.lang in Copy lang files */ = {isa = PBXBuildFile; fileRef = 3A158D72128A27DB00339E6E /* logtalk.lang */; };
-		3A158DC8128A27E100339E6E /* lsm.lang in Copy lang files */ = {isa = PBXBuildFile; fileRef = 3A158D73128A27DB00339E6E /* lsm.lang */; };
-		3A158DC9128A27E100339E6E /* lua.lang in Copy lang files */ = {isa = PBXBuildFile; fileRef = 3A158D74128A27DB00339E6E /* lua.lang */; };
-		3A158DCA128A27E100339E6E /* m4.lang in Copy lang files */ = {isa = PBXBuildFile; fileRef = 3A158D75128A27DB00339E6E /* m4.lang */; };
-		3A158DCB128A27E100339E6E /* makefile.lang in Copy lang files */ = {isa = PBXBuildFile; fileRef = 3A158D76128A27DB00339E6E /* makefile.lang */; };
-		3A158DCC128A27E100339E6E /* manifest.lang in Copy lang files */ = {isa = PBXBuildFile; fileRef = 3A158D77128A27DB00339E6E /* manifest.lang */; };
-		3A158DCD128A27E100339E6E /* nohilite.lang in Copy lang files */ = {isa = PBXBuildFile; fileRef = 3A158D78128A27DB00339E6E /* nohilite.lang */; };
-		3A158DCE128A27E100339E6E /* number.lang in Copy lang files */ = {isa = PBXBuildFile; fileRef = 3A158D79128A27DB00339E6E /* number.lang */; };
-		3A158DCF128A27E100339E6E /* outlang.lang in Copy lang files */ = {isa = PBXBuildFile; fileRef = 3A158D7A128A27DB00339E6E /* outlang.lang */; };
-		3A158DD0128A27E100339E6E /* oz.lang in Copy lang files */ = {isa = PBXBuildFile; fileRef = 3A158D7B128A27DB00339E6E /* oz.lang */; };
-		3A158DD1128A27E100339E6E /* pascal.lang in Copy lang files */ = {isa = PBXBuildFile; fileRef = 3A158D7C128A27DB00339E6E /* pascal.lang */; };
-		3A158DD2128A27E100339E6E /* pc.lang in Copy lang files */ = {isa = PBXBuildFile; fileRef = 3A158D7D128A27DB00339E6E /* pc.lang */; };
-		3A158DD3128A27E100339E6E /* perl.lang in Copy lang files */ = {isa = PBXBuildFile; fileRef = 3A158D7E128A27DB00339E6E /* perl.lang */; };
-		3A158DD4128A27E100339E6E /* php.lang in Copy lang files */ = {isa = PBXBuildFile; fileRef = 3A158D7F128A27DB00339E6E /* php.lang */; };
-		3A158DD5128A27E100339E6E /* postscript.lang in Copy lang files */ = {isa = PBXBuildFile; fileRef = 3A158D80128A27DB00339E6E /* postscript.lang */; };
-		3A158DD6128A27E100339E6E /* prolog.lang in Copy lang files */ = {isa = PBXBuildFile; fileRef = 3A158D81128A27DB00339E6E /* prolog.lang */; };
-		3A158DD7128A27E100339E6E /* properties.lang in Copy lang files */ = {isa = PBXBuildFile; fileRef = 3A158D82128A27DB00339E6E /* properties.lang */; };
-		3A158DD8128A27E100339E6E /* proto.lang in Copy lang files */ = {isa = PBXBuildFile; fileRef = 3A158D83128A27DB00339E6E /* proto.lang */; };
-		3A158DD9128A27E100339E6E /* python.lang in Copy lang files */ = {isa = PBXBuildFile; fileRef = 3A158D84128A27DB00339E6E /* python.lang */; };
-		3A158DDA128A27E100339E6E /* ruby.lang in Copy lang files */ = {isa = PBXBuildFile; fileRef = 3A158D85128A27DB00339E6E /* ruby.lang */; };
-		3A158DDB128A27E100339E6E /* scala.lang in Copy lang files */ = {isa = PBXBuildFile; fileRef = 3A158D86128A27DB00339E6E /* scala.lang */; };
-		3A158DDC128A27E100339E6E /* scheme.lang in Copy lang files */ = {isa = PBXBuildFile; fileRef = 3A158D87128A27DB00339E6E /* scheme.lang */; };
-		3A158DDD128A27E100339E6E /* script_comment.lang in Copy lang files */ = {isa = PBXBuildFile; fileRef = 3A158D88128A27DB00339E6E /* script_comment.lang */; };
-		3A158DDE128A27E100339E6E /* sh.lang in Copy lang files */ = {isa = PBXBuildFile; fileRef = 3A158D89128A27DB00339E6E /* sh.lang */; };
-		3A158DDF128A27E100339E6E /* slang.lang in Copy lang files */ = {isa = PBXBuildFile; fileRef = 3A158D8A128A27DB00339E6E /* slang.lang */; };
-		3A158DE0128A27E100339E6E /* sml.lang in Copy lang files */ = {isa = PBXBuildFile; fileRef = 3A158D8B128A27DB00339E6E /* sml.lang */; };
-		3A158DE1128A27E100339E6E /* spec.lang in Copy lang files */ = {isa = PBXBuildFile; fileRef = 3A158D8C128A27DB00339E6E /* spec.lang */; };
-		3A158DE2128A27E100339E6E /* sql.lang in Copy lang files */ = {isa = PBXBuildFile; fileRef = 3A158D8D128A27DB00339E6E /* sql.lang */; };
-		3A158DE3128A27E100339E6E /* style.lang in Copy lang files */ = {isa = PBXBuildFile; fileRef = 3A158D8E128A27DB00339E6E /* style.lang */; };
-		3A158DE4128A27E100339E6E /* symbols.lang in Copy lang files */ = {isa = PBXBuildFile; fileRef = 3A158D8F128A27DB00339E6E /* symbols.lang */; };
-		3A158DE5128A27E100339E6E /* tcl.lang in Copy lang files */ = {isa = PBXBuildFile; fileRef = 3A158D90128A27DB00339E6E /* tcl.lang */; };
-		3A158DE6128A27E100339E6E /* texinfo.lang in Copy lang files */ = {isa = PBXBuildFile; fileRef = 3A158D91128A27DB00339E6E /* texinfo.lang */; };
-		3A158DE7128A27E100339E6E /* todo.lang in Copy lang files */ = {isa = PBXBuildFile; fileRef = 3A158D92128A27DB00339E6E /* todo.lang */; };
-		3A158DE8128A27E100339E6E /* url.lang in Copy lang files */ = {isa = PBXBuildFile; fileRef = 3A158D93128A27DB00339E6E /* url.lang */; };
-		3A158DE9128A27E100339E6E /* vala.lang in Copy lang files */ = {isa = PBXBuildFile; fileRef = 3A158D94128A27DB00339E6E /* vala.lang */; };
-		3A158DEA128A27E100339E6E /* vbscript.lang in Copy lang files */ = {isa = PBXBuildFile; fileRef = 3A158D95128A27DB00339E6E /* vbscript.lang */; };
-		3A158DEB128A27E100339E6E /* xml.lang in Copy lang files */ = {isa = PBXBuildFile; fileRef = 3A158D96128A27DB00339E6E /* xml.lang */; };
-		3A158DEC128A27E100339E6E /* xorg.lang in Copy lang files */ = {isa = PBXBuildFile; fileRef = 3A158D97128A27DB00339E6E /* xorg.lang */; };
+		3A158DF4128A282F00339E6E /* style in Resources */ = {isa = PBXBuildFile; fileRef = 3A158DF1128A282F00339E6E /* style */; };
+		3A158E4C128A296100339E6E /* lang in Resources */ = {isa = PBXBuildFile; fileRef = 3A158DF5128A296000339E6E /* lang */; };
 		3A25E479128194B400B6A33E /* KSyntaxHighlighter.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A25E478128194B400B6A33E /* KSyntaxHighlighter.mm */; };
 		3A25E47B1281A6A200B6A33E /* libboost_regex-mt.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A25E47A1281A6A200B6A33E /* libboost_regex-mt.dylib */; };
 		3A25E47D1281A6A700B6A33E /* libsource-highlight.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A25E47C1281A6A700B6A33E /* libsource-highlight.dylib */; };
@@ -153,111 +70,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		3A158BE3128A23E200339E6E /* Copy lang files */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = lang;
-			dstSubfolderSpec = 7;
-			files = (
-				3A158D98128A27E100339E6E /* ada.lang in Copy lang files */,
-				3A158D99128A27E100339E6E /* applescript.lang in Copy lang files */,
-				3A158D9A128A27E100339E6E /* asm.lang in Copy lang files */,
-				3A158D9B128A27E100339E6E /* awk.lang in Copy lang files */,
-				3A158D9C128A27E100339E6E /* bat.lang in Copy lang files */,
-				3A158D9D128A27E100339E6E /* bib.lang in Copy lang files */,
-				3A158D9E128A27E100339E6E /* bison.lang in Copy lang files */,
-				3A158D9F128A27E100339E6E /* c.lang in Copy lang files */,
-				3A158DA0128A27E100339E6E /* c_comment.lang in Copy lang files */,
-				3A158DA1128A27E100339E6E /* c_string.lang in Copy lang files */,
-				3A158DA2128A27E100339E6E /* caml.lang in Copy lang files */,
-				3A158DA3128A27E100339E6E /* changelog.lang in Copy lang files */,
-				3A158DA4128A27E100339E6E /* clike_vardeclaration.lang in Copy lang files */,
-				3A158DA5128A27E100339E6E /* clipper.lang in Copy lang files */,
-				3A158DA6128A27E100339E6E /* cobol.lang in Copy lang files */,
-				3A158DA7128A27E100339E6E /* conf.lang in Copy lang files */,
-				3A158DA8128A27E100339E6E /* cpp.lang in Copy lang files */,
-				3A158DA9128A27E100339E6E /* csharp.lang in Copy lang files */,
-				3A158DAA128A27E100339E6E /* css.lang in Copy lang files */,
-				3A158DAB128A27E100339E6E /* d.lang in Copy lang files */,
-				3A158DAC128A27E100339E6E /* default.lang in Copy lang files */,
-				3A158DAD128A27E100339E6E /* desktop.lang in Copy lang files */,
-				3A158DAE128A27E100339E6E /* diff.lang in Copy lang files */,
-				3A158DAF128A27E100339E6E /* erlang.lang in Copy lang files */,
-				3A158DB0128A27E100339E6E /* errors.lang in Copy lang files */,
-				3A158DB1128A27E100339E6E /* extreme_comment.lang in Copy lang files */,
-				3A158DB2128A27E100339E6E /* extreme_comment2.lang in Copy lang files */,
-				3A158DB3128A27E100339E6E /* extreme_comment3.lang in Copy lang files */,
-				3A158DB4128A27E100339E6E /* extreme_comment4.lang in Copy lang files */,
-				3A158DB5128A27E100339E6E /* fixed-fortran.lang in Copy lang files */,
-				3A158DB6128A27E100339E6E /* flex.lang in Copy lang files */,
-				3A158DB7128A27E100339E6E /* fortran.lang in Copy lang files */,
-				3A158DB8128A27E100339E6E /* function.lang in Copy lang files */,
-				3A158DB9128A27E100339E6E /* glsl.lang in Copy lang files */,
-				3A158DBA128A27E100339E6E /* haskell.lang in Copy lang files */,
-				3A158DBB128A27E100339E6E /* haskell_literate.lang in Copy lang files */,
-				3A158DBC128A27E100339E6E /* haxe.lang in Copy lang files */,
-				3A158DBD128A27E100339E6E /* html.lang in Copy lang files */,
-				3A158DBE128A27E100339E6E /* html_simple.lang in Copy lang files */,
-				3A158DBF128A27E100339E6E /* java.lang in Copy lang files */,
-				3A158DC0128A27E100339E6E /* javascript.lang in Copy lang files */,
-				3A158DC1128A27E100339E6E /* key_string.lang in Copy lang files */,
-				3A158DC2128A27E100339E6E /* langdef.lang in Copy lang files */,
-				3A158DC3128A27E100339E6E /* latex.lang in Copy lang files */,
-				3A158DC4128A27E100339E6E /* ldap.lang in Copy lang files */,
-				3A158DC5128A27E100339E6E /* lisp.lang in Copy lang files */,
-				3A158DC6128A27E100339E6E /* log.lang in Copy lang files */,
-				3A158DC7128A27E100339E6E /* logtalk.lang in Copy lang files */,
-				3A158DC8128A27E100339E6E /* lsm.lang in Copy lang files */,
-				3A158DC9128A27E100339E6E /* lua.lang in Copy lang files */,
-				3A158DCA128A27E100339E6E /* m4.lang in Copy lang files */,
-				3A158DCB128A27E100339E6E /* makefile.lang in Copy lang files */,
-				3A158DCC128A27E100339E6E /* manifest.lang in Copy lang files */,
-				3A158DCD128A27E100339E6E /* nohilite.lang in Copy lang files */,
-				3A158DCE128A27E100339E6E /* number.lang in Copy lang files */,
-				3A158DCF128A27E100339E6E /* outlang.lang in Copy lang files */,
-				3A158DD0128A27E100339E6E /* oz.lang in Copy lang files */,
-				3A158DD1128A27E100339E6E /* pascal.lang in Copy lang files */,
-				3A158DD2128A27E100339E6E /* pc.lang in Copy lang files */,
-				3A158DD3128A27E100339E6E /* perl.lang in Copy lang files */,
-				3A158DD4128A27E100339E6E /* php.lang in Copy lang files */,
-				3A158DD5128A27E100339E6E /* postscript.lang in Copy lang files */,
-				3A158DD6128A27E100339E6E /* prolog.lang in Copy lang files */,
-				3A158DD7128A27E100339E6E /* properties.lang in Copy lang files */,
-				3A158DD8128A27E100339E6E /* proto.lang in Copy lang files */,
-				3A158DD9128A27E100339E6E /* python.lang in Copy lang files */,
-				3A158DDA128A27E100339E6E /* ruby.lang in Copy lang files */,
-				3A158DDB128A27E100339E6E /* scala.lang in Copy lang files */,
-				3A158DDC128A27E100339E6E /* scheme.lang in Copy lang files */,
-				3A158DDD128A27E100339E6E /* script_comment.lang in Copy lang files */,
-				3A158DDE128A27E100339E6E /* sh.lang in Copy lang files */,
-				3A158DDF128A27E100339E6E /* slang.lang in Copy lang files */,
-				3A158DE0128A27E100339E6E /* sml.lang in Copy lang files */,
-				3A158DE1128A27E100339E6E /* spec.lang in Copy lang files */,
-				3A158DE2128A27E100339E6E /* sql.lang in Copy lang files */,
-				3A158DE3128A27E100339E6E /* style.lang in Copy lang files */,
-				3A158DE4128A27E100339E6E /* symbols.lang in Copy lang files */,
-				3A158DE5128A27E100339E6E /* tcl.lang in Copy lang files */,
-				3A158DE6128A27E100339E6E /* texinfo.lang in Copy lang files */,
-				3A158DE7128A27E100339E6E /* todo.lang in Copy lang files */,
-				3A158DE8128A27E100339E6E /* url.lang in Copy lang files */,
-				3A158DE9128A27E100339E6E /* vala.lang in Copy lang files */,
-				3A158DEA128A27E100339E6E /* vbscript.lang in Copy lang files */,
-				3A158DEB128A27E100339E6E /* xml.lang in Copy lang files */,
-				3A158DEC128A27E100339E6E /* xorg.lang in Copy lang files */,
-			);
-			name = "Copy lang files";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		3A158BE4128A23E200339E6E /* Copy style files */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = style;
-			dstSubfolderSpec = 7;
-			files = (
-			);
-			name = "Copy style files";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		3A9291381229BBB600DA7E43 /* Copy Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -285,91 +97,8 @@
 		3A158AD9128A09D300339E6E /* NSStringICUAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NSStringICUAdditions.h; sourceTree = "<group>"; };
 		3A158ADA128A09D300339E6E /* NSStringICUAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NSStringICUAdditions.m; sourceTree = "<group>"; };
 		3A158AFE128A0A3700339E6E /* libicucore.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libicucore.dylib; path = usr/lib/libicucore.dylib; sourceTree = SDKROOT; };
-		3A158D43128A27DB00339E6E /* ada.lang */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ada.lang; sourceTree = "<group>"; };
-		3A158D44128A27DB00339E6E /* applescript.lang */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = applescript.lang; sourceTree = "<group>"; };
-		3A158D45128A27DB00339E6E /* asm.lang */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = asm.lang; sourceTree = "<group>"; };
-		3A158D46128A27DB00339E6E /* awk.lang */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = awk.lang; sourceTree = "<group>"; };
-		3A158D47128A27DB00339E6E /* bat.lang */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = bat.lang; sourceTree = "<group>"; };
-		3A158D48128A27DB00339E6E /* bib.lang */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = bib.lang; sourceTree = "<group>"; };
-		3A158D49128A27DB00339E6E /* bison.lang */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = bison.lang; sourceTree = "<group>"; };
-		3A158D4A128A27DB00339E6E /* c.lang */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = c.lang; sourceTree = "<group>"; };
-		3A158D4B128A27DB00339E6E /* c_comment.lang */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = c_comment.lang; sourceTree = "<group>"; };
-		3A158D4C128A27DB00339E6E /* c_string.lang */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = c_string.lang; sourceTree = "<group>"; };
-		3A158D4D128A27DB00339E6E /* caml.lang */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = caml.lang; sourceTree = "<group>"; };
-		3A158D4E128A27DB00339E6E /* changelog.lang */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = changelog.lang; sourceTree = "<group>"; };
-		3A158D4F128A27DB00339E6E /* clike_vardeclaration.lang */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = clike_vardeclaration.lang; sourceTree = "<group>"; };
-		3A158D50128A27DB00339E6E /* clipper.lang */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = clipper.lang; sourceTree = "<group>"; };
-		3A158D51128A27DB00339E6E /* cobol.lang */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = cobol.lang; sourceTree = "<group>"; };
-		3A158D52128A27DB00339E6E /* conf.lang */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = conf.lang; sourceTree = "<group>"; };
-		3A158D53128A27DB00339E6E /* cpp.lang */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = cpp.lang; sourceTree = "<group>"; };
-		3A158D54128A27DB00339E6E /* csharp.lang */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = csharp.lang; sourceTree = "<group>"; };
-		3A158D55128A27DB00339E6E /* css.lang */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = css.lang; sourceTree = "<group>"; };
-		3A158D56128A27DB00339E6E /* d.lang */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = d.lang; sourceTree = "<group>"; };
-		3A158D57128A27DB00339E6E /* default.lang */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = default.lang; sourceTree = "<group>"; };
-		3A158D58128A27DB00339E6E /* desktop.lang */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = desktop.lang; sourceTree = "<group>"; };
-		3A158D59128A27DB00339E6E /* diff.lang */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = diff.lang; sourceTree = "<group>"; };
-		3A158D5A128A27DB00339E6E /* erlang.lang */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = erlang.lang; sourceTree = "<group>"; };
-		3A158D5B128A27DB00339E6E /* errors.lang */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = errors.lang; sourceTree = "<group>"; };
-		3A158D5C128A27DB00339E6E /* extreme_comment.lang */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = extreme_comment.lang; sourceTree = "<group>"; };
-		3A158D5D128A27DB00339E6E /* extreme_comment2.lang */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = extreme_comment2.lang; sourceTree = "<group>"; };
-		3A158D5E128A27DB00339E6E /* extreme_comment3.lang */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = extreme_comment3.lang; sourceTree = "<group>"; };
-		3A158D5F128A27DB00339E6E /* extreme_comment4.lang */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = extreme_comment4.lang; sourceTree = "<group>"; };
-		3A158D60128A27DB00339E6E /* fixed-fortran.lang */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "fixed-fortran.lang"; sourceTree = "<group>"; };
-		3A158D61128A27DB00339E6E /* flex.lang */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = flex.lang; sourceTree = "<group>"; };
-		3A158D62128A27DB00339E6E /* fortran.lang */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = fortran.lang; sourceTree = "<group>"; };
-		3A158D63128A27DB00339E6E /* function.lang */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = function.lang; sourceTree = "<group>"; };
-		3A158D64128A27DB00339E6E /* glsl.lang */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = glsl.lang; sourceTree = "<group>"; };
-		3A158D65128A27DB00339E6E /* haskell.lang */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = haskell.lang; sourceTree = "<group>"; };
-		3A158D66128A27DB00339E6E /* haskell_literate.lang */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = haskell_literate.lang; sourceTree = "<group>"; };
-		3A158D67128A27DB00339E6E /* haxe.lang */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = haxe.lang; sourceTree = "<group>"; };
-		3A158D68128A27DB00339E6E /* html.lang */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = html.lang; sourceTree = "<group>"; };
-		3A158D69128A27DB00339E6E /* html_simple.lang */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = html_simple.lang; sourceTree = "<group>"; };
-		3A158D6A128A27DB00339E6E /* java.lang */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = java.lang; sourceTree = "<group>"; };
-		3A158D6B128A27DB00339E6E /* javascript.lang */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = javascript.lang; sourceTree = "<group>"; };
-		3A158D6C128A27DB00339E6E /* key_string.lang */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = key_string.lang; sourceTree = "<group>"; };
-		3A158D6D128A27DB00339E6E /* langdef.lang */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = langdef.lang; sourceTree = "<group>"; };
-		3A158D6E128A27DB00339E6E /* latex.lang */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = latex.lang; sourceTree = "<group>"; };
-		3A158D6F128A27DB00339E6E /* ldap.lang */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ldap.lang; sourceTree = "<group>"; };
-		3A158D70128A27DB00339E6E /* lisp.lang */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = lisp.lang; sourceTree = "<group>"; };
-		3A158D71128A27DB00339E6E /* log.lang */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = log.lang; sourceTree = "<group>"; };
-		3A158D72128A27DB00339E6E /* logtalk.lang */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = logtalk.lang; sourceTree = "<group>"; };
-		3A158D73128A27DB00339E6E /* lsm.lang */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = lsm.lang; sourceTree = "<group>"; };
-		3A158D74128A27DB00339E6E /* lua.lang */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = lua.lang; sourceTree = "<group>"; };
-		3A158D75128A27DB00339E6E /* m4.lang */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = m4.lang; sourceTree = "<group>"; };
-		3A158D76128A27DB00339E6E /* makefile.lang */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = makefile.lang; sourceTree = "<group>"; };
-		3A158D77128A27DB00339E6E /* manifest.lang */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = manifest.lang; sourceTree = "<group>"; };
-		3A158D78128A27DB00339E6E /* nohilite.lang */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = nohilite.lang; sourceTree = "<group>"; };
-		3A158D79128A27DB00339E6E /* number.lang */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = number.lang; sourceTree = "<group>"; };
-		3A158D7A128A27DB00339E6E /* outlang.lang */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = outlang.lang; sourceTree = "<group>"; };
-		3A158D7B128A27DB00339E6E /* oz.lang */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = oz.lang; sourceTree = "<group>"; };
-		3A158D7C128A27DB00339E6E /* pascal.lang */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = pascal.lang; sourceTree = "<group>"; };
-		3A158D7D128A27DB00339E6E /* pc.lang */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = pc.lang; sourceTree = "<group>"; };
-		3A158D7E128A27DB00339E6E /* perl.lang */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = perl.lang; sourceTree = "<group>"; };
-		3A158D7F128A27DB00339E6E /* php.lang */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = php.lang; sourceTree = "<group>"; };
-		3A158D80128A27DB00339E6E /* postscript.lang */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = postscript.lang; sourceTree = "<group>"; };
-		3A158D81128A27DB00339E6E /* prolog.lang */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = prolog.lang; sourceTree = "<group>"; };
-		3A158D82128A27DB00339E6E /* properties.lang */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = properties.lang; sourceTree = "<group>"; };
-		3A158D83128A27DB00339E6E /* proto.lang */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = proto.lang; sourceTree = "<group>"; };
-		3A158D84128A27DB00339E6E /* python.lang */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = python.lang; sourceTree = "<group>"; };
-		3A158D85128A27DB00339E6E /* ruby.lang */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ruby.lang; sourceTree = "<group>"; };
-		3A158D86128A27DB00339E6E /* scala.lang */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = scala.lang; sourceTree = "<group>"; };
-		3A158D87128A27DB00339E6E /* scheme.lang */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = scheme.lang; sourceTree = "<group>"; };
-		3A158D88128A27DB00339E6E /* script_comment.lang */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = script_comment.lang; sourceTree = "<group>"; };
-		3A158D89128A27DB00339E6E /* sh.lang */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = sh.lang; sourceTree = "<group>"; };
-		3A158D8A128A27DB00339E6E /* slang.lang */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = slang.lang; sourceTree = "<group>"; };
-		3A158D8B128A27DB00339E6E /* sml.lang */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = sml.lang; sourceTree = "<group>"; };
-		3A158D8C128A27DB00339E6E /* spec.lang */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = spec.lang; sourceTree = "<group>"; };
-		3A158D8D128A27DB00339E6E /* sql.lang */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = sql.lang; sourceTree = "<group>"; };
-		3A158D8E128A27DB00339E6E /* style.lang */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = style.lang; sourceTree = "<group>"; };
-		3A158D8F128A27DB00339E6E /* symbols.lang */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = symbols.lang; sourceTree = "<group>"; };
-		3A158D90128A27DB00339E6E /* tcl.lang */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = tcl.lang; sourceTree = "<group>"; };
-		3A158D91128A27DB00339E6E /* texinfo.lang */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = texinfo.lang; sourceTree = "<group>"; };
-		3A158D92128A27DB00339E6E /* todo.lang */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = todo.lang; sourceTree = "<group>"; };
-		3A158D93128A27DB00339E6E /* url.lang */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = url.lang; sourceTree = "<group>"; };
-		3A158D94128A27DB00339E6E /* vala.lang */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = vala.lang; sourceTree = "<group>"; };
-		3A158D95128A27DB00339E6E /* vbscript.lang */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = vbscript.lang; sourceTree = "<group>"; };
-		3A158D96128A27DB00339E6E /* xml.lang */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = xml.lang; sourceTree = "<group>"; };
-		3A158D97128A27DB00339E6E /* xorg.lang */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = xorg.lang; sourceTree = "<group>"; };
+		3A158DF1128A282F00339E6E /* style */ = {isa = PBXFileReference; lastKnownFileType = folder; path = style; sourceTree = "<group>"; };
+		3A158DF5128A296000339E6E /* lang */ = {isa = PBXFileReference; lastKnownFileType = folder; path = lang; sourceTree = "<group>"; };
 		3A25E477128194B400B6A33E /* KSyntaxHighlighter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSyntaxHighlighter.h; sourceTree = "<group>"; };
 		3A25E478128194B400B6A33E /* KSyntaxHighlighter.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KSyntaxHighlighter.mm; sourceTree = "<group>"; };
 		3A25E47A1281A6A200B6A33E /* libboost_regex-mt.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libboost_regex-mt.dylib"; path = "deps/srchilight/libboost_regex-mt.dylib"; sourceTree = "<group>"; };
@@ -446,99 +175,6 @@
 			);
 			path = ICU;
 			sourceTree = "<group>";
-		};
-		3A158D42128A27DB00339E6E /* upstream-lang */ = {
-			isa = PBXGroup;
-			children = (
-				3A158D43128A27DB00339E6E /* ada.lang */,
-				3A158D44128A27DB00339E6E /* applescript.lang */,
-				3A158D45128A27DB00339E6E /* asm.lang */,
-				3A158D46128A27DB00339E6E /* awk.lang */,
-				3A158D47128A27DB00339E6E /* bat.lang */,
-				3A158D48128A27DB00339E6E /* bib.lang */,
-				3A158D49128A27DB00339E6E /* bison.lang */,
-				3A158D4A128A27DB00339E6E /* c.lang */,
-				3A158D4B128A27DB00339E6E /* c_comment.lang */,
-				3A158D4C128A27DB00339E6E /* c_string.lang */,
-				3A158D4D128A27DB00339E6E /* caml.lang */,
-				3A158D4E128A27DB00339E6E /* changelog.lang */,
-				3A158D4F128A27DB00339E6E /* clike_vardeclaration.lang */,
-				3A158D50128A27DB00339E6E /* clipper.lang */,
-				3A158D51128A27DB00339E6E /* cobol.lang */,
-				3A158D52128A27DB00339E6E /* conf.lang */,
-				3A158D53128A27DB00339E6E /* cpp.lang */,
-				3A158D54128A27DB00339E6E /* csharp.lang */,
-				3A158D55128A27DB00339E6E /* css.lang */,
-				3A158D56128A27DB00339E6E /* d.lang */,
-				3A158D57128A27DB00339E6E /* default.lang */,
-				3A158D58128A27DB00339E6E /* desktop.lang */,
-				3A158D59128A27DB00339E6E /* diff.lang */,
-				3A158D5A128A27DB00339E6E /* erlang.lang */,
-				3A158D5B128A27DB00339E6E /* errors.lang */,
-				3A158D5C128A27DB00339E6E /* extreme_comment.lang */,
-				3A158D5D128A27DB00339E6E /* extreme_comment2.lang */,
-				3A158D5E128A27DB00339E6E /* extreme_comment3.lang */,
-				3A158D5F128A27DB00339E6E /* extreme_comment4.lang */,
-				3A158D60128A27DB00339E6E /* fixed-fortran.lang */,
-				3A158D61128A27DB00339E6E /* flex.lang */,
-				3A158D62128A27DB00339E6E /* fortran.lang */,
-				3A158D63128A27DB00339E6E /* function.lang */,
-				3A158D64128A27DB00339E6E /* glsl.lang */,
-				3A158D65128A27DB00339E6E /* haskell.lang */,
-				3A158D66128A27DB00339E6E /* haskell_literate.lang */,
-				3A158D67128A27DB00339E6E /* haxe.lang */,
-				3A158D68128A27DB00339E6E /* html.lang */,
-				3A158D69128A27DB00339E6E /* html_simple.lang */,
-				3A158D6A128A27DB00339E6E /* java.lang */,
-				3A158D6B128A27DB00339E6E /* javascript.lang */,
-				3A158D6C128A27DB00339E6E /* key_string.lang */,
-				3A158D6D128A27DB00339E6E /* langdef.lang */,
-				3A158D6E128A27DB00339E6E /* latex.lang */,
-				3A158D6F128A27DB00339E6E /* ldap.lang */,
-				3A158D70128A27DB00339E6E /* lisp.lang */,
-				3A158D71128A27DB00339E6E /* log.lang */,
-				3A158D72128A27DB00339E6E /* logtalk.lang */,
-				3A158D73128A27DB00339E6E /* lsm.lang */,
-				3A158D74128A27DB00339E6E /* lua.lang */,
-				3A158D75128A27DB00339E6E /* m4.lang */,
-				3A158D76128A27DB00339E6E /* makefile.lang */,
-				3A158D77128A27DB00339E6E /* manifest.lang */,
-				3A158D78128A27DB00339E6E /* nohilite.lang */,
-				3A158D79128A27DB00339E6E /* number.lang */,
-				3A158D7A128A27DB00339E6E /* outlang.lang */,
-				3A158D7B128A27DB00339E6E /* oz.lang */,
-				3A158D7C128A27DB00339E6E /* pascal.lang */,
-				3A158D7D128A27DB00339E6E /* pc.lang */,
-				3A158D7E128A27DB00339E6E /* perl.lang */,
-				3A158D7F128A27DB00339E6E /* php.lang */,
-				3A158D80128A27DB00339E6E /* postscript.lang */,
-				3A158D81128A27DB00339E6E /* prolog.lang */,
-				3A158D82128A27DB00339E6E /* properties.lang */,
-				3A158D83128A27DB00339E6E /* proto.lang */,
-				3A158D84128A27DB00339E6E /* python.lang */,
-				3A158D85128A27DB00339E6E /* ruby.lang */,
-				3A158D86128A27DB00339E6E /* scala.lang */,
-				3A158D87128A27DB00339E6E /* scheme.lang */,
-				3A158D88128A27DB00339E6E /* script_comment.lang */,
-				3A158D89128A27DB00339E6E /* sh.lang */,
-				3A158D8A128A27DB00339E6E /* slang.lang */,
-				3A158D8B128A27DB00339E6E /* sml.lang */,
-				3A158D8C128A27DB00339E6E /* spec.lang */,
-				3A158D8D128A27DB00339E6E /* sql.lang */,
-				3A158D8E128A27DB00339E6E /* style.lang */,
-				3A158D8F128A27DB00339E6E /* symbols.lang */,
-				3A158D90128A27DB00339E6E /* tcl.lang */,
-				3A158D91128A27DB00339E6E /* texinfo.lang */,
-				3A158D92128A27DB00339E6E /* todo.lang */,
-				3A158D93128A27DB00339E6E /* url.lang */,
-				3A158D94128A27DB00339E6E /* vala.lang */,
-				3A158D95128A27DB00339E6E /* vbscript.lang */,
-				3A158D96128A27DB00339E6E /* xml.lang */,
-				3A158D97128A27DB00339E6E /* xorg.lang */,
-			);
-			name = "upstream-lang";
-			path = "deps/srchilight/upstream-lang";
-			sourceTree = SOURCE_ROOT;
 		};
 		3A7E717C1286F40600D85E4C /* file-tree */ = {
 			isa = PBXGroup;
@@ -621,7 +257,8 @@
 		3A928C19122714EE00DA7E43 /* resources */ = {
 			isa = PBXGroup;
 			children = (
-				3A158D42128A27DB00339E6E /* upstream-lang */,
+				3A158DF1128A282F00339E6E /* style */,
+				3A158DF5128A296000339E6E /* lang */,
 				3A928C1A122714EE00DA7E43 /* Info.plist */,
 				3A7E71121286EAE800D85E4C /* BrowserWindow.xib */,
 				3A928C1B122714EE00DA7E43 /* MainMenu.xib */,
@@ -668,8 +305,6 @@
 				3A928C1D1227151800DA7E43 /* Sources */,
 				3A928C1E1227151800DA7E43 /* Frameworks */,
 				3A9291381229BBB600DA7E43 /* Copy Frameworks */,
-				3A158BE3128A23E200339E6E /* Copy lang files */,
-				3A158BE4128A23E200339E6E /* Copy style files */,
 			);
 			buildRules = (
 			);
@@ -737,6 +372,8 @@
 				3A9291DF1229BFCD00DA7E43 /* MainMenu.xib in Resources */,
 				3A9291181229B93C00DA7E43 /* Toolbar.xib in Resources */,
 				3A7E71131286EAE800D85E4C /* BrowserWindow.xib in Resources */,
+				3A158DF4128A282F00339E6E /* style in Resources */,
+				3A158E4C128A296100339E6E /* lang in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

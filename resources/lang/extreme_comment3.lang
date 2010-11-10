@@ -1,0 +1,15 @@
+# treat the preprocess statement
+#  #if 0
+#    ...
+#  #else
+# as a comment
+
+environment comment = '^[[:blank:]]*#[[:blank:]]*if[[:blank:]]+0' begin
+  comment start '^[[:blank:]]*#[[:blank:]]*else' exit
+  comment delim '^[[:blank:]]*#[[:blank:]]*if' 
+                '^[[:blank:]]*#[[:blank:]]*endif' multiline nested
+  
+end
+
+include "cpp.lang"
+

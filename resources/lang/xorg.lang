@@ -1,0 +1,18 @@
+# lang definition file for xorg configuration files
+
+include "script_comment.lang"
+
+state keyword delim "Section" "EndSection" multiline begin
+	include "number.lang"
+	include "c_string.lang"
+	include "script_comment.lang"
+	state keyword delim "SubSection" "EndSubSection" multiline begin
+		include "number.lang"
+		include "c_string.lang"
+		include "script_comment.lang"
+		(normal,type) = `(^[[:blank:]]*)([[:word:]]+)`
+	end
+
+	(normal,type) = `(^[[:blank:]]*)([[:word:]]+)`
+end
+

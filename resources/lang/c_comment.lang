@@ -1,0 +1,25 @@
+# c_comment.lang
+
+# comments with documentation tags
+environment comment start "///" begin
+  include "url.lang"
+  include "html_simple.lang"
+  type = '@[[:alpha:]]+'
+  include "todo.lang"
+end
+
+comment start "//"
+
+# comments with documentation tags
+environment comment delim "/**" "*/" multiline begin
+  include "url.lang"
+  include "html_simple.lang"
+  type = '@[[:alpha:]]+'
+  include "todo.lang"
+end
+
+# standard comments
+environment comment delim "/*" "*/" multiline begin
+  include "url.lang"
+  include "todo.lang"
+end

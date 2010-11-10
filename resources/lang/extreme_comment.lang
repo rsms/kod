@@ -1,0 +1,5 @@
+environment comment start '^[[:blank:]]*#if[[:blank:]]+0' begin
+  comment start '^[[:blank:]]*#(else|endif)' exit
+end
+
+include "cpp.lang"

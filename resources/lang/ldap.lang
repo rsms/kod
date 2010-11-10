@@ -1,0 +1,10 @@
+# for ldap syntax
+
+comment start "#"
+
+(keyword,string) = `(\<[[:alnum:]_]+:)((?:[^,=]*\z)?)`
+
+(attribute,symbol,string,symbol)=
+	`([[:alnum:]_]+)(=)([^,]+)(,?)`
+
+

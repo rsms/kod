@@ -1,0 +1,14 @@
+# language definition for css style sheets
+
+include "c_comment.lang"
+
+selector = '(\.|#)[[:word:]]+'
+
+state cbracket delim "{" "}" multiline begin 
+        include "c_comment.lang"
+        property = '[[:word:]-]+[[:blank:]]*:'
+        value = '[.%[:word:]-]+'
+        string = '#([[:word:]]+)'
+end
+
+include "symbols.lang"

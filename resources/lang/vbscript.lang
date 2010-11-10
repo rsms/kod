@@ -1,0 +1,25 @@
+# language definition for AppleScript
+
+comment start "'"
+
+vardef SPECIALCHAR = '\\.'
+
+environment string delim "\"" "\"" begin
+  specialchar = $SPECIALCHAR
+end
+
+keyword="and|response|call|case|select|continue|date|dim|server",
+"createobject|do|if|else|end|empty|then|next|set",
+"default|false|true|BOF",
+"eof|each|for|sub|function|len|cstr|include",
+"cdbl|cdate|is|null|object|redirect|request|querystring|exit",
+"clng|redim|session|form|not|nothing|loop|while" nonsensitive
+
+include "function.lang"
+
+cbracket = "{|}"
+
+include "symbols.lang"
+
+include "number.lang"
+

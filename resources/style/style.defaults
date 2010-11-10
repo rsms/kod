@@ -1,0 +1,22 @@
+# defaults for styles
+# the format is:
+# elem1 = elem2
+# meaning that if the style for elem1 is not specified, 
+# then it will have the same style as elem2
+
+classname = normal
+usertype = normal
+preproc = keyword
+section = function
+paren = cbracket
+attribute = type
+value = string
+predef_var = type
+predef_func = function
+atom = regexp
+meta = function
+path = regexp
+label = preproc
+error = string
+warning = type
+code = preproc

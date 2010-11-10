@@ -1,0 +1,21 @@
+# this is the language definition for the
+# language definition syntax itself
+comment start "#"
+
+preproc = "include"
+
+string delim "\"" "\"" escape "\\" multiline
+regexp delim "'" "'" escape "\\" multiline
+regexp delim "`" "`" escape "\\" multiline
+
+keyword = "state|environment|begin|end|delim|escape|start",
+          "multiline|nested|vardef|exitall|exit",
+          "redef|subst|nonsensitive"
+
+symbol = "=|+|,|(|)"
+
+vardef ID = '[[:word:]]+'
+
+variable = '\$' + $ID
+
+variable = $ID

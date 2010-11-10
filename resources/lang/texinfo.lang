@@ -1,0 +1,29 @@
+# Language definition file for Texinfo
+# author: Lorenzo Bettini
+
+normal = "@@","@{","@}"
+
+comment start "@c"
+
+preproc = "@include"
+
+environment keyword = '@([^[:blank:]]*)ref' begin
+	cbracket = '\{'
+	cbracket = '\}' exit
+	string = '[^}]+'
+end
+
+preproc = "@menu","@end menu"
+
+# menu items
+string = '\*.+::'
+
+(keyword,cbracket,bold,cbracket) = `(@b)(\{)([^}]+)(\})`
+(keyword,cbracket,italics,cbracket) = `(@(?:emph|i))(\{)([^}]+)(\})`
+(keyword,cbracket,url,cbracket) = `(@(?:uref|url))(\{)([^[:blank:]]+)(\})`
+(keyword,cbracket,variable,cbracket) = `(@value)(\{)([^[:blank:]]+)(\})`
+
+keyword = '@end [^[:blank:]]+'
+keyword = '@[^[:blank:]{}]+'
+
+argument delim "{" "}" escape "@" multiline nested 

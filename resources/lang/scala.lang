@@ -1,0 +1,31 @@
+# written by Dean Wampler
+
+preproc = "import","package"
+
+include "c_comment.lang"
+
+include "number.lang"
+
+include "c_string.lang"
+
+(keyword,normal,classname) = `(\<(?:class|trait))([[:blank:]]+)([$[:alnum:]_]+)`
+
+keyword = "abstract|case|catch|class|def",
+          "do|else|extends|false|final",
+          "finally|for|forSome|if|implicit",
+          "import|lazy|match|new|null",
+          "object|override|package|private|protected",
+          "requires|return|sealed|super|this",
+          "throw|trait|try|true|type",
+          "val|var|while|with|yield",
+          "_|:|=>|=|<-|<:|<%|>:|#|@" 
+
+type = "Int|Byte|Boolean|Char|Long|Float|Double|Short|Nil"
+
+include "symbols.lang"
+
+cbracket = "{|}"
+
+vardef FUNCTION = '([[:alpha:]]|_|[[:punct:]])([[:word:]]|[[:punct:]])*(?=[[:blank:]]*\()'
+function = $FUNCTION
+

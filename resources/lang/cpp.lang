@@ -1,0 +1,15 @@
+# definitions for C++
+# most of it is shared with c.lang
+
+(keyword,normal,classname) = 
+  `(\<(?:class|struct|typename))([[:blank:]]+)([[:alnum:]_]+)`
+
+keyword = "class|const_cast|delete",
+  "dynamic_cast|explicit|false|friend",
+  "inline|mutable|namespace|new|operator|private|protected",
+  "public|reinterpret_cast|static_cast",
+  "template|this|throw|true",
+  "try|typeid|typename",
+  "using|virtual"
+
+include "c.lang"

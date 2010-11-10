@@ -1,0 +1,27 @@
+include "number.lang"
+
+string delim "[[" "]]" multiline nested
+
+string delim "\"" "\"" escape "\\"
+string delim "'" "'"  escape "\\"
+
+keyword = "and|break|do|else|elseif|end|false|for|function|if|in|local|nil|not|or|repeat|return|then|true|until|while"
+
+# if = is matched bewteen [[ then it must be present also in the closing ]]
+environment comment delim `--\[(=*)\[` "]" + @{1} + "]" multiline nested begin
+  include "url.lang"
+  environment comment delim "[[" "]]" multiline nested begin
+        include "url.lang"
+  end
+end
+
+environment comment start "--" begin
+  include "url.lang"
+end
+
+include "symbols.lang"
+
+cbracket = "{|}"
+
+# function = '(?:[[:alpha:]]|_)[[:word:]]*[[:blank:]]*(?:\:(?:[[:alpha:]]|_)[[:word:]]*[[:blank:]]*)?(?=\()'
+function = '([[:alpha:]]|_)[[:word:]:]*(?=\()'

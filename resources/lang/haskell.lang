@@ -1,0 +1,36 @@
+# Quick and dirty Haskell highlight rules for GNU Source-highlight and SHJS
+# Sergey Astanin
+# Feel free to improve according to http://www.haskell.org/onlinereport/lexemes.html
+# Source-highlight docs: http://www.gnu.org/software/src-highlite/source-highlight.html#Language-Definitions
+# SHJS docs: http://shjs.sourceforge.net/doc/documentation.html
+
+# as number.lang but also with Haskell octals
+number =
+'\<[+-]?((0x[[:xdigit:]]+)|(0[oO][0-7]+)|(([[:digit:]]*\.)?
+[[:digit:]]+([eE][+-]?[[:digit:]]+)?))u?((int(?:8|16|32|64))|L)?\>'
+
+# strings and chars (including non-control escapes)
+string delim "\"" "\"" escape "\\"
+string = '\'([^\\\']{1}|\\[\\\'0abfnrtv"&]|\\[[:digit:]]+|\\[oO][0-7]+|\\[xX][[:xdigit:]]+)\''
+
+# show some syntax errors with "regex" style
+regex = '\'[^\\\']{2,}\''
+
+keyword = '\<(case|class|data|default|deriving|do|else|if|import|in|infix|infixl|infixr|instance|let|module|newtype|of|then|type|where|_)\>'
+
+comment delim "{-" "-}" multiline nested
+
+# -- An end-of-line comment
+# but -->, <--, |-- and --| are not comments in Haskell!
+symbol = '([!#$$%*+\./<=>\?@\\\^\|\-~:]+)--'
+comment start '(--)(?![!#$$%*+\./<=>\?@\\\^\|\-~:]+)'
+
+# dont highlight types in qualified names, borrowed from caml.lang
+type = '\<(?:[A-Z][\w\']*)\>(?![\.])'
+
+symbol =
+  "!","#","$","%","&","*","+",".","/","<","=",">","?","@","\\","^","\|","-","~",
+  "(",")",",",";","[","]","`","{","}",
+  ":"
+
+cbracket = "{|}"

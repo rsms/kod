@@ -1,0 +1,8 @@
+state date start '[[:digit:]]{2,4}-?[[:digit:]]{2}-?[[:digit:]]{2}' begin
+  include "url.lang"
+  name = '([[:word:]]|[[:punct:]])+'
+end
+  
+(normal,symbol,normal,file)= `(^[[:blank:]]+)(\*)([[:blank:]]+)((?:[^:]+\:)?)` 
+(normal,file)= `(^[[:blank:]]+)((?:[^:]+\:)?)` 
+

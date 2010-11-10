@@ -1,0 +1,52 @@
+comment start "%"
+
+symbol = "&|~"
+symbol = '\\[$_&{}~^%#`\'"|[:space:]\\]'
+
+string delim "\"" "\"" escape "\\" multiline
+string delim "``" "''" escape "\\" multiline
+string delim "`" "'"  escape "\\" multiline
+#string delim "'" "'"  escape "\\" multiline
+
+math = "$$|\\[|\\]"
+math delim "$" "$" escape "\\" multiline
+
+state keyword start "\\textit" begin
+  environment italics start "{" begin
+    italics delim "{" "}" escape "\\" multiline nested 
+    italics = "}" exitall
+  end
+end
+
+state keyword start "\\textbf" begin
+  environment bold start "{" begin
+    bold delim "{" "}" escape "\\" multiline nested 
+    bold = "}" exitall
+  end
+end
+
+state keyword start "\\texttt" begin
+  environment fixed start "{" begin
+    fixed delim "{" "}" escape "\\" multiline nested 
+    fixed = "}" exitall
+  end
+end
+
+state keyword start "\\underline" begin
+  environment underline start "{" begin
+    underline delim "{" "}" escape "\\" multiline nested 
+    underline = "}" exitall
+  end
+end
+
+vardef command = '\\[[:alpha:]]+'
+
+keyword = $command 
+
+symbol = "*"
+
+normal = '\{[[:blank:]]*\z' # a { and then a new line
+optionalargument delim "[" "]" escape "\\"
+argument delim "{" "}" escape "\\" multiline nested 
+
+
