@@ -252,8 +252,8 @@ NSString * const KHighlightStateAttribute = @"KHighlightState";
  * @param formatterMap
  */
 - (void)setFormatters:(const KTextFormatterMap &)formatterMap {
-  // For each element set this QSyntaxHighlighter
-  // pointer (the formatters will call setFormat on such pointer).
+  // For each element set this pointer (the formatters will later call setFormat
+  // on such pointer).
   for (KTextFormatterMap::const_iterator it = formatterMap.begin();
        it != formatterMap.end(); ++it) {
     KTextFormatter *formatter = it->second.get();
