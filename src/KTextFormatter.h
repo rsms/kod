@@ -13,7 +13,7 @@ class KTextFormatter: public srchilite::Formatter {
  protected:
   /// the language element represented by this formatter
   std::string elem_;
-  
+
   /// reference to related KSyntaxHighlighter
   KSyntaxHighlighter *syntaxHighlighter_;
   
@@ -32,7 +32,7 @@ class KTextFormatter: public srchilite::Formatter {
 
   /// the language element represented by this formatter
   const std::string &getElem() const { return elem_; }
-  void setElem(const std::string &e) { elem_ = e; }
+  void setElem(const std::string &e);
 
   inline void setSyntaxHighlighter(KSyntaxHighlighter *syntaxHighlighter) {
     id old = syntaxHighlighter_;

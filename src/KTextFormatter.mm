@@ -1,6 +1,7 @@
 #import "KTextFormatter.h"
 #import "KSyntaxHighlighter.h"
 #import "NSColor-web.h"
+#import "NSString-intern.h"
 #include <srchilite/formatterparams.h>
 #import <ChromiumTabs/common.h>
 
@@ -68,18 +69,23 @@ void KTextFormatter::clearAttributes(NSMutableAttributedString *astr,
 
 
 KTextFormatter::KTextFormatter(const std::string &elem)
-    : elem_(elem)
-    , syntaxHighlighter_(NULL) {
+    : syntaxHighlighter_(NULL) {
   textAttributes_ = [[NSMutableDictionary alloc] initWithObjectsAndKeys:
       baseFont(), NSFontAttributeName,
-      [NSString stringWithUTF8String:elem.c_str()],
-      ClassAttributeName,
       nil];
+  setElem(elem); // need to be called after creation of textAttributes_
 }
 
 KTextFormatter::~KTextFormatter() {
   objc_exch(&syntaxHighlighter_, nil);
   objc_exch(&textAttributes_, nil);
+}
+
+
+void KTextFormatter::setElem(const std::string &e) {
+  elem_ = e;
+  NSString *symbol = [[NSString stringWithUTF8String:e.c_str()] internedString];
+  [textAttributes_ setObject:symbol forKey:ClassAttributeName];
 }
 
 
@@ -175,7 +181,6 @@ void KTextFormatter::applyAttributes(NSMutableAttributedString *astr,
     [astr addAttributes:textAttributes_ range:range];
   }
 }
-
 
 
 void KTextFormatter::format(const std::string &s,

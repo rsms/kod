@@ -624,6 +624,7 @@ static int debugSimulateTextAppendingIteration = 0;
       NSArray *selectedRanges = textView_.selectedRanges;
       [textStorage replaceCharactersInRange:NSMakeRange(0, textStorage.length)
                        withAttributedString:mastr];
+      //[mastr release]; // this causes double frees... wtf?!
       @try {
         textView_.selectedRanges = selectedRanges;
       } @catch (id e) {
@@ -633,7 +634,6 @@ static int debugSimulateTextAppendingIteration = 0;
         // a serious error. Just the selection which is (partially) lost.
       }
       hasPendingInitialHighlighting_ = NO;
-      //[mastr release];
     });
   } else if (hasPendingInitialHighlighting_) {
     K_DISPATCH_MAIN_ASYNC({
@@ -651,7 +651,7 @@ static int debugSimulateTextAppendingIteration = 0;
 
 
 - (void)textStorageDidProcessEditing:(NSNotification*)notification {
-	// invoked when editing occured
+	// invoked after editing occured
 
   // We sometimes initialize documents on background threads where the initial
   // "filling" causes this method to be called. We're a noop in that case.
@@ -664,8 +664,9 @@ static int debugSimulateTextAppendingIteration = 0;
     // text attributes changed -- not interesting for this code branch
     return;
   }
+  NSUInteger textLength = textStorage.length;
   BOOL completeDocument = (range.location == 0 &&
-                           changeInLen == [textStorage length]);
+                           range.length == textLength);
   BOOL wasInUndoRedo = [[self undoManager] isUndoing] ||
                        [[self undoManager] isRedoing];
   DLOG("range: %@, changeInLen: %d, wasInUndoRedo: %@",
@@ -676,9 +677,8 @@ static int debugSimulateTextAppendingIteration = 0;
     [self updateChangeCount:NSChangeReadOtherContents];
   }
   
-  
   // Syntax highlight
-  if (!hasPendingInitialHighlighting_) {
+  if (!hasPendingInitialHighlighting_ && textLength != 0) {
     KSyntaxHighlighter *syntaxHighlighter = self.syntaxHighlighter;
     if (syntaxHighlighter && syntaxHighlighter.currentMAString == nil) {
       NSRange highlightRange, deltaRange;
@@ -710,14 +710,74 @@ static int debugSimulateTextAppendingIteration = 0;
                          atIndex:index
            longestEffectiveRange:&highlightRange2
                          inRange:maxRange];
+          
+          //
+          // --experimental line extension BEGIN--
+          //
+          // This is the case when NOT using line extension:
+          //   1. initial state:  "void foo(int a) {"
+          //   2. we break "foo": "void fo o(int a) {"
+          //   3. "fo o" gets re-highlighted and correctly receives the "norma"
+          //      format.
+          //   4. we remove the space we added to foo, thus the line become:
+          //      "void foo(int a) {"
+          //   5. "foo" gets re-highlighted, but since the highlighter determine
+          //      element type (format) from _context_ "foo" will incorrectly
+          //      receive the "normal" format rather than the "function" format.
+          //
+          // By including the full line we ensure the highlighter will at least
+          // have some context to work with. This is far from optimal and should
+          // work in one of the following ways:
+          //
+          //   a. Expanding the range to include one different element (not
+          //      counting whitespace/newlines) in each direction, thus the
+          //      above use-case would include "void foo(" at step 4.
+          //
+          //   b. Use a special text attribute (like how state is tracked with
+          //      KHighlightState) which replaces the current
+          //      KTextFormatter::ClassAttributeName symbol representing the
+          //      format. Maybe a struct e.g:
+          //
+          //        KTextFormat {
+          //           NSString *symbol;
+          //           int numberOfPreDependants;
+          //           int numberOfPostDependants;
+          //        }
+          //
+          //      Where |numberOfPreDependants| indicates how many elements this
+          //      format need to consider when being modified, then when
+          //      breaking such an element (step 2. in our use-case above) the
+          //      highlighter applies the following calculation to the new
+          //      format struct ("normal" in our use-case):
+          //
+          //        newFormat.numberOfPreDependants = 
+          //          MAX(newFormat.numberOfPreDependants,
+          //              previousFormat.numberOfPreDependants);
+          //
+          //      Thus, when we later cut out the " " (space) -- as illustrated
+          //      by step 4. in the above use-case -- the highlighter will look
+          //      at enough context. Maybe.
+          //
+          // When there is time, I should probably try to implement (a.).
+          // However, it's not a guarantee [find previous non-empty element,
+          // find next non-empty element, highlight subrange] is a cheaper
+          // operation than [find line range, highlight subrange] -- depends on
+          // how element scanning is implemented I guess.
+          //
+          highlightRange = [text lineRangeForRange:highlightRange];
+          //
+          // --experimental line extension END--
+          //
+          
           highlightRange = NSUnionRange(highlightRange, highlightRange2);
         }
         
         deltaRange = range;
       }
-      DLOG("highlightRange: %@", highlightRange.location == NSNotFound
+      DLOG("highlightRange: %@ \"%@\"", highlightRange.location == NSNotFound
                           ? @"{NSNotFound, 0}"
-                          : NSStringFromRange(highlightRange));
+                          : NSStringFromRange(highlightRange),
+                          [text substringWithRange:highlightRange]);
       NSRange nextRange = NSMakeRange(0, 0);
       NSUInteger textEnd = [textStorage length];
       while (nextRange.location != textEnd) {
