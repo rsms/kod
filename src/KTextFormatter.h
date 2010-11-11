@@ -6,10 +6,12 @@
 @class KSyntaxHighlighter;
 
 /**
-* A specialization of srchilite::Formatter in order to format parts of
-* a document, instead of outputting the formatted text.
-*/
-class KTextFormatter: public srchilite::Formatter {
+ * Constitutes the text attributes for a specific language element.
+ *
+ * Part of the source-highlight API. srchilite::Formatter is an interface which
+ * defines a single method |format(text, params)|.
+ */
+class KStyleElement : public srchilite::Formatter {
  protected:
   /// the language element represented by this formatter
   std::string elem_;
@@ -64,7 +66,7 @@ class KTextFormatter: public srchilite::Formatter {
    * @param the string to format
    * @param params possible additional parameters for the formatter
    */
-  void format(const std::string &s,
+  void format(const std::string &text,
               const srchilite::FormatterParams *params = 0);
 };
 
