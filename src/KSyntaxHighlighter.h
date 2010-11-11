@@ -24,19 +24,19 @@ extern const NSString *KHighlightStateAttribute;
   /// the GNU Source-highlighter used for the actual highlighting
   srchilite::SourceHighlighter *sourceHighlighter_;
   
-  /**
-   * this is crucial to get the starting position of the string to highlight
-   * within the whole line
-   */
+  /// initial state
   srchilite::FormatterParams formatterParams_;
 
   /// table of formatters
   srchilite::FormatterManager *formatterManager_;
   
   /// Parser state
+  // the following variables MUST NOT be modified from the outside while the
+  // highlighter is inside call to |highlightMAString:inRange:deltaRange:|
   NSUInteger currentMAStringOffset_;
   NSMutableAttributedString *currentMAString_;
   __weak const std::string *currentUTF8String_;
+  BOOL currentUTF8StringIsMultibyte_;
   __weak KHighlightState *currentState_;
   __weak KHighlightState *lastFormattedState_; // temporal per format call
   NSRange lastFormattedRange_;

@@ -21,6 +21,7 @@
 @property(assign, nonatomic) NSStringEncoding textEncoding;
 @property(readonly) KBrowserWindowController* windowController;
 @property(readonly) KSyntaxHighlighter* syntaxHighlighter;
+@property(readonly) NSMutableParagraphStyle *paragraphStyle;
 
 + (NSFont*)defaultFont;
 

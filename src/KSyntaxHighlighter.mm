@@ -1,8 +1,6 @@
 #import "KSyntaxHighlighter.h"
 #import "KHighlightState.h"
 #import "KTextFormatter.h"
-#import "NSString-utf8-range-conv.h"
-#import "NSError+KAdditions.h"
 
 #import <srchilite/langelems.h>
 #import <srchilite/stylefileparser.h>
@@ -11,35 +9,9 @@
 #import <srchilite/settings.h>
 
 #ifndef NDEBUG
-#define NDEBUG 1
+//#define NDEBUG 1
 #endif
-#import <ChromiumTabs/common.h>
-
-@interface NSString (cpp)
-- (NSUInteger)populateStdString:(std::string*)str
-                  usingEncoding:(NSStringEncoding)encoding
-                          range:(NSRange)range;
-@end
-@implementation NSString (cpp)
-
-- (NSUInteger)populateStdString:(std::string*)str
-                  usingEncoding:(NSStringEncoding)encoding
-                          range:(NSRange)range {
-  *str = std::string(range.length, '0');
-  char *pch = (char*)str->data();
-  NSUInteger usedBufferCount = 0;
-  [self getBytes:pch
-       maxLength:range.length
-      usedLength:&usedBufferCount
-        encoding:encoding
-         options:0
-           range:range
-  remainingRange:NULL];
-  return usedBufferCount;
-}
-
-@end
-
+#import "common.h"
 
 
 @implementation KSyntaxHighlighter
@@ -352,7 +324,7 @@ const NSString *KHighlightStateAttribute = (const NSString *)CFSTR("KHighlightSt
                     options:opts
                  usingBlock:^(id value, NSRange range, BOOL *stop) {
     std::string elem;
-    [value populateStdString:&elem
+    [value populateStdString:elem
                usingEncoding:NSUTF8StringEncoding
                        range:NSMakeRange(0, [value length])];
     
@@ -493,10 +465,14 @@ const NSString *KHighlightStateAttribute = (const NSString *)CFSTR("KHighlightSt
                            usingBlock:^(NSString *_, NSRange substringRange,
                                         NSRange enclosingRange, BOOL *stop) {
     //DLOG("substringRange: %@", NSStringFromRange(substringRange));
+    //std::string str([[text substringWithRange:enclosingRange] UTF8String]);
+    //currentUTF8StringIsMultibyte_ = (str.size() != enclosingRange.length);
     std::string str;
-    [text populateStdString:&str
-              usingEncoding:NSUTF8StringEncoding
-                      range:enclosingRange];
+    NSUInteger size = [text populateStdString:str
+                                usingEncoding:NSUTF8StringEncoding
+                                        range:enclosingRange];
+    currentUTF8StringIsMultibyte_ = (size != enclosingRange.length);
+
     currentUTF8String_ = &str;
     //fprintf(stderr, "** \"%s\"\n", str.c_str());
     sourceHighlighter_->highlightParagraph(str);
@@ -718,18 +694,22 @@ static void _debugDumpHighlightEvent(const srchilite::HighlightEvent &event) {
 - (void)setFormat:(KTextFormatter*)format inRange:(NSRange)range {
   if (!currentMAString_) return;
   NSDictionary *attrs = format->textAttributes();
-  
-  NSRange utf8Range = range;
-  range = [NSString UTF16RangeFromUTF8Range:range
-                               inUTF8String:currentUTF8String_->data()
-                                   ofLength:currentUTF8String_->size()];
+
+  if (currentUTF8StringIsMultibyte_) {
+    // currentUTF8String_ contains non-ascii chars, so we need to convert range
+    range = [NSString UTF16RangeFromUTF8Range:range
+                                 inUTF8String:currentUTF8String_->data()
+                                     ofLength:currentUTF8String_->size()];
+  }
+
   range.location += currentMAStringOffset_;
   lastFormattedRange_ = range;
   lastFormattedState_ = nil; // temporal
+  //DLOG_RANGE(range, currentMAString_.string);
   #if 0
   DLOG("setFormat:%s inRange:%@ (\"%@\") <-- %@",
        format->getElem().c_str(), NSStringFromRange(range),
-       [[currentMAString_ string] substringWithRange:range],
+       [currentMAString_.string substringWithRange:range],
        attrs);
   #endif
   [currentMAString_ setAttributes:attrs range:range];

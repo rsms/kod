@@ -1,4 +1,4 @@
-#import <string>
+#import "common.h"
 #import <boost/shared_ptr.hpp>
 #import <srchilite/formatter.h>
 #import <srchilite/formatterfactory.h>
@@ -35,9 +35,7 @@ class KTextFormatter: public srchilite::Formatter {
   void setElem(const std::string &e);
 
   inline void setSyntaxHighlighter(KSyntaxHighlighter *syntaxHighlighter) {
-    id old = syntaxHighlighter_;
-    syntaxHighlighter_ = [syntaxHighlighter retain];
-    if (old) [old release];
+    objc_exch(&syntaxHighlighter_, syntaxHighlighter);
   }
   
   /// Set the style of this formatter

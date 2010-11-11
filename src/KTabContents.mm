@@ -7,37 +7,8 @@
 #import "NSString-ranges.h"
 
 #import "NSError+KAdditions.h"
-#import <ChromiumTabs/common.h>
+#import "common.h"
 #import <dispatch/dispatch.h>
-
-#define K_DISPATCH_MAIN_ASYNC(code)\
-  dispatch_async(dispatch_get_main_queue(),^{ \
-    NSAutoreleasePool *__arpool = [NSAutoreleasePool new]; \
-    code \
-    [__arpool drain]; \
-  })
-
-#define K_DISPATCH_MAIN_SYNC(code)\
-  dispatch_sync(dispatch_get_main_queue(),^{ \
-    NSAutoreleasePool *__arpool = [NSAutoreleasePool new]; \
-    code \
-    [__arpool drain]; \
-  })
-
-#define K_DISPATCH_BG_ASYNC(code)\
-  dispatch_async(dispatch_get_global_queue(0,0),^{ \
-    NSAutoreleasePool *__arpool = [NSAutoreleasePool new]; \
-    code \
-    [__arpool drain]; \
-  })
-
-
-
-#define DLOG_RANGE(r, str) do { \
-    NSString *s = @"<index out of bounds>"; \
-    @try{ s = [str substringWithRange:(r)]; }@catch(id e){} \
-    DLOG( #r " %@ \"%@\"", NSStringFromRange(r), s); \
-  } while (0)
 
 
 @interface KTabContents (Private)
@@ -172,6 +143,7 @@ static int debugSimulateTextAppendingIteration = 0;
   // Note: This might be called from a background thread and must thus be
   // thread-safe.
   if (!(self = [super init])) return nil;
+  NSZone *zone = [self zone];
 
   // Default title and icon
   self.title = _kDefaultTitle;
@@ -184,20 +156,48 @@ static int debugSimulateTextAppendingIteration = 0;
   undoManager_ = [self undoManager]; assert(undoManager_);
 
   // Create a NSTextView
-  textView_ = [[NSTextView alloc] initWithFrame:NSZeroRect];
+  textView_ = [[NSTextView allocWithZone:zone] initWithFrame:NSZeroRect];
   [textView_ setDelegate:self];
   [textView_ setAllowsUndo:YES];
   [textView_ setFont:[isa defaultFont]];
-  [textView_ setBackgroundColor:
-      [NSColor colorWithCalibratedWhite:0.1 alpha:1.0]];
-  [textView_ setTextColor:[NSColor whiteColor]];
-  [textView_ setInsertionPointColor:[NSColor cyanColor]];
-  [textView_ setAutomaticLinkDetectionEnabled:YES];
+  [textView_ setAutomaticLinkDetectionEnabled:NO];
+  [textView_ setSmartInsertDeleteEnabled:NO];
+  [textView_ setAutomaticQuoteSubstitutionEnabled:NO];
+  [textView_ setAllowsImageEditing:NO];
+  [textView_ setRichText:NO];
+  [textView_ turnOffKerning:self]; // we are monospace (robot voice)
   [textView_ setAutoresizingMask:          NSViewMaxYMargin|
                           NSViewMinXMargin|NSViewWidthSizable|NSViewMaxXMargin|
                                            NSViewHeightSizable|
                                            NSViewMinYMargin];
   [textView_ setUsesFindPanel:YES];
+  [textView_ setTextContainerInset:NSMakeSize(2.0, 4.0)];
+  
+  // configure layout manager
+  //NSLayoutManager *layoutManager = []
+  
+  // default paragraph style
+  NSMutableParagraphStyle *paragraphStyle = [NSMutableParagraphStyle new];
+  [paragraphStyle setParagraphStyle:[NSParagraphStyle defaultParagraphStyle]];
+  [paragraphStyle setLineBreakMode:NSLineBreakByCharWrapping];
+  [paragraphStyle setDefaultTabInterval:2];
+  [textView_ setDefaultParagraphStyle:paragraphStyle];
+  //NSParagraphStyleAttributeName
+  
+  // TODO: the following settings should follow the current style
+  [textView_ setBackgroundColor:
+      [NSColor colorWithCalibratedWhite:0.1 alpha:1.0]];
+  [textView_ setTextColor:[NSColor whiteColor]];
+  [textView_ setInsertionPointColor:
+      [NSColor colorWithCalibratedRed:1.0 green:0.2 blue:0.1 alpha:1.0]];
+  [textView_ setSelectedTextAttributes:[NSDictionary dictionaryWithObject:
+      [NSColor colorWithCalibratedRed:0.12 green:0.18 blue:0.27 alpha:1.0]
+      forKey:NSBackgroundColorAttributeName]];
+  
+  // TODO: this defines the attributes to apply to "marked" text, input which is
+  // pending, like "¨" waiting for "u" to build the character "ü". Should match
+  // the current style.
+  //[textView_ setMarkedTextAttributes:[NSDictionary dictionaryWithObject:[NSColor redColor] forKey:NSBackgroundColorAttributeName]];
 
   // Create a NSScrollView to which we add the NSTextView
   KScrollView *sv = [[KScrollView alloc] initWithFrame:NSZeroRect];
@@ -237,6 +237,17 @@ static int debugSimulateTextAppendingIteration = 0;
   } else assert(outError && *outError);
   
   return self;
+}
+
+
+- (void)dealloc {
+  [syntaxHighlighter_ release]; syntaxHighlighter_ = nil;
+  [super dealloc];
+}
+
+
+- (NSMutableParagraphStyle*)paragraphStyle {
+  return (NSMutableParagraphStyle*)textView_.defaultParagraphStyle;
 }
 
 
@@ -428,51 +439,6 @@ static int debugSimulateTextAppendingIteration = 0;
           [NSStringFromRange(selectedRange) UTF8String],
           [[attrs description] UTF8String]);
 }
-
-/*- (IBAction)selectNextElement:(id)sender {
-  NSMutableAttributedString *mastr = textView_.textStorage;
-  NSString *text = [mastr string];
-  NSCharacterSet *cs = [NSCharacterSet whitespaceAndNewlineCharacterSet];
-  NSRange range = [textView_ selectedRange];
-  range.location += range.length;
-  range.length = mastr.length - range.location;
-  [mastr enumerateAttribute:KTextFormatter::ClassAttributeName
-                    inRange:range
-                    options:0
-                 usingBlock:^(id value, NSRange range, BOOL *stop) {
-    
-    NSRange r = [text rangeOfCharacterFromSet:cs options:0 range:range];
-    if (r.location == range.location) {
-      if (r.length == range.length) {
-        // all characters where SP|TAB|CR|LF
-        DLOG("all blanks");
-        return;
-      }
-      range.location += r.length;
-      range.length -= r.length;
-    }
-    DLOG("find last in range %@ \"%@\"",
-         NSStringFromRange(range), [text substringWithRange:range]);
-    r = [text rangeOfCharacterFromSet:cs options:NSBackwardsSearch range:range];
-    DLOG("r = %@ \"%@\"",
-         NSStringFromRange(r), [text substringWithRange:r]);
-    if (r.location != NSNotFound) {
-      NSUInteger end = r.location + r.length;
-      DLOG("A");
-      if (end == range.location + range.length) {
-        DLOG("B");
-        //range.length -= MIN(r.length, range.length);
-        range.length -= r.length;
-      } else DLOG("C");
-    }
-    
-    DLOG("[2] %@ %@ => \"%@\"", value,
-         NSStringFromRange(range), [text substringWithRange:range]);
-    
-    [textView_ setSelectedRange:range];
-    *stop = YES;
-  }];
-}*/
 
 
 - (IBAction)selectNextElement:(id)sender {
@@ -711,6 +677,8 @@ static int debugSimulateTextAppendingIteration = 0;
            longestEffectiveRange:&highlightRange2
                          inRange:maxRange];
           
+          highlightRange = NSUnionRange(highlightRange, highlightRange2);
+          
           //
           // --experimental line extension BEGIN--
           //
@@ -764,20 +732,23 @@ static int debugSimulateTextAppendingIteration = 0;
           // operation than [find line range, highlight subrange] -- depends on
           // how element scanning is implemented I guess.
           //
-          highlightRange = [text lineRangeForRange:highlightRange];
+          highlightRange2 = [text lineRangeForRange:highlightRange];
+          highlightRange = NSUnionRange(highlightRange, highlightRange2);
+          // skip LF
+          //NSUInteger end = highlightRange.location + highlightRange.length;
+          //if (end < maxRange.length && [text characterAtIndex:end] == '\n') {
+          //  highlightRange.length--;
+          //}
           //
           // --experimental line extension END--
           //
-          
-          highlightRange = NSUnionRange(highlightRange, highlightRange2);
         }
         
         deltaRange = range;
       }
-      DLOG("highlightRange: %@ \"%@\"", highlightRange.location == NSNotFound
-                          ? @"{NSNotFound, 0}"
-                          : NSStringFromRange(highlightRange),
-                          [text substringWithRange:highlightRange]);
+
+      DLOG_RANGE(highlightRange, text);
+
       NSRange nextRange = NSMakeRange(0, 0);
       NSUInteger textEnd = [textStorage length];
       while (nextRange.location != textEnd) {
