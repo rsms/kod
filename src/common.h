@@ -36,6 +36,8 @@
 
 #import "NSString-utf8-range-conv.h"
 #import "NSString-cpp.h"
+#import "NSString-intern.h"
+#import "NSString-ranges.h"
 #import "NSError+KAdditions.h"
 
 #endif  // K_COMMON_H_

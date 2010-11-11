@@ -1,4 +1,3 @@
-#import <Cocoa/Cocoa.h>
 #import "KTextFormatter.h"
 #import "KTextFormatterFactory.h"
 #import "KHighlightStateData.h"
@@ -11,10 +10,11 @@
 #import <srchilite/langdefmanager.h>
 #import <srchilite/langmap.h>
 #import <srchilite/instances.h>
+#import <dispatch/dispatch.h>
 
 @class KHighlightState;
 
-extern const NSString *KHighlightStateAttribute;
+extern NSString * const KHighlightStateAttribute;
 
 @interface KSyntaxHighlighter : NSObject <KHighlightEventListener> {
   /// current definition and style files (or nil)
@@ -30,9 +30,10 @@ extern const NSString *KHighlightStateAttribute;
   /// table of formatters
   srchilite::FormatterManager *formatterManager_;
   
-  /// Parser state
+  /// Temporal state
   // the following variables MUST NOT be modified from the outside while the
   // highlighter is inside call to |highlightMAString:inRange:deltaRange:|
+  dispatch_semaphore_t semaphore_; // dsema's only call to kernel on contention
   NSUInteger currentMAStringOffset_;
   NSMutableAttributedString *currentMAString_;
   __weak const std::string *currentUTF8String_;
@@ -65,10 +66,13 @@ extern const NSString *KHighlightStateAttribute;
 + (NSMutableArray *)styleFileSearchPath;
 
 /// Canonical rep of the content of |file|
-+ (NSString*)canonicalContentOfDefinitionFile:(NSString*)file;
++ (NSString*)canonicalContentOfLanguageFile:(NSString*)file;
 
-/// Highlight state for definition |file|
-+ (srchilite::HighlightStatePtr)highlightStateForDefinitionFile:(NSString*)file;
+/// Highlight state for language |file|
++ (srchilite::HighlightStatePtr)highlightStateForLanguageFile:(NSString*)file;
+
+/// Shared highlighter for language |file|
++ (KSyntaxHighlighter*)highlighterForLanguage:(NSString*)language;
 
 /**
  * Given a language definition file name, initializes the Source-highlight's

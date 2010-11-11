@@ -253,12 +253,12 @@ static int debugSimulateTextAppendingIteration = 0;
 
 - (KSyntaxHighlighter*)syntaxHighlighter {
   if (!syntaxHighlighter_) {
-    if (![NSThread isMainThread]) {
+    /*if (![NSThread isMainThread]) {
       // have the code run in the main thread
       K_DISPATCH_MAIN_SYNC({ [self syntaxHighlighter]; });
       // return the object created on main
       return syntaxHighlighter_;
-    }
+    }*/
     NSString *lang = nil;
     NSURL *url = [self fileURL];
     if (url) {
@@ -268,10 +268,11 @@ static int debugSimulateTextAppendingIteration = 0;
     // default lang file
     if (!lang || lang.length == 0) {
       lang = @"default";
+    } else {
+      lang = [lang stringByDeletingPathExtension];
     }
-    syntaxHighlighter_ =
-        [[KSyntaxHighlighter alloc] initWithLanguageFile:lang
-                                               styleFile:@"default"];
+    syntaxHighlighter_ = [KSyntaxHighlighter highlighterForLanguage:lang];
+    [syntaxHighlighter_ retain];
   }
   return syntaxHighlighter_;
 }

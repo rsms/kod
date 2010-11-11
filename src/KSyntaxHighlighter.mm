@@ -7,11 +7,22 @@
 #import <srchilite/parserexception.h>
 #import <srchilite/ioexception.h>
 #import <srchilite/settings.h>
+#import <libkern/OSAtomic.h>
 
-#ifndef NDEBUG
-//#define NDEBUG 1
-#endif
 #import "common.h"
+
+// xxx temp debug
+#define DLOG_state_enabled 0
+
+// enable logging of state (only effective in debug mode)
+#ifndef DLOG_state_enabled
+  #define DLOG_state_enabled 1
+#endif
+#if DLOG_state_enabled
+  #define DLOG_state DLOG
+#else
+  #define DLOG_state(...) ((void)0)
+#endif
 
 
 @implementation KSyntaxHighlighter
@@ -22,9 +33,10 @@
 
 static NSMutableArray *gLanguageFileSearchPath_;
 static NSMutableArray *gStyleFileSearchPath_;
+static NSMutableDictionary *gSharedInstances_;
+static OSSpinLock gSharedInstancesSpinLock_ = OS_SPINLOCK_INIT;
 
-const NSString *KHighlightStateAttribute = (const NSString *)CFSTR("KHighlightState");
-
+NSString * const KHighlightStateAttribute = @"KHighlightState";
 
 + (void)load {
   NSAutoreleasePool *pool = [NSAutoreleasePool new];
@@ -41,6 +53,7 @@ const NSString *KHighlightStateAttribute = (const NSString *)CFSTR("KHighlightSt
       [[NSMutableArray alloc] initWithObjects:builtinLangDir, nil];
   gStyleFileSearchPath_ =
       [[NSMutableArray alloc] initWithObjects:builtinStyleDir, nil];
+  gSharedInstances_ = [NSMutableDictionary new];
   [pool drain];
 }
 
@@ -109,13 +122,17 @@ const NSString *KHighlightStateAttribute = (const NSString *)CFSTR("KHighlightSt
 }
 
 
-
-+ (NSString*)canonicalContentOfDefinitionFile:(NSString*)file {
++ (NSString*)canonicalContentOfLanguageFile:(NSString*)file {
+  if (![file isAbsolutePath]) {
+    file = [self pathForLanguageFile:file error:nil];
+    if (!file) return nil;
+  }
+  NSString *dirname = [file stringByDeletingLastPathComponent];
+  file = [file lastPathComponent];
   srchilite::LangDefManager *langDefManager =
       srchilite::Instances::getLangDefManager();
-  const std::string path = "/opt/local/share/source-highlight";
   srchilite::LangElems *langElems =
-      langDefManager->getLangElems(path, [file UTF8String]);
+      langDefManager->getLangElems([dirname UTF8String], [file UTF8String]);
   if (langElems) {
     return [NSString stringWithUTF8String:langElems->toString().c_str()];
   }
@@ -123,7 +140,7 @@ const NSString *KHighlightStateAttribute = (const NSString *)CFSTR("KHighlightSt
 }
 
 
-+ (srchilite::HighlightStatePtr)highlightStateForDefinitionFile:(NSString*)file{
++ (srchilite::HighlightStatePtr)highlightStateForLanguageFile:(NSString*)file{
   srchilite::LangDefManager *langDefManager =
       srchilite::Instances::getLangDefManager();
   if ([file isAbsolutePath]) {
@@ -182,8 +199,31 @@ const NSString *KHighlightStateAttribute = (const NSString *)CFSTR("KHighlightSt
 }
 
 
++ (KSyntaxHighlighter*)highlighterForLanguage:(NSString*)language {
+  KSyntaxHighlighter *highlighter;
+  OSSpinLockLock(&gSharedInstancesSpinLock_);
+  try {
+    highlighter = [gSharedInstances_ objectForKey:language];
+    if (highlighter) DLOG("gSharedInstances_ HIT %@", language);
+    if (!highlighter) { DLOG("gSharedInstances_ MISS %@", language);
+      language = [language internedString];
+      highlighter = [[self alloc] initWithLanguageFile:language
+                                             styleFile:@"default"];
+      [gSharedInstances_ setObject:highlighter forKey:language];
+      [highlighter release];
+    }
+    OSSpinLockUnlock(&gSharedInstancesSpinLock_);
+  } catch (const std::exception &e) {
+    OSSpinLockUnlock(&gSharedInstancesSpinLock_);
+    throw e;
+  }
+  return highlighter;
+}
+
+
 - (id)init {
   self = [super init];
+  semaphore_ = dispatch_semaphore_create(1); // 1=unlocked, 0=locked
   return self;
 }
 
@@ -277,7 +317,7 @@ const NSString *KHighlightStateAttribute = (const NSString *)CFSTR("KHighlightSt
   file = [isa pathForLanguageFile:file error:&error];
   if (!error) {
     try {
-      mainState = [isa highlightStateForDefinitionFile:file];
+      mainState = [isa highlightStateForLanguageFile:file];
     } catch (const srchilite::ParserException &e) {
       DLOG("ParserException when loading lang file \"%@\": %s", file, e.what());
       error = [NSError kodErrorWithFormat:
@@ -351,6 +391,9 @@ const NSString *KHighlightStateAttribute = (const NSString *)CFSTR("KHighlightSt
 - (NSRange)highlightMAString:(NSMutableAttributedString*)mastr
                      inRange:(NSRange)range
                   deltaRange:(NSRange)deltaRange {
+  // assure mutual exclusive access to this highlighter
+  dispatch_semaphore_wait(semaphore_, DISPATCH_TIME_FOREVER);
+
   #if !NDEBUG
   fprintf(stderr,
       "------------------ highlight:inRange:deltaRange: ------------------\n");
@@ -366,7 +409,7 @@ const NSString *KHighlightStateAttribute = (const NSString *)CFSTR("KHighlightSt
     range = NSMakeRange(0, documentLength);
   } else {
     // highlight minimal part
-    DLOG("range: %@  \"%@\"", NSStringFromRange(range),
+    DLOG_state("range: %@  \"%@\"", NSStringFromRange(range),
          [text substringWithRange:range]);
   }
   
@@ -388,11 +431,13 @@ const NSString *KHighlightStateAttribute = (const NSString *)CFSTR("KHighlightSt
     shouldTryToRestoreState = NO;
   }
   
+  #if DLOG_state_enabled
   DLOG_EXPR(isCompleteDocument);
   DLOG_EXPR(wasCausedByDeleteEvent);
   DLOG_EXPR(isBeginningOfDocument);
   DLOG_EXPR(isZeroPointOfDocument);
   DLOG_EXPR(shouldTryToRestoreState);
+  #endif
   
   assert(currentState_ == nil);
   if (shouldTryToRestoreState) {
@@ -412,14 +457,14 @@ const NSString *KHighlightStateAttribute = (const NSString *)CFSTR("KHighlightSt
         //[currentState_ replaceData:stateData];
         assert(currentState_->data != NULL);
         srchilite::HighlightStatePtr cs = currentState_->data->currentState;
-        DLOG("found previous state: %d at index %u",
+        DLOG_state("found previous state: %d at index %u",
              currentState_->data->currentState->getId(),
              previousIndex);
         if (tries == 0 && deltaRange.length == 0)
           didBreakState = YES;
         break;
       } else {
-        DLOG("no previous state");
+        DLOG_state("no previous state");
         if ([currentMAString_ length]-range.location > 1) {
           previousIndex = range.location+1;
         } else {
@@ -430,7 +475,7 @@ const NSString *KHighlightStateAttribute = (const NSString *)CFSTR("KHighlightSt
     }
   }
   
-  DLOG("didBreakState = %s", didBreakState?"YES":"NO");
+  DLOG_state("didBreakState = %s", didBreakState?"YES":"NO");
   
   // restore state
   //int stateIdAtStart = 0;
@@ -487,15 +532,19 @@ const NSString *KHighlightStateAttribute = (const NSString *)CFSTR("KHighlightSt
   [currentMAString_ release];
   currentMAString_ = nil;
   
-  //DLOG("tempStackDepthDelta_: %d", tempStackDepthDelta_);
   BOOL stateStackIsEmpty = sourceHighlighter_->getStateStack()->empty();
+  
+  // we are now done accessing non-thread safe stuff -- release our lock
+  dispatch_semaphore_signal(semaphore_);
+  
+  //DLOG("tempStackDepthDelta_: %d", tempStackDepthDelta_);
   if (didBreakState) {
-    DLOG("highlightMAString returned with open state (0)");
+    DLOG_state("highlightMAString returned with open state (0)");
     NSRange nextRange = NSUnionRange(range, effectiveRange);
     //DLOG("nextRange: %@", NSStringFromRange(nextRange));
     return nextRange;
   } else if (tempStackDepthDelta_ != 0) {
-    DLOG("highlightMAString returned with open state (1)");
+    DLOG_state("highlightMAString returned with open state (1)");
   
     // if effectiveRange extends beyond our editing point, include the
     // remainder.
@@ -523,18 +572,18 @@ const NSString *KHighlightStateAttribute = (const NSString *)CFSTR("KHighlightSt
       nextRange.length = 0;
     }
     
-    DLOG("range: %@, effectiveRange: %@, nextRange: %@",
+    DLOG_state("range: %@, effectiveRange: %@, nextRange: %@",
          NSStringFromRange(range),
          NSStringFromRange(effectiveRange), NSStringFromRange(nextRange));
     return nextRange;
   } else if (!stateStackIsEmpty) {
     if (deltaRange.length == 0) {
-      DLOG("highlightMAString returned with open state (2)");
+      DLOG_state("highlightMAString returned with open state (2)");
       // we are dealing with a DELETE edit which possibly caused dirty content
       // below the edited point.
       return NSMakeRange(range.location + range.length, 0);
     } else {
-      DLOG("highlightMAString returned with open state (3)");
+      DLOG_state("highlightMAString returned with open state (3)");
       return NSMakeRange(range.location + range.length, 0);
     }
   }
@@ -613,7 +662,7 @@ static void _debugDumpHighlightEvent(const srchilite::HighlightEvent &event) {
 -(void)_applyCurrentStateToLastFormattedRange {
   if (currentState_) {
     if (currentState_ != lastFormattedState_) {
-      DLOG("set state #%d %@ \"%@\"",
+      DLOG_state("set state #%d %@ \"%@\"",
            currentState_->data->currentState->getId(),
            NSStringFromRange(lastFormattedRange_),
            [[currentMAString_ string] substringWithRange:lastFormattedRange_]);
@@ -630,7 +679,7 @@ static void _debugDumpHighlightEvent(const srchilite::HighlightEvent &event) {
       lastFormattedState_ = currentState_;
     }
   } else {
-    DLOG("clear state %@ \"%@\"",
+    DLOG_state("clear state %@ \"%@\"",
          NSStringFromRange(lastFormattedRange_),
          [[currentMAString_ string] substringWithRange:lastFormattedRange_]);
     [currentMAString_ removeAttribute:KHighlightStateAttribute
@@ -643,7 +692,7 @@ static void _debugDumpHighlightEvent(const srchilite::HighlightEvent &event) {
   switch (event.type) {
     case srchilite::HighlightEvent::ENTERSTATE: {
       // DID enter state
-      DLOG("STATE+");
+      DLOG_state("STATE+");
       tempStackDepthDelta_++;
       [self _updateCurrentState:NO];
       // never set state on first char of state opening
@@ -656,7 +705,7 @@ static void _debugDumpHighlightEvent(const srchilite::HighlightEvent &event) {
     }
     case srchilite::HighlightEvent::EXITSTATE: {
       // DID exit state
-      DLOG("STATE-");
+      DLOG_state("STATE-");
       tempStackDepthDelta_--;
       // Clear currentState_?
       if (sourceHighlighter_->getStateStack()->empty()) {
@@ -675,14 +724,14 @@ static void _debugDumpHighlightEvent(const srchilite::HighlightEvent &event) {
             NSMakeRange(lastFormattedRange_.location +
                         lastFormattedRange_.length-1, 1);
         [currentMAString_ removeAttribute:KHighlightStateAttribute range:range];
-        DLOG("clear state %@ \"%@\"",
+        DLOG_state("clear state %@ \"%@\"",
              NSStringFromRange(range),
              [[currentMAString_ string] substringWithRange:range]);
       }
       break;
     }
     default: if (currentState_) {
-      DLOG("STATE=");
+      DLOG_state("STATE=");
       [self _applyCurrentStateToLastFormattedRange];
       break;
     }
