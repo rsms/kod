@@ -23,7 +23,7 @@
 		3A25E47D1281A6A700B6A33E /* libsource-highlight.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A25E47C1281A6A700B6A33E /* libsource-highlight.dylib */; };
 		3A25E4971281A9D300B6A33E /* libsource-highlight.dylib in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 3A25E47C1281A6A700B6A33E /* libsource-highlight.dylib */; };
 		3A25E4981281A9D500B6A33E /* libboost_regex-mt.dylib in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 3A25E47A1281A6A200B6A33E /* libboost_regex-mt.dylib */; };
-		3A25E4B71281AE3700B6A33E /* KTextFormatter.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A25E4B61281AE3700B6A33E /* KTextFormatter.mm */; };
+		3A25E4B71281AE3700B6A33E /* KStyleElement.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A25E4B61281AE3700B6A33E /* KStyleElement.mm */; };
 		3A25E5351281B9DA00B6A33E /* KTextFormatterFactory.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A25E5341281B9DA00B6A33E /* KTextFormatterFactory.mm */; };
 		3A25E6101281CFEF00B6A33E /* NSColor-web.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A25E60F1281CFEF00B6A33E /* NSColor-web.m */; };
 		3A4D50ED1282E40300B06EEB /* NSString-utf8-range-conv.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A4D50EC1282E40300B06EEB /* NSString-utf8-range-conv.m */; };
@@ -113,8 +113,8 @@
 		3A25E478128194B400B6A33E /* KSyntaxHighlighter.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KSyntaxHighlighter.mm; sourceTree = "<group>"; };
 		3A25E47A1281A6A200B6A33E /* libboost_regex-mt.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libboost_regex-mt.dylib"; path = "deps/srchilight/libboost_regex-mt.dylib"; sourceTree = "<group>"; };
 		3A25E47C1281A6A700B6A33E /* libsource-highlight.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libsource-highlight.dylib"; path = "deps/srchilight/libsource-highlight.dylib"; sourceTree = "<group>"; };
-		3A25E4B51281AE3700B6A33E /* KTextFormatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KTextFormatter.h; sourceTree = "<group>"; };
-		3A25E4B61281AE3700B6A33E /* KTextFormatter.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KTextFormatter.mm; sourceTree = "<group>"; };
+		3A25E4B51281AE3700B6A33E /* KStyleElement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KStyleElement.h; sourceTree = "<group>"; };
+		3A25E4B61281AE3700B6A33E /* KStyleElement.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KStyleElement.mm; sourceTree = "<group>"; };
 		3A25E4FC1281B3D500B6A33E /* KHighlightStateData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KHighlightStateData.h; sourceTree = "<group>"; };
 		3A25E5331281B9DA00B6A33E /* KTextFormatterFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KTextFormatterFactory.h; sourceTree = "<group>"; };
 		3A25E5341281B9DA00B6A33E /* KTextFormatterFactory.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KTextFormatterFactory.mm; sourceTree = "<group>"; };
@@ -211,8 +211,8 @@
 				3A025A961288B2A300206ECF /* KHighlightState.mm */,
 				3A25E477128194B400B6A33E /* KSyntaxHighlighter.h */,
 				3A25E478128194B400B6A33E /* KSyntaxHighlighter.mm */,
-				3A25E4B51281AE3700B6A33E /* KTextFormatter.h */,
-				3A25E4B61281AE3700B6A33E /* KTextFormatter.mm */,
+				3A25E4B51281AE3700B6A33E /* KStyleElement.h */,
+				3A25E4B61281AE3700B6A33E /* KStyleElement.mm */,
 				3A25E5331281B9DA00B6A33E /* KTextFormatterFactory.h */,
 				3A25E5341281B9DA00B6A33E /* KTextFormatterFactory.mm */,
 			);
@@ -410,7 +410,7 @@
 				3A9293671229E49A00DA7E43 /* NSError+KAdditions.m in Sources */,
 				3A9293CC1229ED4C00DA7E43 /* KDocumentController.mm in Sources */,
 				3A25E479128194B400B6A33E /* KSyntaxHighlighter.mm in Sources */,
-				3A25E4B71281AE3700B6A33E /* KTextFormatter.mm in Sources */,
+				3A25E4B71281AE3700B6A33E /* KStyleElement.mm in Sources */,
 				3A25E5351281B9DA00B6A33E /* KTextFormatterFactory.mm in Sources */,
 				3A25E6101281CFEF00B6A33E /* NSColor-web.m in Sources */,
 				3A4D50ED1282E40300B06EEB /* NSString-utf8-range-conv.m in Sources */,
