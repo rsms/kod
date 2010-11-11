@@ -2,6 +2,7 @@
 
 @class KBrowser;
 @class KSyntaxHighlighter;
+@class KStyle;
 @class KBrowserWindowController;
 
 // This class represents a tab. In this example application a tab contains a
@@ -12,6 +13,7 @@
   BOOL isDirty_;
   NSStringEncoding textEncoding_;
   KSyntaxHighlighter *syntaxHighlighter_;
+  KStyle *style_;
   
   // Internal state
   BOOL hasPendingInitialHighlighting_;
@@ -20,8 +22,9 @@
 @property(assign, nonatomic) BOOL isDirty;
 @property(assign, nonatomic) NSStringEncoding textEncoding;
 @property(readonly) KBrowserWindowController* windowController;
+@property(readonly) NSMutableParagraphStyle *paragraphStyle; // compound
 @property(readonly) KSyntaxHighlighter* syntaxHighlighter;
-@property(readonly) NSMutableParagraphStyle *paragraphStyle;
+@property(retain, nonatomic) KStyle *style;
 
 + (NSFont*)defaultFont;
 

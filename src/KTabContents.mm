@@ -1,14 +1,11 @@
+#import "common.h"
 #import "KTabContents.h"
 #import "KBrowser.h"
-#import "KSyntaxHighlighter.h"
 #import "KBrowserWindowController.h"
+#import "KSyntaxHighlighter.h"
+#import "KStyle.h"
 #import "KScroller.h"
 #import "KScrollView.h"
-#import "NSString-ranges.h"
-
-#import "NSError+KAdditions.h"
-#import "common.h"
-#import <dispatch/dispatch.h>
 
 
 @interface KTabContents (Private)
@@ -17,8 +14,9 @@
 
 @implementation KTabContents
 
-@synthesize isDirty = isDirty_;
-@synthesize textEncoding = textEncoding_;
+@synthesize isDirty = isDirty_,
+            textEncoding = textEncoding_,
+            style = style_;
 
 static NSImage* _kDefaultIcon = nil;
 static NSString* _kDefaultTitle = @"Untitled";
@@ -53,7 +51,7 @@ static NSFont* _kDefaultFont = nil;
 
 
 
-
+// things which MUST execute on the main thread.
 - (void)_initOnMain {
   if (![NSThread isMainThread]) {
     K_DISPATCH_MAIN_ASYNC({ [self _initOnMain]; });
@@ -206,6 +204,9 @@ static int debugSimulateTextAppendingIteration = 0;
 
   // Set the NSScrollView as our view
   view_ = sv;
+  
+  // Default style
+  style_ = [[KStyle defaultStyle] retain];
 
   // Let the global document controller know we came to life
   [[NSDocumentController sharedDocumentController] addDocument:self];
@@ -241,7 +242,8 @@ static int debugSimulateTextAppendingIteration = 0;
 
 
 - (void)dealloc {
-  [syntaxHighlighter_ release]; syntaxHighlighter_ = nil;
+  [syntaxHighlighter_ release];
+  [style_ release];
   [super dealloc];
 }
 

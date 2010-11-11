@@ -39,5 +39,7 @@
 #import "NSString-intern.h"
 #import "NSString-ranges.h"
 #import "NSError+KAdditions.h"
+#import "dsem-scope.hh"
+#import "h-objc.h"
 
 #endif  // K_COMMON_H_
