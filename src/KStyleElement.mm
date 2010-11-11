@@ -1,4 +1,4 @@
-#import "KTextFormatter.h"
+#import "KStyleElement.h"
 #import "KSyntaxHighlighter.h"
 #import "NSColor-web.h"
 #import "NSString-intern.h"
@@ -8,7 +8,7 @@
 static NSCharacterSet *kQuoteCharacterSet = nil;
 
 // Using a dummy category to hook code into load sequence
-@implementation NSObject (dummycat_ktextformatter)
+@implementation NSObject (KStyleElement)
 + (void)load {
   NSAutoreleasePool *pool = [NSAutoreleasePool new];
   kQuoteCharacterSet =
@@ -34,7 +34,7 @@ static NSColor *_NSColorFromStdStr(const std::string &color) {
 
 static NSFont* _kBaseFont = nil;
 
-NSFont* KTextFormatter::baseFont() {
+NSFont* KStyleElement::baseFont() {
   if (!_kBaseFont) {
     NSFontManager *fontManager = [NSFontManager sharedFontManager];
     _kBaseFont =
@@ -49,11 +49,11 @@ NSFont* KTextFormatter::baseFont() {
 }
 
 
-NSString *KTextFormatter::ClassAttributeName = @"ktfclass";
+NSString *KStyleElement::ClassAttributeName = @"ktfclass";
 
 
 //static
-void KTextFormatter::clearAttributes(NSMutableAttributedString *astr,
+void KStyleElement::clearAttributes(NSMutableAttributedString *astr,
                                      NSRange range,
                                      bool removeSpecials/*=0*/) {
   // remove all attributes we can possibly set
@@ -63,12 +63,12 @@ void KTextFormatter::clearAttributes(NSMutableAttributedString *astr,
   [astr removeAttribute:NSBackgroundColorAttributeName range:range];
   if (removeSpecials) {
     // remove special attribues we set
-    [astr removeAttribute:KTextFormatter::ClassAttributeName range:range];
+    [astr removeAttribute:ClassAttributeName range:range];
   }
 }
 
 
-KTextFormatter::KTextFormatter(const std::string &elem)
+KStyleElement::KStyleElement(const std::string &elem)
     : syntaxHighlighter_(NULL) {
   textAttributes_ = [[NSMutableDictionary alloc] initWithObjectsAndKeys:
       baseFont(), NSFontAttributeName,
@@ -76,20 +76,20 @@ KTextFormatter::KTextFormatter(const std::string &elem)
   setElem(elem); // need to be called after creation of textAttributes_
 }
 
-KTextFormatter::~KTextFormatter() {
+KStyleElement::~KStyleElement() {
   objc_exch(&syntaxHighlighter_, nil);
   objc_exch(&textAttributes_, nil);
 }
 
 
-void KTextFormatter::setElem(const std::string &e) {
+void KStyleElement::setElem(const std::string &e) {
   elem_ = e;
   NSString *symbol = [[NSString stringWithUTF8String:e.c_str()] internedString];
   [textAttributes_ setObject:symbol forKey:ClassAttributeName];
 }
 
 
-void KTextFormatter::setStyle(srchilite::StyleConstantsPtr style) {
+void KStyleElement::setStyle(srchilite::StyleConstantsPtr style) {
   BOOL underlined = NO;
   NSFont *font = baseFont();
   NSFontTraitMask fontTraitMask = 0;
@@ -138,7 +138,7 @@ void KTextFormatter::setStyle(srchilite::StyleConstantsPtr style) {
 }
 
 
-void KTextFormatter::setForegroundColor(NSColor *color) {
+void KStyleElement::setForegroundColor(NSColor *color) {
   if (color) {
     [textAttributes_ setObject:color forKey:NSForegroundColorAttributeName];
   } else {
@@ -146,16 +146,16 @@ void KTextFormatter::setForegroundColor(NSColor *color) {
   }
 }
 
-void KTextFormatter::setForegroundColor(const std::string &color) {
+void KStyleElement::setForegroundColor(const std::string &color) {
   setForegroundColor(_NSColorFromStdStr(color));
 }
 
-NSColor *KTextFormatter::foregroundColor() {
+NSColor *KStyleElement::foregroundColor() {
   return [textAttributes_ objectForKey:NSForegroundColorAttributeName];
 }
 
 
-void KTextFormatter::setBackgroundColor(NSColor *color) {
+void KStyleElement::setBackgroundColor(NSColor *color) {
   if (color) {
     [textAttributes_ setObject:color forKey:NSBackgroundColorAttributeName];
   } else {
@@ -163,16 +163,16 @@ void KTextFormatter::setBackgroundColor(NSColor *color) {
   }
 }
 
-void KTextFormatter::setBackgroundColor(const std::string &color) {
+void KStyleElement::setBackgroundColor(const std::string &color) {
   setBackgroundColor(_NSColorFromStdStr(color));
 }
 
-NSColor *KTextFormatter::backgroundColor() {
+NSColor *KStyleElement::backgroundColor() {
   return [textAttributes_ objectForKey:NSBackgroundColorAttributeName];
 }
 
 
-void KTextFormatter::applyAttributes(NSMutableAttributedString *astr,
+void KStyleElement::applyAttributes(NSMutableAttributedString *astr,
                                      NSRange range,
                                      bool replace/*=0*/) {
   if (replace) {
@@ -183,7 +183,7 @@ void KTextFormatter::applyAttributes(NSMutableAttributedString *astr,
 }
 
 
-void KTextFormatter::format(const std::string &s,
+void KStyleElement::format(const std::string &s,
                             const srchilite::FormatterParams *params) {
   #if 0
   if ( (elem_ != "normal" || !s.size()) && params ) {

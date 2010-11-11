@@ -1,6 +1,6 @@
 #import "KSyntaxHighlighter.h"
 #import "KHighlightState.h"
-#import "KTextFormatter.h"
+#import "KStyleElement.h"
 
 #import <srchilite/langelems.h>
 #import <srchilite/stylefileparser.h>
@@ -156,7 +156,7 @@ NSString * const KHighlightStateAttribute = @"KHighlightState";
 }
 
 
-+ (const KTextFormatterMap &)textFormatterMapForFormatterFactory:
++ (const KStyleElementMap &)textFormatterMapForFormatterFactory:
     (KTextFormatterFactory &)formatterFactory
     styleFile:(NSString *)styleFile {
 
@@ -188,7 +188,7 @@ NSString * const KHighlightStateAttribute = @"KHighlightState";
   if (bgcolor != "") {
     DLOG("TODO: bgcolor = %s", bgcolor.c_str());
     // TODO: clean up this mess and move all style things to a separate class
-    // with proper caching of {style_id => KTextFormatterMap}
+    // with proper caching of {style_id => KStyleElementMap}
   }
   // Idea: We should fetch the "normal" formatter and:
   // 1. if bgcolor is set but no fgcolor, deduce a good fgcolor based on bgcolor
@@ -251,12 +251,12 @@ NSString * const KHighlightStateAttribute = @"KHighlightState";
  * the highlighter was initialized through init().
  * @param formatterMap
  */
-- (void)setFormatters:(const KTextFormatterMap &)formatterMap {
+- (void)setFormatters:(const KStyleElementMap &)formatterMap {
   // For each element set this pointer (the formatters will later call setFormat
   // on such pointer).
-  for (KTextFormatterMap::const_iterator it = formatterMap.begin();
+  for (KStyleElementMap::const_iterator it = formatterMap.begin();
        it != formatterMap.end(); ++it) {
-    KTextFormatter *formatter = it->second.get();
+    KStyleElement *formatter = it->second.get();
     formatter->setSyntaxHighlighter(self);
     formatterManager_->addFormatter(it->first, it->second);
     if (it->first == "normal")
@@ -274,10 +274,10 @@ NSString * const KHighlightStateAttribute = @"KHighlightState";
     }
     delete formatterManager_;
   }
-  KTextFormatter *defaultFormatter = new KTextFormatter("normal");
+  KStyleElement *defaultFormatter = new KStyleElement("normal");
   defaultFormatter->setSyntaxHighlighter(self);
   formatterManager_ =
-      new srchilite::FormatterManager(KTextFormatterPtr(defaultFormatter));
+      new srchilite::FormatterManager(KStyleElementPtr(defaultFormatter));
   KTextFormatterFactory f;
   //f.setDefaultToMonospace(isDefaultToMonospace());
   
@@ -330,7 +330,7 @@ NSString * const KHighlightStateAttribute = @"KHighlightState";
     if (!sourceHighlighter_) {
       // make sure sourceHighlighter_ is valid
       mainState.reset(new srchilite::HighlightState());
-      sourceHighlighter_ = new srchilite::SourceHighlighter(mainState);
+      sourceHighlighter_ = new KSourceHighlighter(mainState);
     }
     [NSApp presentError:error]; // FIXME pass by reference or something
     return;
@@ -338,7 +338,7 @@ NSString * const KHighlightStateAttribute = @"KHighlightState";
   
   if (sourceHighlighter_)
     delete sourceHighlighter_;
-  sourceHighlighter_ = new srchilite::SourceHighlighter(mainState);
+  sourceHighlighter_ = new KSourceHighlighter(mainState);
   sourceHighlighter_->setFormatterParams(&formatterParams_);
   sourceHighlighter_->setOptimize(false);
   sourceHighlighter_->addListener(new KHighlightEventListenerProxy(self));
@@ -359,7 +359,7 @@ NSString * const KHighlightStateAttribute = @"KHighlightState";
   NSRange textRange = NSMakeRange(0, mastr.length);
   NSAttributedStringEnumerationOptions opts = 0;
   //opts = NSAttributedStringEnumerationLongestEffectiveRangeNotRequired;
-  [mastr enumerateAttribute:KTextFormatter::ClassAttributeName
+  [mastr enumerateAttribute:KStyleElement::ClassAttributeName
                     inRange:textRange
                     options:opts
                  usingBlock:^(id value, NSRange range, BOOL *stop) {
@@ -369,9 +369,9 @@ NSString * const KHighlightStateAttribute = @"KHighlightState";
                        range:NSMakeRange(0, [value length])];
     
     // clear any formatter attributes
-    KTextFormatter::clearAttributes(mastr, range);
+    KStyleElement::clearAttributes(mastr, range);
     // find current formatter for |elem|
-    KTextFormatter* formatter = dynamic_cast<KTextFormatter*>(
+    KStyleElement* formatter = dynamic_cast<KStyleElement*>(
         formatterManager_->getFormatter(elem).get());
     // apply the formatters' style to |range|
     if (formatter) {
@@ -740,7 +740,7 @@ static void _debugDumpHighlightEvent(const srchilite::HighlightEvent &event) {
 }
 
 
-- (void)setFormat:(KTextFormatter*)format inRange:(NSRange)range {
+- (void)setFormat:(KStyleElement*)format inRange:(NSRange)range {
   if (!currentMAString_) return;
   NSDictionary *attrs = format->textAttributes();
 

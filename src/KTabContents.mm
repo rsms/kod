@@ -664,7 +664,7 @@ static int debugSimulateTextAppendingIteration = 0;
         NSRange maxRange = NSMakeRange(0, text.length);
         NSUInteger index = range.location;
         if (index > 0) index--;
-        [textStorage attribute:KTextFormatter::ClassAttributeName
+        [textStorage attribute:KStyleElement::ClassAttributeName
                        atIndex:index
          longestEffectiveRange:&highlightRange
                        inRange:maxRange];
@@ -673,7 +673,7 @@ static int debugSimulateTextAppendingIteration = 0;
         if (range.location > 0 && range.location < maxRange.length-1) {
           index = range.location + 1;
           NSRange highlightRange2;
-          [textStorage attribute:KTextFormatter::ClassAttributeName
+          [textStorage attribute:KStyleElement::ClassAttributeName
                          atIndex:index
            longestEffectiveRange:&highlightRange2
                          inRange:maxRange];
@@ -704,7 +704,7 @@ static int debugSimulateTextAppendingIteration = 0;
           //
           //   b. Use a special text attribute (like how state is tracked with
           //      KHighlightState) which replaces the current
-          //      KTextFormatter::ClassAttributeName symbol representing the
+          //      KStyleElement::ClassAttributeName symbol representing the
           //      format. Maybe a struct e.g:
           //
           //        KTextFormat {

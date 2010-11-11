@@ -13,18 +13,18 @@ bool KTextFormatterFactory::hasFormatter(const std::string &key) const {
   return textFormatterMap_.find(key) != textFormatterMap_.end();
 }
 
-KTextFormatterPtr
+KStyleElementPtr
     KTextFormatterFactory::getFormatter(const std::string &key) const {
-  KTextFormatterMap::const_iterator it = textFormatterMap_.find(key);
+  KStyleElementMap::const_iterator it = textFormatterMap_.find(key);
   if (it != textFormatterMap_.end()) {
     return it->second;
   } else {
-    return KTextFormatterPtr();
+    return KStyleElementPtr();
   }
 }
 
 void KTextFormatterFactory::addFormatter(const std::string &key,
-                                         KTextFormatterPtr formatter) {
+                                         KStyleElementPtr formatter) {
   textFormatterMap_[key] = formatter;
 }
 
@@ -36,9 +36,9 @@ bool KTextFormatterFactory::createFormatter(const std::string &key,
   if (hasFormatter(key))
     return false;
   
-  //DLOG("Creating KTextFormatter '%s'", key.c_str());
-  KTextFormatter *formatter = new KTextFormatter(key);
-  addFormatter(key, KTextFormatterPtr(formatter));
+  //DLOG("Creating KStyleElement '%s'", key.c_str());
+  KStyleElement *formatter = new KStyleElement(key);
+  addFormatter(key, KStyleElementPtr(formatter));
   
   formatter->setStyle(styleconstants);
   if (color.size())

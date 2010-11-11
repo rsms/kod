@@ -18,6 +18,7 @@
 		3A159312128B581E00339E6E /* NSString-ranges.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A159311128B581E00339E6E /* NSString-ranges.m */; };
 		3A15936B128B619800339E6E /* NSString-intern.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A15936A128B619800339E6E /* NSString-intern.m */; };
 		3A15949F128B83F100339E6E /* NSString-cpp.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A15949E128B83F100339E6E /* NSString-cpp.mm */; };
+		3A159629128C3BCB00339E6E /* KSourceHighlighter.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A159628128C3BCB00339E6E /* KSourceHighlighter.mm */; };
 		3A25E479128194B400B6A33E /* KSyntaxHighlighter.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A25E478128194B400B6A33E /* KSyntaxHighlighter.mm */; };
 		3A25E47B1281A6A200B6A33E /* libboost_regex-mt.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A25E47A1281A6A200B6A33E /* libboost_regex-mt.dylib */; };
 		3A25E47D1281A6A700B6A33E /* libsource-highlight.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A25E47C1281A6A700B6A33E /* libsource-highlight.dylib */; };
@@ -109,6 +110,8 @@
 		3A159448128B7B9500339E6E /* common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = common.h; sourceTree = "<group>"; };
 		3A15949D128B83F100339E6E /* NSString-cpp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString-cpp.h"; sourceTree = "<group>"; };
 		3A15949E128B83F100339E6E /* NSString-cpp.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = "NSString-cpp.mm"; sourceTree = "<group>"; };
+		3A159627128C3BCB00339E6E /* KSourceHighlighter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSourceHighlighter.h; sourceTree = "<group>"; };
+		3A159628128C3BCB00339E6E /* KSourceHighlighter.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KSourceHighlighter.mm; sourceTree = "<group>"; };
 		3A25E477128194B400B6A33E /* KSyntaxHighlighter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSyntaxHighlighter.h; sourceTree = "<group>"; };
 		3A25E478128194B400B6A33E /* KSyntaxHighlighter.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KSyntaxHighlighter.mm; sourceTree = "<group>"; };
 		3A25E47A1281A6A200B6A33E /* libboost_regex-mt.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libboost_regex-mt.dylib"; path = "deps/srchilight/libboost_regex-mt.dylib"; sourceTree = "<group>"; };
@@ -211,6 +214,8 @@
 				3A025A961288B2A300206ECF /* KHighlightState.mm */,
 				3A25E477128194B400B6A33E /* KSyntaxHighlighter.h */,
 				3A25E478128194B400B6A33E /* KSyntaxHighlighter.mm */,
+				3A159627128C3BCB00339E6E /* KSourceHighlighter.h */,
+				3A159628128C3BCB00339E6E /* KSourceHighlighter.mm */,
 				3A25E4B51281AE3700B6A33E /* KStyleElement.h */,
 				3A25E4B61281AE3700B6A33E /* KStyleElement.mm */,
 				3A25E5331281B9DA00B6A33E /* KTextFormatterFactory.h */,
@@ -428,6 +433,7 @@
 				3A159312128B581E00339E6E /* NSString-ranges.m in Sources */,
 				3A15936B128B619800339E6E /* NSString-intern.m in Sources */,
 				3A15949F128B83F100339E6E /* NSString-cpp.mm in Sources */,
+				3A159629128C3BCB00339E6E /* KSourceHighlighter.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

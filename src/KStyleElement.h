@@ -10,6 +10,12 @@
  *
  * Part of the source-highlight API. srchilite::Formatter is an interface which
  * defines a single method |format(text, params)|.
+ *
+ * KStyleElements are owned by KStyle objects:
+ *
+ *    KStyle
+ *      dict { element-id => KStyleElement , .. }
+ *
  */
 class KStyleElement : public srchilite::Formatter {
  protected:
@@ -29,8 +35,8 @@ class KStyleElement : public srchilite::Formatter {
                               NSRange range,
                               bool removeSpecials=false);
   
-  KTextFormatter(const std::string &elem = "normal");
-  virtual ~KTextFormatter();
+  KStyleElement(const std::string &elem = "normal");
+  virtual ~KStyleElement();
 
   /// the language element represented by this formatter
   const std::string &getElem() const { return elem_; }
@@ -70,5 +76,5 @@ class KStyleElement : public srchilite::Formatter {
               const srchilite::FormatterParams *params = 0);
 };
 
-/// shared pointer for KTextFormatter
-typedef boost::shared_ptr<KTextFormatter> KTextFormatterPtr;
+/// shared pointer for KStyleElement
+typedef boost::shared_ptr<KStyleElement> KStyleElementPtr;

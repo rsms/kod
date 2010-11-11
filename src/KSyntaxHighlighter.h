@@ -1,11 +1,11 @@
-#import "KTextFormatter.h"
+#import "KStyleElement.h"
 #import "KTextFormatterFactory.h"
 #import "KHighlightStateData.h"
 #import "KHighlightEventListener.h"
+#import "KSourceHighlighter.h"
 
 #import <srchilite/highlightstate.h>
 #import <srchilite/formattermanager.h>
-#import <srchilite/sourcehighlighter.h>
 #import <srchilite/formatterparams.h>
 #import <srchilite/langdefmanager.h>
 #import <srchilite/langmap.h>
@@ -22,7 +22,7 @@ extern NSString * const KHighlightStateAttribute;
   NSString *styleFile_;
   
   /// the GNU Source-highlighter used for the actual highlighting
-  srchilite::SourceHighlighter *sourceHighlighter_;
+  KSourceHighlighter *sourceHighlighter_;
   
   /// initial state
   srchilite::FormatterParams formatterParams_;
@@ -130,6 +130,6 @@ extern NSString * const KHighlightStateAttribute;
  * TextFormatter, from Source-highglight library code, and relies on
  * the corresponding protected method of QSyntaxHighlighter: setFormat).
  */
-- (void)setFormat:(KTextFormatter*)format inRange:(NSRange)range;
+- (void)setFormat:(KStyleElement*)format inRange:(NSRange)range;
 
 @end

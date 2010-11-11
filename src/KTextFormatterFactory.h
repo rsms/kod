@@ -1,8 +1,8 @@
 #import <map>
 #import <srchilite/formatterfactory.h>
-#import "KTextFormatter.h"
+#import "KStyleElement.h"
 
-typedef std::map<std::string, KTextFormatterPtr> KTextFormatterMap;
+typedef std::map<std::string, KStyleElementPtr> KStyleElementMap;
 
 /**
  * Specialization of FormatterFactory to create TextFormatter objects
@@ -10,7 +10,7 @@ typedef std::map<std::string, KTextFormatterPtr> KTextFormatterMap;
  */
 class KTextFormatterFactory: public srchilite::FormatterFactory {
 protected:
-  KTextFormatterMap textFormatterMap_;
+  KStyleElementMap textFormatterMap_;
 
   /// whether to default font to monospace (default true)
   bool defaultToMonospace;
@@ -35,19 +35,19 @@ public:
    * @param key
    * @return the formatter for the given key is already present
    */
-  KTextFormatterPtr getFormatter(const std::string &key) const;
+  KStyleElementPtr getFormatter(const std::string &key) const;
 
   /**
    * Adds the formatter for the given key.
    * @param key
    * @param formatter
    */
-  void addFormatter(const std::string &key, KTextFormatterPtr formatter);
+  void addFormatter(const std::string &key, KStyleElementPtr formatter);
 
   /**
-   * @return the KTextFormatterMap
+   * @return the KStyleElementMap
    */
-  const KTextFormatterMap &getTextFormatterMap() const {
+  const KStyleElementMap &getTextFormatterMap() const {
     return textFormatterMap_;
   }
   
