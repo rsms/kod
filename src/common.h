@@ -5,6 +5,7 @@
 #define K_COMMON_H_
 
 #import <ChromiumTabs/common.h>
+#import <assert.h>
 
 #define K_DISPATCH_MAIN_ASYNC(code)\
   dispatch_async(dispatch_get_main_queue(),^{ \

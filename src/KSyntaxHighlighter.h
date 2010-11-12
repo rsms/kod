@@ -13,6 +13,7 @@
 #import <dispatch/dispatch.h>
 
 @class KHighlightState;
+@class KStyle;
 
 extern NSString * const KHighlightStateAttribute;
 
@@ -40,6 +41,7 @@ extern NSString * const KHighlightStateAttribute;
   BOOL currentUTF8StringIsMultibyte_;
   __weak KHighlightState *currentState_;
   __weak KHighlightState *lastFormattedState_; // temporal per format call
+  __weak KStyle *currentStyle_;
   NSRange lastFormattedRange_;
   int tempStackDepthDelta_;
 }
@@ -110,10 +112,8 @@ extern NSString * const KHighlightStateAttribute;
  */
 - (NSRange)highlightMAString:(NSMutableAttributedString*)mastr
                      inRange:(NSRange)range
-                  deltaRange:(NSRange)deltaRange;
-
-/// Convenience method to highlight a complete NSMutableAttributedString
-- (void)highlightMAString:(NSMutableAttributedString*)mastr;
+                  deltaRange:(NSRange)deltaRange
+                   withStyle:(KStyle*)style;
 
 /**
  * This function is applied to the syntax highlighter's current text block
@@ -131,5 +131,8 @@ extern NSString * const KHighlightStateAttribute;
  * the corresponding protected method of QSyntaxHighlighter: setFormat).
  */
 - (void)setFormat:(KStyleElement*)format inRange:(NSRange)range;
+
+- (void)setStyleForElementOfType:(NSString const*)elem
+                     inUTF8Range:(NSRange)range;
 
 @end

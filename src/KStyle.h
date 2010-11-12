@@ -59,6 +59,6 @@ class KStyleElement;
  * Note: Don't call unless |reload:| has been called at least once (which is
  *       implied by any of the class methods, but not init methods).
  */
-- (KStyleElement*)styleElementForKey:(NSString*)key;
+- (KStyleElement*)styleElementForSymbol:(NSString const*)symbol;
 
 @end

@@ -1,4 +1,6 @@
 #import "KSourceHighlighter.h"
+#import "KSyntaxHighlighter.h"
+#import "KLangSymbol.h"
 
 #include <srchilite/highlighttoken.h>
 #include <srchilite/matchingparameters.h>
@@ -28,17 +30,28 @@ notify(defaultHighlightEvent); \
 
 #define UPDATE_START_IN_FORMATTER_PARAMS(start_index) if (formatterParams) formatterParams->start = start_index;
 
-KSourceHighlighter::KSourceHighlighter(HighlightStatePtr mainState) :
-mainHighlightState(mainState), currentHighlightState(mainState),
-stateStack(KHighlightStateStackPtr(new KHighlightStateStack)),
-formatterManager(0), optimize(false), suspended(false),
-formatterParams(0) {
+KSourceHighlighter::KSourceHighlighter(HighlightStatePtr mainState, KSyntaxHighlighter *syntaxHighlighter)
+    : syntaxHighlighter_(syntaxHighlighter)
+    , mainHighlightState(mainState)
+    , currentHighlightState(mainState)
+    , stateStack(KHighlightStateStackPtr(new KHighlightStateStack))
+    , formatterManager(0)
+    , suspended(false)
+    , formatterParams(0) {
 }
 
 KSourceHighlighter::~KSourceHighlighter() {
 }
 
+
+#define APPLY_FORMAT(elemstr, toksize) \
+  [syntaxHighlighter_ setStyleForElementOfType: \
+      KLangSymbol::symbolForString(elemstr) \
+      inUTF8Range:NSMakeRange(formatterParams->start, (toksize))]
+
+
 void KSourceHighlighter::highlightParagraph(const std::string &paragraph) {
+  assert(syntaxHighlighter_ != NULL);
   std::string::const_iterator start = paragraph.begin();
   std::string::const_iterator end = paragraph.end();
   bool matched = true;
@@ -59,7 +72,9 @@ void KSourceHighlighter::highlightParagraph(const std::string &paragraph) {
         UPDATE_START_IN_FORMATTER_PARAMS(
           (std::distance(paragraph.begin(), start)) );
         // format non matched part with the current state's default element
-        format(currentHighlightState->getDefaultElement(), token.prefix);
+        //format(currentHighlightState->getDefaultElement(), token.prefix);
+        APPLY_FORMAT(currentHighlightState->getDefaultElement(),
+                     token.prefix.size());
         GENERATE_DEFAULT_EVENT(token.prefix);
       }
       
@@ -72,7 +87,8 @@ void KSourceHighlighter::highlightParagraph(const std::string &paragraph) {
         UPDATE_START_IN_FORMATTER_PARAMS(
             (std::distance(paragraph.begin(), start) +
             token.prefix.size() + prevLen) );
-        format(it->first, it->second);
+        //format(it->first, it->second);
+        APPLY_FORMAT(it->first, it->second.size());
         GENERATE_EVENT(token, HighlightEvent::FORMAT);
         prevLen += it->second.size();
       }
@@ -103,18 +119,20 @@ void KSourceHighlighter::highlightParagraph(const std::string &paragraph) {
     } else {
       // no rule matched, so we highlight it with the current state's default element
       // provided the string is not empty (if it is empty this is really useless)
-      if (start != end) {
+      size_t len = end - start;
+      if (len) {
         // this is the index in the paragraph of the matched part
         UPDATE_START_IN_FORMATTER_PARAMS((std::distance(paragraph.begin(), start)));
+        //const string s(start, end);
+        //format(currentHighlightState->getDefaultElement(), s);
+        APPLY_FORMAT(currentHighlightState->getDefaultElement(), len);//s.size());
+        
+        // TODO: remove in future:
         const string s(start, end);
-        format(currentHighlightState->getDefaultElement(), s);
         GENERATE_DEFAULT_EVENT(s);
       }
     }
   }
-  
-  if (optimize)
-    flush(); // flush what we have buffered
 }
 
 HighlightStatePtr KSourceHighlighter::getNextState(const HighlightToken &token) {
@@ -133,8 +151,8 @@ HighlightStatePtr KSourceHighlighter::getNextState(const HighlightToken &token) 
       nextState = nextState->getOriginalState();
     }
     
-    HighlightStatePtr copyState = HighlightStatePtr(new HighlightState(
-                                                                       *nextState));
+    HighlightStatePtr copyState =
+        HighlightStatePtr(new HighlightState(*nextState));
     copyState->setOriginalState(nextState);
     copyState->replaceReferences(token.matchedSubExps);
     return copyState;
@@ -172,6 +190,9 @@ void KSourceHighlighter::clearStateStack() {
 }
 
 void KSourceHighlighter::format(const std::string &elem, const std::string &s) {
+  if (elem == "comment") {
+    DLOG("element (data: %p)", elem.data());
+  }
   if (suspended)
     return;
   
@@ -180,36 +201,7 @@ void KSourceHighlighter::format(const std::string &elem, const std::string &s) {
   
   // the formatter is allowed to be null
   if (formatterManager) {
-    if (!optimize) {
-      formatterManager->getFormatter(elem)->format(s, formatterParams);
-    } else {
-      // otherwise we optmize output generation: delay formatting a specific
-      // element until we deal with another element; this way strings that belong
-      // to the same element are formatted using only one tag: e.g.,
-      // <comment>/* mycomment */</comment>
-      // instead of
-      // <comment>/*</comment><comment>mycomment</comment><comment>*/</comment>
-      if (elem != currentElement) {
-        if (currentElement.size())
-          flush();
-      }
-      
-      currentElement = elem;
-      currentElementBuffer << s;
-    }
-  }
-}
-
-void KSourceHighlighter::flush() {
-  if (formatterManager) {
-    
-    // flush the buffer for the current element
-    formatterManager->getFormatter(currentElement)->format(
-        currentElementBuffer.str(), formatterParams);
-    
-    // reset current element information
-    currentElement = "";
-    currentElementBuffer.str("");
+    formatterManager->getFormatter(elem)->format(s, formatterParams);
   }
 }
 

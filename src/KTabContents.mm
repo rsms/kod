@@ -584,7 +584,8 @@ static int debugSimulateTextAppendingIteration = 0;
     NSRange range = NSMakeRange(NSNotFound, 0);
     [syntaxHighlighter highlightMAString:mastr
                                  inRange:range
-                              deltaRange:range];
+                              deltaRange:range
+                               withStyle:style_];
   }
   
   // if we where forced to make a copy of the text, swap it back
@@ -757,7 +758,8 @@ static int debugSimulateTextAppendingIteration = 0;
       while (nextRange.location != textEnd) {
         nextRange = [syntaxHighlighter highlightMAString:textStorage
                                                  inRange:highlightRange
-                                              deltaRange:deltaRange];
+                                              deltaRange:deltaRange
+                                               withStyle:style_];
         //[textStorage ensureAttributesAreFixedInRange:highlightRange];
         if (nextRange.location == textEnd) {
           DLOG("info: code tree is incomplete (open state at end of document)");

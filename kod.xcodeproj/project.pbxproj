@@ -48,6 +48,8 @@
 		3A9293CC1229ED4C00DA7E43 /* KDocumentController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A9293CB1229ED4C00DA7E43 /* KDocumentController.mm */; };
 		3A929886122AC38F00DA7E43 /* ChromiumTabs.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A9297E4122AB49D00DA7E43 /* ChromiumTabs.framework */; };
 		3A929887122AC39100DA7E43 /* ChromiumTabs.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 3A9297E4122AB49D00DA7E43 /* ChromiumTabs.framework */; };
+		3AF14C42128D792F00623011 /* KLangRegexRuleFactory.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3AF14C41128D792F00623011 /* KLangRegexRuleFactory.mm */; };
+		3AF14D20128D928A00623011 /* KLangSymbol.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3AF14D1F128D928A00623011 /* KLangSymbol.mm */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -164,6 +166,10 @@
 		3A9293661229E49A00DA7E43 /* NSError+KAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSError+KAdditions.m"; sourceTree = "<group>"; };
 		3A9293CA1229ED4C00DA7E43 /* KDocumentController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KDocumentController.h; sourceTree = "<group>"; };
 		3A9293CB1229ED4C00DA7E43 /* KDocumentController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KDocumentController.mm; sourceTree = "<group>"; };
+		3AF14C40128D792F00623011 /* KLangRegexRuleFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KLangRegexRuleFactory.h; sourceTree = "<group>"; };
+		3AF14C41128D792F00623011 /* KLangRegexRuleFactory.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KLangRegexRuleFactory.mm; sourceTree = "<group>"; };
+		3AF14D1E128D928A00623011 /* KLangSymbol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KLangSymbol.h; sourceTree = "<group>"; };
+		3AF14D1F128D928A00623011 /* KLangSymbol.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KLangSymbol.mm; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -219,6 +225,10 @@
 				3A025A961288B2A300206ECF /* KHighlightState.mm */,
 				3A25E477128194B400B6A33E /* KSyntaxHighlighter.h */,
 				3A25E478128194B400B6A33E /* KSyntaxHighlighter.mm */,
+				3AF14D1E128D928A00623011 /* KLangSymbol.h */,
+				3AF14D1F128D928A00623011 /* KLangSymbol.mm */,
+				3AF14C40128D792F00623011 /* KLangRegexRuleFactory.h */,
+				3AF14C41128D792F00623011 /* KLangRegexRuleFactory.mm */,
 				3A159627128C3BCB00339E6E /* KSourceHighlighter.h */,
 				3A159628128C3BCB00339E6E /* KSourceHighlighter.mm */,
 				3A159683128C432800339E6E /* KStyle.h */,
@@ -444,6 +454,8 @@
 				3A15949F128B83F100339E6E /* NSString-cpp.mm in Sources */,
 				3A159629128C3BCB00339E6E /* KSourceHighlighter.mm in Sources */,
 				3A159685128C432800339E6E /* KStyle.mm in Sources */,
+				3AF14C42128D792F00623011 /* KLangRegexRuleFactory.mm in Sources */,
+				3AF14D20128D928A00623011 /* KLangSymbol.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

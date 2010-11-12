@@ -41,6 +41,7 @@ class KStyleElement : public srchilite::Formatter {
   /// the language element represented by this formatter
   const std::string &getElem() const { return elem_; }
   void setElem(const std::string &e);
+  NSString *symbol();
 
   inline void setSyntaxHighlighter(KSyntaxHighlighter *syntaxHighlighter) {
     objc_exch(&syntaxHighlighter_, syntaxHighlighter);

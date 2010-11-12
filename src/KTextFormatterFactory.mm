@@ -1,4 +1,6 @@
 #import "KTextFormatterFactory.h"
+#import "KStyle.h"
+#import "KLangSymbol.h"
 #import <ChromiumTabs/common.h>
 
 //QtColorMap TextFormatterFactory::colorMap;

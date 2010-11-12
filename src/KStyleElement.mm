@@ -2,6 +2,7 @@
 #import "KSyntaxHighlighter.h"
 #import "NSColor-web.h"
 #import "NSString-intern.h"
+#import "KLangSymbol.h"
 #include <srchilite/formatterparams.h>
 #import <ChromiumTabs/common.h>
 
@@ -82,10 +83,15 @@ KStyleElement::~KStyleElement() {
 }
 
 
-void KStyleElement::setElem(const std::string &e) {
-  elem_ = e;
-  NSString *symbol = [[NSString stringWithUTF8String:e.c_str()] internedString];
+void KStyleElement::setElem(const std::string &name) {
+  NSString const *symbol = nil;
+  elem_ = KLangSymbol::symbolize(name, &symbol);
   [textAttributes_ setObject:symbol forKey:ClassAttributeName];
+}
+
+
+NSString *KStyleElement::symbol() {
+  return [textAttributes_ objectForKey:ClassAttributeName];
 }
 
 

@@ -10,6 +10,8 @@
 #include <srchilite/highlightstate.h>
 #include <srchilite/eventgenerator.h>
 
+@class KSyntaxHighlighter;
+
 namespace srchilite {
 class FormatterManager;
 struct HighlightToken;
@@ -36,6 +38,9 @@ typedef boost::shared_ptr<KHighlightStateStack> KHighlightStateStackPtr;
 class KSourceHighlighter :
     public srchilite::EventGenerator<srchilite::HighlightEventListener,
                                      srchilite::HighlightEvent> {
+  /// Parent highlighter
+  __weak KSyntaxHighlighter *syntaxHighlighter_;
+
   /// the main (and initial) highlight state
   srchilite::HighlightStatePtr mainHighlightState;
   
@@ -48,12 +53,6 @@ class KSourceHighlighter :
   /// the formatter manager, used to format element strings
   // TODO: remove this -- we don't need or use it
   const srchilite::FormatterManager *formatterManager;
-  
-  /**
-   * Whether to optimize output (e.g., adjacent text parts belonging
-   * to the same element will be buffered and generated as a single text part)
-   */
-  bool optimize;
   
   /**
    * Whether formatting is currently suspended.  Note that matching for
@@ -119,7 +118,8 @@ class KSourceHighlighter :
   /**
    * @param mainState the main and initial state for highlighting
    */
-  KSourceHighlighter(srchilite::HighlightStatePtr mainState);
+  KSourceHighlighter(srchilite::HighlightStatePtr mainState,
+                     KSyntaxHighlighter *syntaxHighlighter);
   ~KSourceHighlighter();
   
   /**
@@ -161,14 +161,6 @@ class KSourceHighlighter :
   // TODO: remove
   void setFormatterManager(const srchilite::FormatterManager *_formatterManager) {
     formatterManager = _formatterManager;
-  }
-  
-  bool getOptimize() const {
-    return optimize;
-  }
-  
-  void setOptimize(bool b = true) {
-    optimize = b;
   }
   
   void setFormatterParams(srchilite::FormatterParams *p) {

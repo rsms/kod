@@ -51,7 +51,6 @@ static dispatch_semaphore_t gSearchPathsSemaphore_; // 1/0 = unlocked/locked
     style = [[self alloc] initWithName:name referencingFile:file];
     if ([style reload:outError]) {
       [gInstancesDict_ setObject:style forKey:name];
-      [style release];
     } else {
       [style release];
       style = nil;
@@ -111,7 +110,7 @@ static inline void _freeElementsMapTable(NSMapTable **elements) {
   // NSMapTable does not manage refcounting so we need to release contents
   // before releasing the NSMapTable itself.
   for (id element in *elements) {
-    [element release];
+    delete element;
   }
   [*elements release];
   *elements = NULL;
@@ -146,6 +145,8 @@ static inline void _freeElementsMapTable(NSMapTable **elements) {
   NSMapTable *elements = _newElementsMapTableWithInitialCapacity(1);
 
   // TODO: create elements
+  KStyleElement *element = new KStyleElement("normal");
+  //[elements setObject:(id)element forKey:element->symbol()]; // EXC_BAD_ACCESS
 
   // Atomically exchange
   NSMapTable *old = h_objc_swap(&elements_, elements);
@@ -161,7 +162,7 @@ static inline void _freeElementsMapTable(NSMapTable **elements) {
 #pragma mark Getting style elements
 
 /// Return the style element for symbolic key
-- (KStyleElement*)styleElementForKey:(NSString*)key {
+- (KStyleElement*)styleElementForSymbol:(NSString const*)key {
   return (KStyleElement*)[elements_ objectForKey:key];
 }
 
