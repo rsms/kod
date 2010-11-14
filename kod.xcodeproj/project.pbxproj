@@ -48,6 +48,7 @@
 		3A9293CC1229ED4C00DA7E43 /* KDocumentController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A9293CB1229ED4C00DA7E43 /* KDocumentController.mm */; };
 		3A929886122AC38F00DA7E43 /* ChromiumTabs.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A9297E4122AB49D00DA7E43 /* ChromiumTabs.framework */; };
 		3A929887122AC39100DA7E43 /* ChromiumTabs.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 3A9297E4122AB49D00DA7E43 /* ChromiumTabs.framework */; };
+		3AE5E5171290955000B17C4F /* kod.icns in Resources */ = {isa = PBXBuildFile; fileRef = 3AE5E5161290955000B17C4F /* kod.icns */; };
 		3AF14C42128D792F00623011 /* KLangRegexRuleFactory.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3AF14C41128D792F00623011 /* KLangRegexRuleFactory.mm */; };
 		3AF14D20128D928A00623011 /* KLangSymbol.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3AF14D1F128D928A00623011 /* KLangSymbol.mm */; };
 /* End PBXBuildFile section */
@@ -166,6 +167,7 @@
 		3A9293661229E49A00DA7E43 /* NSError+KAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSError+KAdditions.m"; sourceTree = "<group>"; };
 		3A9293CA1229ED4C00DA7E43 /* KDocumentController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KDocumentController.h; sourceTree = "<group>"; };
 		3A9293CB1229ED4C00DA7E43 /* KDocumentController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KDocumentController.mm; sourceTree = "<group>"; };
+		3AE5E5161290955000B17C4F /* kod.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = kod.icns; path = icon/kod.icns; sourceTree = "<group>"; };
 		3AF14C40128D792F00623011 /* KLangRegexRuleFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KLangRegexRuleFactory.h; sourceTree = "<group>"; };
 		3AF14C41128D792F00623011 /* KLangRegexRuleFactory.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KLangRegexRuleFactory.mm; sourceTree = "<group>"; };
 		3AF14D1E128D928A00623011 /* KLangSymbol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KLangSymbol.h; sourceTree = "<group>"; };
@@ -298,6 +300,7 @@
 		3A928C19122714EE00DA7E43 /* resources */ = {
 			isa = PBXGroup;
 			children = (
+				3AE5E5161290955000B17C4F /* kod.icns */,
 				3A158DF1128A282F00339E6E /* style */,
 				3A158DF5128A296000339E6E /* lang */,
 				3A928C1A122714EE00DA7E43 /* Info.plist */,
@@ -415,6 +418,7 @@
 				3A7E71131286EAE800D85E4C /* BrowserWindow.xib in Resources */,
 				3A158DF4128A282F00339E6E /* style in Resources */,
 				3A158E4C128A296100339E6E /* lang in Resources */,
+				3AE5E5171290955000B17C4F /* kod.icns in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
