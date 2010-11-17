@@ -206,7 +206,12 @@ static int debugSimulateTextAppendingIteration = 0;
   view_ = sv;
   
   // Default style
-  style_ = [[KStyle defaultStyle] retain];
+  style_ = [[KStyle emptyStyle] retain];
+  [KStyle defaultStyleWithCallback:^(NSError *err, KStyle *style) {
+    if (err) [NSApp presentError:err];
+    else DLOG("yay -- style %@ loaded", style);
+    self.style = style;
+  }];
 
   // Let the global document controller know we came to life
   [[NSDocumentController sharedDocumentController] addDocument:self];
@@ -214,6 +219,31 @@ static int debugSimulateTextAppendingIteration = 0;
   [self _initOnMain];
 
   return self;
+}
+
+
+- (void)styleDidChange:(NSNotification*)notification {
+  // TODO: [self reloadStyle];
+}
+
+
+- (void)setStyle:(KStyle*)style {
+  NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
+  KStyle* old = h_objc_swap(&style_, style);
+  if (style_) {
+    [nc addObserver:self
+           selector:@selector(styleDidChange:)
+               name:KStyleDidChangeNotification
+             object:style_];
+    [style_ retain];
+  }
+  if (old) {
+    [nc removeObserver:self
+                  name:KStyleDidChangeNotification
+                object:old];
+    [old release];
+  }
+  // don't reload style here
 }
 
 
@@ -243,7 +273,13 @@ static int debugSimulateTextAppendingIteration = 0;
 
 - (void)dealloc {
   [syntaxHighlighter_ release];
-  [style_ release];
+  if (style_) {
+    NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
+    [nc removeObserver:self
+                  name:KStyleDidChangeNotification
+                object:style_];
+    [style_ release];
+  }
   [super dealloc];
 }
 
@@ -572,6 +608,9 @@ static int debugSimulateTextAppendingIteration = 0;
   NSTextStorage *textStorage = textView_.textStorage;
   NSMutableAttributedString *mastr = textStorage;
   
+  // this is a no-op unless we got style
+  if (!style_) return;
+  
   // if we are not on main we need to create a copy of the text storage to avoid
   // pthread mutex deadlocks.
   if (![NSThread isMainThread]) {
@@ -579,6 +618,7 @@ static int debugSimulateTextAppendingIteration = 0;
   }
   
   if ([textStorage length]) {
+    NSDate *date = [NSDate date];
     KSyntaxHighlighter *syntaxHighlighter = self.syntaxHighlighter;
     assert(syntaxHighlighter != nil);
     NSRange range = NSMakeRange(NSNotFound, 0);
@@ -586,6 +626,8 @@ static int debugSimulateTextAppendingIteration = 0;
                                  inRange:range
                               deltaRange:range
                                withStyle:style_];
+    double rt = [[NSDate date] timeIntervalSince1970] - [date timeIntervalSince1970];
+    NSLog(@"real: %.4f ms", rt*1000.0);
   }
   
   // if we where forced to make a copy of the text, swap it back
@@ -648,7 +690,7 @@ static int debugSimulateTextAppendingIteration = 0;
   }
   
   // Syntax highlight
-  if (!hasPendingInitialHighlighting_ && textLength != 0) {
+  if (!hasPendingInitialHighlighting_ && textLength != 0 && style_) {
     KSyntaxHighlighter *syntaxHighlighter = self.syntaxHighlighter;
     if (syntaxHighlighter && syntaxHighlighter.currentMAString == nil) {
       NSRange highlightRange, deltaRange;

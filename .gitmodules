@@ -1,3 +1,6 @@
 [submodule "deps/srchilight/src-highlite"]
 	path = deps/srchilight/src-highlite
 	url = git://git.savannah.gnu.org/src-highlite.git
+[submodule "deps/libcss"]
+	path = deps/libcss
+	url = git@github.com:rsms/libcss-osx.git

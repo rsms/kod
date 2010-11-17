@@ -6,6 +6,7 @@ static KLangSymbolMap gNames;
 
 const std::string &KLangSymbol::symbolize(const std::string &name,
                                           NSString const ** symbol) {
+  // TODO: atomicity
   KLangSymbolMap::iterator it = gNames.find(name);
   if (it == gNames.end()) {
     //DLOG("NOTFOUND %s", name.c_str());

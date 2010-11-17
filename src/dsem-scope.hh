@@ -5,9 +5,13 @@
 
 #ifdef __cplusplus
 
+#define KSemaphoreSection(dsema) for (KSemaphoreScope kSemaphoreScope(dsema); \
+  kSemaphoreScope.refs-- != 0;)
+
 class KSemaphoreScope {
  public:
-  inline KSemaphoreScope(dispatch_semaphore_t dsema) : dsema_(dsema) {
+  int refs;  ///< primarily used for the convenience scope macro
+  inline KSemaphoreScope(dispatch_semaphore_t dsema) : dsema_(dsema), refs(1) {
     //fprintf(stderr, "dsemscope %p INCREMENT\n", dsema_);
     //NSLog(@"%@", [NSThread callStackSymbols]);
     dispatch_semaphore_wait(dsema_, DISPATCH_TIME_FOREVER);
@@ -15,6 +19,7 @@ class KSemaphoreScope {
   inline ~KSemaphoreScope() {
     //fprintf(stderr, "dsemscope %p DECREMENT\n", dsema_);
     dispatch_semaphore_signal(dsema_);
+    refs--;
   }
  private:
   dispatch_semaphore_t dsema_;

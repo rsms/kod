@@ -29,12 +29,10 @@
 
 @implementation KSyntaxHighlighter
 
-@synthesize styleFile = styleFile_,
-            currentMAString = currentMAString_;
+@synthesize currentMAString = currentMAString_;
 
 
 static NSMutableArray *gLanguageFileSearchPath_;
-static NSMutableArray *gStyleFileSearchPath_;
 static NSMutableDictionary *gSharedInstances_;
 static OSSpinLock gSharedInstancesSpinLock_ = OS_SPINLOCK_INIT;
 static srchilite::LangDefManager *gLangDefManager_ = NULL;
@@ -46,18 +44,14 @@ NSString * const KHighlightStateAttribute = @"KHighlightState";
   
   // TODO: replace style with KStyle stuff
   NSBundle *mainBundle = [NSBundle mainBundle];
-  NSString *builtinLangDir = nil, *builtinStyleDir = nil;
+  NSString *builtinLangDir = nil;
   if (mainBundle) {
     builtinLangDir =
         [[mainBundle resourcePath] stringByAppendingPathComponent:@"lang"];
-    builtinStyleDir =
-        [[mainBundle resourcePath] stringByAppendingPathComponent:@"style"];
     srchilite::Settings::setGlobalDataDir([builtinLangDir UTF8String]);
   }
   gLanguageFileSearchPath_ =
       [[NSMutableArray alloc] initWithObjects:builtinLangDir, nil];
-  gStyleFileSearchPath_ =
-      [[NSMutableArray alloc] initWithObjects:builtinStyleDir, nil];
   
   // language-name => KSyntaxHighlighter
   gSharedInstances_ = [NSMutableDictionary new];
@@ -69,7 +63,6 @@ NSString * const KHighlightStateAttribute = @"KHighlightState";
 
 
 + (NSMutableArray *)languageFileSearchPath { return gLanguageFileSearchPath_; }
-+ (NSMutableArray *)styleFileSearchPath { return gStyleFileSearchPath_; }
 
 
 + (srchilite::LangMap*)definitionMap {
@@ -124,12 +117,12 @@ NSString * const KHighlightStateAttribute = @"KHighlightState";
 }
 
 
-+ (NSString *)pathForStyleFile:(NSString*)file error:(NSError**)error {
+/*+ (NSString *)pathForStyleFile:(NSString*)file error:(NSError**)error {
   return [self _pathForResourceFile:file
                              ofType:@"css"
                       inSearchPaths:gStyleFileSearchPath_
                               error:error];
-}
+}*/
 
 
 + (NSString*)canonicalContentOfLanguageFile:(NSString*)file {
@@ -162,7 +155,7 @@ NSString * const KHighlightStateAttribute = @"KHighlightState";
 }
 
 
-+ (const KStyleElementMap &)textFormatterMapForFormatterFactory:
+/*+ (const KStyleElementMap &)textFormatterMapForFormatterFactory:
     (KTextFormatterFactory &)formatterFactory
     styleFile:(NSString *)styleFile {
 
@@ -202,7 +195,7 @@ NSString * const KHighlightStateAttribute = @"KHighlightState";
   // 3. use default colors
 
   return formatterFactory.getTextFormatterMap();
-}
+}*/
 
 
 + (KSyntaxHighlighter*)highlighterForLanguage:(NSString*)language {
@@ -257,7 +250,7 @@ NSString * const KHighlightStateAttribute = @"KHighlightState";
  * the highlighter was initialized through init().
  * @param formatterMap
  */
-- (void)setFormatters:(const KStyleElementMap &)formatterMap {
+/*- (void)setFormatters:(const KStyleElementMap &)formatterMap {
   // For each element set this pointer (the formatters will later call setFormat
   // on such pointer).
   for (KStyleElementMap::const_iterator it = formatterMap.begin();
@@ -268,11 +261,12 @@ NSString * const KHighlightStateAttribute = @"KHighlightState";
     if (it->first == "normal")
       formatterManager_->setDefaultFormatter(it->second);
   }
-}
+}*/
 
 
 - (void)reloadStyle {
-  DLOG("reloading FormatterManager");
+  K_DEPRECATED;
+  /*DLOG("reloading FormatterManager");
   if (formatterManager_) {
     if (sourceHighlighter_ &&
         sourceHighlighter_->getFormatterManager() == formatterManager_) {
@@ -299,18 +293,18 @@ NSString * const KHighlightStateAttribute = @"KHighlightState";
   }
   
   if (sourceHighlighter_)
-    sourceHighlighter_->setFormatterManager(formatterManager_);
+    sourceHighlighter_->setFormatterManager(formatterManager_);*/
 }
 
 
-- (void)loadStyleFile:(NSString*)file {
+/*- (void)loadStyleFile:(NSString*)file {
   self.styleFile = file;
   [self reloadStyle];
-}
+}*/
 
 
 - (void)loadLanguageFile:(NSString*)langFile styleFile:(NSString*)styleFile {
-  self.styleFile = styleFile;
+  //self.styleFile = styleFile;
   [self loadLanguageFile:langFile];  // implies reloadStyle
 }
 
@@ -337,9 +331,6 @@ NSString * const KHighlightStateAttribute = @"KHighlightState";
       // make sure sourceHighlighter_ is valid
       mainState.reset(new srchilite::HighlightState());
       sourceHighlighter_ = new KSourceHighlighter(mainState, self);
-      // TODO: get rid of this when we have implemented streamlined "event"
-      // passing (dependants: KSourceHighlighter).
-      sourceHighlighter_->addListener(new KHighlightEventListenerProxy(self));
     }
     [NSApp presentError:error]; // FIXME pass by reference or something
     return;
@@ -402,7 +393,7 @@ NSString * const KHighlightStateAttribute = @"KHighlightState";
   #endif
   assert(currentMAString_ == nil);
   currentStyle_ = style; // weak, so no need to retain/release/clear
-  assert(currentStyle_);
+  //assert(currentStyle_);
   currentMAString_ = [mastr retain];
   NSString *text = [mastr string];
   NSUInteger documentLength = [text length];
@@ -745,7 +736,7 @@ static void _debugDumpHighlightEvent(const srchilite::HighlightEvent &event) {
 
 
 - (void)setStyleForElementOfType:(NSString const*)typeSymbol
-                       inUTF8Range:(NSRange)range {
+                     inUTF8Range:(NSRange)range {
   if (!currentMAString_) return;
 
   // convert range if needed
@@ -762,22 +753,25 @@ static void _debugDumpHighlightEvent(const srchilite::HighlightEvent &event) {
   lastFormattedRange_ = range;
   lastFormattedState_ = nil;
   
-  DLOG_state("format [%@] %@ '%@'", typeSymbol,
-             NSStringFromRange(range),
-             [currentMAString_.string substringWithRange:range]);
-  
   // lookup style element for element type
   KStyleElement *element = [currentStyle_ styleElementForSymbol:typeSymbol];
   // Apply text attributes to range
   if (element) {
     [currentMAString_ setAttributes:element->textAttributes() range:range];
+    //[currentMAString_ addAttributes:element->textAttributes() range:range];
+    // Note: setAttributes is faster than addAttributes, but it replaces _any_
+    // attribute.
   } else {
     KStyleElement::clearAttributes(currentMAString_, range, true);
   }
+  DLOG_state("format [%@] %@ '%@' <-- %@", typeSymbol,
+             NSStringFromRange(range),
+             [currentMAString_.string substringWithRange:range],
+             element ? element->textAttributes() : nil);
 }
 
 
-- (void)setFormat:(KStyleElement*)format inRange:(NSRange)range {
+/*- (void)setFormat:(KStyleElement*)format inRange:(NSRange)range {
   if (!currentMAString_) return;
   NSDictionary *attrs = format->textAttributes();
 
@@ -792,10 +786,10 @@ static void _debugDumpHighlightEvent(const srchilite::HighlightEvent &event) {
   lastFormattedRange_ = range;
   lastFormattedState_ = nil; // temporal
   //DLOG_RANGE(range, currentMAString_.string);
-  DLOG_state("format [%s] %@ '%@'", format->getElem().c_str(),
+  DLOG_state("format [%@] %@ '%@'", format->symbol(),
              NSStringFromRange(range),
              [currentMAString_.string substringWithRange:range]);
   [currentMAString_ setAttributes:attrs range:range];
-}
+}*/
 
 @end

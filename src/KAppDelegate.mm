@@ -3,7 +3,7 @@
 #import "KBrowserWindowController.h"
 #import "KTabContents.h"
 #import "KDocumentController.h"
-#import <ChromiumTabs/common.h>
+#import "common.h"
 
 @implementation KAppDelegate
 

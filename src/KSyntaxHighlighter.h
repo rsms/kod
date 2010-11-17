@@ -1,5 +1,4 @@
 #import "KStyleElement.h"
-#import "KTextFormatterFactory.h"
 #import "KHighlightStateData.h"
 #import "KHighlightEventListener.h"
 #import "KSourceHighlighter.h"
@@ -20,7 +19,6 @@ extern NSString * const KHighlightStateAttribute;
 @interface KSyntaxHighlighter : NSObject <KHighlightEventListener> {
   /// current definition and style files (or nil)
   NSString *definitionFile_;
-  NSString *styleFile_;
   
   /// the GNU Source-highlighter used for the actual highlighting
   KSourceHighlighter *sourceHighlighter_;
@@ -46,7 +44,6 @@ extern NSString * const KHighlightStateAttribute;
   int tempStackDepthDelta_;
 }
 
-@property(retain, nonatomic) NSString *styleFile;
 @property(readonly, nonatomic) NSMutableAttributedString *currentMAString;
 
 /**
@@ -61,11 +58,9 @@ extern NSString * const KHighlightStateAttribute;
 
 /// Resolve path for |file|, passing |error|.
 + (NSString *)pathForLanguageFile:(NSString*)file error:(NSError**)error;
-+ (NSString *)pathForStyleFile:(NSString*)file error:(NSError**)error;
 
 /// Search paths
 + (NSMutableArray *)languageFileSearchPath;
-+ (NSMutableArray *)styleFileSearchPath;
 
 /// Canonical rep of the content of |file|
 + (NSString*)canonicalContentOfLanguageFile:(NSString*)file;
@@ -83,9 +78,6 @@ extern NSString * const KHighlightStateAttribute;
  * @throws srchilite::ParserException
  */
 - (id)initWithLanguageFile:(NSString*)langFile styleFile:(NSString*)styleFile;
-
-/// Load style from file (causes |reloadFormatting|)
-- (void)loadStyleFile:(NSString*)file;
 
 /// Setup with definition |file|
 - (void)loadLanguageFile:(NSString*)file;
@@ -130,8 +122,7 @@ extern NSString * const KHighlightStateAttribute;
  * TextFormatter, from Source-highglight library code, and relies on
  * the corresponding protected method of QSyntaxHighlighter: setFormat).
  */
-- (void)setFormat:(KStyleElement*)format inRange:(NSRange)range;
-
+//- (void)setFormat:(KStyleElement*)format inRange:(NSRange)range;
 - (void)setStyleForElementOfType:(NSString const*)elem
                      inUTF8Range:(NSRange)range;
 

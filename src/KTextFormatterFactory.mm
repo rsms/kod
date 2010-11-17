@@ -35,7 +35,9 @@ bool KTextFormatterFactory::createFormatter(const std::string &key,
                                             const std::string &color,
                                             const std::string &bgcolor,
                                   srchilite::StyleConstantsPtr styleconstants) {
-  if (hasFormatter(key))
+  K_DEPRECATED;
+  return false;
+  /*if (hasFormatter(key))
     return false;
   
   //DLOG("Creating KStyleElement '%s'", key.c_str());
@@ -47,5 +49,5 @@ bool KTextFormatterFactory::createFormatter(const std::string &key,
     formatter->setForegroundColor(color);
   if (bgcolor.size())
     formatter->setBackgroundColor(bgcolor);
-  return true;
+  return true;*/
 }

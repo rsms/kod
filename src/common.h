@@ -6,6 +6,7 @@
 
 #import <ChromiumTabs/common.h>
 #import <assert.h>
+#import <libkern/OSAtomic.h>
 
 #define K_DISPATCH_MAIN_ASYNC(code)\
   dispatch_async(dispatch_get_main_queue(),^{ \
@@ -35,11 +36,31 @@
     DLOG( #r " %@ \"%@\"", NSStringFromRange(r), s); \
   } while (0)
 
+
+#define NOTIMPLEMENTED() errx(4, "Not implemented reached in %s (%s:%d)", \
+                              __PRETTY_FUNCTION__, __SRC_FILENAME__, __LINE__)
+
+#define K_DEPRECATED \
+  WLOG("DEPRECATED %s (%s:%d)", __PRETTY_FUNCTION__, __SRC_FILENAME__, __LINE__)
+
+// Atomically perform (old = (dst = src)).
+inline static void *k_swapptr(void * volatile *dst, void *src) {
+  void *old;
+  while (1) {
+    old = *dst;
+    if (OSAtomicCompareAndSwapPtrBarrier(old, src, dst)) break;
+  }
+  return old;
+}
+
+
+
 #import "NSString-utf8-range-conv.h"
 #import "NSString-cpp.h"
 #import "NSString-intern.h"
 #import "NSString-ranges.h"
 #import "NSError+KAdditions.h"
+#import "NSColor-web.h"
 #import "dsem-scope.hh"
 #import "h-objc.h"
 

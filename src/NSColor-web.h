@@ -1,22 +1,37 @@
+@interface NSColorSpace (Kod)
++ (NSColorSpace*)genericLabColorSpace;
+@end
+
 @interface NSColor (web)
 
 /**
- * Return an NSColor or nil by parsing |name|.
- *
- * Supported formats:
- *
- *  - #RGB
- *  - #RRGGBB
- *  - #RRGGBBAA
- *  - rgb(R[0-255], G[0-255], B[0-255])
- *  - rgba(R[0-255], G[0-255], B[0-255], A[0-1])
- *  - <symbolic>
- *
- * Where <symbolic> can be any standard name (e.g. "red", "aquamarine" or
- * "dark salmon").
- *
- * If |name| is unparsable, nil is returned.
+ * sRGB color from a string of hex digits in one of the following formats:
+ * - RRGGBBAA
+ * - RRGGBB
+ * - RGBA
+ * - RGB
  */
-+ (NSColor*)colorWithCssDefinition:(NSString*)name;
++ (NSColor*)colorWithSRGBHexString:(NSString*)str;
+
+/// Create a RRGGBBAA string of hex digits representing this color in sRGB
+- (NSString*)sRGBhexString;
+
+/// Return a 32-bit unsigned integer representation in sRGB (host byte order)
+- (uint32_t)sRGBUInt32Value;
+
+/// The color in sRGB color space (returns self if already in sRGB)
+- (NSColor*)colorUsingSRGBColorSpace;
+
+/// Color converted to LAB color space
+- (NSColor*)labColor;
+
+/// Luminance
+- (CGFloat)luminance;
+
+/// Returns whether the color is in the dark half of the spectrum
+- (BOOL)isDarkColor;
+
+/// Returns a color that is legible on this color. (Nothing to do with textColor)
+- (NSColor*)legibleTextColor;
 
 @end

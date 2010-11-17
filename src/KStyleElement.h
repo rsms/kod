@@ -19,9 +19,6 @@
  */
 class KStyleElement : public srchilite::Formatter {
  protected:
-  /// the language element represented by this formatter
-  std::string elem_;
-
   /// reference to related KSyntaxHighlighter
   KSyntaxHighlighter *syntaxHighlighter_;
   
@@ -35,12 +32,10 @@ class KStyleElement : public srchilite::Formatter {
                               NSRange range,
                               bool removeSpecials=false);
   
-  KStyleElement(const std::string &elem = "normal");
+  KStyleElement(NSString *name = @"normal");
   virtual ~KStyleElement();
 
   /// the language element represented by this formatter
-  const std::string &getElem() const { return elem_; }
-  void setElem(const std::string &e);
   NSString *symbol();
 
   inline void setSyntaxHighlighter(KSyntaxHighlighter *syntaxHighlighter) {
@@ -51,11 +46,9 @@ class KStyleElement : public srchilite::Formatter {
   void setStyle(srchilite::StyleConstantsPtr style);
   inline NSDictionary *textAttributes() { return textAttributes_; }
 
-  void setForegroundColor(const std::string &color);
   void setForegroundColor(NSColor *color);
   NSColor *foregroundColor();
 
-  void setBackgroundColor(const std::string &color);
   void setBackgroundColor(NSColor *color);
   NSColor *backgroundColor();
   
