@@ -274,32 +274,6 @@ static inline void _freeElementsMapTable(NSMapTable **elements) {
 
 
 #pragma mark -
-#pragma mark Setting up elements
-
-/// Reload from underlying file (this is an atomic operation)
-/*- (void)reloadWithCallback:(void(^)(NSError*))callback {
-  
-  // TODO: read file_
-
-  // Create a new elements map
-  KPtrHashTable<KStyleElement> elements;
-
-  // Add elements
-  KStyleElement *defaultElement = new KStyleElement("normal");
-  elements.put(defaultElement->symbol(), defaultElement);
-  
-  // Swap
-  boost::shared_ptr<KStyleElement> newDefaultElem =
-      elements_.getValue(defaultElement->symbol());
-  elements_.atomicSwap(elements);
-  defaultElement_.swap(newDefaultElem);
-
-  // TODO: post notification "reloaded"
-  //callback(err);
-}*/
-
-
-#pragma mark -
 #pragma mark Getting style elements
 
 /// Return the style element for symbolic key
@@ -319,8 +293,13 @@ static inline void _freeElementsMapTable(NSMapTable **elements) {
     elem = new KStyleElement(key);
     
     NSColor *color = style.color;
-    if (!color)
-      color = KConfig.getColor(@"defaultTextColor", [NSColor whiteColor]);
+    if (!color) {
+      //color = KConfig.getColor(@"defaultTextColor", [NSColor whiteColor]);
+      // random color
+      srand((unsigned)(pointer_t)key);
+      CGFloat hue = (CGFloat)rand() / RAND_MAX;
+      color = [NSColor colorWithCalibratedHue:hue saturation:0.5 brightness:0.9 alpha:1.0];
+    }
     elem->setForegroundColor(color);
     
     elements_.put(key, elem);
@@ -329,5 +308,59 @@ static inline void _freeElementsMapTable(NSMapTable **elements) {
 
   return elem;
 }
+
+
+#pragma mark -
+#pragma mark Formatting
+
+
+- (void)applyStyle:(NSString const*)typeSymbol
+        toMAString:(NSMutableAttributedString*)mastr
+           inRange:(NSRange)range
+     byReplacement:(BOOL)replace {
+  // lookup style element for element type
+  KStyleElement *element = [self styleElementForSymbol:typeSymbol];
+  NSDictionary *attrs = nil;
+
+  // Set text attributes
+  if (element) {
+    [mastr setAttributes:element->textAttributes() range:range];
+    //[currentMAString_ addAttributes:element->textAttributes() range:range];
+    // Note: setAttributes is faster than addAttributes, but it replaces _any_
+    // attribute.
+  } else {
+    KStyleElement::clearAttributes(mastr, range, true);
+  }
+  #if 0
+  DLOG("%@ applyStyle:%@ %@ '%@' <-- %@", typeSymbol,
+             NSStringFromRange(range),
+             [mastr.string substringWithRange:range],
+             element ? element->textAttributes() : nil);
+  #endif
+}
+
+
+- (void)applyStyleToMAString:(NSMutableAttributedString*)mastr {
+  NSRange textRange = NSMakeRange(0, mastr.length);
+  NSAttributedStringEnumerationOptions opts = 0;
+  //opts = NSAttributedStringEnumerationLongestEffectiveRangeNotRequired;
+  [mastr enumerateAttribute:KStyleElement::ClassAttributeName
+                    inRange:textRange
+                    options:opts
+                 usingBlock:^(id value, NSRange range, BOOL *stop) {
+    NSString const *symbol = value;
+    
+    // clear any formatter attributes
+    KStyleElement::clearAttributes(mastr, range);
+    // find current formatter for |elem|
+    KStyleElement* formatter = [self styleElementForSymbol:symbol];
+    // apply the formatters' style to |range|
+    if (formatter) {
+      formatter->applyAttributes(mastr, range);
+    }
+    //DLOG("%s %@", elem.c_str(), NSStringFromRange(range));
+  }];
+}
+
 
 @end

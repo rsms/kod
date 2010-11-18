@@ -206,8 +206,7 @@ NSString * const KHighlightStateAttribute = @"KHighlightState";
     if (highlighter) DLOG("gSharedInstances_ HIT %@", language);
     if (!highlighter) { DLOG("gSharedInstances_ MISS %@", language);
       language = [language internedString];
-      highlighter = [[self alloc] initWithLanguageFile:language
-                                             styleFile:@"default"];
+      highlighter = [[self alloc] initWithLanguageFile:language];
       [gSharedInstances_ setObject:highlighter forKey:language];
       [highlighter release];
     }
@@ -227,9 +226,9 @@ NSString * const KHighlightStateAttribute = @"KHighlightState";
 }
 
 
-- (id)initWithLanguageFile:(NSString*)langFile styleFile:(NSString*)styleFile {
+- (id)initWithLanguageFile:(NSString*)langFile {
   if ((self = [self init])) {
-    [self loadLanguageFile:langFile styleFile:styleFile];
+    [self loadLanguageFile:langFile];
   }
   return self;
 }
@@ -241,71 +240,6 @@ NSString * const KHighlightStateAttribute = @"KHighlightState";
   if (sourceHighlighter_)
     delete sourceHighlighter_;
   [super dealloc];
-}
-
-
-/**
- * Creates formatters (and use them to initialize the formatter manager),
- * by using the passed TextFormatterMap. This can be called only after
- * the highlighter was initialized through init().
- * @param formatterMap
- */
-/*- (void)setFormatters:(const KStyleElementMap &)formatterMap {
-  // For each element set this pointer (the formatters will later call setFormat
-  // on such pointer).
-  for (KStyleElementMap::const_iterator it = formatterMap.begin();
-       it != formatterMap.end(); ++it) {
-    KStyleElement *formatter = it->second.get();
-    formatter->setSyntaxHighlighter(self);
-    formatterManager_->addFormatter(it->first, it->second);
-    if (it->first == "normal")
-      formatterManager_->setDefaultFormatter(it->second);
-  }
-}*/
-
-
-- (void)reloadStyle {
-  K_DEPRECATED;
-  /*DLOG("reloading FormatterManager");
-  if (formatterManager_) {
-    if (sourceHighlighter_ &&
-        sourceHighlighter_->getFormatterManager() == formatterManager_) {
-      sourceHighlighter_->setFormatterManager(NULL);
-    }
-    delete formatterManager_;
-  }
-  KStyleElement *defaultFormatter = new KStyleElement("normal");
-  defaultFormatter->setSyntaxHighlighter(self);
-  formatterManager_ =
-      new srchilite::FormatterManager(KStyleElementPtr(defaultFormatter));
-  KTextFormatterFactory f;
-  //f.setDefaultToMonospace(isDefaultToMonospace());
-  
-  NSError *error = nil;
-  NSString *file = [isa pathForStyleFile:styleFile_ error:&error];
-  if (error) {
-    [NSApp presentError:error];
-  } else {
-    if (file)
-      self.styleFile = file;
-    [self setFormatters:
-        [isa textFormatterMapForFormatterFactory:f styleFile:styleFile_]];
-  }
-  
-  if (sourceHighlighter_)
-    sourceHighlighter_->setFormatterManager(formatterManager_);*/
-}
-
-
-/*- (void)loadStyleFile:(NSString*)file {
-  self.styleFile = file;
-  [self reloadStyle];
-}*/
-
-
-- (void)loadLanguageFile:(NSString*)langFile styleFile:(NSString*)styleFile {
-  //self.styleFile = styleFile;
-  [self loadLanguageFile:langFile];  // implies reloadStyle
 }
 
 
@@ -340,10 +274,6 @@ NSString * const KHighlightStateAttribute = @"KHighlightState";
     delete sourceHighlighter_;
   sourceHighlighter_ = new KSourceHighlighter(mainState, self);
   sourceHighlighter_->setFormatterParams(&formatterParams_);
-  
-  // reload FormatterManager
-  if (!formatterManager_)
-    [self reloadStyle];
 
   definitionFile_ = [file retain];
 }
@@ -351,33 +281,6 @@ NSString * const KHighlightStateAttribute = @"KHighlightState";
 
 #pragma mark -
 #pragma mark Formatting
-
-
-- (void)recolorMAString:(NSMutableAttributedString*)mastr {
-  NSRange textRange = NSMakeRange(0, mastr.length);
-  NSAttributedStringEnumerationOptions opts = 0;
-  //opts = NSAttributedStringEnumerationLongestEffectiveRangeNotRequired;
-  [mastr enumerateAttribute:KStyleElement::ClassAttributeName
-                    inRange:textRange
-                    options:opts
-                 usingBlock:^(id value, NSRange range, BOOL *stop) {
-    std::string elem;
-    [value populateStdString:elem
-               usingEncoding:NSUTF8StringEncoding
-                       range:NSMakeRange(0, [value length])];
-    
-    // clear any formatter attributes
-    KStyleElement::clearAttributes(mastr, range);
-    // find current formatter for |elem|
-    KStyleElement* formatter = dynamic_cast<KStyleElement*>(
-        formatterManager_->getFormatter(elem).get());
-    // apply the formatters' style to |range|
-    if (formatter) {
-      formatter->applyAttributes(mastr, range);
-    }
-    //DLOG("%s %@", elem.c_str(), NSStringFromRange(range));
-  }];
-}
 
 
 - (NSRange)highlightMAString:(NSMutableAttributedString*)mastr
@@ -753,21 +656,10 @@ static void _debugDumpHighlightEvent(const srchilite::HighlightEvent &event) {
   lastFormattedRange_ = range;
   lastFormattedState_ = nil;
   
-  // lookup style element for element type
-  KStyleElement *element = [currentStyle_ styleElementForSymbol:typeSymbol];
-  // Apply text attributes to range
-  if (element) {
-    [currentMAString_ setAttributes:element->textAttributes() range:range];
-    //[currentMAString_ addAttributes:element->textAttributes() range:range];
-    // Note: setAttributes is faster than addAttributes, but it replaces _any_
-    // attribute.
-  } else {
-    KStyleElement::clearAttributes(currentMAString_, range, true);
-  }
-  DLOG_state("format [%@] %@ '%@' <-- %@", typeSymbol,
-             NSStringFromRange(range),
-             [currentMAString_.string substringWithRange:range],
-             element ? element->textAttributes() : nil);
+  [currentStyle_ applyStyle:typeSymbol
+                 toMAString:currentMAString_
+                    inRange:range
+              byReplacement:YES]; // replacing is faster than adding
 }
 
 

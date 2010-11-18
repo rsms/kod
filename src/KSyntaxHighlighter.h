@@ -77,30 +77,18 @@ extern NSString * const KHighlightStateAttribute;
  * @param file the lang file of Source-highlight
  * @throws srchilite::ParserException
  */
-- (id)initWithLanguageFile:(NSString*)langFile styleFile:(NSString*)styleFile;
+- (id)initWithLanguageFile:(NSString*)langFile;
 
 /// Setup with definition |file|
 - (void)loadLanguageFile:(NSString*)file;
-
-/// Optimized method for loading both language definition and style
-- (void)loadLanguageFile:(NSString*)langFile styleFile:(NSString*)styleFile;
-
-/// Reload style
-- (void)reloadStyle;
 
 #pragma mark -
 #pragma mark Formatting
 
 /**
- * Update colors (call this after calling loadStyleFromFile: on an already
- * managed NSMutableAttributedString.
- */
-- (void)recolorMAString:(NSMutableAttributedString*)mastr;
-
-/**
  * Returns NSNotFound if the highlight state is stable, otherwise the position
- * of the last character highlighted is returned to indicate what should be
- * re-evaluated.
+ * of the last character highlighted is returned, indicating a new range which
+ * should be (re-)evaluated.
  */
 - (NSRange)highlightMAString:(NSMutableAttributedString*)mastr
                      inRange:(NSRange)range

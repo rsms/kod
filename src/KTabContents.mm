@@ -129,10 +129,10 @@ static int debugSimulateTextAppendingIteration = 0;
 
 
 - (void)debugReloadStyle:(id)x {
-  [self.syntaxHighlighter reloadStyle];
+  /*[self.syntaxHighlighter reloadStyle];
   [self performSelector:@selector(debugReloadStyle:)
              withObject:self
-             afterDelay:2.0];
+             afterDelay:2.0];*/
 }
 
 

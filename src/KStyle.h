@@ -1,5 +1,5 @@
-#import "KPtrHashTable.h"
-#import <boost/shared_ptr.hpp>
+#import "HUnorderedMap.h"
+#import <libkern/OSAtomic.h>
 #import <CSS/CSS.h>
 
 class KStyleElement;
@@ -16,7 +16,7 @@ typedef void (^KStyleLoadCallback)(NSError*, KStyle*);
   KStyleElement *catchAllElement_;
 
   /// Contains KStyleElement mapped by their string symbols.
-  KPtrHashTable<KStyleElement> elements_;
+  HUnorderedMapSharedPtr<NSString const*, KStyleElement> elements_;
   OSSpinLock elementsSpinLock_;
 }
 
@@ -53,5 +53,20 @@ typedef void (^KStyleLoadCallback)(NSError*, KStyle*);
  *       implied by any of the class methods, but not init methods).
  */
 - (KStyleElement*)styleElementForSymbol:(NSString const*)symbol;
+
+
+#pragma mark -
+#pragma mark Formatting
+
+/**
+ * Update colors in an already processed/colored NSMutableAttributedString.
+ * Intended to be called when style has changed.
+ */
+- (void)applyStyleToMAString:(NSMutableAttributedString*)mastr;
+
+- (void)applyStyle:(NSString const*)typeSymbol
+        toMAString:(NSMutableAttributedString*)mastr
+           inRange:(NSRange)range
+     byReplacement:(BOOL)replace;
 
 @end

@@ -19,7 +19,8 @@ static HighlightEvent defaultHighlightEvent(defaultHighlightToken,
                                             HighlightEvent::FORMATDEFAULT);
 
 /// avoid generate an event if there's no one listening
-#define GENERATE_EVENT(token, type) if (hasListeners()) notify(HighlightEvent(token, type));
+#define GENERATE_EVENT(token, type) \
+  if (hasListeners()) notify(HighlightEvent(token, type));
 
 #define GENERATE_DEFAULT_EVENT(s) \
 if (hasListeners()) { \
@@ -28,7 +29,8 @@ defaultHighlightToken.addMatched("default", s); \
 notify(defaultHighlightEvent); \
 }
 
-#define UPDATE_START_IN_FORMATTER_PARAMS(start_index) if (formatterParams) formatterParams->start = start_index;
+#define UPDATE_START_IN_FORMATTER_PARAMS(start_index) \
+  if (formatterParams) formatterParams->start = start_index;
 
 KSourceHighlighter::KSourceHighlighter(HighlightStatePtr mainState, KSyntaxHighlighter *syntaxHighlighter)
     : syntaxHighlighter_(syntaxHighlighter)

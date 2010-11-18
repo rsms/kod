@@ -28,6 +28,8 @@
 		3A25E4B71281AE3700B6A33E /* KStyleElement.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A25E4B61281AE3700B6A33E /* KStyleElement.mm */; };
 		3A25E6101281CFEF00B6A33E /* NSColor-web.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A25E60F1281CFEF00B6A33E /* NSColor-web.m */; };
 		3A4D50ED1282E40300B06EEB /* NSString-utf8-range-conv.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A4D50EC1282E40300B06EEB /* NSString-utf8-range-conv.m */; };
+		3A6D465F12946DA700DBA2A3 /* HObject.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A6D465E12946DA700DBA2A3 /* HObject.mm */; };
+		3A6D468A12947AF700DBA2A3 /* HUnorderedMap.cc in Sources */ = {isa = PBXBuildFile; fileRef = 3A6D468912947AF700DBA2A3 /* HUnorderedMap.cc */; };
 		3A7E71131286EAE800D85E4C /* BrowserWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3A7E71121286EAE800D85E4C /* BrowserWindow.xib */; };
 		3A7E71801286F44D00D85E4C /* KFileOutlineView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A7E717F1286F44D00D85E4C /* KFileOutlineView.mm */; };
 		3A7E71831286F54A00D85E4C /* KFileTextFieldCell.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A7E71821286F54A00D85E4C /* KFileTextFieldCell.mm */; };
@@ -83,21 +85,21 @@
 			isa = PBXContainerItemProxy;
 			containerPortal = 3AE5E8A912915ABA00B17C4F /* CSS.xcodeproj */;
 			proxyType = 2;
-			remoteGlobalIDString = 8DC2EF5B0486A6940098B216 /* CSS.framework */;
+			remoteGlobalIDString = 8DC2EF5B0486A6940098B216;
 			remoteInfo = CSS;
 		};
 		3AE5E8B412915ABA00B17C4F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 3AE5E8A912915ABA00B17C4F /* CSS.xcodeproj */;
 			proxyType = 2;
-			remoteGlobalIDString = 3AF14EFB128E083800623011 /* CSS Example.app */;
+			remoteGlobalIDString = 3AF14EFB128E083800623011;
 			remoteInfo = "CSS Example";
 		};
 		3AE5E8B612915AC600B17C4F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 3AE5E8A912915ABA00B17C4F /* CSS.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 8DC2EF4F0486A6940098B216 /* CSS */;
+			remoteGlobalIDString = 8DC2EF4F0486A6940098B216;
 			remoteInfo = CSS;
 		};
 /* End PBXContainerItemProxy section */
@@ -153,12 +155,16 @@
 		3A25E4B51281AE3700B6A33E /* KStyleElement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KStyleElement.h; sourceTree = "<group>"; };
 		3A25E4B61281AE3700B6A33E /* KStyleElement.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KStyleElement.mm; sourceTree = "<group>"; };
 		3A25E4FC1281B3D500B6A33E /* KHighlightStateData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KHighlightStateData.h; sourceTree = "<group>"; };
-		3A25E5331281B9DA00B6A33E /* KTextFormatterFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KTextFormatterFactory.h; sourceTree = "<group>"; };
-		3A25E5341281B9DA00B6A33E /* KTextFormatterFactory.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KTextFormatterFactory.mm; sourceTree = "<group>"; };
 		3A25E60E1281CFEF00B6A33E /* NSColor-web.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSColor-web.h"; sourceTree = "<group>"; };
 		3A25E60F1281CFEF00B6A33E /* NSColor-web.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSColor-web.m"; sourceTree = "<group>"; };
 		3A4D50EB1282E40300B06EEB /* NSString-utf8-range-conv.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString-utf8-range-conv.h"; sourceTree = "<group>"; };
 		3A4D50EC1282E40300B06EEB /* NSString-utf8-range-conv.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString-utf8-range-conv.m"; sourceTree = "<group>"; };
+		3A6D465D12946DA700DBA2A3 /* HObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HObject.h; sourceTree = "<group>"; };
+		3A6D465E12946DA700DBA2A3 /* HObject.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = HObject.mm; sourceTree = "<group>"; };
+		3A6D468812947AF700DBA2A3 /* HUnorderedMap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HUnorderedMap.h; sourceTree = "<group>"; };
+		3A6D468912947AF700DBA2A3 /* HUnorderedMap.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = HUnorderedMap.cc; sourceTree = "<group>"; };
+		3A6D468F12947B6000DBA2A3 /* HSpinLock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HSpinLock.h; sourceTree = "<group>"; };
+		3A6D47431294950700DBA2A3 /* HObjCPtr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HObjCPtr.h; sourceTree = "<group>"; };
 		3A7E71121286EAE800D85E4C /* BrowserWindow.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = BrowserWindow.xib; sourceTree = "<group>"; };
 		3A7E717E1286F44D00D85E4C /* KFileOutlineView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KFileOutlineView.h; sourceTree = "<group>"; };
 		3A7E717F1286F44D00D85E4C /* KFileOutlineView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KFileOutlineView.mm; sourceTree = "<group>"; };
@@ -272,8 +278,6 @@
 				3A159684128C432800339E6E /* KStyle.mm */,
 				3A25E4B51281AE3700B6A33E /* KStyleElement.h */,
 				3A25E4B61281AE3700B6A33E /* KStyleElement.mm */,
-				3A25E5331281B9DA00B6A33E /* KTextFormatterFactory.h */,
-				3A25E5341281B9DA00B6A33E /* KTextFormatterFactory.mm */,
 			);
 			name = "syntax-highlight";
 			sourceTree = "<group>";
@@ -314,7 +318,7 @@
 				3A92911D1229B9D500DA7E43 /* KToolbarController.mm */,
 				3AE5EA551292B2D000B17C4F /* KConfig.h */,
 				3AE5EA561292B2D000B17C4F /* KConfig.mm */,
-				3AE5E8D112916F3300B17C4F /* Data structures */,
+				3AE5E8D112916F3300B17C4F /* Base */,
 				3AE5E8D212916F4100B17C4F /* NS categories */,
 				3AE5E8D012916F2500B17C4F /* NSView subclasses */,
 				3A158AD3128A09D300339E6E /* ICU */,
@@ -386,13 +390,19 @@
 			name = "NSView subclasses";
 			sourceTree = "<group>";
 		};
-		3AE5E8D112916F3300B17C4F /* Data structures */ = {
+		3AE5E8D112916F3300B17C4F /* Base */ = {
 			isa = PBXGroup;
 			children = (
+				3A6D465D12946DA700DBA2A3 /* HObject.h */,
+				3A6D465E12946DA700DBA2A3 /* HObject.mm */,
+				3A6D47431294950700DBA2A3 /* HObjCPtr.h */,
+				3A6D468F12947B6000DBA2A3 /* HSpinLock.h */,
+				3A6D468812947AF700DBA2A3 /* HUnorderedMap.h */,
+				3A6D468912947AF700DBA2A3 /* HUnorderedMap.cc */,
 				3AE5E8CC12916F1100B17C4F /* KPtrHashTable.h */,
 				3AE5E8CD12916F1100B17C4F /* KPtrHashTable.cc */,
 			);
-			name = "Data structures";
+			name = Base;
 			sourceTree = "<group>";
 		};
 		3AE5E8D212916F4100B17C4F /* NS categories */ = {
@@ -557,6 +567,8 @@
 				3AE5E8CE12916F1100B17C4F /* KPtrHashTable.cc in Sources */,
 				3AE5EA571292B2D000B17C4F /* KConfig.mm in Sources */,
 				3AE5ECB61292F7B800B17C4F /* KThread.mm in Sources */,
+				3A6D465F12946DA700DBA2A3 /* HObject.mm in Sources */,
+				3A6D468A12947AF700DBA2A3 /* HUnorderedMap.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
