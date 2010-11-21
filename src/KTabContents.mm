@@ -9,6 +9,7 @@
 #import "KScrollView.h"
 #import "KLangMap.h"
 
+
 @interface KTabContents (Private)
 - (void)undoManagerCheckpoint:(NSNotification*)notification;
 @end
@@ -472,9 +473,10 @@ static int debugSimulateTextAppendingIteration = 0;
   
   while (YES) {
     NSUInteger maxLength = mastr.length;
-    NSDictionary *attrs = [mastr attributesAtIndex:index
-                             longestEffectiveRange:&range
-                                           inRange:NSMakeRange(0, maxLength)];
+    [mastr attribute:KStyleElement::ClassAttributeName
+             atIndex:index
+longestEffectiveRange:&range
+             inRange:NSMakeRange(0, maxLength)];
     
     // trim left
     NSRange r = [text rangeOfCharactersFromSet:cs
@@ -522,9 +524,10 @@ static int debugSimulateTextAppendingIteration = 0;
 
   while (YES) {
     NSUInteger maxLength = mastr.length;
-    NSDictionary *attrs = [mastr attributesAtIndex:index
-                             longestEffectiveRange:&range
-                                           inRange:NSMakeRange(0, maxLength)];
+    [mastr attribute:KStyleElement::ClassAttributeName
+             atIndex:index
+longestEffectiveRange:&range
+             inRange:NSMakeRange(0, maxLength)];
 
     // beginning of document?
     if (selectedRange.location == 0 && range.location == 0 &&
@@ -582,7 +585,7 @@ static int debugSimulateTextAppendingIteration = 0;
                      inRange:(NSRange)range
               waitUntilReady:(BOOL)wait {
   //NSLog(@"highlightTextStorage");
-  if (textStorage.length == 0)
+  /*if (textStorage.length == 0)
     return;
   if (wait) {
     if (sourceHighlightSem_->get() != 0L) {
@@ -590,41 +593,20 @@ static int debugSimulateTextAppendingIteration = 0;
     }
   } else if (sourceHighlightSem_->tryGet() != 0L) {
     return;
-  }
-
-  if ([NSThread isMainThread]) {
-    sourceHighlighter_->highlight(textStorage, style_, range);
-    sourceHighlightSem_->put();
-    hasPendingInitialHighlighting_ = NO;
-  } else {
-    //NSLog(@"highlighting on bg thread...");
-    sourceHighlighter_->beginBufferingOfAttributes();
-    sourceHighlighter_->highlight(textStorage, style_, range);
-    //NSLog(@"highlighting on bg thread DONE");
-    K_DISPATCH_MAIN_ASYNC(
-      //NSLog(@"flushing attributes on main thread...");
-      //
-      // TODO: This is very slow since it involves emitting thousands of edits.
-      // We should continue and create a usable subclass of NSTextStorage
-      // (already work in progress at KTextStorage) in which we can coalesce all
-      // edits into one single edit.
-      //
-      // Further, in a custom subclass KTextStorage we should be able to perform
-      // similar editing coalescing
-      //
-      sourceHighlighter_->endFlushBufferedAttributes(textStorage);
-      sourceHighlightSem_->put();
-      hasPendingInitialHighlighting_ = NO;
-      //NSLog(@"flushing attributes on main thread DONE");
-    );
-  }
+  }*/
+  
+  [textStorage beginEditing];
+  sourceHighlighter_->highlight(textStorage, style_, range);
+  hasPendingInitialHighlighting_ = NO;
+  [textStorage endEditing];
+  //sourceHighlightSem_->put();
 }
 
 
 - (void)queueCompleteHighlighting {
   if (!hasPendingInitialHighlighting_) {
     hasPendingInitialHighlighting_ = YES;
-    DLOG(@"queueCompleteHighlighting");
+    DLOG("queueCompleteHighlighting");
     K_DISPATCH_BG_ASYNC({ [self highlightCompleteDocument]; });
   }
 }
@@ -644,10 +626,10 @@ static int debugSimulateTextAppendingIteration = 0;
   
   // Syntax highlight preamble
   if (!hasPendingInitialHighlighting_) {
-    if (sourceHighlightSem_->tryGet() == 0L) {
+    //if (sourceHighlightSem_->tryGet() == 0L) {
       sourceHighlighter_->willHighlight(textStorage, editedRange);
-      sourceHighlightSem_->put();
-    }
+    //  sourceHighlightSem_->put();
+    //}
   }
 }
 
