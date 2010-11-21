@@ -16,7 +16,7 @@
  *
  * Common pattern for retain/release:
  *
- *   [h_objc_swap(&[member_ retain], newobj) release];
+ *   [h_objc_swap(&member_, [newobj retain]) release];
  */
 inline id h_objc_swap(id volatile *dst, id src) {
   id old;

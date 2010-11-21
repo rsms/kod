@@ -1,5 +1,4 @@
 #import "KStyleElement.h"
-#import "KSyntaxHighlighter.h"
 #import "NSColor-web.h"
 #import "NSString-intern.h"
 #import "KLangSymbol.h"
@@ -55,7 +54,7 @@ void KStyleElement::clearAttributes(NSMutableAttributedString *astr,
 }
 
 
-KStyleElement::KStyleElement(NSString *name) : syntaxHighlighter_(NULL) {
+KStyleElement::KStyleElement(NSString *name) {
   NSString const *symbol = [name internedString];
   textAttributes_ = [[NSMutableDictionary alloc] initWithObjectsAndKeys:
       baseFont(), NSFontAttributeName,
@@ -64,7 +63,6 @@ KStyleElement::KStyleElement(NSString *name) : syntaxHighlighter_(NULL) {
 }
 
 KStyleElement::~KStyleElement() {
-  objc_exch(&syntaxHighlighter_, nil);
   objc_exch(&textAttributes_, nil);
 }
 

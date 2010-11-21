@@ -1,3 +1,7 @@
+# @matchext html, htm, shtml, xhtml, phtml, php, inc, tmpl, tpl, ctp
+# #@matchname moc, cpp, C, cc, h, hh, H, hpp
+# @matchfirstline <!DOCTYPE|<(?i:html)|<\?(?i:php)
+	
 # deal with embedded CSS
 state keyword = "<style" nonsensitive begin
     include "key_string.lang"

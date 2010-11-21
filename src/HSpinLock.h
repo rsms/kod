@@ -20,16 +20,13 @@ class HSpinLock {
     Scope(Scope const &);
     Scope & operator=( Scope const & );
    public:
-    explicit Scope(HSpinLock & sl, bool _l=true) : sl_(sl) { if(_l) sl.lock(); }
+    explicit Scope(HSpinLock & sl) : sl_(sl) { sl.lock(); }
     ~Scope() { sl_.unlock(); }
   };
 };
 
 /**
  * Critical section helper.
- *
- * Note that this is a light-weight construct which does not handle premature
- * break, like a return statement.
  *
  * Example:
  *

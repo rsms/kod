@@ -62,6 +62,7 @@ unsigned const ICUUnicodeWordBoundaries = UREGEX_UWORD;
 	UParseError err;
 	UErrorCode status = 0;
 	UChar *regexStr = [aPattern UTF16String];
+  // uregex_open copies regexStr
 	URegularExpression *e = uregex_open(regexStr, -1, flags, &err, &status);
 
 	if(U_FAILURE(status)) {
@@ -163,18 +164,27 @@ unsigned const ICUUnicodeWordBoundaries = UREGEX_UWORD;
 
 -(NSString *)description {
 
-	if([self re] != NULL) {
+	if (re != NULL) {
 		UChar *p = NULL;
 		UErrorCode status = 0;
-		int len = 0;
-		p = (UChar *)uregex_pattern([self re], &len, &status);
+		int32_t len = 0;
+		p = (UChar *)uregex_pattern(re, &len, &status);
 
 		if(U_FAILURE(status)) {
-			[NSException raise:@"Pattern Exception"
-						format:@"Could not get pattern text from pattern."];
+			[NSException raise:@"ICUPatternException"
+                  format:@"Could not get pattern text from pattern."];
 		}
-
-		return [[NSString alloc] initWithBytes:p length:len encoding:[NSString nativeUTF16Encoding]];
+    
+    // nasty bug in libicu where len is not properly set
+    if (len == -1) {
+      // the string is null terminated, so fast-forward until null
+      len = 0;
+      unichar *ptr = p;
+      for (; *ptr++; );
+      len = ptr-p;
+    }
+    
+    return [NSString stringWithCharacters:p length:len];
 	}
 
 	return nil;

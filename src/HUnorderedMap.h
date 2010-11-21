@@ -1,6 +1,8 @@
 #ifndef H_UNORDERED_MAP_
 #define H_UNORDERED_MAP_
 
+#import <tr1/functional>
+#import <tr1/hashtable>
 #import <tr1/unordered_map>
 
 // You can define this as 0 to disable atomic *Sync methods (and drop HSpinLock

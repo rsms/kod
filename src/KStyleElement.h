@@ -3,8 +3,6 @@
 #import <srchilite/formatter.h>
 #import <srchilite/formatterfactory.h>
 
-@class KSyntaxHighlighter;
-
 /**
  * Constitutes the text attributes for a specific language element.
  *
@@ -19,9 +17,6 @@
  */
 class KStyleElement : public srchilite::Formatter {
  protected:
-  /// reference to related KSyntaxHighlighter
-  KSyntaxHighlighter *syntaxHighlighter_;
-  
   NSMutableDictionary *textAttributes_;
 
  public:
@@ -37,10 +32,6 @@ class KStyleElement : public srchilite::Formatter {
 
   /// the language element represented by this formatter
   NSString *symbol();
-
-  inline void setSyntaxHighlighter(KSyntaxHighlighter *syntaxHighlighter) {
-    objc_exch(&syntaxHighlighter_, syntaxHighlighter);
-  }
   
   /// Set the style of this formatter
   void setStyle(srchilite::StyleConstantsPtr style);

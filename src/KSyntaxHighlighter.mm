@@ -264,7 +264,7 @@ NSString * const KHighlightStateAttribute = @"KHighlightState";
     if (!sourceHighlighter_) {
       // make sure sourceHighlighter_ is valid
       mainState.reset(new srchilite::HighlightState());
-      sourceHighlighter_ = new KSourceHighlighter(mainState, self);
+      sourceHighlighter_ = new KSourceHighlighter(mainState);
     }
     [NSApp presentError:error]; // FIXME pass by reference or something
     return;
@@ -272,7 +272,7 @@ NSString * const KHighlightStateAttribute = @"KHighlightState";
   
   if (sourceHighlighter_)
     delete sourceHighlighter_;
-  sourceHighlighter_ = new KSourceHighlighter(mainState, self);
+  sourceHighlighter_ = new KSourceHighlighter(mainState);
   sourceHighlighter_->setFormatterParams(&formatterParams_);
 
   definitionFile_ = [file retain];

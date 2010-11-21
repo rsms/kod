@@ -1,8 +1,9 @@
 #import "HUnorderedMap.h"
+#import "KStyleElement.h"
+
 #import <libkern/OSAtomic.h>
 #import <CSS/CSS.h>
 
-class KStyleElement;
 @class KStyle;
 
 extern NSString const * KStyleDidChangeNotification;

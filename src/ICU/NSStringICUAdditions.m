@@ -87,7 +87,7 @@ typedef struct URegularExpression URegularExpression;
 
 -(void *)copyUTF16String {
 	unsigned int length = [self length];
-	UChar *utf16String = malloc((length+1)*sizeof(UChar));
+	unichar *utf16String = malloc((length+1)*sizeof(unichar));
 	[self getCharacters: utf16String];
 	utf16String[length] = 0;
 	return utf16String;

@@ -53,15 +53,15 @@ inline static void *k_swapptr(void * volatile *dst, void *src) {
   return old;
 }
 
-
-
+#import "kexceptions.h"
 #import "NSString-utf8-range-conv.h"
 #import "NSString-cpp.h"
 #import "NSString-intern.h"
 #import "NSString-ranges.h"
 #import "NSError+KAdditions.h"
 #import "NSColor-web.h"
-#import "dsem-scope.hh"
+#import "NSCharacterSet-kod.h"
+#import "HSemaphore.h"
 #import "h-objc.h"
 
 #endif  // K_COMMON_H_

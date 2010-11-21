@@ -1,5 +1,4 @@
 #import "KStyle.h"
-#import "KStyleElement.h"
 #import "KThread.h"
 #import "KConfig.h"
 
@@ -31,12 +30,12 @@ static css_error css_node_has_class(void *pw, void *n, lwc_string *name,
 
 static NSMutableDictionary *gInstancesDict_; // [urlstr => KStyle]
 static NSMutableDictionary *gInstanceLoadQueueDict_; // [urlstr => block]
-static dispatch_semaphore_t gInstancesSemaphore_; // 1/0 = unlocked/locked
+static HSemaphore gInstancesSemaphore_(1); // 1/0 = unlocked/locked
 
 static css_select_handler gCSSHandler;
 
 static CSSStylesheet* gBaseStylesheet_ = nil;
-static dispatch_semaphore_t gBaseStylesheetSemaphore_;
+static HSemaphore gBaseStylesheetSemaphore_(1);
 
 static KStyle *gEmptyStyle_ = nil;
 
@@ -46,16 +45,12 @@ static KStyle *gEmptyStyle_ = nil;
   // instances
   gInstancesDict_ = [NSMutableDictionary new];
   gInstanceLoadQueueDict_ = [NSMutableDictionary new];
-  gInstancesSemaphore_ = dispatch_semaphore_create(1);
 
   // CSS select handler
   CSSSelectHandlerInitToBase(&gCSSHandler);
   gCSSHandler.node_name = &css_node_name;
   gCSSHandler.node_has_name = &css_node_has_name;
   gCSSHandler.node_has_class = &css_node_has_class;
-  
-  // Base stylesheet
-  gBaseStylesheetSemaphore_ = dispatch_semaphore_create(1);
   
   // Empty style
   gEmptyStyle_ =
@@ -77,7 +72,7 @@ static KStyle *gEmptyStyle_ = nil;
 + (CSSStylesheet*)baseStylesheet {
   // Maybe: in the future, this should be a computed with regards to the current
   // editor background color.
-  KSemaphoreScope dss(gBaseStylesheetSemaphore_);
+  HSemaphore::Scope dss(gBaseStylesheetSemaphore_);
   if (!gBaseStylesheet_) {
     NSData *data = [@"body { color:#fff; }" dataUsingEncoding:NSUTF8StringEncoding];
     gBaseStylesheet_ = [[CSSStylesheet alloc] initWithURL:nil];
@@ -100,7 +95,7 @@ static void _loadStyle_finalize(NSString const *key, KStyle *style,
                                 NSError* err) {
   DLOG("finalize key %@, style %@, err %@", key, style, err);
   NSMutableSet *callbacks;
-  KSemaphoreSection(gInstancesSemaphore_) {
+  HSemaphoreSection(gInstancesSemaphore_) {
     if (style) {
       [gInstancesDict_ setObject:style forKey:key];
     }
@@ -181,7 +176,7 @@ static void _loadStyle(NSURL* url) {
       withCallback:(void(^)(NSError*,KStyle*))callback {
   assert(callback != 0);
   // scoped critical section
-  KSemaphoreScope dss(gInstancesSemaphore_);
+  HSemaphore::Scope dss(gInstancesSemaphore_);
   
   // key for global dicts
   NSString *key = [url absoluteString];
@@ -317,6 +312,7 @@ static inline void _freeElementsMapTable(NSMapTable **elements) {
 - (void)applyStyle:(NSString const*)typeSymbol
         toMAString:(NSMutableAttributedString*)mastr
            inRange:(NSRange)range
+    //withAttributes:(NSDictionary*)extraAttrs
      byReplacement:(BOOL)replace {
   // lookup style element for element type
   KStyleElement *element = [self styleElementForSymbol:typeSymbol];
@@ -324,7 +320,11 @@ static inline void _freeElementsMapTable(NSMapTable **elements) {
 
   // Set text attributes
   if (element) {
-    [mastr setAttributes:element->textAttributes() range:range];
+    NSDictionary *attrs = element->textAttributes();
+    /*if (extraAttrs) {
+      attrs = [attrs ]
+    }*/
+    [mastr setAttributes:attrs range:range];
     //[currentMAString_ addAttributes:element->textAttributes() range:range];
     // Note: setAttributes is faster than addAttributes, but it replaces _any_
     // attribute.

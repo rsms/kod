@@ -1,12 +1,13 @@
 #import "common.h"
+#import "KConfig.h"
 #import "KTabContents.h"
 #import "KBrowser.h"
 #import "KBrowserWindowController.h"
-#import "KSyntaxHighlighter.h"
+#import "KSourceHighlighter.h"
 #import "KStyle.h"
 #import "KScroller.h"
 #import "KScrollView.h"
-
+#import "KLangMap.h"
 
 @interface KTabContents (Private)
 - (void)undoManagerCheckpoint:(NSNotification*)notification;
@@ -52,7 +53,7 @@ static NSFont* _kDefaultFont = nil;
 
 
 // things which MUST execute on the main thread.
-- (void)_initOnMain {
+/*- (void)_initOnMain {
   if (![NSThread isMainThread]) {
     K_DISPATCH_MAIN_ASYNC({ [self _initOnMain]; });
     return;
@@ -64,18 +65,17 @@ static NSFont* _kDefaultFont = nil;
          selector:@selector(textStorageDidProcessEditing:)
              name:NSTextStorageDidProcessEditingNotification
 					 object:[textView_ textStorage]];
+	[nc addObserver:self
+         selector:@selector(textStorageWillProcessEditing:)
+             name:NSTextStorageWillProcessEditingNotification
+					 object:[textView_ textStorage]];
 
   // Observe when the document is modified so we can update the UI accordingly
 	[nc addObserver:self
          selector:@selector(undoManagerCheckpoint:)
              name:NSUndoManagerCheckpointNotification
 					 object:undoManager_];
-
-  // XXX DEBUG
-  #if !NDEBUG
-  //[self debugSimulateTextAppending:self];
-  #endif
-}
+}*/
 
 
 // XXX DEBUG
@@ -113,29 +113,6 @@ static int debugSimulateTextAppendingIteration = 0;
 }
 
 
-- (void)debugSimulateSwitchStyle:(id)x {
-  #if 0  // load an alternative style
-  KSyntaxHighlighter* syntaxHighlighter = self.syntaxHighlighter;  // lazy
-  [syntaxHighlighter loadStyleFile:@"bright"];
-  [syntaxHighlighter recolorTextStorage:textView_.textStorage];
-  #endif
-  
-  #if 0  // reload style every 2 seconds
-  [self performSelector:@selector(debugReloadStyle:)
-             withObject:self
-             afterDelay:2.0];
-  #endif
-}
-
-
-- (void)debugReloadStyle:(id)x {
-  /*[self.syntaxHighlighter reloadStyle];
-  [self performSelector:@selector(debugReloadStyle:)
-             withObject:self
-             afterDelay:2.0];*/
-}
-
-
 // This is the main initialization method
 - (id)initWithBaseTabContents:(CTTabContents*)baseContents {
   // Note: This might be called from a background thread and must thus be
@@ -146,15 +123,28 @@ static int debugSimulateTextAppendingIteration = 0;
   // Default title and icon
   self.title = _kDefaultTitle;
   self.icon = _kDefaultIcon;
+  
+  // 1=unlocked, 0=locked
+  sourceHighlightSem_ = new HSemaphore(1);
 
   // Set other default values
   textEncoding_ = NSUTF8StringEncoding;
+  
+  // Default highlighter
+  sourceHighlighter_.reset(new KSourceHighlighter);
 
   // Save a weak reference to the undo manager (performance reasons)
   undoManager_ = [self undoManager]; assert(undoManager_);
 
   // Create a NSTextView
   textView_ = [[NSTextView allocWithZone:zone] initWithFrame:NSZeroRect];
+  
+  // Create text storage
+  //KTextStorage *textStorage = [[KTextStorage alloc] init];
+  //textView_.layoutManager.textStorage = textStorage;
+  //[textStorage release];
+  
+  // Setup text view
   [textView_ setDelegate:self];
   [textView_ setAllowsUndo:YES];
   [textView_ setFont:[isa defaultFont]];
@@ -208,17 +198,78 @@ static int debugSimulateTextAppendingIteration = 0;
   // Default style
   style_ = [[KStyle emptyStyle] retain];
   [KStyle defaultStyleWithCallback:^(NSError *err, KStyle *style) {
-    if (err) [NSApp presentError:err];
-    else DLOG("yay -- style %@ loaded", style);
+    if (err) {
+      [NSApp presentError:err];
+      return;
+    }
+    DLOG("style %@ loaded", style);
     self.style = style;
   }];
 
   // Let the global document controller know we came to life
   [[NSDocumentController sharedDocumentController] addDocument:self];
   
-  [self _initOnMain];
+  // Observe when the document is modified so we can update the UI accordingly
+  NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
+	[nc addObserver:self
+         selector:@selector(undoManagerCheckpoint:)
+             name:NSUndoManagerCheckpointNotification
+					 object:undoManager_];
+
+  // register as text storage delegate
+  textView_.textStorage.delegate = self;
 
   return self;
+}
+
+
+- (id)initWithContentsOfURL:(NSURL *)absoluteURL
+                     ofType:(NSString *)typeName
+                      error:(NSError **)outError {
+  // This may be called by a background thread
+  DLOG_TRACE();
+  self = [self initWithBaseTabContents:nil];
+  assert(self);
+  DLOG_EXPR(absoluteURL);
+  DLOG_EXPR(typeName);
+  self = [super initWithContentsOfURL:absoluteURL
+                               ofType:typeName
+                                error:outError];
+  return self;
+}
+
+
+- (void)dealloc {
+  if (style_) {
+    NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
+    [nc removeObserver:self
+                  name:KStyleDidChangeNotification
+                object:style_];
+    [style_ release];
+  }
+  delete sourceHighlightSem_;
+  sourceHighlightSem_ = NULL;
+  [super dealloc];
+}
+
+
+- (NSString*)langId {
+  return langId_;
+}
+
+- (void)setLangId:(NSString*)langId {
+  if (langId_ != langId) {
+    langId_ = [langId retain];
+    DLOG("%@ changed langId to '%@'", self, langId_);
+    if (sourceHighlighter_->setLanguage(langId_)) {
+      [self queueCompleteHighlighting];
+    }
+  }
+}
+
+
+- (NSMutableParagraphStyle*)paragraphStyle {
+  return (NSMutableParagraphStyle*)textView_.defaultParagraphStyle;
 }
 
 
@@ -244,75 +295,6 @@ static int debugSimulateTextAppendingIteration = 0;
     [old release];
   }
   // don't reload style here
-}
-
-
-- (id)initWithContentsOfURL:(NSURL *)absoluteURL
-                     ofType:(NSString *)typeName
-                      error:(NSError **)outError {
-  // This may be called by a background thread
-  DLOG_TRACE();
-  self = [self initWithBaseTabContents:nil];
-  assert(self);
-  DLOG_EXPR(absoluteURL);
-  DLOG_EXPR(typeName);
-  self = [super initWithContentsOfURL:absoluteURL
-                               ofType:typeName
-                                error:outError];
-  if (self) {
-    // Defer highlighting
-    // TODO: only if highlighting is active
-    K_DISPATCH_MAIN_ASYNC({
-      [self queueCompleteHighlighting:self];
-    });
-  } else assert(outError && *outError);
-  
-  return self;
-}
-
-
-- (void)dealloc {
-  [syntaxHighlighter_ release];
-  if (style_) {
-    NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
-    [nc removeObserver:self
-                  name:KStyleDidChangeNotification
-                object:style_];
-    [style_ release];
-  }
-  [super dealloc];
-}
-
-
-- (NSMutableParagraphStyle*)paragraphStyle {
-  return (NSMutableParagraphStyle*)textView_.defaultParagraphStyle;
-}
-
-
-- (KSyntaxHighlighter*)syntaxHighlighter {
-  if (!syntaxHighlighter_) {
-    /*if (![NSThread isMainThread]) {
-      // have the code run in the main thread
-      K_DISPATCH_MAIN_SYNC({ [self syntaxHighlighter]; });
-      // return the object created on main
-      return syntaxHighlighter_;
-    }*/
-    NSString *lang = nil;
-    NSURL *url = [self fileURL];
-    if (url) {
-      NSString *filename = [[url path] lastPathComponent];
-      lang = [KSyntaxHighlighter languageFileForFilename:filename];
-    }
-    // default lang file
-    if (!lang || lang.length == 0) {
-      lang = @"default";
-    } else {
-      lang = [lang stringByDeletingPathExtension];
-    }
-    syntaxHighlighter_ = [KSyntaxHighlighter highlighterForLanguage:lang];
-    [syntaxHighlighter_ retain];
-  }
-  return syntaxHighlighter_;
 }
 
 
@@ -596,68 +578,76 @@ static int debugSimulateTextAppendingIteration = 0;
 }
 
 
-- (void)queueCompleteHighlighting:(id)sender {
-  assert(hasPendingInitialHighlighting_ == NO);
-  hasPendingInitialHighlighting_ = YES;
-  DLOG("queueCompleteHighlighting");
-  K_DISPATCH_BG_ASYNC({ [self highlightCompleteDocument:sender]; });
+- (void)highlightTextStorage:(NSTextStorage*)textStorage
+                     inRange:(NSRange)range
+              waitUntilReady:(BOOL)wait {
+  //NSLog(@"highlightTextStorage");
+  if (textStorage.length == 0)
+    return;
+  if (wait) {
+    if (sourceHighlightSem_->get() != 0L) {
+      return;
+    }
+  } else if (sourceHighlightSem_->tryGet() != 0L) {
+    return;
+  }
+
+  if ([NSThread isMainThread]) {
+    sourceHighlighter_->highlight(textStorage, style_, range);
+    sourceHighlightSem_->put();
+    hasPendingInitialHighlighting_ = NO;
+  } else {
+    //NSLog(@"highlighting on bg thread...");
+    sourceHighlighter_->beginBufferingOfAttributes();
+    sourceHighlighter_->highlight(textStorage, style_, range);
+    //NSLog(@"highlighting on bg thread DONE");
+    K_DISPATCH_MAIN_ASYNC(
+      //NSLog(@"flushing attributes on main thread...");
+      //
+      // TODO: This is very slow since it involves emitting thousands of edits.
+      // We should continue and create a usable subclass of NSTextStorage
+      // (already work in progress at KTextStorage) in which we can coalesce all
+      // edits into one single edit.
+      //
+      // Further, in a custom subclass KTextStorage we should be able to perform
+      // similar editing coalescing
+      //
+      sourceHighlighter_->endFlushBufferedAttributes(textStorage);
+      sourceHighlightSem_->put();
+      hasPendingInitialHighlighting_ = NO;
+      //NSLog(@"flushing attributes on main thread DONE");
+    );
+  }
 }
 
 
-- (void)highlightCompleteDocument:(id)sender {
-  NSTextStorage *textStorage = textView_.textStorage;
-  NSMutableAttributedString *mastr = textStorage;
-  
-  // this is a no-op unless we got style
-  if (!style_) return;
-  
-  // if we are not on main we need to create a copy of the text storage to avoid
-  // pthread mutex deadlocks.
-  if (![NSThread isMainThread]) {
-    mastr = [[NSMutableAttributedString alloc] initWithAttributedString:mastr];
+- (void)queueCompleteHighlighting {
+  if (!hasPendingInitialHighlighting_) {
+    hasPendingInitialHighlighting_ = YES;
+    DLOG(@"queueCompleteHighlighting");
+    K_DISPATCH_BG_ASYNC({ [self highlightCompleteDocument]; });
   }
+}
+
+
+- (void)highlightCompleteDocument {
+  static NSRange range = NSMakeRange(NSNotFound, 0);
+  [self highlightTextStorage:textView_.textStorage
+                     inRange:range
+              waitUntilReady:YES];
+}
+
+
+- (void)textStorageWillProcessEditing:(NSNotification *)notification {
+  NSTextStorage	*textStorage = notification.object;
+  NSRange	editedRange = [textStorage editedRange];
   
-  if ([textStorage length]) {
-    NSDate *date = [NSDate date];
-    KSyntaxHighlighter *syntaxHighlighter = self.syntaxHighlighter;
-    assert(syntaxHighlighter != nil);
-    NSRange range = NSMakeRange(NSNotFound, 0);
-    [syntaxHighlighter highlightMAString:mastr
-                                 inRange:range
-                              deltaRange:range
-                               withStyle:style_];
-    double rt = [[NSDate date] timeIntervalSince1970] - [date timeIntervalSince1970];
-    NSLog(@"real: %.4f ms", rt*1000.0);
-  }
-  
-  // if we where forced to make a copy of the text, swap it back
-  if (mastr != textStorage) {
-    K_DISPATCH_MAIN_ASYNC({
-      NSArray *selectedRanges = textView_.selectedRanges;
-      [textStorage replaceCharactersInRange:NSMakeRange(0, textStorage.length)
-                       withAttributedString:mastr];
-      //[mastr release]; // this causes double frees... wtf?!
-      @try {
-        textView_.selectedRanges = selectedRanges;
-      } @catch (id e) {
-        WLOG("gracefully failed to restore selections after hardcore "
-             "background highlighting action");
-        // in this case the text changed length which is a used action and not
-        // a serious error. Just the selection which is (partially) lost.
-      }
-      hasPendingInitialHighlighting_ = NO;
-    });
-  } else if (hasPendingInitialHighlighting_) {
-    K_DISPATCH_MAIN_ASYNC({
-      hasPendingInitialHighlighting_ = NO; // FIXME run in main
-    });
-    
-    //NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
-    // NSObject emit, on ...
-    
-    //[self on:@"highlightComplete", ^{
-    //  hasPendingInitialHighlighting_ = NO;
-    //}]
+  // Syntax highlight preamble
+  if (!hasPendingInitialHighlighting_) {
+    if (sourceHighlightSem_->tryGet() == 0L) {
+      sourceHighlighter_->willHighlight(textStorage, editedRange);
+      sourceHighlightSem_->put();
+    }
   }
 }
 
@@ -667,22 +657,24 @@ static int debugSimulateTextAppendingIteration = 0;
 
   // We sometimes initialize documents on background threads where the initial
   // "filling" causes this method to be called. We're a noop in that case.
-  if (![NSThread isMainThread]) return;
+  if (isProcessingTextStorageEdit_ || ![NSThread isMainThread])
+    return;
 
   NSTextStorage	*textStorage = [notification object];
-	NSRange	range = [textStorage editedRange];
+	NSRange	editedRange = [textStorage editedRange];
 	int	changeInLen = [textStorage changeInLength];
   if (changeInLen == 0) {
-    // text attributes changed -- not interesting for this code branch
+    // text attributes changed -- not interested
     return;
   }
-  NSUInteger textLength = textStorage.length;
-  BOOL completeDocument = (range.location == 0 &&
-                           range.length == textLength);
+  
+  isProcessingTextStorageEdit_ = YES;
+  
   BOOL wasInUndoRedo = [[self undoManager] isUndoing] ||
                        [[self undoManager] isRedoing];
-  DLOG("range: %@, changeInLen: %d, wasInUndoRedo: %@",
-       NSStringFromRange(range), changeInLen, wasInUndoRedo ? @"YES":@"NO");
+  DLOG("editedRange: %@, changeInLen: %d, wasInUndoRedo: %@",
+       NSStringFromRange(editedRange), changeInLen,
+       wasInUndoRedo ? @"YES":@"NO");
 
   // mark as dirty if not already dirty
   if (!isDirty_) {
@@ -690,146 +682,46 @@ static int debugSimulateTextAppendingIteration = 0;
   }
   
   // Syntax highlight
-  if (!hasPendingInitialHighlighting_ && textLength != 0 && style_) {
-    KSyntaxHighlighter *syntaxHighlighter = self.syntaxHighlighter;
-    if (syntaxHighlighter && syntaxHighlighter.currentMAString == nil) {
-      NSRange highlightRange, deltaRange;
-      NSString *text = [textStorage string];
-      if (completeDocument) {
-        //DLOG(@"COMPLETE");
-        highlightRange = NSMakeRange(NSNotFound, 0); // whole document
-        deltaRange = highlightRange;
-      } else {
-        /*if (range.length != 1 || [text characterAtIndex:range.location] != '\n') {
-          // unless newline
-          highlightRange = [text lineRangeForRange:range];
-        } else {
-          highlightRange = range;
-        }*/
-        NSRange maxRange = NSMakeRange(0, text.length);
-        NSUInteger index = range.location;
-        if (index > 0) index--;
-        [textStorage attribute:KStyleElement::ClassAttributeName
-                       atIndex:index
-         longestEffectiveRange:&highlightRange
-                       inRange:maxRange];
-        highlightRange = NSUnionRange(range, highlightRange);
-        
-        if (range.location > 0 && range.location < maxRange.length-1) {
-          index = range.location + 1;
-          NSRange highlightRange2;
-          [textStorage attribute:KStyleElement::ClassAttributeName
-                         atIndex:index
-           longestEffectiveRange:&highlightRange2
-                         inRange:maxRange];
-          
-          highlightRange = NSUnionRange(highlightRange, highlightRange2);
-          
-          //
-          // --experimental line extension BEGIN--
-          //
-          // This is the case when NOT using line extension:
-          //   1. initial state:  "void foo(int a) {"
-          //   2. we break "foo": "void fo o(int a) {"
-          //   3. "fo o" gets re-highlighted and correctly receives the "norma"
-          //      format.
-          //   4. we remove the space we added to foo, thus the line become:
-          //      "void foo(int a) {"
-          //   5. "foo" gets re-highlighted, but since the highlighter determine
-          //      element type (format) from _context_ "foo" will incorrectly
-          //      receive the "normal" format rather than the "function" format.
-          //
-          // By including the full line we ensure the highlighter will at least
-          // have some context to work with. This is far from optimal and should
-          // work in one of the following ways:
-          //
-          //   a. Expanding the range to include one different element (not
-          //      counting whitespace/newlines) in each direction, thus the
-          //      above use-case would include "void foo(" at step 4.
-          //
-          //   b. Use a special text attribute (like how state is tracked with
-          //      KHighlightState) which replaces the current
-          //      KStyleElement::ClassAttributeName symbol representing the
-          //      format. Maybe a struct e.g:
-          //
-          //        KTextFormat {
-          //           NSString *symbol;
-          //           int numberOfPreDependants;
-          //           int numberOfPostDependants;
-          //        }
-          //
-          //      Where |numberOfPreDependants| indicates how many elements this
-          //      format need to consider when being modified, then when
-          //      breaking such an element (step 2. in our use-case above) the
-          //      highlighter applies the following calculation to the new
-          //      format struct ("normal" in our use-case):
-          //
-          //        newFormat.numberOfPreDependants = 
-          //          MAX(newFormat.numberOfPreDependants,
-          //              previousFormat.numberOfPreDependants);
-          //
-          //      Thus, when we later cut out the " " (space) -- as illustrated
-          //      by step 4. in the above use-case -- the highlighter will look
-          //      at enough context. Maybe.
-          //
-          // When there is time, I should probably try to implement (a.).
-          // However, it's not a guarantee [find previous non-empty element,
-          // find next non-empty element, highlight subrange] is a cheaper
-          // operation than [find line range, highlight subrange] -- depends on
-          // how element scanning is implemented I guess.
-          //
-          highlightRange2 = [text lineRangeForRange:highlightRange];
-          highlightRange = NSUnionRange(highlightRange, highlightRange2);
-          // skip LF
-          //NSUInteger end = highlightRange.location + highlightRange.length;
-          //if (end < maxRange.length && [text characterAtIndex:end] == '\n') {
-          //  highlightRange.length--;
-          //}
-          //
-          // --experimental line extension END--
-          //
-        }
-        
-        deltaRange = range;
-      }
-
-      DLOG_RANGE(highlightRange, text);
-
-      NSRange nextRange = NSMakeRange(0, 0);
-      NSUInteger textEnd = [textStorage length];
-      while (nextRange.location != textEnd) {
-        nextRange = [syntaxHighlighter highlightMAString:textStorage
-                                                 inRange:highlightRange
-                                              deltaRange:deltaRange
-                                               withStyle:style_];
-        //[textStorage ensureAttributesAreFixedInRange:highlightRange];
-        if (nextRange.location == textEnd) {
-          DLOG("info: code tree is incomplete (open state at end of document)");
-          break;
-        } else if (nextRange.location == NSNotFound) {
-          break;
-        }
-        deltaRange = nextRange;
-        if (deltaRange.length == 0) {
-          deltaRange = [text lineRangeForRange:deltaRange];
-          //DLOG("adjusted deltaRange to line: %@", NSStringFromRange(deltaRange));
-        }
-        // adjust one line break backward
-        if (deltaRange.location > 1) {
-          deltaRange.location -= 1;
-          deltaRange.length += 1;
-        }
-        DLOG_EXPR(deltaRange);
-        highlightRange = deltaRange;
-      }
-    }
-  }
-  
+  if (!hasPendingInitialHighlighting_) {
+    [self highlightTextStorage:textStorage
+                       inRange:editedRange
+                waitUntilReady:NO];
+  };
   
   // this makes the edit an undoable entry (otherwise each "group" of edits will
   // be undoable, which is not fine-grained enough for us)
   [textView_ breakUndoCoalescing];
+  
+  isProcessingTextStorageEdit_ = NO;
 }
+
+
+
+- (void)guessLanguageBasedOnUTI:(NSString*)uti textContent:(NSString*)text {
+  KLangMap *langMap = [KLangMap sharedLangMap];
+  NSString *firstLine = nil;
+  
+  // find first line
+  if (text) {
+    NSRange firstNewlineRange =
+        [text rangeOfCharacterFromSet:[NSCharacterSet newlineCharacterSet]];
+    // limit to 1k (the file might lack newlines) since we make a copy and
+    // because the underlying mechanism uses somewhat slow regexp.
+    if (firstNewlineRange.location != NSNotFound) {
+      NSUInteger stopIndex = MIN(1024, firstNewlineRange.location);
+      firstLine = [text substringToIndex:stopIndex];
+    } else if (text.length <= 1024) {
+      firstLine = text;
+    } else {
+      firstLine = [text substringToIndex:1024];
+    }
+  }
+  
+  self.langId = [langMap langIdForSourceURL:self.fileURL
+                                    withUTI:uti
+                       consideringFirstLine:firstLine];
+}
+
 
 // Generate data from text
 - (NSData*)dataOfType:(NSString*)typeName error:(NSError **)outError {
@@ -843,6 +735,7 @@ static int debugSimulateTextAppendingIteration = 0;
   return data;
 }
 
+
 // Generate text from data
 - (BOOL)readFromData:(NSData *)data
               ofType:(NSString *)typeName
@@ -850,7 +743,7 @@ static int debugSimulateTextAppendingIteration = 0;
   NSString *text = [[NSString alloc] initWithData:data encoding:textEncoding_];
   if (!text) {
     WLOG("Failed to parse data. text => nil (data length: %u)", [data length]);
-    *outError = [NSError kodErrorWithDescription:@"Failed to parse data"];
+    *outError = [NSError kodErrorWithDescription:@"Failed to parse file"];
     return NO;
   } else {
     [textView_ setString:text];
@@ -858,6 +751,11 @@ static int debugSimulateTextAppendingIteration = 0;
     [textView_ setSelectedRange:NSMakeRange(0, 0)];
     [self updateChangeCount:NSChangeCleared];
     isDirty_ = NO;
+    
+    // guess language if no language has been set
+    if (!langId_)
+      [self guessLanguageBasedOnUTI:typeName textContent:text];
+    
     return YES;
   }
 }

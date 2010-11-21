@@ -6,14 +6,18 @@
 #include <stack>
 #include <sstream>
 #include <boost/shared_ptr.hpp>
+#import "HUnorderedMap.h"
+#import "KTextStorage.h"
 
-#include <srchilite/highlightstate.h>
 #include <srchilite/eventgenerator.h>
+#include <srchilite/highlightstate.h>
 
-@class KSyntaxHighlighter;
+class KSourceHighlighter;
+@class KSourceHighlightState, KStyle;
 
 namespace srchilite {
 class FormatterManager;
+class LangDefManager;
 struct HighlightToken;
 struct FormatterParams;
 class HighlightEventListener;
@@ -22,6 +26,13 @@ struct HighlightEvent;
 
 typedef std::stack<srchilite::HighlightStatePtr> KHighlightStateStack;
 typedef boost::shared_ptr<KHighlightStateStack> KHighlightStateStackPtr;
+typedef boost::shared_ptr<KSourceHighlighter> KSourceHighlighterPtr;
+
+// map { state id -> KSourceHighlightState* }
+typedef HUnorderedMapObjC<unsigned int> KSourceHighlightStateMap;
+
+// NSAttributedString attribute reflecting a srchilite::HighlightState
+extern NSString * const KSourceHighlightStateAttribute;
 
 /**
  * The main class performing the highlighting of a single line.
@@ -35,46 +46,28 @@ typedef boost::shared_ptr<KHighlightStateStack> KHighlightStateStackPtr;
  * same object can be used to highlight, for instance, an entire file, by
  * calling highlightParagraph on each line.
  */
-class KSourceHighlighter :
-    public srchilite::EventGenerator<srchilite::HighlightEventListener,
-                                     srchilite::HighlightEvent> {
-  /// Parent highlighter
-  __weak KSyntaxHighlighter *syntaxHighlighter_;
+class KSourceHighlighter {
+  
+  // ---------------------------------------
 
   /// the main (and initial) highlight state
-  srchilite::HighlightStatePtr mainHighlightState;
+  srchilite::HighlightStatePtr mainHighlightState_;
   
   /// the current highlight state
-  srchilite::HighlightStatePtr currentHighlightState;
+  srchilite::HighlightStatePtr currentHighlightState_;
+  //KSourceHighlightState *currentHighlightState_;
   
   /// the stack for the highlight states
   KHighlightStateStackPtr stateStack;
   
-  /// the formatter manager, used to format element strings
-  // TODO: remove this -- we don't need or use it
-  const srchilite::FormatterManager *formatterManager;
-  
-  /**
-   * Whether formatting is currently suspended.  Note that matching for
-   * regular expressions is not suspended: only the actual output of formatted
-   * code is suspended.
-   */
-  bool suspended;
-  
-  /**
-   * Additional parameters for the formatters
-   */
+  /// Additional parameters for the formatters
   srchilite::FormatterParams *formatterParams;
   
-  /**
-   * The current element being formatted (used for optmization and buffering)
-   */
-  std::string currentElement;
+  /// interned string used for cache lookup etc.
+  NSString const *langId_;
   
-  /**
-   * The buffer for the text for the current element
-   */
-  std::ostringstream currentElementBuffer;
+  /// Maps state id -> KSourceHighlightState instances
+  KSourceHighlightStateMap sourceHighlightStateMap_;
   
   /**
    * Enters a new state (using the stack)
@@ -98,15 +91,9 @@ class KSourceHighlighter :
    * performs reference replacement)
    * @param token
    */
-  srchilite::HighlightStatePtr
-  getNextState(const srchilite::HighlightToken &token);
+  srchilite::HighlightStatePtr getNextState(
+      const srchilite::HighlightToken &token);
   
-  /**
-   * Formats the given string as the specified element
-   * @param elem
-   * @param s
-   */
-  void format(const std::string &elem, const std::string &s);
   
   /**
    * Makes sure to flush the possible buffer of the current element
@@ -114,66 +101,83 @@ class KSourceHighlighter :
    */
   void flush();
   
+  /**
+   * Replace state and clear the stack if needed.
+   * Returns true if state changed.
+   */
+  bool setState(const srchilite::HighlightStatePtr &newState);
+  
+  // -----------------------------
+  // highlighting support
+  
+  KTextStorage *textStorage_; // weak
+  KStyle *style_; // weak
+  NSString *text_; // weak
+  NSRange fullRange_;
+  std::string *paragraph_; // weak
+  bool paragraphIsMultibyte_;
+  bool receivedWillHighlight_;
+  
+  NSMutableArray *attributesBuffer_;
+  
+  // current matched range
+  NSRange matchRange_;
+  
+  void highlightLine(std::string::const_iterator &paragraphStart,
+                     std::string::const_iterator &start,
+                     std::string::const_iterator &end,
+                     srchilite::MatchingParameters &mParams);
+  
+  NSRange calcOptimalRange(NSRange editedRange);
+  id rangeOfLangElement(NSUInteger index, NSRange &range);
+  
+  inline NSRange matchUnicodeRange() {
+    if (paragraphIsMultibyte_) {
+      return [NSString UTF16RangeFromUTF8Range:matchRange_
+                                  inUTF8String:paragraph_->data()
+                                      ofLength:paragraph_->size()];
+    } else {
+      return matchRange_;
+    }
+  }
+  
  public:
+  
   /**
    * @param mainState the main and initial state for highlighting
    */
-  KSourceHighlighter(srchilite::HighlightStatePtr mainState,
-                     KSyntaxHighlighter *syntaxHighlighter);
+  KSourceHighlighter();
   ~KSourceHighlighter();
+  
+  bool setLanguage(NSString const *langId, NSURL *url=NULL);
   
   /**
    * Highlights a paragraph (a line actually)
    * @param paragraph
    */
-  void highlightParagraph(const std::string &paragraph);
-  
-  srchilite::HighlightStatePtr getCurrentState() const {
-    return currentHighlightState;
-  }
-  
-  void setCurrentState(srchilite::HighlightStatePtr state) {
-    currentHighlightState = state;
-  }
-  
-  KHighlightStateStackPtr getStateStack() {
-    return stateStack;
-  }
-  
-  void setStateStack(KHighlightStateStackPtr state) {
-    stateStack = state;
-  }
+  void format(const std::string &elem);
   
   /**
    * Clears the statck of states
    */
   void clearStateStack();
   
+  bool beginBufferingOfAttributes();
+  void bufferAttributes(NSDictionary *attrs, NSRange range);
+  void endFlushBufferedAttributes(NSTextStorage *textStorage);
+  
   srchilite::HighlightStatePtr getMainState() const {
-    return mainHighlightState;
-  }
-  
-  // TODO: remove
-  const srchilite::FormatterManager *getFormatterManager() const {
-    return formatterManager;
-  }
-  
-  // TODO: remove
-  void setFormatterManager(const srchilite::FormatterManager *_formatterManager) {
-    formatterManager = _formatterManager;
+    return mainHighlightState_;
   }
   
   void setFormatterParams(srchilite::FormatterParams *p) {
     formatterParams = p;
   }
   
-  bool isSuspended() const {
-    return suspended;
-  }
+  // ---------------------------------------------------------------
   
-  void setSuspended(bool b = true) {
-    suspended = b;
-  }
+  void willHighlight(NSTextStorage *textStorage, NSRange editedRange);
+  void highlight(NSTextStorage *textStorage, KStyle *style, NSRange editRange);
 };
 
 #endif K_SOURCE_HIGHLIGHTER_H_

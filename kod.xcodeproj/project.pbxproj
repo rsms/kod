@@ -20,7 +20,6 @@
 		3A15949F128B83F100339E6E /* NSString-cpp.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A15949E128B83F100339E6E /* NSString-cpp.mm */; };
 		3A159629128C3BCB00339E6E /* KSourceHighlighter.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A159628128C3BCB00339E6E /* KSourceHighlighter.mm */; };
 		3A159685128C432800339E6E /* KStyle.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A159684128C432800339E6E /* KStyle.mm */; };
-		3A25E479128194B400B6A33E /* KSyntaxHighlighter.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A25E478128194B400B6A33E /* KSyntaxHighlighter.mm */; };
 		3A25E47B1281A6A200B6A33E /* libboost_regex-mt.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A25E47A1281A6A200B6A33E /* libboost_regex-mt.dylib */; };
 		3A25E47D1281A6A700B6A33E /* libsource-highlight.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A25E47C1281A6A700B6A33E /* libsource-highlight.dylib */; };
 		3A25E4971281A9D300B6A33E /* libsource-highlight.dylib in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 3A25E47C1281A6A700B6A33E /* libsource-highlight.dylib */; };
@@ -30,6 +29,10 @@
 		3A4D50ED1282E40300B06EEB /* NSString-utf8-range-conv.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A4D50EC1282E40300B06EEB /* NSString-utf8-range-conv.m */; };
 		3A6D465F12946DA700DBA2A3 /* HObject.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A6D465E12946DA700DBA2A3 /* HObject.mm */; };
 		3A6D468A12947AF700DBA2A3 /* HUnorderedMap.cc in Sources */ = {isa = PBXBuildFile; fileRef = 3A6D468912947AF700DBA2A3 /* HUnorderedMap.cc */; };
+		3A6D4A3B1295781D00DBA2A3 /* KLangManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A6D4A3A1295781D00DBA2A3 /* KLangManager.mm */; };
+		3A6D4B05129591F300DBA2A3 /* kexceptions.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A6D4B04129591F300DBA2A3 /* kexceptions.m */; };
+		3A6D4B681295A85400DBA2A3 /* KLangMap.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A6D4B671295A85400DBA2A3 /* KLangMap.mm */; };
+		3A6D4D6B1295F0BA00DBA2A3 /* NSCharacterSet-kod.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A6D4D6A1295F0BA00DBA2A3 /* NSCharacterSet-kod.m */; };
 		3A7E71131286EAE800D85E4C /* BrowserWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3A7E71121286EAE800D85E4C /* BrowserWindow.xib */; };
 		3A7E71801286F44D00D85E4C /* KFileOutlineView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A7E717F1286F44D00D85E4C /* KFileOutlineView.mm */; };
 		3A7E71831286F54A00D85E4C /* KFileTextFieldCell.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A7E71821286F54A00D85E4C /* KFileTextFieldCell.mm */; };
@@ -49,6 +52,9 @@
 		3A9293CC1229ED4C00DA7E43 /* KDocumentController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A9293CB1229ED4C00DA7E43 /* KDocumentController.mm */; };
 		3A929886122AC38F00DA7E43 /* ChromiumTabs.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A9297E4122AB49D00DA7E43 /* ChromiumTabs.framework */; };
 		3A929887122AC39100DA7E43 /* ChromiumTabs.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 3A9297E4122AB49D00DA7E43 /* ChromiumTabs.framework */; };
+		3AC2D3FD1298C40A0066B586 /* KSourceHighlightState.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3AC2D3FC1298C40A0066B586 /* KSourceHighlightState.mm */; };
+		3AC2D4A71298D8050066B586 /* KTextStorage.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3AC2D4A61298D8050066B586 /* KTextStorage.mm */; };
+		3AC4FADC1296D049004CDCFD /* KLangMapLinePattern.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3AC4FADB1296D049004CDCFD /* KLangMapLinePattern.mm */; };
 		3AE5E5171290955000B17C4F /* kod.icns in Resources */ = {isa = PBXBuildFile; fileRef = 3AE5E5161290955000B17C4F /* kod.icns */; };
 		3AE5E8B812915AD900B17C4F /* CSS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3AE5E8B312915ABA00B17C4F /* CSS.framework */; };
 		3AE5E8CE12916F1100B17C4F /* KPtrHashTable.cc in Sources */ = {isa = PBXBuildFile; fileRef = 3AE5E8CD12916F1100B17C4F /* KPtrHashTable.cc */; };
@@ -146,7 +152,7 @@
 		3A159628128C3BCB00339E6E /* KSourceHighlighter.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KSourceHighlighter.mm; sourceTree = "<group>"; };
 		3A159683128C432800339E6E /* KStyle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KStyle.h; sourceTree = "<group>"; };
 		3A159684128C432800339E6E /* KStyle.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KStyle.mm; sourceTree = "<group>"; };
-		3A15968A128C501C00339E6E /* dsem-scope.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = "dsem-scope.hh"; sourceTree = "<group>"; };
+		3A15968A128C501C00339E6E /* HSemaphore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HSemaphore.h; sourceTree = "<group>"; };
 		3A1596E5128C607700339E6E /* h-objc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "h-objc.h"; sourceTree = "<group>"; };
 		3A25E477128194B400B6A33E /* KSyntaxHighlighter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSyntaxHighlighter.h; sourceTree = "<group>"; };
 		3A25E478128194B400B6A33E /* KSyntaxHighlighter.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KSyntaxHighlighter.mm; sourceTree = "<group>"; };
@@ -165,6 +171,14 @@
 		3A6D468912947AF700DBA2A3 /* HUnorderedMap.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = HUnorderedMap.cc; sourceTree = "<group>"; };
 		3A6D468F12947B6000DBA2A3 /* HSpinLock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HSpinLock.h; sourceTree = "<group>"; };
 		3A6D47431294950700DBA2A3 /* HObjCPtr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HObjCPtr.h; sourceTree = "<group>"; };
+		3A6D4A391295781D00DBA2A3 /* KLangManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KLangManager.h; sourceTree = "<group>"; };
+		3A6D4A3A1295781D00DBA2A3 /* KLangManager.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KLangManager.mm; sourceTree = "<group>"; };
+		3A6D4B03129591F300DBA2A3 /* kexceptions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = kexceptions.h; sourceTree = "<group>"; };
+		3A6D4B04129591F300DBA2A3 /* kexceptions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = kexceptions.m; sourceTree = "<group>"; };
+		3A6D4B661295A85400DBA2A3 /* KLangMap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KLangMap.h; sourceTree = "<group>"; };
+		3A6D4B671295A85400DBA2A3 /* KLangMap.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KLangMap.mm; sourceTree = "<group>"; };
+		3A6D4D691295F0BA00DBA2A3 /* NSCharacterSet-kod.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSCharacterSet-kod.h"; sourceTree = "<group>"; };
+		3A6D4D6A1295F0BA00DBA2A3 /* NSCharacterSet-kod.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSCharacterSet-kod.m"; sourceTree = "<group>"; };
 		3A7E71121286EAE800D85E4C /* BrowserWindow.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = BrowserWindow.xib; sourceTree = "<group>"; };
 		3A7E717E1286F44D00D85E4C /* KFileOutlineView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KFileOutlineView.h; sourceTree = "<group>"; };
 		3A7E717F1286F44D00D85E4C /* KFileOutlineView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KFileOutlineView.mm; sourceTree = "<group>"; };
@@ -199,6 +213,12 @@
 		3A9293661229E49A00DA7E43 /* NSError+KAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSError+KAdditions.m"; sourceTree = "<group>"; };
 		3A9293CA1229ED4C00DA7E43 /* KDocumentController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KDocumentController.h; sourceTree = "<group>"; };
 		3A9293CB1229ED4C00DA7E43 /* KDocumentController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KDocumentController.mm; sourceTree = "<group>"; };
+		3AC2D3FB1298C40A0066B586 /* KSourceHighlightState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSourceHighlightState.h; sourceTree = "<group>"; };
+		3AC2D3FC1298C40A0066B586 /* KSourceHighlightState.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KSourceHighlightState.mm; sourceTree = "<group>"; };
+		3AC2D4A51298D8050066B586 /* KTextStorage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KTextStorage.h; sourceTree = "<group>"; };
+		3AC2D4A61298D8050066B586 /* KTextStorage.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KTextStorage.mm; sourceTree = "<group>"; };
+		3AC4FADA1296D049004CDCFD /* KLangMapLinePattern.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KLangMapLinePattern.h; sourceTree = "<group>"; };
+		3AC4FADB1296D049004CDCFD /* KLangMapLinePattern.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KLangMapLinePattern.mm; sourceTree = "<group>"; };
 		3AE5E5161290955000B17C4F /* kod.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = kod.icns; path = icon/kod.icns; sourceTree = "<group>"; };
 		3AE5E8A912915ABA00B17C4F /* CSS.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = CSS.xcodeproj; path = "deps/libcss/cocoa-framework/CSS.xcodeproj"; sourceTree = "<group>"; };
 		3AE5E8CC12916F1100B17C4F /* KPtrHashTable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KPtrHashTable.h; sourceTree = "<group>"; };
@@ -272,8 +292,16 @@
 				3AF14D1F128D928A00623011 /* KLangSymbol.mm */,
 				3AF14C40128D792F00623011 /* KLangRegexRuleFactory.h */,
 				3AF14C41128D792F00623011 /* KLangRegexRuleFactory.mm */,
+				3A6D4B661295A85400DBA2A3 /* KLangMap.h */,
+				3A6D4B671295A85400DBA2A3 /* KLangMap.mm */,
+				3AC4FADA1296D049004CDCFD /* KLangMapLinePattern.h */,
+				3AC4FADB1296D049004CDCFD /* KLangMapLinePattern.mm */,
+				3A6D4A391295781D00DBA2A3 /* KLangManager.h */,
+				3A6D4A3A1295781D00DBA2A3 /* KLangManager.mm */,
 				3A159627128C3BCB00339E6E /* KSourceHighlighter.h */,
 				3A159628128C3BCB00339E6E /* KSourceHighlighter.mm */,
+				3AC2D3FB1298C40A0066B586 /* KSourceHighlightState.h */,
+				3AC2D3FC1298C40A0066B586 /* KSourceHighlightState.mm */,
 				3A159683128C432800339E6E /* KStyle.h */,
 				3A159684128C432800339E6E /* KStyle.mm */,
 				3A25E4B51281AE3700B6A33E /* KStyleElement.h */,
@@ -299,7 +327,8 @@
 			children = (
 				3A92912B1229BB5100DA7E43 /* prefix.pch */,
 				3A159448128B7B9500339E6E /* common.h */,
-				3A15968A128C501C00339E6E /* dsem-scope.hh */,
+				3A6D4B03129591F300DBA2A3 /* kexceptions.h */,
+				3A6D4B04129591F300DBA2A3 /* kexceptions.m */,
 				3A1596E5128C607700339E6E /* h-objc.h */,
 				3A928C16122714E800DA7E43 /* main.m */,
 				3AE5ECB41292F7B800B17C4F /* KThread.h */,
@@ -314,6 +343,8 @@
 				3A9292981229D31200DA7E43 /* KBrowserWindowController.mm */,
 				3A9291191229B96A00DA7E43 /* KTabContents.h */,
 				3A92911A1229B96A00DA7E43 /* KTabContents.mm */,
+				3AC2D4A51298D8050066B586 /* KTextStorage.h */,
+				3AC2D4A61298D8050066B586 /* KTextStorage.mm */,
 				3A92911C1229B9D500DA7E43 /* KToolbarController.h */,
 				3A92911D1229B9D500DA7E43 /* KToolbarController.mm */,
 				3AE5EA551292B2D000B17C4F /* KConfig.h */,
@@ -397,6 +428,7 @@
 				3A6D465E12946DA700DBA2A3 /* HObject.mm */,
 				3A6D47431294950700DBA2A3 /* HObjCPtr.h */,
 				3A6D468F12947B6000DBA2A3 /* HSpinLock.h */,
+				3A15968A128C501C00339E6E /* HSemaphore.h */,
 				3A6D468812947AF700DBA2A3 /* HUnorderedMap.h */,
 				3A6D468912947AF700DBA2A3 /* HUnorderedMap.cc */,
 				3AE5E8CC12916F1100B17C4F /* KPtrHashTable.h */,
@@ -420,6 +452,8 @@
 				3A15936A128B619800339E6E /* NSString-intern.m */,
 				3A15949D128B83F100339E6E /* NSString-cpp.h */,
 				3A15949E128B83F100339E6E /* NSString-cpp.mm */,
+				3A6D4D691295F0BA00DBA2A3 /* NSCharacterSet-kod.h */,
+				3A6D4D6A1295F0BA00DBA2A3 /* NSCharacterSet-kod.m */,
 			);
 			name = "NS categories";
 			sourceTree = "<group>";
@@ -534,6 +568,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3AE5EA571292B2D000B17C4F /* KConfig.mm in Sources */,
 				3A9291C51229BF7500DA7E43 /* main.m in Sources */,
 				3A9291C61229BFAD00DA7E43 /* KAppDelegate.mm in Sources */,
 				3A9291C71229BFB000DA7E43 /* KBrowser.mm in Sources */,
@@ -542,7 +577,6 @@
 				3A9292991229D31200DA7E43 /* KBrowserWindowController.mm in Sources */,
 				3A9293671229E49A00DA7E43 /* NSError+KAdditions.m in Sources */,
 				3A9293CC1229ED4C00DA7E43 /* KDocumentController.mm in Sources */,
-				3A25E479128194B400B6A33E /* KSyntaxHighlighter.mm in Sources */,
 				3A25E4B71281AE3700B6A33E /* KStyleElement.mm in Sources */,
 				3A25E6101281CFEF00B6A33E /* NSColor-web.m in Sources */,
 				3A4D50ED1282E40300B06EEB /* NSString-utf8-range-conv.m in Sources */,
@@ -565,10 +599,16 @@
 				3AF14C42128D792F00623011 /* KLangRegexRuleFactory.mm in Sources */,
 				3AF14D20128D928A00623011 /* KLangSymbol.mm in Sources */,
 				3AE5E8CE12916F1100B17C4F /* KPtrHashTable.cc in Sources */,
-				3AE5EA571292B2D000B17C4F /* KConfig.mm in Sources */,
 				3AE5ECB61292F7B800B17C4F /* KThread.mm in Sources */,
 				3A6D465F12946DA700DBA2A3 /* HObject.mm in Sources */,
 				3A6D468A12947AF700DBA2A3 /* HUnorderedMap.cc in Sources */,
+				3A6D4A3B1295781D00DBA2A3 /* KLangManager.mm in Sources */,
+				3A6D4B05129591F300DBA2A3 /* kexceptions.m in Sources */,
+				3A6D4B681295A85400DBA2A3 /* KLangMap.mm in Sources */,
+				3A6D4D6B1295F0BA00DBA2A3 /* NSCharacterSet-kod.m in Sources */,
+				3AC4FADC1296D049004CDCFD /* KLangMapLinePattern.mm in Sources */,
+				3AC2D3FD1298C40A0066B586 /* KSourceHighlightState.mm in Sources */,
+				3AC2D4A71298D8050066B586 /* KTextStorage.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -5,6 +5,7 @@ class KConfiguration {
  public:
   KConfiguration();
   ~KConfiguration();
+  void init();
 
   NSBundle*        bundle;
   NSUserDefaults*  defaults;
@@ -12,19 +13,19 @@ class KConfiguration {
   NSURL*           resourceURL_;
 
   // defaults getters
-  BOOL          getBool(NSString* key) const;
-  int           getInt(NSString* key) const;
-  float         getFloat(NSString* key) const;
-  double        getDouble(NSString* key) const;
-  NSArray*      getArray(NSString* key, NSArray* def=nil) const;
-  NSArray*      getStrings(NSString* key, NSArray* def=nil) const;
-  NSData*       getData(NSString* key, NSData* def=nil) const;
-  NSDictionary* getDict(NSString* key, NSDictionary* def=nil) const;
-  NSString*     getString(NSString* key, NSString* def=nil) const;
-  NSURL*        getURL(NSString* key, NSURL* def=nil) const;
-  NSColor*      getColor(NSString* key, NSColor* def=nil) const;
-  id            get(NSString* key, id def=nil) const;
-  inline id operator[] (NSString* key) const { return get(key); }
+  BOOL          getBool(NSString* key);
+  int           getInt(NSString* key);
+  float         getFloat(NSString* key);
+  double        getDouble(NSString* key);
+  NSArray*      getArray(NSString* key, NSArray* def=nil);
+  NSArray*      getStrings(NSString* key, NSArray* def=nil);
+  NSData*       getData(NSString* key, NSData* def=nil);
+  NSDictionary* getDict(NSString* key, NSDictionary* def=nil);
+  NSString*     getString(NSString* key, NSString* def=nil);
+  NSURL*        getURL(NSString* key, NSURL* def=nil);
+  NSColor*      getColor(NSString* key, NSColor* def=nil);
+  id            get(NSString* key, id def=nil);
+  inline id operator[] (NSString* key) { return get(key); }
 
   // defaults setters
   void set(NSString* key, BOOL v);
@@ -38,6 +39,7 @@ class KConfiguration {
 
   // resources
   NSURL* resourceURL(NSString* relpath);
+  NSString* resourcePath(NSString* relpath);
 
  protected:
   static KConfiguration const *instance_;
@@ -49,7 +51,7 @@ extern KConfiguration KConfig;
 // inline implementations
 
 #define iimpl_getter(T, N, M) \
-  inline T KConfiguration::get##N(NSString* key) const { \
+  inline T KConfiguration::get##N(NSString* key) { \
     return [defaults M##ForKey:key]; }
 iimpl_getter(BOOL, Bool, bool)
 iimpl_getter(int, Int, integer)
@@ -57,7 +59,7 @@ iimpl_getter(float, Float, float)
 iimpl_getter(double, Double, double)
 #undef iimpl_getter
 #define iimpl_getter(T, N, M) \
-  inline T KConfiguration::get##N(NSString* key, T def) const { \
+  inline T KConfiguration::get##N(NSString* key, T def) { \
     T v = [defaults M##ForKey:key]; return v ? v : def; }
 iimpl_getter(NSArray*, Array, array)
 iimpl_getter(NSArray*, Strings, stringArray)
@@ -65,7 +67,7 @@ iimpl_getter(NSData*, Data, data)
 iimpl_getter(NSDictionary*, Dict, dictionary)
 iimpl_getter(NSString*, String, string)
 iimpl_getter(NSURL*, URL, URL)
-inline id KConfiguration::get(NSString* key, id def) const {
+inline id KConfiguration::get(NSString* key, id def) {
   id v = [defaults objectForKey:key]; return v ? v : def;
 }
 #undef iimpl_getter

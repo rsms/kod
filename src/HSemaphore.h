@@ -26,7 +26,7 @@ class HSemaphore {
   }
   
   /// Like wait, but returns immediately
-  inline long tryGet() { return wait(DISPATCH_TIME_NOW); }
+  inline long tryGet() { return get(DISPATCH_TIME_NOW); }
   
   /// Signals (increments) a semaphore.
   /// Returns non-zero if a thread is woken. Otherwise, zero is returned.
@@ -51,9 +51,6 @@ class HSemaphore {
 /**
  * Critical section helper.
  *
- * Note that this is a light-weight construct which does not handle premature
- * break, like a return statement.
- *
  * Example:
  *
  *   HSemaphore sem;
@@ -66,7 +63,7 @@ class HSemaphore {
  *
  */
 #define HSemaphoreSection(sem) \
-  for (_HSemaphoreSectionScope __ksss(sem); __ksss.getOnce() ; )
+  for (_HSemaphoreSectionScope _hssectscope(sem); _hssectscope.getOnce() ; )
 // See HSpinLock.h for a description of the algorithm
 
 
@@ -83,13 +80,6 @@ class _HSemaphoreSectionScope {
     return (used_ = true);
   }
 };
-
-__attribute__((constructor)) void __HSemaphore_init() {
-  HSemaphore sem;
-  HSemaphoreSection(sem) {
-    // lkalala
-  }
-}
 
 
 
