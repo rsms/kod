@@ -941,21 +941,45 @@ longestEffectiveRange:&range
       static size_t bufsize = 512;
       char *buf = new char[bufsize];
       
-      key = "com.apple.TextEncoding"; // "utf-8;12345"
+      key = "com.apple.TextEncoding";
+      // The value is a string "utf-8;134217984" where the last part (if
+      // present) is a CFStringEncoding encoded in base-10.
       if ((readsz = fgetxattr(fd, key, (void*)buf, bufsize, 0, 0)) < 0) {
-        WLOG("failed to read xattr '%s' from '%@'", key, path);
+        DLOG("failed to read xattr '%s' from '%@'", key, path);
       } else if (readsz > 2) { // <2 chars doesnt make sense
         NSString *s = [[NSString alloc] initWithBytesNoCopy:(void*)buf
                                                      length:readsz
                                                    encoding:NSUTF8StringEncoding
                                                freeWhenDone:NO];
-        textEncoding_ = CFStringConvertEncodingToNSStringEncoding(
-            CFStringConvertIANACharSetNameToEncoding((CFStringRef)s));
+        NSRange r = [s rangeOfString:@";"];
+        CFStringEncoding enc1 = 0;
+        if (r.location != NSNotFound) {
+          // try parsing a suffix integer value
+          enc1 = [[s substringFromIndex:r.location+1] integerValue];
+          NSStringEncoding enc2 =
+              CFStringConvertEncodingToNSStringEncoding(enc1);
+          if (enc2 < NSASCIIStringEncoding || enc2 > NSUTF32LittleEndianStringEncoding) {
+            // that didn't work, lets set s to the first part and continue
+            enc1 = -1;
+            s = [s substringToIndex:r.location];
+          }
+        }
+        if (enc1 == 0) {
+          // try to parse s as an IANA charset (e.g. "utf-8")
+          enc1 = CFStringConvertIANACharSetNameToEncoding((CFStringRef)s);
+        }
+        if (enc1 > 0) {
+          textEncoding_ = CFStringConvertEncodingToNSStringEncoding(enc1);
+        }
+        //DLOG("xattr read encoding '%@' %d -> %@ ([%d] %@)", s, (int)enc1,
+        //     CFStringConvertEncodingToIANACharSetName(enc1),
+        //     (int)textEncoding_,
+        //     [NSString localizedNameOfStringEncoding:textEncoding_]);
       }
       
       key = "se.hunch.kod.selection";
       if ((readsz = fgetxattr(fd, key, (void*)buf, bufsize, 0, 0)) < 0) {
-        WLOG("failed to read xattr '%s' from '%@'", key, path);
+        DLOG("failed to read xattr '%s' from '%@'", key, path);
       } else if (readsz > 2) { // <2 chars doesnt make sense
         NSString *s = [[NSString alloc] initWithBytesNoCopy:(void*)buf
                                                      length:readsz
@@ -1103,8 +1127,13 @@ originalContentsURL:(NSURL *)absoluteOriginalContentsURL
     const char *key, *utf8pch;
     
     key = "com.apple.TextEncoding";
-    utf8pch = [(NSString*)CFStringConvertEncodingToIANACharSetName(
-        CFStringConvertNSStringEncodingToEncoding(textEncoding_)) UTF8String];
+    // The value is a string "utf-8;134217984" where the last part (if
+    // present) is a CFStringEncoding encoded in base-10.
+    CFStringEncoding enc1 =
+        CFStringConvertNSStringEncodingToEncoding(textEncoding_);
+    NSString *s = [NSString stringWithFormat:@"%@;%d",
+                   CFStringConvertEncodingToIANACharSetName(enc1), (int)enc1];
+    utf8pch = [s UTF8String];
     if (fsetxattr(fd, key, (void*)utf8pch, strlen(utf8pch), 0, 0) != 0) {
       WLOG("failed to write xattr '%s' to '%@'", key, path);
     }
