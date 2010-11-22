@@ -18,14 +18,15 @@
 // found in the main bundle, a fallback nib will be loaded from the framework.
 // This is usually enough since all UI which normally is customized is comprised
 // within each tab (CTTabContents view).
--(CTBrowserWindowController *)createWindowController {
+// DEPRECATED in chromium-tabs
+/*-(CTBrowserWindowController *)createWindowController {
   NSString *windowNibPath = [CTUtil pathForResource:@"BrowserWindow"
                                              ofType:@"nib"];
   KBrowserWindowController* windowController =
       [[KBrowserWindowController alloc] initWithWindowNibPath:windowNibPath
                                                       browser:self];
   return [windowController autorelease];
-}
+}*/
 
 
 -(CTTabContents*)addTabContents:(CTTabContents*)tab

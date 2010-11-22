@@ -1,5 +1,6 @@
 #import <ChromiumTabs/ChromiumTabs.h>
 
+#import "common.h"
 #import "KSourceHighlighter.h"
 #import "HSemaphore.h"
 
@@ -24,7 +25,7 @@
   NSString const *langId_;
   
   // Internal state
-  BOOL hasPendingInitialHighlighting_;
+  hatomic_flags_t stateFlags_;
 }
 
 @property(assign, nonatomic) BOOL isDirty;
@@ -36,6 +37,7 @@
 
 
 + (NSFont*)defaultFont;
+- (void)setIconBasedOnContents;
 
 - (void)guessLanguageBasedOnUTI:(NSString*)uti textContent:(NSString*)text;
 
@@ -44,11 +46,13 @@
 - (IBAction)selectNextElement:(id)sender;
 - (IBAction)selectPreviousElement:(id)sender;
 
-- (void)highlightTextStorage:(NSTextStorage*)textStorage
+- (BOOL)setNeedsHighlightingOfCompleteDocument;
+- (BOOL)highlightCompleteDocumentInBackgroundIfQueued;
+- (BOOL)highlightCompleteDocumentInBackground;
+- (BOOL)highlightCompleteDocument;
+
+- (BOOL)highlightTextStorage:(NSTextStorage*)textStorage
                      inRange:(NSRange)range;
-- (void)highlightCompleteDocument;
-- (void)highlightCompleteDocumentInBackground;
-- (void)highlightCompleteDocumentASAP;
 
 - (void)textStorageDidProcessEditing:(NSNotification*)notification;
 - (void)documentDidChangeDirtyState; // when isDirty_ changed

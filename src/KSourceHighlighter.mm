@@ -346,9 +346,10 @@ void KSourceHighlighter::willHighlight(NSTextStorage *textStorage,
   if (editedRange.location != NSNotFound) {
     // find KSourceHighlightStateAttribute
     NSRange effectiveRange;
+    NSUInteger index = MIN(editedRange.location, fullRange_.length-1);
     KSourceHighlightState* attrValue =
         [textStorage attribute:KSourceHighlightStateAttribute
-                       atIndex:editedRange.location
+                       atIndex:index
                 effectiveRange:&effectiveRange];
     DLOG_RANGE(effectiveRange, text_);
     // TODO: save info to be used by |highlight|

@@ -130,15 +130,6 @@
 }
 
 
-- (void)finalizeOpenDocument:(NSArray*)args {
-  // proxy to finalizeOpenDocument: for background threads
-  assert([NSThread isMainThread]);
-  [self finalizeOpenDocument:[args objectAtIndex:0]
-        withWindowController:[args count] > 2 ? [args objectAtIndex:2] : nil
-                     display:[(NSNumber*)[args objectAtIndex:1] boolValue]];
-}
-
-
 - (id)openDocumentWithContentsOfURL:(NSURL *)absoluteURL
                             display:(BOOL)display
                               error:(NSError **)error {
@@ -158,14 +149,11 @@
   KTabContents* tab = [[KTabContents alloc] initWithContentsOfURL:url
                                                            ofType:typeName
                                                             error:error];
-  if (error && *error) {
-    [tab release];
-    tab = nil;
-  } else if (tab) {
-    // set tab title, url, icon (implied by setting url), etc.
-    [tab setFileURL:url];
+  if (!tab && error) {
+    // if tab failed to create and we received a pointer to store the error,
+    // make sure an error is present
+    assert(*error);
   }
-  if (!tab && error) assert(*error);
   return tab;
 }
 
@@ -174,10 +162,17 @@
                withWindowController:(KBrowserWindowController*)windowController
                             display:(BOOL)display
                               error:(NSError **)error {
+  // check if |url| is already open
+  KTabContents *tab = (KTabContents *)[self documentForURL:url];
+  if (tab) {
+    // make sure the tab is presented to the user
+    [tab makeKeyAndOrderFront:self];
+    return tab;
+  }
+  
+  // make a document from |url|
   NSString *typeName = [self typeForContentsOfURL:url error:nil];
-  KTabContents* tab = [self makeDocumentWithContentsOfURL:url
-                                                   ofType:typeName
-                                                    error:error];
+  tab = [self makeDocumentWithContentsOfURL:url ofType:typeName error:error];
   if (tab) {
     // add the tab to |browser|
     if (![NSThread isMainThread]) {
@@ -191,13 +186,13 @@
             withWindowController:windowController
                          display:display];
     }
-  } else assert(error && *error);
+  }
   return tab;
 }
 
 
 - (NSString*)defaultType {
-  return @"txt";  // FIXME
+  return @"public.text";  // FIXME
 }
 
 

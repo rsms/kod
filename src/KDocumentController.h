@@ -19,6 +19,5 @@
 - (void)finalizeOpenDocument:(KTabContents*)tab
         withWindowController:(KBrowserWindowController*)windowController
                      display:(BOOL)display;
-- (void)finalizeOpenDocument:(NSArray*)args;
 
 @end

@@ -1,4 +1,3 @@
-#import "common.h"
 #import "KConfig.h"
 #import "KTabContents.h"
 #import "KBrowser.h"
@@ -8,6 +7,14 @@
 #import "KScroller.h"
 #import "KScrollView.h"
 #import "KLangMap.h"
+
+
+// used in stateFlags_
+enum {
+  kHighlightingIsQueued = HATOMIC_FLAG_MIN,
+  kHighlightingIsProcessing,
+  kTestStorageEditingIsProcessing,
+};
 
 
 @interface KTabContents (Private)
@@ -240,9 +247,6 @@ static int debugSimulateTextAppendingIteration = 0;
   // we are in a loading state
   self.isLoading = YES;
   
-  // queue complete highlighting
-  [self highlightCompleteDocumentASAP];
-  
   // this will take care of loading the contents at |absoluteURL|
   //
   // readFromURL:ofType:error: will call:
@@ -252,6 +256,7 @@ static int debugSimulateTextAppendingIteration = 0;
   // 
   if (![self readFromURL:absoluteURL ofType:typeName error:outError]) {
     [self release];
+    if (outError) assert(*outError != nil);
     return nil;
   }
   return self;
@@ -273,10 +278,11 @@ static int debugSimulateTextAppendingIteration = 0;
 
 
 - (void)setIsLoading:(BOOL)loading {
-  //DLOG("setIsLoading:%@", loading?@"YES":@"NO");
+  BOOL isLoadingPrev = isLoading_;
   [super setIsLoading:loading];
-  if (!isLoading_ && hasPendingInitialHighlighting_) {
-    [self highlightCompleteDocumentInBackground];
+  // update icon if we went from "loading" to "not loading"
+  if (isLoadingPrev && !isLoading_) {
+    [self setIconBasedOnContents];
   }
 }
 
@@ -291,9 +297,8 @@ static int debugSimulateTextAppendingIteration = 0;
     DLOG("%@ changed langId to '%@'", self, langId_);
     // TODO: langId should be a UTI in the future
     self.fileType = langId;
-    if (sourceHighlighter_->setLanguage(langId_)) {
-      [self highlightCompleteDocumentASAP];
-    }
+    sourceHighlighter_->setLanguage(langId_);
+    [self setNeedsHighlightingOfCompleteDocument];
   }
 }
 
@@ -392,8 +397,20 @@ static int debugSimulateTextAppendingIteration = 0;
 }
 
 
+-(void)tabDidBecomeVisible {
+  if (hatomic_flags_clear(&stateFlags_, kHighlightingIsQueued)) {
+    // we did clear the flag
+    [self highlightCompleteDocumentInBackground];
+  }
+}
+
+
+//- (void)undoManagerChangeDone:(NSNotification *)notification;
+//- (void)undoManagerChangeUndone:(NSNotification *)notification;
+
+
 - (void)undoManagerCheckpoint:(NSNotification*)notification {
-  DLOG_EXPR([self isDocumentEdited]);
+  //DLOG_EXPR([self isDocumentEdited]);
   BOOL isDirty = [self isDocumentEdited];
   if (isDirty_ != isDirty) {
     isDirty_ = isDirty;
@@ -404,6 +421,7 @@ static int debugSimulateTextAppendingIteration = 0;
 
 - (void)documentDidChangeDirtyState {
   DLOG("documentDidChangeDirtyState");
+  // windowController - (void)setDocumentEdited:(BOOL)dirtyFlag;
   //self.title = @"*";
 }
 
@@ -413,9 +431,9 @@ static int debugSimulateTextAppendingIteration = 0;
 
 // For some reason, this is called for _each edit_ to the text view so it needs
 // to be fast.
-/*- (NSUndoManager *)undoManagerForTextView:(NSTextView *)aTextView {
+- (NSUndoManager *)undoManagerForTextView:(NSTextView *)aTextView {
   return undoManager_;
-}*/
+}
 
 
 #pragma mark -
@@ -446,12 +464,33 @@ static int debugSimulateTextAppendingIteration = 0;
 }
 
 
+//- (void)setFileType:(NSString*)typeName { [super setFileType:typeName]; }
+
+
+- (void)setIconBasedOnContents {
+  DLOG_TRACE();
+  NSWorkspace *workspace = [NSWorkspace sharedWorkspace];
+  NSURL *url = [self fileURL];
+  if (url) {
+    if ([url isFileURL]) {
+      self.icon = [workspace iconForFile:[url path]];
+    } else if (self.fileType) {
+      DLOG("remote url -- self.fileType => %@", self.fileType);
+      NSString *guessedExt =
+          [workspace preferredFilenameExtensionForType:self.fileType];
+      DLOG_EXPR(guessedExt);
+      self.icon = [workspace iconForFileType:guessedExt];
+    }
+  } else {
+    self.icon = _kDefaultIcon;
+  }
+}
+
+
 - (void)setFileURL:(NSURL *)url {
   if (url != [self fileURL]) {
     [super setFileURL:url];
-    if (url && [url path]) {
-      self.icon = [[NSWorkspace sharedWorkspace] iconForFile:[url path]];
-      
+    if (url) {
       // set title
       if ([url isFileURL]) {
         self.title = url.lastPathComponent;
@@ -466,7 +505,6 @@ static int debugSimulateTextAppendingIteration = 0;
       }
     } else {
       self.title = _kDefaultTitle;
-      self.icon = _kDefaultIcon;
     }
   }
 }
@@ -625,44 +663,81 @@ longestEffectiveRange:&range
 }
 
 
-- (void)highlightTextStorage:(NSTextStorage*)textStorage
+// aka "enqueue complete highlighting"
+// returns true if processing was queued, otherwise false indicates processing
+// was already queued.
+- (BOOL)setNeedsHighlightingOfCompleteDocument {
+  if (hatomic_flags_set(&stateFlags_, kHighlightingIsQueued)) {
+    // we did set the flag ("enqueued")
+    if (isVisible_) {
+      // trigger highlighting directly if visible
+      [self highlightCompleteDocumentInBackgroundIfQueued];
+    }
+    return YES;
+  }
+  return NO;
+}
+
+
+// aka "dequeue and trigger complete highlighting"
+// returns true if processing was scheduled
+- (BOOL)highlightCompleteDocumentInBackgroundIfQueued {
+  if (hatomic_flags_clear(&stateFlags_, kHighlightingIsQueued)) {
+    // we cleared the flag ("dequeued")
+    return [self highlightCompleteDocumentInBackground];
+  }
+  return NO;
+}
+
+
+// returns true if processing was scheduled
+- (BOOL)highlightCompleteDocumentInBackground {
+  // we utilize the kHighlightingIsProcessing flag
+  if (hatomic_flags_set(&stateFlags_, kHighlightingIsProcessing)) {
+    K_DISPATCH_BG_ASYNC({
+      if (hatomic_flags_clear(&stateFlags_, kHighlightingIsProcessing)) {
+        [self highlightCompleteDocument];
+      }
+    });
+    return YES;
+  }
+  return NO;
+}
+
+
+- (BOOL)highlightCompleteDocument {
+  static NSRange range = NSMakeRange(NSNotFound, 0);
+  return [self highlightTextStorage:textView_.textStorage
+                            inRange:range];
+}
+
+
+- (BOOL)highlightTextStorage:(NSTextStorage*)textStorage
                      inRange:(NSRange)range {
+  if (!hatomic_flags_set(&stateFlags_, kHighlightingIsProcessing)) {
+    // someone else is already processing
+    return NO;
+  }
   [textStorage beginEditing];
   sourceHighlighter_->highlight(textStorage, style_, range);
-  hasPendingInitialHighlighting_ = NO;
   [textStorage endEditing];
-}
-
-
-- (void)highlightCompleteDocumentASAP {
-  if (isLoading_) {
-    hasPendingInitialHighlighting_ = YES;
-  } else {
-    [self highlightCompleteDocumentInBackground];
-  }
-}
-
-
-- (void)highlightCompleteDocumentInBackground {
-  K_DISPATCH_BG_ASYNC({
-    [self highlightCompleteDocument];
-  });
-}
-
-
-- (void)highlightCompleteDocument {
-  static NSRange range = NSMakeRange(NSNotFound, 0);
-  [self highlightTextStorage:textView_.textStorage
-                     inRange:range];
+  hatomic_flags_clear(&stateFlags_, kHighlightingIsProcessing);
+  return YES;
 }
 
 
 - (void)textStorageWillProcessEditing:(NSNotification *)notification {
+  // Edit event preamble (unless loading or already processing)
+  if (isLoading_ ||
+      hatomic_flags_test(&stateFlags_, kTestStorageEditingIsProcessing)) {
+    return;
+  }
+  
   NSTextStorage	*textStorage = notification.object;
   NSRange	editedRange = [textStorage editedRange];
   
-  // Syntax highlight preamble
-  if (!hasPendingInitialHighlighting_ && !isLoading_) {
+  // Highlight preamble, unless already highlighting
+  if (!hatomic_flags_test(&stateFlags_, kHighlightingIsProcessing)) {
     sourceHighlighter_->willHighlight(textStorage, editedRange);
   }
 }
@@ -671,16 +746,21 @@ longestEffectiveRange:&range
 - (void)textStorageDidProcessEditing:(NSNotification*)notification {
 	// invoked after editing occured
 
-  // We sometimes initialize documents on background threads where the initial
-  // "filling" causes this method to be called. We're a noop in that case.
-  if (isProcessingTextStorageEdit_ || isLoading_ || ![NSThread isMainThread])
+  // Don't process editing if we are in a loading state (i.e. the edit might
+  // have been caused by input data arrival)
+  // Also, if we don't manage to set kTestStorageEditingIsProcessing, that means
+  // a text storage edit is currently being processed, so we bail.
+  if (isLoading_ ||
+      !hatomic_flags_set(&stateFlags_, kTestStorageEditingIsProcessing)) {
     return;
+  }
 
   NSTextStorage	*textStorage = [notification object];
 	NSRange	editedRange = [textStorage editedRange];
 	int	changeInLen = [textStorage changeInLength];
   if (changeInLen == 0) {
     // text attributes changed -- not interested
+    hatomic_flags_clear(&stateFlags_, kTestStorageEditingIsProcessing);
     return;
   }
   
@@ -697,17 +777,15 @@ longestEffectiveRange:&range
     [self updateChangeCount:NSChangeReadOtherContents];
   }
   
-  // Syntax highlight
-  if (!hasPendingInitialHighlighting_) {
-    [self highlightTextStorage:textStorage
-                       inRange:editedRange];
-  };
+  // Syntax highlight (it's a no-op if aldready processing a "highlight")
+  [self highlightTextStorage:textStorage inRange:editedRange];
   
   // this makes the edit an undoable entry (otherwise each "group" of edits will
   // be undoable, which is not fine-grained enough for us)
   [textView_ breakUndoCoalescing];
   
-  isProcessingTextStorageEdit_ = NO;
+  // No longer processing text storage edit
+  hatomic_flags_clear(&stateFlags_, kTestStorageEditingIsProcessing);
 }
 
 
@@ -740,7 +818,7 @@ longestEffectiveRange:&range
 
 
 - (void)startReadingFromRemoteURL:(NSURL*)absoluteURL
-                           ofType:(NSString *)_typeName {
+                           ofType:(NSString *)typeName {
   // set state to "waiting"
   self.isLoading = YES;
   self.isWaitingForResponse = YES;
@@ -748,8 +826,8 @@ longestEffectiveRange:&range
   // set text view to be read-only
   [textView_ setEditable:NO];
   
-  // we might alter this one, so make it __block
-  __block NSString* typeName = [_typeName retain];
+  // set type (might change when we receive a response)
+  self.fileType = typeName;
   
   HURLConnection *conn = [absoluteURL
     fetchWithOnResponseBlock:^(NSURLResponse *response) {
@@ -775,7 +853,7 @@ longestEffectiveRange:&range
               UTTypeCreatePreferredIdentifierForTag(kUTTagClassMIMEType,
                                                     mimeType, NULL);
           if (uti)
-            h_objc_xch(&typeName, uti);
+            self.fileType = uti;
         }
       }
       
@@ -793,7 +871,7 @@ longestEffectiveRange:&range
     onCompleteBlock:^(NSError *err, NSData *data) {
       // Read data unless an error occured while reading URL
       if (!err) {
-        [self readFromData:data ofType:typeName error:&err];
+        [self readFromData:data ofType:self.fileType error:&err];
       }
       
       // make sure isLoading is false
@@ -834,22 +912,23 @@ longestEffectiveRange:&range
     NSData *data = [NSData dataWithContentsOfMappedFile:path];
     
     // read data
-    if (![self readFromData:data ofType:typeName error:outError])
+    if (![self readFromData:data ofType:typeName error:outError]) {
       return NO;
+    }
     
     // read mtime
     NSDate *mtime = nil;
     if (![absoluteURL getResourceValue:&mtime
-                           forKey:NSURLContentModificationDateKey
-                            error:outError]) {
+                                forKey:NSURLContentModificationDateKey
+                                 error:outError]) {
       return NO;
     }
     self.fileModificationDate = mtime;
   } else {
     // load a foreign/remote resource
     [self startReadingFromRemoteURL:absoluteURL ofType:typeName];
-    return YES;
   }
+  return YES;
 }
 
 
@@ -884,26 +963,27 @@ longestEffectiveRange:&range
     return NO;
   } else {
     [textView_ setString:text];
-    [text release];
     // TODO: restore selection(s), possibly by reading from ext. attrs.
     [textView_ setSelectedRange:NSMakeRange(0, 0)];
     [self updateChangeCount:NSChangeCleared];
     isDirty_ = NO;
     self.isLoading = NO;
     self.isWaitingForResponse = NO;
+    self.fileType = typeName;
     
     // guess language if no language has been set
     if (!langId_) {
       // implies queueing of complete highlighting
       [self guessLanguageBasedOnUTI:typeName textContent:text];
-    } else if (hasPendingInitialHighlighting_) {
-      self.fileType = typeName;
-      [self highlightCompleteDocumentInBackground];
+    } else {
+      if (isVisible_)
+        [self setNeedsHighlightingOfCompleteDocument];
     }
+    
+    [text release];
   }
   return YES;
 }
-
 
 
 // Generate data from text
