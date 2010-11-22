@@ -14,7 +14,7 @@ class KConfiguration {
 
   // defaults getters
   BOOL          getBool(NSString* key);
-  int           getInt(NSString* key);
+  int           getInt(NSString* key, int def=0);
   float         getFloat(NSString* key);
   double        getDouble(NSString* key);
   NSArray*      getArray(NSString* key, NSArray* def=nil);
@@ -54,9 +54,13 @@ extern KConfiguration KConfig;
   inline T KConfiguration::get##N(NSString* key) { \
     return [defaults M##ForKey:key]; }
 iimpl_getter(BOOL, Bool, bool)
-iimpl_getter(int, Int, integer)
 iimpl_getter(float, Float, float)
 iimpl_getter(double, Double, double)
+inline int KConfiguration::getInt(NSString* key, int def) {
+  NSNumber *n = get(key);
+  if (!n || ![n isKindOfClass:[NSNumber class]]) return def;
+  return [n intValue];
+}
 #undef iimpl_getter
 #define iimpl_getter(T, N, M) \
   inline T KConfiguration::get##N(NSString* key, T def) { \

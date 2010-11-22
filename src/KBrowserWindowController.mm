@@ -63,7 +63,7 @@ willPositionSheet:(NSWindow *)sheet
 
 
 - (void)setDocument:(NSDocument *)document {
-  DLOG("%s %@", __func__, document);
+  //DLOG("%s %@", __func__, document);
   [super setDocument:document];
 }
 

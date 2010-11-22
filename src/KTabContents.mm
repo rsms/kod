@@ -1,3 +1,5 @@
+#include <sys/xattr.h>
+
 #import "KConfig.h"
 #import "KTabContents.h"
 #import "KBrowser.h"
@@ -134,11 +136,12 @@ static int debugSimulateTextAppendingIteration = 0;
   self.title = _kDefaultTitle;
   self.icon = _kDefaultIcon;
   
+  // use default text encoding unless explicitly set
+  textEncoding_ = NSUTF8StringEncoding;
+      //KConfig.getInt(@"defaultReadTextEncoding", (int)NSUTF8StringEncoding);
+  
   // 1=unlocked, 0=locked
   sourceHighlightSem_ = new HSemaphore(1);
-
-  // Set other default values
-  textEncoding_ = NSUTF8StringEncoding;
   
   // Default highlighter
   sourceHighlighter_.reset(new KSourceHighlighter);
@@ -475,10 +478,9 @@ static int debugSimulateTextAppendingIteration = 0;
     if ([url isFileURL]) {
       self.icon = [workspace iconForFile:[url path]];
     } else if (self.fileType) {
-      DLOG("remote url -- self.fileType => %@", self.fileType);
+      //DLOG("remote url -- self.fileType => %@", self.fileType);
       NSString *guessedExt =
           [workspace preferredFilenameExtensionForType:self.fileType];
-      DLOG_EXPR(guessedExt);
       self.icon = [workspace iconForFileType:guessedExt];
     }
   } else {
@@ -829,19 +831,24 @@ longestEffectiveRange:&range
   // set type (might change when we receive a response)
   self.fileType = typeName;
   
+  __block NSString *textEncodingNameFromResponse = nil;
+  
   HURLConnection *conn = [absoluteURL
     fetchWithOnResponseBlock:^(NSURLResponse *response) {
       NSError *error = nil;
+      NSDate *fileModificationDate = nil;
       
       // change state from waiting to loading
       self.isWaitingForResponse = NO;
       
-      // check HTTP response
+      // handle HTTP response
       if ([response isKindOfClass:[NSHTTPURLResponse class]]) {
+        // check status
         NSInteger status = [(NSHTTPURLResponse*)response statusCode];
         if (status < 200 || status > 299) {
           error = [NSError HTTPErrorWithStatusCode:status];
         }
+        // TODO: get fileModificationDate from response headers
       }
       
       // try to derive UTI and read filename, unless error
@@ -855,6 +862,9 @@ longestEffectiveRange:&range
           if (uti)
             self.fileType = uti;
         }
+        
+        // get text encoding
+        textEncodingNameFromResponse = [response textEncodingName];
       }
       
       // update URL, if needed (might have been redirected)
@@ -863,14 +873,22 @@ longestEffectiveRange:&range
       // set suggested title
       self.title = response.suggestedFilename;
       
-      // TODO: set fileModificationDate to value from response headers for HTTP
-      self.fileModificationDate = [NSDate date];
+      // set modification date
+      self.fileModificationDate = fileModificationDate ? fileModificationDate
+                                                       : [NSDate date];
       
       return error;
     }
     onCompleteBlock:^(NSError *err, NSData *data) {
       // Read data unless an error occured while reading URL
       if (!err) {
+        // if we got a charset, try to convert it into a NSStringEncoding symbol
+        if (textEncodingNameFromResponse) {
+          textEncoding_ = CFStringConvertEncodingToNSStringEncoding(
+              CFStringConvertIANACharSetNameToEncoding(
+                  (CFStringRef)textEncodingNameFromResponse));
+        }
+        // parse data
         [self readFromData:data ofType:self.fileType error:&err];
       }
       
@@ -910,10 +928,44 @@ longestEffectiveRange:&range
     // utilize mmap to load a file
     NSString *path = [absoluteURL path];
     NSData *data = [NSData dataWithContentsOfMappedFile:path];
+    if (!data) return NO;
     
-    // read data
-    if (![self readFromData:data ofType:typeName error:outError]) {
-      return NO;
+    // read xattrs
+    NSRange selectedRange = {0};
+    int fd = open([path UTF8String], O_RDONLY);
+    if (fd < 0) {
+      WLOG("failed to open(\"%@\", O_RDONLY)", path);
+    } else {
+      const char *key;
+      ssize_t readsz;
+      static size_t bufsize = 512;
+      char *buf = new char[bufsize];
+      
+      key = "com.apple.TextEncoding"; // "utf-8;12345"
+      if ((readsz = fgetxattr(fd, key, (void*)buf, bufsize, 0, 0)) < 0) {
+        WLOG("failed to read xattr '%s' from '%@'", key, path);
+      } else if (readsz > 2) { // <2 chars doesnt make sense
+        NSString *s = [[NSString alloc] initWithBytesNoCopy:(void*)buf
+                                                     length:readsz
+                                                   encoding:NSUTF8StringEncoding
+                                               freeWhenDone:NO];
+        textEncoding_ = CFStringConvertEncodingToNSStringEncoding(
+            CFStringConvertIANACharSetNameToEncoding((CFStringRef)s));
+      }
+      
+      key = "se.hunch.kod.selection";
+      if ((readsz = fgetxattr(fd, key, (void*)buf, bufsize, 0, 0)) < 0) {
+        WLOG("failed to read xattr '%s' from '%@'", key, path);
+      } else if (readsz > 2) { // <2 chars doesnt make sense
+        NSString *s = [[NSString alloc] initWithBytesNoCopy:(void*)buf
+                                                     length:readsz
+                                                   encoding:NSUTF8StringEncoding
+                                               freeWhenDone:NO];
+        selectedRange = NSRangeFromString(s);
+      }
+      
+      delete buf; buf = NULL;
+      close(fd);
     }
     
     // read mtime
@@ -924,6 +976,16 @@ longestEffectiveRange:&range
       return NO;
     }
     self.fileModificationDate = mtime;
+    
+    // read data
+    if (![self readFromData:data ofType:typeName error:outError]) {
+      return NO;
+    }
+    
+    // restore (or set) selection
+    if (selectedRange.location < textView_.textStorage.length) {
+      [textView_ setSelectedRange:selectedRange];
+    }
   } else {
     // load a foreign/remote resource
     [self startReadingFromRemoteURL:absoluteURL ofType:typeName];
@@ -954,7 +1016,7 @@ longestEffectiveRange:&range
                error:(NSError **)outError {
   DLOG("readFromData:%p ofType:%@", data, typeName);
   
-  // decode data into text
+  // try to decode data as text encoded as textEncoding_
   NSString *text = [[NSString alloc] initWithData:data encoding:textEncoding_];
   
   if (!text) {
@@ -993,27 +1055,70 @@ longestEffectiveRange:&range
   NSData *data = [[textView_ string] dataUsingEncoding:textEncoding_
                                   allowLossyConversion:NO];
   if (!data) {
-    *outError = [NSError kodErrorWithDescription:@"Failed to parse data"];
+    *outError = [NSError kodErrorWithFormat:
+        @"Unable to encode text using encoding '%@'",
+        [NSString localizedNameOfStringEncoding:textEncoding_]];
   }
   return data;
 }
 
 
-// fs extended attributes to write with the document
-- (NSDictionary *)fileAttributesToWriteToURL:(NSURL *)url
-                                      ofType:(NSString *)typeName
-                            forSaveOperation:(NSSaveOperationType)saveOperation
-                         originalContentsURL:(NSURL *)originalContentsURL
-                                       error:(NSError **)error {
-  NSDictionary *sd = [super fileAttributesToWriteToURL:url
-                                                ofType:typeName
-                                      forSaveOperation:saveOperation
-                                   originalContentsURL:originalContentsURL
-                                                 error:error];
-  DLOG_TRACE();
-  NSMutableDictionary* d = [NSMutableDictionary dictionaryWithDictionary:sd];
-  [d setObject:@"moset" forKey:@"KTabContentsCursorState"];
-  return d;
+- (BOOL)writeToURL:(NSURL *)absoluteURL
+            ofType:(NSString *)typeName
+  forSaveOperation:(NSSaveOperationType)saveOperation
+originalContentsURL:(NSURL *)absoluteOriginalContentsURL
+             error:(NSError **)outError {
+  // currently only supports writing to files
+  if (![absoluteURL isFileURL]) {
+    if (outError) {
+      *outError = [NSError kodErrorWithFormat:
+          @"Kod can't save data to remotely located URL '%@'", absoluteURL];
+    }
+    return NO;
+  }
+  
+  // make a file wrapper (calls dataOfType:error:)
+  NSFileWrapper *fileWrapper = [self fileWrapperOfType:typeName error:outError];
+  if (!fileWrapper) return NO;
+  
+  // modify attributes
+  NSMutableDictionary* attrs = [fileWrapper.fileAttributes mutableCopy];
+  [attrs setObject:@"hello" forKey:@"se.hunch.kod.cursor"];
+  [fileWrapper setFileAttributes:attrs];
+  
+  // write it
+  if (![fileWrapper writeToURL:absoluteURL
+                       options:0
+           originalContentsURL:absoluteOriginalContentsURL
+                         error:outError]) {
+    return NO;
+  }
+  
+  // write xattrs
+  NSString *path = [absoluteURL path];
+  int fd = open([path UTF8String], O_RDONLY);
+  if (fd < 0) {
+    WLOG("failed to open(\"%@\", O_RDONLY)", path);
+  } else {
+    const char *key, *utf8pch;
+    
+    key = "com.apple.TextEncoding";
+    utf8pch = [(NSString*)CFStringConvertEncodingToIANACharSetName(
+        CFStringConvertNSStringEncodingToEncoding(textEncoding_)) UTF8String];
+    if (fsetxattr(fd, key, (void*)utf8pch, strlen(utf8pch), 0, 0) != 0) {
+      WLOG("failed to write xattr '%s' to '%@'", key, path);
+    }
+    
+    key = "se.hunch.kod.selection";
+    utf8pch = [NSStringFromRange([textView_ selectedRange]) UTF8String];
+    if (fsetxattr(fd, key, (void*)utf8pch, strlen(utf8pch), 0, 0) != 0) {
+      WLOG("failed to write xattr '%s' to '%@'", key, path);
+    }
+    
+    close(fd);
+  }
+  
+  return YES;
 }
 
 
