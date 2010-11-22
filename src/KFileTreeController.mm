@@ -2,6 +2,7 @@
 #import "KFileTreeNodeData.h"
 #import "KFileTextFieldCell.h"
 #import "KFileOutlineView.h"
+#import "KConfig.h"
 
 #import <ChromiumTabs/common.h>
 #import <dispatch/dispatch.h>
@@ -20,7 +21,8 @@ static NSString *kNameColumnId = @"name";
   // DEV XXX temporary
   NSError *error = nil;
   rootTreeNode_ =
-      [self treeNodeFromDirectoryAtPath:@"/Users/rasmus/src/libnt" error:&error];
+      [self treeNodeFromDirectoryAtPath:[KConfig.resourcePath() stringByDeletingLastPathComponent] // FIXME
+                                  error:&error];
   if (!rootTreeNode_) {
     [NSApp presentError:error];
   } else {

@@ -180,4 +180,12 @@ static uint32_t _touint32(NSColor *color) {
 }
 
 
+- (NSColor*)randomColorWithSaturation:(CGFloat)saturation
+                           brightness:(CGFloat)brightness
+                                alpha:(CGFloat)alpha {
+  srand(time(NULL));
+  CGFloat hue = (CGFloat)rand() / RAND_MAX;
+  return [NSColor colorWithCalibratedHue:hue saturation:0.5 brightness:0.9 alpha:1.0];
+}
+
 @end

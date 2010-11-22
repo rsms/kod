@@ -61,6 +61,7 @@ inline static void *k_swapptr(void * volatile *dst, void *src) {
 #import "NSError+KAdditions.h"
 #import "NSColor-web.h"
 #import "NSCharacterSet-kod.h"
+#import "NSURL-blocks.h"
 #import "HSemaphore.h"
 #import "h-objc.h"
 

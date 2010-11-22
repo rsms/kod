@@ -18,4 +18,17 @@
  */
 - (BOOL)performBlock:(void(^)(void))block;
 
+/**
+ * Schedule NSURLConnection in this thread's runloop. Returns YES if scheduled
+ * or NO if the thread has been cancelled.
+ */
+- (BOOL)scheduleURLConnection:(NSURLConnection*)connection;
+
+/**
+ * Schedule and start processing of connection in this thread. Returns YES if
+ * scheduled and processing is pending/has started or NO if the thread has been
+ * cancelled.
+ */
+- (BOOL)processURLConnection:(NSURLConnection*)connection;
+
 @end

@@ -38,8 +38,8 @@ class KConfiguration {
   inline void remove(NSString* key) { [defaults removeObjectForKey:key]; }
 
   // resources
-  NSURL* resourceURL(NSString* relpath);
-  NSString* resourcePath(NSString* relpath);
+  NSURL* resourceURL(NSString* relpath=nil);
+  NSString* resourcePath(NSString* relpath=nil);
 
  protected:
   static KConfiguration const *instance_;

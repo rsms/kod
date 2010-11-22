@@ -21,7 +21,7 @@
 	<key>CFBundleShortVersionString</key>
 	<string>1.0</string>
 	<key>CFBundleSignature</key>
-	<string>????</string>
+	<string>kode</string>
 	<key>CFBundleVersion</key>
 	<string>1</string>
 	<key>LSMinimumSystemVersion</key>
@@ -30,6 +30,50 @@
 	<string>MainMenu</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
+	<key>LSArchitecturePriority</key>
+	<array>
+		<string>x86_64</string>
+		<string>i386</string>
+	</array>
+	<key>LSMinimumSystemVersion</key>
+	<string>10.6.0</string>
+	<key>LSMinimumSystemVersionByArchitecture</key>
+	<dict>
+		<key>x86_64</key>
+		<string>10.6</string>
+	</dict>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+			<key>CFBundleURLIconFile</key>
+			<string></string>
+			<key>CFBundleURLName</key>
+			<string>Kod</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>kod</string>
+			</array>
+		</dict>
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>Web site URL</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>http</string>
+				<string>https</string>
+			</array>
+		</dict>
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>Local file URL</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>file</string>
+			</array>
+		</dict>
+	</array>
 	<key>CFBundleDocumentTypes</key>
 	<array>
 		<dict>
@@ -60,7 +104,7 @@
 		</dict>
 		<dict>
 			<key>CFBundleTypeName</key>
-			<string>Document</string>
+			<string>File</string>
 			<key>CFBundleTypeIconFile</key>
 			<string>GenericDocumentIcon</string>
 			<key>CFBundleTypeOSTypes</key>
@@ -75,6 +119,49 @@
 			<string>Editor</string>
 			<key>NSDocumentClass</key>
 			<string>KTabContents</string>
+		</dict>
+		<dict>
+			<key>CFBundleTypeName</key>
+			<string>Folder</string>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+			<key>LSItemContentTypes</key>
+			<array>
+				<string>public.folder</string>
+			</array>
+			<key>LSTypeIsPackage</key>
+			<false/>
+			<key>NSPersistentStoreTypeKey</key>
+			<string>Binary</string>
+		</dict>
+		<dict>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>inetloc</string>
+				<string>webloc</string>
+			</array>
+			<key>CFBundleTypeName</key>
+			<string>Remote resource</string>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+		</dict>
+	</array>
+	<key>NSServices</key>
+	<array>
+		<dict>
+			<key>NSMenuItem</key>
+			<dict>
+				<key>default</key>
+				<string>Kod/Open link in Kod</string>
+			</dict>
+			<key>NSMessage</key>
+			<string>openLink</string>
+			<key>NSPortName</key>
+			<string>Kod</string>
+			<key>NSSendTypes</key>
+			<array>
+				<string>public.url</string>
+			</array>
 		</dict>
 	</array>
 </dict>

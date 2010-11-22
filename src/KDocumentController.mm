@@ -165,7 +165,7 @@
     // set tab title, url, icon (implied by setting url), etc.
     [tab setFileURL:url];
   }
-  if (!tab) assert(error && *error);
+  if (!tab && error) assert(*error);
   return tab;
 }
 
@@ -181,14 +181,11 @@
   if (tab) {
     // add the tab to |browser|
     if (![NSThread isMainThread]) {
-      // if we worked in a background thread
-      NSArray* args = [NSArray arrayWithObjects:
-          tab, [NSNumber numberWithBool:display], windowController, nil];
-      [self performSelectorOnMainThread:@selector(finalizeOpenDocument:)
-                             withObject:args
-                          waitUntilDone:YES];
-      // NODE: if we don't wait for the above to complete, we'll need to
-      // manage the references of |args|. Now we just let it autorelease.
+      K_DISPATCH_MAIN_ASYNC({
+        [self finalizeOpenDocument:tab
+              withWindowController:windowController
+                           display:display];
+      });
     } else {
       [self finalizeOpenDocument:tab
             withWindowController:windowController

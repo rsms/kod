@@ -3,6 +3,10 @@
 #import <srchilite/formatter.h>
 #import <srchilite/formatterfactory.h>
 
+@class CSSStyle;
+
+extern NSString * const KStyleElementAttributeName;
+
 /**
  * Constitutes the text attributes for a specific language element.
  *
@@ -15,33 +19,54 @@
  *      dict { element-id => KStyleElement , .. }
  *
  */
-class KStyleElement : public srchilite::Formatter {
+class KStyleElement {
  protected:
   NSMutableDictionary *textAttributes_;
 
  public:
-  static NSFont *baseFont();
-  static NSString *ClassAttributeName;
+  static NSFontDescriptor *fontDescriptor();
   
   static void clearAttributes(NSMutableAttributedString *astr,
                               NSRange range,
                               bool removeSpecials=false);
   
-  KStyleElement(NSString *name = @"normal");
+  KStyleElement(NSString *name=@"body", CSSStyle *style=nil);
   virtual ~KStyleElement();
 
   /// the language element represented by this formatter
-  NSString *symbol();
+  NSString *symbol() {
+    return [textAttributes_ objectForKey:KStyleElementAttributeName];
+  }
   
-  /// Set the style of this formatter
-  void setStyle(srchilite::StyleConstantsPtr style);
+  void setStyle(CSSStyle *style);
   inline NSDictionary *textAttributes() { return textAttributes_; }
+  
+  inline void setAttribute(NSString *key, id value) {
+    if (value) [textAttributes_ setObject:value forKey:key];
+    else [textAttributes_ removeObjectForKey:key];
+  }
+  inline id attribute(NSString *key) {
+    return [textAttributes_ objectForKey:key];
+  }
+  
+  void setFont(NSFont *font) {
+    setAttribute(NSFontAttributeName, font);
+  }
+  NSFont *font() { return attribute(NSFontAttributeName); }
 
-  void setForegroundColor(NSColor *color);
-  NSColor *foregroundColor();
+  void setForegroundColor(NSColor *color) {
+    setAttribute(NSForegroundColorAttributeName, color);
+  }
+  NSColor *foregroundColor() {
+    return attribute(NSForegroundColorAttributeName);
+  }
 
-  void setBackgroundColor(NSColor *color);
-  NSColor *backgroundColor();
+  void setBackgroundColor(NSColor *color) {
+    setAttribute(NSBackgroundColorAttributeName, color);
+  }
+  NSColor *backgroundColor() {
+    return attribute(NSBackgroundColorAttributeName);
+  }
   
   /**
    * Applies attributes to |astr| in |range|. If |replace| is true, any existing
@@ -50,15 +75,6 @@ class KStyleElement : public srchilite::Formatter {
   void applyAttributes(NSMutableAttributedString *astr,
                        NSRange range,
                        bool replace=false);
-
-  /**
-   * Formats the passed string.
-   *
-   * @param the string to format
-   * @param params possible additional parameters for the formatter
-   */
-  void format(const std::string &text,
-              const srchilite::FormatterParams *params = 0);
 };
 
 /// shared pointer for KStyleElement

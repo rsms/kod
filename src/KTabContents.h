@@ -45,10 +45,10 @@
 - (IBAction)selectPreviousElement:(id)sender;
 
 - (void)highlightTextStorage:(NSTextStorage*)textStorage
-                     inRange:(NSRange)range
-              waitUntilReady:(BOOL)wait;
+                     inRange:(NSRange)range;
 - (void)highlightCompleteDocument;
-- (void)queueCompleteHighlighting;
+- (void)highlightCompleteDocumentInBackground;
+- (void)highlightCompleteDocumentASAP;
 
 - (void)textStorageDidProcessEditing:(NSNotification*)notification;
 - (void)documentDidChangeDirtyState; // when isDirty_ changed

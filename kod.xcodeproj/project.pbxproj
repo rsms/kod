@@ -52,11 +52,12 @@
 		3A9293CC1229ED4C00DA7E43 /* KDocumentController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A9293CB1229ED4C00DA7E43 /* KDocumentController.mm */; };
 		3A929886122AC38F00DA7E43 /* ChromiumTabs.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A9297E4122AB49D00DA7E43 /* ChromiumTabs.framework */; };
 		3A929887122AC39100DA7E43 /* ChromiumTabs.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 3A9297E4122AB49D00DA7E43 /* ChromiumTabs.framework */; };
+		3A93A8401299E14300185857 /* NSURL-blocks.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A93A83F1299E14300185857 /* NSURL-blocks.m */; };
 		3AC2D3FD1298C40A0066B586 /* KSourceHighlightState.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3AC2D3FC1298C40A0066B586 /* KSourceHighlightState.mm */; };
 		3AC2D4A71298D8050066B586 /* KTextStorage.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3AC2D4A61298D8050066B586 /* KTextStorage.mm */; };
+		3AC2D74012998D590066B586 /* CSS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3AE5EB871292DB5C00B17C4F /* CSS.framework */; };
 		3AC4FADC1296D049004CDCFD /* KLangMapLinePattern.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3AC4FADB1296D049004CDCFD /* KLangMapLinePattern.mm */; };
 		3AE5E5171290955000B17C4F /* kod.icns in Resources */ = {isa = PBXBuildFile; fileRef = 3AE5E5161290955000B17C4F /* kod.icns */; };
-		3AE5E8B812915AD900B17C4F /* CSS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3AE5E8B312915ABA00B17C4F /* CSS.framework */; };
 		3AE5E8CE12916F1100B17C4F /* KPtrHashTable.cc in Sources */ = {isa = PBXBuildFile; fileRef = 3AE5E8CD12916F1100B17C4F /* KPtrHashTable.cc */; };
 		3AE5E9A3129180CB00B17C4F /* CSS.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 3AE5E8B312915ABA00B17C4F /* CSS.framework */; };
 		3AE5EA571292B2D000B17C4F /* KConfig.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3AE5EA561292B2D000B17C4F /* KConfig.mm */; };
@@ -213,6 +214,8 @@
 		3A9293661229E49A00DA7E43 /* NSError+KAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSError+KAdditions.m"; sourceTree = "<group>"; };
 		3A9293CA1229ED4C00DA7E43 /* KDocumentController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KDocumentController.h; sourceTree = "<group>"; };
 		3A9293CB1229ED4C00DA7E43 /* KDocumentController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KDocumentController.mm; sourceTree = "<group>"; };
+		3A93A83E1299E14300185857 /* NSURL-blocks.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSURL-blocks.h"; sourceTree = "<group>"; };
+		3A93A83F1299E14300185857 /* NSURL-blocks.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSURL-blocks.m"; sourceTree = "<group>"; };
 		3AC2D3FB1298C40A0066B586 /* KSourceHighlightState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSourceHighlightState.h; sourceTree = "<group>"; };
 		3AC2D3FC1298C40A0066B586 /* KSourceHighlightState.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KSourceHighlightState.mm; sourceTree = "<group>"; };
 		3AC2D4A51298D8050066B586 /* KTextStorage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KTextStorage.h; sourceTree = "<group>"; };
@@ -225,7 +228,7 @@
 		3AE5E8CD12916F1100B17C4F /* KPtrHashTable.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = KPtrHashTable.cc; sourceTree = "<group>"; };
 		3AE5EA551292B2D000B17C4F /* KConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KConfig.h; sourceTree = "<group>"; };
 		3AE5EA561292B2D000B17C4F /* KConfig.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KConfig.mm; sourceTree = "<group>"; };
-		3AE5EB871292DB5C00B17C4F /* CSS.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CSS.framework; path = "/Users/rasmus/src/libcss/cocoa-framework/build/Release/CSS.framework"; sourceTree = "<absolute>"; };
+		3AE5EB871292DB5C00B17C4F /* CSS.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CSS.framework; path = "deps/libcss/cocoa-framework/build/Release/CSS.framework"; sourceTree = "<group>"; };
 		3AE5ECB41292F7B800B17C4F /* KThread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KThread.h; sourceTree = "<group>"; };
 		3AE5ECB51292F7B800B17C4F /* KThread.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KThread.mm; sourceTree = "<group>"; };
 		3AF14C40128D792F00623011 /* KLangRegexRuleFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KLangRegexRuleFactory.h; sourceTree = "<group>"; };
@@ -243,7 +246,7 @@
 				3A25E47B1281A6A200B6A33E /* libboost_regex-mt.dylib in Frameworks */,
 				3A25E47D1281A6A700B6A33E /* libsource-highlight.dylib in Frameworks */,
 				3A158AFF128A0A3700339E6E /* libicucore.dylib in Frameworks */,
-				3AE5E8B812915AD900B17C4F /* CSS.framework in Frameworks */,
+				3AC2D74012998D590066B586 /* CSS.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -440,6 +443,8 @@
 		3AE5E8D212916F4100B17C4F /* NS categories */ = {
 			isa = PBXGroup;
 			children = (
+				3A93A83E1299E14300185857 /* NSURL-blocks.h */,
+				3A93A83F1299E14300185857 /* NSURL-blocks.m */,
 				3A9293651229E49A00DA7E43 /* NSError+KAdditions.h */,
 				3A9293661229E49A00DA7E43 /* NSError+KAdditions.m */,
 				3A25E60E1281CFEF00B6A33E /* NSColor-web.h */,
@@ -609,6 +614,7 @@
 				3AC4FADC1296D049004CDCFD /* KLangMapLinePattern.mm in Sources */,
 				3AC2D3FD1298C40A0066B586 /* KSourceHighlightState.mm in Sources */,
 				3AC2D4A71298D8050066B586 /* KTextStorage.mm in Sources */,
+				3A93A8401299E14300185857 /* NSURL-blocks.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -657,11 +663,13 @@
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_2)",
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_3)",
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_4)",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_5)",
 				);
 				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)\"";
 				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_2 = "\"$(SRCROOT)/../chromium-tabs/build/Debug\"";
 				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_3 = "\"$(SYSTEM_LIBRARY_DIR)/Frameworks/WebKit.framework/Versions/A/Frameworks\"";
 				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_4 = "\"$(SRCROOT)/../libcss/cocoa-framework/build/Release\"";
+				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_5 = "\"$(SRCROOT)/deps/libcss/cocoa-framework/build/Release\"";
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_EXCEPTIONS = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
@@ -712,11 +720,14 @@
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_2)",
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_1)",
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_3)",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_4)",
 				);
 				FRAMEWORK_SEARCH_PATHS_QUOTED_1 = "\"$(SYSTEM_LIBRARY_DIR)/Frameworks/WebKit.framework/Versions/A/Frameworks\"";
 				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)\"";
 				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_2 = "\"$(SRCROOT)/../chromium-tabs/build/Debug\"";
 				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_3 = "\"$(SRCROOT)/../libcss/cocoa-framework/build/Release\"";
+				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_4 = "\"$(SRCROOT)/deps/libcss/cocoa-framework/build/Release\"";
+				GCC_AUTO_VECTORIZATION = YES;
 				GCC_ENABLE_EXCEPTIONS = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_MODEL_TUNING = G5;

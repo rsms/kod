@@ -1,56 +1,56 @@
 body { background-color:#444; color: #ddd; }
 
 /* the color for context lines (when specified with line ranges) */
-.context {  color: gray; }
+context {  color: gray; }
 
-.keyword { color: #66c8ef; }
-.type { color: lightsalmon; }
-.usertype { color: #CAC059; }
-.classname { color: #eb7962; }
-.string { color:#9aca7e; background-color:#1B221D; }
-.specialchar { color: #5ECA4D; background-color:#1B221D; }
-.regexp { color: #FFB14B; background-color:#262019; }
-.comment { color: #666; font-style: italic; }
-.number { color: #C969B6; }
-.preproc { color: #508B78; font-weight: bold; }
-.symbol { color: #A19DBF; }
-.function { color: #85FFDF; background-color: #141B1F; }
-.cbracket { color: #ddd; }
-.todo { font-weight: bold; background-color: cyan; }
+keyword { color: #66c8ef; }
+type { color: lightsalmon; }
+usertype { color: #CAC059; }
+classname { color: #eb7962; }
+string { color:#9aca7e; background-color:#1B221D; }
+specialchar { color: #5ECA4D; background-color:#1B221D; }
+regexp { color: #FFB14B; background-color:#262019; }
+comment { color: #666; font-style: italic; }
+number { color: #C969B6; }
+preproc { color: #508B78; font-weight: bold; }
+symbol { color: #A19DBF; }
+function { color: #85FFDF; background-color: #141B1F; }
+cbracket { color: #ddd; }
+todo { font-weight: bold; background-color: cyan; }
 
 /* line numbers */
-.linenum { color: black; }
+linenum { color: black; }
 
 /* Internet related */
-.url { color: blue; text-decoration: underline; }
+url { color: blue; text-decoration: underline; }
 
 /* other elements for ChangeLog and Log files */
-.date { color: blue; font-weight: bold; }
-.time, .file { color: darkblue; font-weight: bold; }
-.ip, .name { color: darkgreen; }
+date { color: blue; font-weight: bold; }
+time, file { color: darkblue; font-weight: bold; }
+ip, name { color: darkgreen; }
 
 /* for Prolog, Perl, lang */
-.variable { color: #cda869; }
-.italics { color: darkgreen; font-style: italic; }
-.bold { color: darkgreen; font-weight: bold; }
+variable { color: #cda869; }
+italics { color: darkgreen; font-style: italic; }
+bold { color: darkgreen; font-weight: bold; }
 
 /* for LaTeX */
-.underline { color: darkgreen; text-decoration: underline; }
-.fixed { color: green; }
-.argument, .optionalargument { color: darkgreen; }
-.math { color: orange; }
-.bibtex { color: blue; }
+underline { color: darkgreen; text-decoration: underline; }
+fixed { color: green; }
+argument, optionalargument { color: darkgreen; }
+math { color: orange; }
+bibtex { color: blue; }
 
 /* for diffs */
-.oldfile { color: orange; }
-.newfile { color: darkgreen; }
-.difflines { color: blue; }
+oldfile { color: orange; }
+newfile { color: darkgreen; }
+difflines { color: blue; }
 
 /* for css */
-.selector { color: #cda869; }
-.property { color: #c4af75; }
-.value { color: #f9ed97; }
+selector { color: #cda869; }
+property { color: #c4af75; }
+value { color: #f9ed97; }
 
 /* for Oz */
-.atom { color: orange; }
-.meta { font-style: italic; }
+atom { color: orange; }
+meta { font-style: italic; }

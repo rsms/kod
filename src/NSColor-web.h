@@ -34,4 +34,8 @@
 /// Returns a color that is legible on this color. (Nothing to do with textColor)
 - (NSColor*)legibleTextColor;
 
+- (NSColor*)randomColorWithSaturation:(CGFloat)saturation
+                           brightness:(CGFloat)brightness
+                                alpha:(CGFloat)alpha;
+
 @end

@@ -54,7 +54,7 @@ static KStyle *gEmptyStyle_ = nil;
   
   // Empty style
   gEmptyStyle_ =
-      [[KStyle alloc] initWithCatchAllElement:new KStyleElement(@"normal")];
+      [[KStyle alloc] initWithCatchAllElement:new KStyleElement(@"body")];
   
   [pool drain];
 }
@@ -159,16 +159,19 @@ static void _loadStyle(NSURL* url) {
   // Defer loading to background
   //
   // Note: We do this in order to avoid many lingering threads just running
-  //       runloops which sit and wait for I/O.
+  //       runloops which sit and wait for I/O, but also to avoid spending
+  //       precious time in the main thread, which would normally be the natural
+  //       choice (depending on the complexity of the loaded CSS, considerable
+  //       CPU cycles might be needed).
   //
   [url retain];
   [[KThread backgroundThread] performBlock:^{
+    // shortcut to have the underlying NSURLConnection scheduled in the
+    // backgroundThread (i.e. the callback will be invoked in that thread
+    // -- the actual I/O is handled by a global Foundation-controlled thread).
     _loadStyle_load(url);
     [url release];
   }];
-  /*dispatch_async_f(dispatch_get_global_queue(0,0),
-                   [url retain],  ///< or it might get autoreleased before used
-                   &_loadStyle_load);*/
 }
 
 
@@ -278,25 +281,22 @@ static inline void _freeElementsMapTable(NSMapTable **elements) {
   KStyleElement *elem = elements_.get(key);
   if (!elem) {
     lwc_string *elementName = [key LWCString];
-    CSSStyle *style = [CSSStyle selectStyleForObject:elementName
-                                           inContext:cssContext_
-                                       pseudoElement:0
-                                               media:CSS_MEDIA_SCREEN
-                                         inlineStyle:nil
-                                        usingHandler:&gCSSHandler];
-    lwc_string_unref(elementName);
-    elem = new KStyleElement(key);
-    
-    NSColor *color = style.color;
-    if (!color) {
-      //color = KConfig.getColor(@"defaultTextColor", [NSColor whiteColor]);
-      // random color
-      srand((unsigned)(pointer_t)key);
-      CGFloat hue = (CGFloat)rand() / RAND_MAX;
-      color = [NSColor colorWithCalibratedHue:hue saturation:0.5 brightness:0.9 alpha:1.0];
+    CSSStyle *style = nil;
+    @try {
+      style = [CSSStyle selectStyleForObject:elementName
+                                   inContext:cssContext_
+                               pseudoElement:0
+                                       media:CSS_MEDIA_SCREEN
+                                 inlineStyle:nil
+                                usingHandler:&gCSSHandler];
+    } @catch (NSException *e) {
+      WLOG("CSSStyle select failed %@ -- %@", e, [e callStackSymbols]);
+      DLOG("cssContext_ => %@", cssContext_);
+      DLOG("elementName => %@", key);
     }
-    elem->setForegroundColor(color);
-    
+    if (elementName)
+      lwc_string_unref(elementName);
+    elem = new KStyleElement(key, style);
     elements_.put(key, elem);
   }
   OSSpinLockUnlock(&elementsSpinLock_);
@@ -344,7 +344,7 @@ static inline void _freeElementsMapTable(NSMapTable **elements) {
   NSRange textRange = NSMakeRange(0, mastr.length);
   NSAttributedStringEnumerationOptions opts = 0;
   //opts = NSAttributedStringEnumerationLongestEffectiveRangeNotRequired;
-  [mastr enumerateAttribute:KStyleElement::ClassAttributeName
+  [mastr enumerateAttribute:KStyleElementAttributeName
                     inRange:textRange
                     options:opts
                  usingBlock:^(id value, NSRange range, BOOL *stop) {

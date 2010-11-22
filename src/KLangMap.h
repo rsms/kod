@@ -26,6 +26,7 @@
   HSpinLock langIdToInfoLock_;
   
   // Maps UTI to langId (e.g. "public.c-header" => @"cpp")
+  // TODO: langId should be a UTI in the future
   NSMutableDictionary *UTIToLangIdMap_;
   HSpinLock UTIToLangIdMapLock_;
 

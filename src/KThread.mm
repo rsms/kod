@@ -118,4 +118,24 @@ static dispatch_semaphore_t backgroundThreadSemaphore_;
 }
 
 
+- (BOOL)processURLConnection:(NSURLConnection*)connection {
+  if ([self scheduleURLConnection:connection]) {
+    [connection start];
+    return YES;
+  }
+  return NO;
+}
+
+
+- (BOOL)scheduleURLConnection:(NSURLConnection*)connection {
+  // wait until started if neccessary
+  dispatch_semaphore_wait(runSemaphore_, DISPATCH_TIME_FOREVER);
+  dispatch_semaphore_signal(runSemaphore_);
+  if ([self isCancelled]) return NO;
+  [connection scheduleInRunLoop:runLoop_ forMode:NSDefaultRunLoopMode];
+  //CFRunLoopWakeUp([runLoop_ getCFRunLoop]);
+  return YES;
+}
+
+
 @end

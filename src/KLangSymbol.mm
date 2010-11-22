@@ -33,5 +33,11 @@ const std::string &KLangSymbol::symbolize(const std::string &name,
 
 NSString const *KLangSymbol::symbolForString(const std::string &name) {
   KLangSymbolMap::iterator it = gNames.find(name);
-  return (it != gNames.end()) ? it->second : nil;
+  if (it == gNames.end()) {
+    NSString const *symbol = nil;
+    symbolize(name, &symbol);
+    return symbol;
+  } else {
+    return it->second;
+  }
 }

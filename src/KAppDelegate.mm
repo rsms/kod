@@ -27,6 +27,25 @@
   // Create our document controller. We need to be the first who creates a
   // NSDocumentController type, since it's somewhat singleton.
   [[KDocumentController alloc] init];
+  
+  // Register ourselves as service provider
+  [NSApp setServicesProvider:self];
+  
+  // Register URL handler
+  NSAppleEventManager *aem = [NSAppleEventManager sharedAppleEventManager];
+	[aem setEventHandler:self
+           andSelector:@selector(openUrl:withReplyEvent:)
+         forEventClass:kInternetEventClass
+            andEventID:kAEGetURL];
+}
+
+- (void)openUrl:(NSAppleEventDescriptor*)event
+ withReplyEvent:(NSAppleEventDescriptor*)replyEvent {
+	NSString *urlstr = [[event paramDescriptorForKeyword:keyDirectObject] stringValue];
+	NSURL* url = [NSURL URLWithString:urlstr];
+  if (url) {
+    [self openURL:url];
+  }
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)notification {
@@ -114,5 +133,65 @@
     [openPanel release];
   }];
 }*/
+
+
+#pragma mark -
+#pragma mark NSServices
+
+
+- (void)openLink:(NSPasteboard*)pboard
+        userData:(NSString*)userData
+           error:(NSString**)error {
+  DLOG("openLink:%@ userData:%@", pboard, userData);
+  
+  // Read all URLs in |pboard|
+  NSArray *classes = [NSArray arrayWithObject:[NSURL class]];
+  NSArray *urls = [pboard readObjectsForClasses:classes options:nil];
+  if (!urls.count) {
+    classes = [NSArray arrayWithObject:[NSString class]];
+    NSArray *strings = [pboard readObjectsForClasses:classes options:nil];
+    urls = [NSMutableArray array];
+    for (NSString *str in strings) {
+      NSURL *url = [NSURL URLWithString:str];
+      if (!url) {
+        // This happens for malformed URL
+        // For example (ironically enough) Apple's developer docs URLs:
+        //   "http://developer.apple.com/library/mac/#documentation/Miscellaneou
+        //   s/Reference/UTIRef/Articles/System-DeclaredUniformTypeIdentifiers.h
+        //   tml#//apple_ref/doc/uid/TP40009259-SW1"
+        *error = @"Failed to parse link(s)";
+      } else {
+        [(NSMutableArray*)urls addObject:url];
+      }
+    }
+  }
+  
+  // open all urls in the normal priority background dispatch queue
+  //DLOG("urls => %@", urls);
+  if (urls.count) {
+    for (NSURL *url in urls) {
+      [self openURL:url];
+    }
+  }
+  
+  //[pboard clearContents];
+}
+
+
+- (void)openURL:(NSURL*)url {
+  KDocumentController *docCtrl =
+      (KDocumentController*)[NSDocumentController sharedDocumentController];
+  if ([url isFileURL]) {
+    // file URLs use blocking I/O
+    K_DISPATCH_BG_ASYNC({
+      [docCtrl openDocumentWithContentsOfURL:url display:YES error:nil];
+    });
+  } else {
+    // non-file URLs use async I/O and should be run on the main thread
+    // (the underlying mechansim will take care of scheduling on the main
+    // thread, so we don't need to check for it here).
+    [docCtrl openDocumentWithContentsOfURL:url display:YES error:nil];
+  }
+}
 
 @end

@@ -22,11 +22,13 @@
 
 static NSImage* _kDefaultIcon = nil;
 static NSString* _kDefaultTitle = @"Untitled";
+static dispatch_queue_t gHighlightDispatchQueue = NULL;
 
 + (void)load {
   NSAutoreleasePool* pool = [NSAutoreleasePool new];
   _kDefaultIcon =
       [[[NSWorkspace sharedWorkspace] iconForFile:@"/dev/null"] retain];
+  gHighlightDispatchQueue = dispatch_queue_create("kod.highlight", NULL);
   [pool drain];
 }
 
@@ -223,19 +225,35 @@ static int debugSimulateTextAppendingIteration = 0;
   return self;
 }
 
-
+/*
+ This method is invoked by the NSDocumentController method
+ makeDocumentWithContentsOfURL:ofType:error: 
+ */
 - (id)initWithContentsOfURL:(NSURL *)absoluteURL
                      ofType:(NSString *)typeName
                       error:(NSError **)outError {
-  // This may be called by a background thread
-  DLOG_TRACE();
+  // This may be called on a background thread
+  DLOG("initWithContentsOfURL:%@ ofType:%@", absoluteURL, typeName);
   self = [self initWithBaseTabContents:nil];
   assert(self);
-  DLOG_EXPR(absoluteURL);
-  DLOG_EXPR(typeName);
-  self = [super initWithContentsOfURL:absoluteURL
-                               ofType:typeName
-                                error:outError];
+  
+  // we are in a loading state
+  self.isLoading = YES;
+  
+  // queue complete highlighting
+  [self highlightCompleteDocumentASAP];
+  
+  // this will take care of loading the contents at |absoluteURL|
+  //
+  // readFromURL:ofType:error: will call:
+  // - setFileURL:
+  // - setFileType:
+  // - setFileModificationDate:
+  // 
+  if (![self readFromURL:absoluteURL ofType:typeName error:outError]) {
+    [self release];
+    return nil;
+  }
   return self;
 }
 
@@ -254,6 +272,15 @@ static int debugSimulateTextAppendingIteration = 0;
 }
 
 
+- (void)setIsLoading:(BOOL)loading {
+  //DLOG("setIsLoading:%@", loading?@"YES":@"NO");
+  [super setIsLoading:loading];
+  if (!isLoading_ && hasPendingInitialHighlighting_) {
+    [self highlightCompleteDocumentInBackground];
+  }
+}
+
+
 - (NSString*)langId {
   return langId_;
 }
@@ -262,8 +289,10 @@ static int debugSimulateTextAppendingIteration = 0;
   if (langId_ != langId) {
     langId_ = [langId retain];
     DLOG("%@ changed langId to '%@'", self, langId_);
+    // TODO: langId should be a UTI in the future
+    self.fileType = langId;
     if (sourceHighlighter_->setLanguage(langId_)) {
-      [self queueCompleteHighlighting];
+      [self highlightCompleteDocumentASAP];
     }
   }
 }
@@ -326,10 +355,10 @@ static int debugSimulateTextAppendingIteration = 0;
                         atIndex:(NSInteger)index
                    inForeground:(bool)foreground {
   [super tabDidInsertIntoBrowser:browser atIndex:index inForeground:foreground];
-  assert(browser);
-  [self addWindowController:browser.windowController];
+  DLOG("%@ tabDidInsertIntoBrowser:%@ atIndex:%d", self, browser, index);
+  //assert(browser);
+  //[self addWindowController:browser.windowController];
 }
-
 
 - (void)tabDidDetachFromBrowser:(CTBrowser*)browser atIndex:(NSInteger)index {
   [super tabDidDetachFromBrowser:browser atIndex:index];
@@ -346,6 +375,7 @@ static int debugSimulateTextAppendingIteration = 0;
       [self addWindowController:wc];
       [self setWindow:[wc window]];
     }
+    
   }
 }
 
@@ -417,13 +447,27 @@ static int debugSimulateTextAppendingIteration = 0;
 
 
 - (void)setFileURL:(NSURL *)url {
-  [super setFileURL:url];
-  if (url && [url path]) {
-    self.icon = [[NSWorkspace sharedWorkspace] iconForFile:[url path]];
-    self.title = [url lastPathComponent];
-  } else {
-    self.title = _kDefaultTitle;
-    self.icon = _kDefaultIcon;
+  if (url != [self fileURL]) {
+    [super setFileURL:url];
+    if (url && [url path]) {
+      self.icon = [[NSWorkspace sharedWorkspace] iconForFile:[url path]];
+      
+      // set title
+      if ([url isFileURL]) {
+        self.title = url.lastPathComponent;
+      } else {
+        NSString *newTitle = [url absoluteString];
+        NSCharacterSet *illegalFilenameCharset =
+            [NSCharacterSet characterSetWithCharactersInString:@"/:"];
+        newTitle = [newTitle stringByTrimmingCharactersInSet:illegalFilenameCharset];
+        newTitle = [newTitle stringByReplacingOccurrencesOfString:@"/"
+                                                       withString:@"-"];
+        self.title = newTitle;
+      }
+    } else {
+      self.title = _kDefaultTitle;
+      self.icon = _kDefaultIcon;
+    }
   }
 }
 
@@ -473,7 +517,7 @@ static int debugSimulateTextAppendingIteration = 0;
   
   while (YES) {
     NSUInteger maxLength = mastr.length;
-    [mastr attribute:KStyleElement::ClassAttributeName
+    [mastr attribute:KStyleElementAttributeName
              atIndex:index
 longestEffectiveRange:&range
              inRange:NSMakeRange(0, maxLength)];
@@ -524,7 +568,7 @@ longestEffectiveRange:&range
 
   while (YES) {
     NSUInteger maxLength = mastr.length;
-    [mastr attribute:KStyleElement::ClassAttributeName
+    [mastr attribute:KStyleElementAttributeName
              atIndex:index
 longestEffectiveRange:&range
              inRange:NSMakeRange(0, maxLength)];
@@ -582,41 +626,34 @@ longestEffectiveRange:&range
 
 
 - (void)highlightTextStorage:(NSTextStorage*)textStorage
-                     inRange:(NSRange)range
-              waitUntilReady:(BOOL)wait {
-  //NSLog(@"highlightTextStorage");
-  /*if (textStorage.length == 0)
-    return;
-  if (wait) {
-    if (sourceHighlightSem_->get() != 0L) {
-      return;
-    }
-  } else if (sourceHighlightSem_->tryGet() != 0L) {
-    return;
-  }*/
-  
+                     inRange:(NSRange)range {
   [textStorage beginEditing];
   sourceHighlighter_->highlight(textStorage, style_, range);
   hasPendingInitialHighlighting_ = NO;
   [textStorage endEditing];
-  //sourceHighlightSem_->put();
 }
 
 
-- (void)queueCompleteHighlighting {
-  if (!hasPendingInitialHighlighting_) {
+- (void)highlightCompleteDocumentASAP {
+  if (isLoading_) {
     hasPendingInitialHighlighting_ = YES;
-    DLOG("queueCompleteHighlighting");
-    K_DISPATCH_BG_ASYNC({ [self highlightCompleteDocument]; });
+  } else {
+    [self highlightCompleteDocumentInBackground];
   }
+}
+
+
+- (void)highlightCompleteDocumentInBackground {
+  K_DISPATCH_BG_ASYNC({
+    [self highlightCompleteDocument];
+  });
 }
 
 
 - (void)highlightCompleteDocument {
   static NSRange range = NSMakeRange(NSNotFound, 0);
   [self highlightTextStorage:textView_.textStorage
-                     inRange:range
-              waitUntilReady:YES];
+                     inRange:range];
 }
 
 
@@ -625,11 +662,8 @@ longestEffectiveRange:&range
   NSRange	editedRange = [textStorage editedRange];
   
   // Syntax highlight preamble
-  if (!hasPendingInitialHighlighting_) {
-    //if (sourceHighlightSem_->tryGet() == 0L) {
-      sourceHighlighter_->willHighlight(textStorage, editedRange);
-    //  sourceHighlightSem_->put();
-    //}
+  if (!hasPendingInitialHighlighting_ && !isLoading_) {
+    sourceHighlighter_->willHighlight(textStorage, editedRange);
   }
 }
 
@@ -639,7 +673,7 @@ longestEffectiveRange:&range
 
   // We sometimes initialize documents on background threads where the initial
   // "filling" causes this method to be called. We're a noop in that case.
-  if (isProcessingTextStorageEdit_ || ![NSThread isMainThread])
+  if (isProcessingTextStorageEdit_ || isLoading_ || ![NSThread isMainThread])
     return;
 
   NSTextStorage	*textStorage = [notification object];
@@ -666,8 +700,7 @@ longestEffectiveRange:&range
   // Syntax highlight
   if (!hasPendingInitialHighlighting_) {
     [self highlightTextStorage:textStorage
-                       inRange:editedRange
-                waitUntilReady:NO];
+                       inRange:editedRange];
   };
   
   // this makes the edit an undoable entry (otherwise each "group" of edits will
@@ -705,42 +738,120 @@ longestEffectiveRange:&range
 }
 
 
-// Generate data from text
-- (NSData*)dataOfType:(NSString*)typeName error:(NSError **)outError {
-  DLOG_EXPR(typeName);
-  [textView_ breakUndoCoalescing]; // preserves undo state
-  NSData *data = [[textView_ string] dataUsingEncoding:textEncoding_
-                                  allowLossyConversion:NO];
-  if (!data) {
-    *outError = [NSError kodErrorWithDescription:@"Failed to parse data"];
-  }
-  return data;
+
+- (void)startReadingFromRemoteURL:(NSURL*)absoluteURL
+                           ofType:(NSString *)_typeName {
+  // set state to "waiting"
+  self.isLoading = YES;
+  self.isWaitingForResponse = YES;
+  
+  // set text view to be read-only
+  [textView_ setEditable:NO];
+  
+  // we might alter this one, so make it __block
+  __block NSString* typeName = [_typeName retain];
+  
+  HURLConnection *conn = [absoluteURL
+    fetchWithOnResponseBlock:^(NSURLResponse *response) {
+      NSError *error = nil;
+      
+      // change state from waiting to loading
+      self.isWaitingForResponse = NO;
+      
+      // check HTTP response
+      if ([response isKindOfClass:[NSHTTPURLResponse class]]) {
+        NSInteger status = [(NSHTTPURLResponse*)response statusCode];
+        if (status < 200 || status > 299) {
+          error = [NSError HTTPErrorWithStatusCode:status];
+        }
+      }
+      
+      // try to derive UTI and read filename, unless error
+      if (!error) {
+        // get UTI based on MIME type
+        CFStringRef mimeType = (CFStringRef)[response MIMEType];
+        if (mimeType) {
+          NSString *uti = (NSString*)
+              UTTypeCreatePreferredIdentifierForTag(kUTTagClassMIMEType,
+                                                    mimeType, NULL);
+          if (uti)
+            h_objc_xch(&typeName, uti);
+        }
+      }
+      
+      // update URL, if needed (might have been redirected)
+      self.fileURL = response.URL;
+      
+      // set suggested title
+      self.title = response.suggestedFilename;
+      
+      // TODO: set fileModificationDate to value from response headers for HTTP
+      self.fileModificationDate = [NSDate date];
+      
+      return error;
+    }
+    onCompleteBlock:^(NSError *err, NSData *data) {
+      // Read data unless an error occured while reading URL
+      if (!err) {
+        [self readFromData:data ofType:typeName error:&err];
+      }
+      
+      // make sure isLoading is false
+      self.isLoading = NO;
+      
+      // if an error occured, handle it
+      if (err) {
+        self.isCrashed = YES; // FIXME
+        [NSApp presentError:err];
+      }
+      
+      // we are done -- allow editing
+      [textView_ setEditable:YES];
+      
+      // TODO: syntax highlighting
+    }
+    startImmediately:NO];
+  
+  // we want the blocks to be invoked on the main thread, thank you
+  [conn scheduleInRunLoop:[NSRunLoop mainRunLoop]
+                  forMode:NSDefaultRunLoopMode];
+  [conn start];
 }
 
 
-// Generate text from data
-- (BOOL)readFromData:(NSData *)data
-              ofType:(NSString *)typeName
-               error:(NSError **)outError {
-  NSString *text = [[NSString alloc] initWithData:data encoding:textEncoding_];
-  if (!text) {
-    WLOG("Failed to parse data. text => nil (data length: %u)", [data length]);
-    *outError = [NSError kodErrorWithDescription:@"Failed to parse file"];
-    return NO;
+
+- (BOOL)readFromURL:(NSURL *)absoluteURL
+             ofType:(NSString *)typeName
+              error:(NSError **)outError {
+  DLOG("readFromURL:%@ ofType:%@", absoluteURL, typeName);
+
+  // set url
+  self.fileURL = absoluteURL;
+  
+  if ([absoluteURL isFileURL]) {
+    // utilize mmap to load a file
+    NSString *path = [absoluteURL path];
+    NSData *data = [NSData dataWithContentsOfMappedFile:path];
+    
+    // read data
+    if (![self readFromData:data ofType:typeName error:outError])
+      return NO;
+    
+    // read mtime
+    NSDate *mtime = nil;
+    if (![absoluteURL getResourceValue:&mtime
+                           forKey:NSURLContentModificationDateKey
+                            error:outError]) {
+      return NO;
+    }
+    self.fileModificationDate = mtime;
   } else {
-    [textView_ setString:text];
-    // TODO: restore selection(s), possibly by reading from ext. attrs.
-    [textView_ setSelectedRange:NSMakeRange(0, 0)];
-    [self updateChangeCount:NSChangeCleared];
-    isDirty_ = NO;
-    
-    // guess language if no language has been set
-    if (!langId_)
-      [self guessLanguageBasedOnUTI:typeName textContent:text];
-    
+    // load a foreign/remote resource
+    [self startReadingFromRemoteURL:absoluteURL ofType:typeName];
     return YES;
   }
 }
+
 
 // Sets the contents of this document by reading from a file wrapper of a
 // specified type (e.g. a directory).
@@ -756,6 +867,57 @@ longestEffectiveRange:&range
   *outError = [NSError kodErrorWithDescription:@"Unable to read directories"];
   return NO;
 }
+
+
+// Generate text from data
+- (BOOL)readFromData:(NSData *)data
+              ofType:(NSString *)typeName
+               error:(NSError **)outError {
+  DLOG("readFromData:%p ofType:%@", data, typeName);
+  
+  // decode data into text
+  NSString *text = [[NSString alloc] initWithData:data encoding:textEncoding_];
+  
+  if (!text) {
+    WLOG("Failed to parse data. text => nil (data length: %u)", [data length]);
+    *outError = [NSError kodErrorWithDescription:@"Failed to parse file"];
+    return NO;
+  } else {
+    [textView_ setString:text];
+    [text release];
+    // TODO: restore selection(s), possibly by reading from ext. attrs.
+    [textView_ setSelectedRange:NSMakeRange(0, 0)];
+    [self updateChangeCount:NSChangeCleared];
+    isDirty_ = NO;
+    self.isLoading = NO;
+    self.isWaitingForResponse = NO;
+    
+    // guess language if no language has been set
+    if (!langId_) {
+      // implies queueing of complete highlighting
+      [self guessLanguageBasedOnUTI:typeName textContent:text];
+    } else if (hasPendingInitialHighlighting_) {
+      self.fileType = typeName;
+      [self highlightCompleteDocumentInBackground];
+    }
+  }
+  return YES;
+}
+
+
+
+// Generate data from text
+- (NSData*)dataOfType:(NSString*)typeName error:(NSError **)outError {
+  DLOG_EXPR(typeName);
+  [textView_ breakUndoCoalescing]; // preserves undo state
+  NSData *data = [[textView_ string] dataUsingEncoding:textEncoding_
+                                  allowLossyConversion:NO];
+  if (!data) {
+    *outError = [NSError kodErrorWithDescription:@"Failed to parse data"];
+  }
+  return data;
+}
+
 
 // fs extended attributes to write with the document
 - (NSDictionary *)fileAttributesToWriteToURL:(NSURL *)url

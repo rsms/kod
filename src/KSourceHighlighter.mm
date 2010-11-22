@@ -34,12 +34,6 @@ static HSemaphore g_state_cache_sem(1); // 1=unlocked, 0=locked
 static HighlightStatePtr g_empty_state;
 
 
-// UTI "public.c-plus-plus-source" --> URL
-// 
-
-/// UTI => URL
-
-
 /// Runtime constructor
 __attribute__((constructor)) static void __init() {
   g_empty_state = HighlightStatePtr(new HighlightState);
@@ -256,6 +250,7 @@ void KSourceHighlighter::highlightLine(str_const_iterator &paragraphStart,
                                        str_const_iterator &start,
                                        str_const_iterator &end,
                                        MatchingParameters &mParams) {
+  //DLOG("line> '%s'", std::string(start, end).c_str());
   str_const_iterator location = start;
   bool matched = true;
   HighlightToken token;
@@ -368,10 +363,8 @@ void KSourceHighlighter::highlight(NSTextStorage *textStorage,
                                    KStyle *style,
                                    NSRange editedRange) {
   // update instance-locals
-  if (receivedWillHighlight_) {
-    assert(textStorage_ == textStorage);
-    assert(text_ == [textStorage_ string]);
-  } else {
+  if (!receivedWillHighlight_ || textStorage_ != textStorage) {
+    receivedWillHighlight_ = NO;
     textStorage_ = [textStorage retain];
     text_ = [[textStorage_ string] retain];
     fullRange_ = NSMakeRange(0, textStorage_.length);
@@ -409,8 +402,6 @@ void KSourceHighlighter::highlight(NSTextStorage *textStorage,
     // TODO: Handle CR linebreaks. Currently only CRLF and LF are handled.
     while (end != paragraphEnd && *end++ != '\n') {}
     
-    DLOG("line =>\n'%s'", std::string(start, end).c_str());
-    
     highlightLine(paragraphStart, start, end, mParams);
 
     start = end;
@@ -430,7 +421,7 @@ void KSourceHighlighter::highlight(NSTextStorage *textStorage,
 id KSourceHighlighter::rangeOfLangElement(NSUInteger index, NSRange &range) {
   // Algorithm
   /* - start by looking at |index|
-   * - read the attribute |KStyleElement::ClassAttributeName|
+   * - read the attribute |KStyleElementAttributeName|
    * - if we found such an attribute
    *   - let |start| be index and move location to the left until the attribute
    *     is no longer present.
@@ -455,7 +446,7 @@ NSRange KSourceHighlighter::calcOptimalRange(NSRange editedRange) {
   if (index > 0) index--;
   
   // Find the effective range of which index is contained and the attribute
-  // |KStyleElement::ClassAttributeName| does not change value
+  // |KStyleElementAttributeName| does not change value
   rangeOfLangElement(index, highlightRange);
 
   highlightRange = NSUnionRange(editedRange, highlightRange);
@@ -479,7 +470,7 @@ NSRange KSourceHighlighter::calcOptimalRange(NSRange editedRange) {
      *      "void foo(int a) {"
      *   5. "foo" gets re-highlighted, but since the highlighter determine
      *      element type (format) from _context_ "foo" will incorrectly
-     *      receive the "normal" format rather than the "function" format.
+     *      receive the "body" format rather than the "function" format.
      *
      * By including the full line we ensure the highlighter will at least
      * have some context to work with. This is far from optimal and should
@@ -491,7 +482,7 @@ NSRange KSourceHighlighter::calcOptimalRange(NSRange editedRange) {
      *
      *   b. Use a special text attribute (like how state is tracked with
      *      KHighlightState) which replaces the current
-     *      KStyleElement::ClassAttributeName symbol representing the
+     *      KStyleElementAttributeName symbol representing the
      *      format. Maybe a struct e.g:
      *
      *        KTextFormat {
@@ -503,7 +494,7 @@ NSRange KSourceHighlighter::calcOptimalRange(NSRange editedRange) {
      *      Where |numberOfPreDependants| indicates how many elements this
      *      format need to consider when being modified, then when
      *      breaking such an element (step 2. in our use-case above) the
-     *      highlighter applies the following calculation to the new
+     *      highlighter "body" the following calculation to the new
      *      format struct ("normal" in our use-case):
      *
      *        newFormat.numberOfPreDependants = 
