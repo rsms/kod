@@ -217,6 +217,7 @@
 		3A93A83E1299E14300185857 /* NSURL-blocks.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSURL-blocks.h"; sourceTree = "<group>"; };
 		3A93A83F1299E14300185857 /* NSURL-blocks.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSURL-blocks.m"; sourceTree = "<group>"; };
 		3A93AB82129ADA5500185857 /* hatomic_flags.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = hatomic_flags.h; sourceTree = "<group>"; };
+		3A93B4E5129B67CB00185857 /* KRUsage.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = KRUsage.hh; sourceTree = "<group>"; };
 		3AC2D3FB1298C40A0066B586 /* KSourceHighlightState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSourceHighlightState.h; sourceTree = "<group>"; };
 		3AC2D3FC1298C40A0066B586 /* KSourceHighlightState.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KSourceHighlightState.mm; sourceTree = "<group>"; };
 		3AC2D4A51298D8050066B586 /* KTextStorage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KTextStorage.h; sourceTree = "<group>"; };
@@ -334,6 +335,7 @@
 				3A6D4B03129591F300DBA2A3 /* kexceptions.h */,
 				3A6D4B04129591F300DBA2A3 /* kexceptions.m */,
 				3A1596E5128C607700339E6E /* h-objc.h */,
+				3A93B4E5129B67CB00185857 /* KRUsage.hh */,
 				3A928C16122714E800DA7E43 /* main.m */,
 				3AE5ECB41292F7B800B17C4F /* KThread.h */,
 				3AE5ECB51292F7B800B17C4F /* KThread.mm */,

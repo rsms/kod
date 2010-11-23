@@ -3,7 +3,7 @@
 
 #import "common.h"
 
-#include <stack>
+#include <deque>
 #include <sstream>
 #include <boost/shared_ptr.hpp>
 #import "HUnorderedMap.h"
@@ -24,12 +24,9 @@ class HighlightEventListener;
 struct HighlightEvent;
 }
 
-typedef std::stack<srchilite::HighlightStatePtr> KHighlightStateStack;
+typedef std::deque<srchilite::HighlightStatePtr> KHighlightStateStack;
 typedef boost::shared_ptr<KHighlightStateStack> KHighlightStateStackPtr;
 typedef boost::shared_ptr<KSourceHighlighter> KSourceHighlighterPtr;
-
-// map { state id -> KSourceHighlightState* }
-typedef HUnorderedMapObjC<unsigned int> KSourceHighlightStateMap;
 
 // NSAttributedString attribute reflecting a srchilite::HighlightState
 extern NSString * const KSourceHighlightStateAttribute;
@@ -58,16 +55,13 @@ class KSourceHighlighter {
   //KSourceHighlightState *currentHighlightState_;
   
   /// the stack for the highlight states
-  KHighlightStateStackPtr stateStack;
+  KHighlightStateStackPtr stateStack_;
   
   /// Additional parameters for the formatters
   srchilite::FormatterParams *formatterParams;
   
   /// interned string used for cache lookup etc.
   NSString const *langId_;
-  
-  /// Maps state id -> KSourceHighlightState instances
-  KSourceHighlightStateMap sourceHighlightStateMap_;
   
   /**
    * Enters a new state (using the stack)
@@ -105,7 +99,15 @@ class KSourceHighlighter {
    * Replace state and clear the stack if needed.
    * Returns true if state changed.
    */
-  bool setState(const srchilite::HighlightStatePtr &newState);
+  bool setMainState(const srchilite::HighlightStatePtr &newState);
+  
+  // set current state from a KSourceHighlightState object
+  void setCurrentState(KSourceHighlightState *state);
+  
+  inline void resetState() {
+    currentHighlightState_ = mainHighlightState_;
+    clearStateStack();
+  }
   
   // -----------------------------
   // highlighting support
@@ -114,9 +116,10 @@ class KSourceHighlighter {
   KStyle *style_; // weak
   NSString *text_; // weak
   NSRange fullRange_;
+  NSRange highlightRange_;
   std::string *paragraph_; // weak
   bool paragraphIsMultibyte_;
-  bool receivedWillHighlight_;
+  //bool receivedWillHighlight_;
   
   NSMutableArray *attributesBuffer_;
   
@@ -132,14 +135,43 @@ class KSourceHighlighter {
   id rangeOfLangElement(NSUInteger index, NSRange &range);
   
   inline NSRange matchUnicodeRange() {
+    NSRange range;
     if (paragraphIsMultibyte_) {
-      return [NSString UTF16RangeFromUTF8Range:matchRange_
+      range =[NSString UTF16RangeFromUTF8Range:matchRange_
                                   inUTF8String:paragraph_->data()
                                       ofLength:paragraph_->size()];
     } else {
-      return matchRange_;
+      range = matchRange_;
     }
+    // convert/offset to textStorage_'s space
+    range.location += highlightRange_.location;
+    return range;
   }
+  
+  inline KSourceHighlightState *stateAtIndex(NSUInteger index) {
+    return [textStorage_ attribute:KSourceHighlightStateAttribute
+                           atIndex:index
+                    effectiveRange:NULL];
+  }
+  
+  inline KSourceHighlightState *stateAtIndex(NSUInteger index,
+                                             NSRangePointer effectiveRange) {
+    return [textStorage_ attribute:KSourceHighlightStateAttribute
+                           atIndex:index
+                    effectiveRange:effectiveRange];
+    
+    //return [textStorage_ attribute:KSourceHighlightStateAttribute
+    //                       atIndex:index
+    //         longestEffectiveRange:effectiveRange
+    //                       inRange:fullRange_];
+    
+    //NSUInteger index = selectedRange.location;
+    //if (index >= textStorage.length) index = textStorage.length-1;
+    //NSDictionary *attrs = [textStorage attributesAtIndex:index
+    //                                      effectiveRange:&selectedRange];
+  }
+  
+  void highlightPass();
   
  public:
   
@@ -151,15 +183,10 @@ class KSourceHighlighter {
   
   bool setLanguage(NSString const *langId, NSURL *url=NULL);
   
-  /**
-   * Highlights a paragraph (a line actually)
-   * @param paragraph
-   */
+  // apply formatting
   void format(const std::string &elem);
   
-  /**
-   * Clears the statck of states
-   */
+  // Clears the stack of states
   void clearStateStack();
   
   bool beginBufferingOfAttributes();
@@ -174,10 +201,24 @@ class KSourceHighlighter {
     formatterParams = p;
   }
   
+  inline uint32_t currentStateHash() {
+    uint32_t hash = currentHighlightState_->getId();
+    if (!stateStack_->empty()) {
+      KHighlightStateStack::reverse_iterator rit = stateStack_->rbegin(),
+                                             rend = stateStack_->rend();
+      while (rit != rend) {
+        hash = (*(rit++))->getId() + (hash << 6) + (hash << 16) - hash;
+      }
+    }
+    return hash;
+  }
+  
   // ---------------------------------------------------------------
   
-  void willHighlight(NSTextStorage *textStorage, NSRange editedRange);
-  void highlight(NSTextStorage *textStorage, KStyle *style, NSRange editRange);
+  //void willHighlight(NSTextStorage *textStorage, NSRange editedRange);
+  NSRange highlight(NSTextStorage *textStorage, KStyle *style, NSRange inRange,
+                    KSourceHighlightState *editedHighlightState,
+                    NSRange editedHighlightStateRange);
 };
 
 #endif K_SOURCE_HIGHLIGHTER_H_

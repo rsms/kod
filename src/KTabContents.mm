@@ -721,13 +721,16 @@ longestEffectiveRange:&range
     return NO;
   }
   [textStorage beginEditing];
-  sourceHighlighter_->highlight(textStorage, style_, range);
+  sourceHighlighter_->highlight(textStorage, style_, range,
+                                lastEditedHighlightState_,
+                                lastEditedHighlightStateRange_);
   [textStorage endEditing];
   hatomic_flags_clear(&stateFlags_, kHighlightingIsProcessing);
   return YES;
 }
 
 
+/*
 - (void)textStorageWillProcessEditing:(NSNotification *)notification {
   // Edit event preamble (unless loading or already processing)
   if (isLoading_ ||
@@ -742,34 +745,114 @@ longestEffectiveRange:&range
   if (!hatomic_flags_test(&stateFlags_, kHighlightingIsProcessing)) {
     sourceHighlighter_->willHighlight(textStorage, editedRange);
   }
+}*/
+
+
+// Edits arrive in singles
+- (BOOL)textView:(NSTextView *)aTextView
+shouldChangeTextInRange:(NSRange)range
+replacementString:(NSString *)replacementString {
+  DLOG("replace text '%@' at %@ with '%@'",
+       [textView_.textStorage.string substringWithRange:range],
+       NSStringFromRange(range), replacementString);
+  
+  // find range of highlighting state at edit location
+  NSTextStorage *textStorage = textView_.textStorage;
+  if (textStorage.length != 0) {
+    NSUInteger index;
+    if (replacementString.length == 0) {
+      // deletion
+      if (textStorage.length == 1) {
+        index = NSNotFound;
+      } else {
+        index = MIN(range.location+1, textStorage.length-1);
+      }
+    } else {
+      // insertion/replacement
+      index = MIN(range.location, textStorage.length-1);
+    }
+    if (index != NSNotFound) {
+      lastEditedHighlightState_ =
+        [textStorage attribute:KSourceHighlightStateAttribute
+                       atIndex:index
+                effectiveRange:&lastEditedHighlightStateRange_];
+    }
+    //KSourceHighlightState *hlstate =
+    //  [textStorage attribute:KSourceHighlightStateAttribute
+    //                 atIndex:range.location
+    //   longestEffectiveRange:&highlightStateRange
+    //                 inRange:NSMakeRange(0, textStorage.length)];
+    //DLOG("state[2] at %u -> %@ '%@'", range.location, hlstate,
+    //  [textStorage.string substringWithRange:lastEditedHighlightStateRange_]);
+  } else {
+    lastEditedHighlightState_ = nil;
+  }
+
+  return YES;
 }
 
 
-- (void)textStorageDidProcessEditing:(NSNotification*)notification {
-	// invoked after editing occured
+/*- (BOOL)textView:(NSTextView *)textView
+shouldChangeTextInRanges:(NSArray *)affectedRanges
+      replacementStrings:(NSArray *)replacementStrings {
+  NSUInteger i, count = [affectedRanges count];
+  for (i = 0; i < count; i++) {
+    NSValue *val = [affectedRanges objectAtIndex:i];
+    NSString *str = [replacementStrings objectAtIndex:i];
+    NSRange range = [val rangeValue];
+    DLOG("replace text '%@' at %@ with '%@'",
+         [textView_.textStorage.string substringWithRange:range],
+         NSStringFromRange(range), str);
+    
+    // find full range of state at edit location
+    
+    NSRange highlightStateRange;
+    NSTextStorage *textStorage = textView_.textStorage;
+    KSourceHighlightState *hlstate =
+      [textStorage attribute:KSourceHighlightStateAttribute
+                     atIndex:range.location
+       longestEffectiveRange:&highlightStateRange
+                     inRange:NSMakeRange(0, textStorage.length)];
+    DLOG("state at %u -> %@ '%@'", range.location, hlstate,
+         [textStorage.string substringWithRange:highlightStateRange]);
+    
+  }
+  return YES;
+}*/
+
+
+// invoked after an editing occured, but before it's been committed
+// Has the nasty side effect of losing the selection when applying attributes
+//- (void)textStorageWillProcessEditing:(NSNotification *)notification {}
+
+// invoked after an editing occured which has just been committed
+//- (void)textStorageDidProcessEditing:(NSNotification *)notification {}
+
+- (void)textStorageDidProcessEditing:(NSNotification *)notification {
+	// invoked after an editing occured, but before it's been committed
 
   // Don't process editing if we are in a loading state (i.e. the edit might
   // have been caused by input data arrival)
-  // Also, if we don't manage to set kTestStorageEditingIsProcessing, that means
-  // a text storage edit is currently being processed, so we bail.
-  if (isLoading_ ||
-      !hatomic_flags_set(&stateFlags_, kTestStorageEditingIsProcessing)) {
+  if (isLoading_)
     return;
-  }
 
   NSTextStorage	*textStorage = [notification object];
 	NSRange	editedRange = [textStorage editedRange];
 	int	changeInLen = [textStorage changeInLength];
   if (changeInLen == 0) {
     // text attributes changed -- not interested
-    hatomic_flags_clear(&stateFlags_, kTestStorageEditingIsProcessing);
     return;
   }
   
-  isProcessingTextStorageEdit_ = YES;
+  // If we don't manage to set kTestStorageEditingIsProcessing, that means a
+  // text storage edit is currently being processed, so we bail.
+  if (!hatomic_flags_set(&stateFlags_, kTestStorageEditingIsProcessing)) {
+    return;
+  }
   
   BOOL wasInUndoRedo = [[self undoManager] isUndoing] ||
                        [[self undoManager] isRedoing];
+  DLOG_RANGE(editedRange, textStorage.string);
   DLOG("editedRange: %@, changeInLen: %d, wasInUndoRedo: %@",
        NSStringFromRange(editedRange), changeInLen,
        wasInUndoRedo ? @"YES":@"NO");
@@ -780,7 +863,10 @@ longestEffectiveRange:&range
   }
   
   // Syntax highlight (it's a no-op if aldready processing a "highlight")
-  [self highlightTextStorage:textStorage inRange:editedRange];
+  //selectionsBeforeEdit_ = [textView_ selectedRanges];
+  if ([self highlightTextStorage:textStorage inRange:editedRange]) {
+    //[textView_ setSelectedRanges:selections];
+  }
   
   // this makes the edit an undoable entry (otherwise each "group" of edits will
   // be undoable, which is not fine-grained enough for us)

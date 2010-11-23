@@ -5,6 +5,7 @@
 #import "KLangManager.h"
 #import "KStyle.h"
 #import "KSourceHighlightState.h"
+#import "KRUsage.hh"
 #import "KConfig.h"
 #import "common.h"
 
@@ -33,6 +34,10 @@ static HighlightStateCacheMap g_state_cache;
 static HSemaphore g_state_cache_sem(1); // 1=unlocked, 0=locked
 static HighlightStatePtr g_empty_state;
 
+// Global highlight state+stack cache
+// map { state+stack hash -> KSourceHighlightState* }
+typedef HUnorderedMapObjC<uint32_t> StateStackCacheType;
+static StateStackCacheType g_statestack_cache;
 
 /// Runtime constructor
 __attribute__((constructor)) static void __init() {
@@ -42,9 +47,14 @@ __attribute__((constructor)) static void __init() {
 
 KSourceHighlighter::KSourceHighlighter()
     : langId_(nil)
-    , stateStack(KHighlightStateStackPtr(new KHighlightStateStack))
+    , stateStack_(KHighlightStateStackPtr(new KHighlightStateStack))
     , formatterParams(0)
-    , attributesBuffer_(nil) {
+    , textStorage_(nil)
+    , style_(nil)
+    , text_(nil)
+    , paragraph_(nil)
+    , attributesBuffer_(nil)
+    , paragraphIsMultibyte_(false) {
   mainHighlightState_ = g_empty_state;
   currentHighlightState_ = g_empty_state;
 }
@@ -58,7 +68,7 @@ bool KSourceHighlighter::setLanguage(NSString const *langId, NSURL *url) {
 
   // no language?
   if (!langId) {
-    return setState(g_empty_state);
+    return setMainState(g_empty_state);
   }
   
   // avoid race conditions where multiple threads load the same language file
@@ -68,7 +78,7 @@ bool KSourceHighlighter::setLanguage(NSString const *langId, NSURL *url) {
   HighlightStateCacheMap::iterator it = g_state_cache.find(langId);
   if (it != g_state_cache.map().end()) {
     // found one
-    return setState(it->second);
+    return setMainState(it->second);
   }
   
   // Find URL for this langId
@@ -76,7 +86,7 @@ bool KSourceHighlighter::setLanguage(NSString const *langId, NSURL *url) {
     if (!(url = [[KLangMap sharedLangMap] langFileURLForLangId:langId])) {
       // no known definition file
       g_state_cache.insert(langId, g_empty_state);
-      return setState(g_empty_state);
+      return setMainState(g_empty_state);
     }
   }
   
@@ -93,7 +103,7 @@ bool KSourceHighlighter::setLanguage(NSString const *langId, NSURL *url) {
   
   // put into cache and assign state
   g_state_cache.insert(langId, state);
-  return setState(state);
+  return setMainState(state);
 }
 
 
@@ -129,8 +139,8 @@ HighlightStatePtr KSourceHighlighter::getNextState(const HighlightToken &token) 
 }
 
 void KSourceHighlighter::enterState(HighlightStatePtr state) {
-  DLOG("enterState: %d %s", state->getId(), state->getDefaultElement().c_str());
-  stateStack->push(currentHighlightState_);
+  //DLOG("enterState: %d %s", state->getId(), state->getDefaultElement().c_str());
+  stateStack_->push_back(currentHighlightState_);
   currentHighlightState_ = state;
 }
 
@@ -139,17 +149,17 @@ void KSourceHighlighter::enterState(HighlightStatePtr state) {
  * @param level
  */
 void KSourceHighlighter::exitState(int level) {
-  DLOG("exitState: %d %s", currentHighlightState_->getId(),
-       currentHighlightState_->getDefaultElement().c_str());
+  //DLOG("exitState: %d %s", currentHighlightState_->getId(),
+  //     currentHighlightState_->getDefaultElement().c_str());
   
   // remove additional levels
   for (int l = 1; l < level; ++l) {
-    HighlightStatePtr state = stateStack->top();
+    HighlightStatePtr state = stateStack_->back();
     DLOG("exitState: %d %s", state->getId(), state->getDefaultElement().c_str());
-    stateStack->pop();
+    stateStack_->pop_back();
   }
-  currentHighlightState_ = stateStack->top();
-  stateStack->pop();
+  currentHighlightState_ = stateStack_->back();
+  stateStack_->pop_back();
 }
 
 void KSourceHighlighter::exitAll() {
@@ -158,11 +168,11 @@ void KSourceHighlighter::exitAll() {
 }
 
 void KSourceHighlighter::clearStateStack() {
-  while (!stateStack->empty())
-    stateStack->pop();
+  while (!stateStack_->empty())
+    stateStack_->pop_back();
 }
 
-bool KSourceHighlighter::setState(const HighlightStatePtr &newState) {
+bool KSourceHighlighter::setMainState(const HighlightStatePtr &newState) {
   if (mainHighlightState_ != newState) {
     mainHighlightState_ = newState;
     currentHighlightState_ = newState;
@@ -170,6 +180,19 @@ bool KSourceHighlighter::setState(const HighlightStatePtr &newState) {
     return true;
   }
   return false;
+}
+
+void KSourceHighlighter::setCurrentState(KSourceHighlightState *state) {
+  if (!state) return;
+  currentHighlightState_ = state->highlightState;
+  // shallow copy-in stack
+  stateStack_ = KHighlightStateStackPtr(
+      new KHighlightStateStack( *(state->stateStack) ));
+  /*
+      srchilite::HighlightStateStack *stateStack =
+      new srchilite::HighlightStateStack(*(currentState_->data->stateStack));
+    sourceHighlighter_->setCurrentState(currentState_->data->currentState);
+    sourceHighlighter_->setStateStack(srchilite::HighlightStateStackPtr(stateStack));*/
 }
 
 // --------------------------------------------------------------------------
@@ -204,19 +227,23 @@ void KSourceHighlighter::endFlushBufferedAttributes(NSTextStorage *textStorage) 
 }
 
 
-
 void KSourceHighlighter::format(const std::string &elem) {
   NSString const *typeSymbol = KLangSymbol::symbolForString(elem);
   NSRange range = matchUnicodeRange();
+  uint32_t stateHash = currentStateHash();
   
-  // get state
-  unsigned int stateId = currentHighlightState_->getId();
-  KSourceHighlightState *state = sourceHighlightStateMap_.get(stateId);
-  if (!state) { // TODO: thread safe
-    state = [[KSourceHighlightState alloc] initWithHighlightState:
-        currentHighlightState_];
-    sourceHighlightStateMap_.put(stateId, state);
-  }
+  // lookup state+stack entry in global cache
+  KSourceHighlightState *state = g_statestack_cache.getSync(stateHash);
+  if (!state) {
+    // shallow copy-out stack
+    KHighlightStateStack *stackCopy = new KHighlightStateStack(*(stateStack_));
+    state = [[KSourceHighlightState alloc]
+             initWithHighlightState:currentHighlightState_
+                         stateStack:KHighlightStateStackPtr(stackCopy)];
+    g_statestack_cache.putSync(stateHash, state);
+    [state release];
+    //DLOG("g_statestack_cache MISS for %d %@", stateHash, state);
+  } //else DLOG("g_statestack_cache HIT for %d %@", stateHash, state);
   
   // build text attributes
   NSDictionary *attrs;
@@ -331,7 +358,7 @@ void KSourceHighlighter::highlightLine(str_const_iterator &paragraphStart,
 
 
 // called _before_ an edit is committed
-void KSourceHighlighter::willHighlight(NSTextStorage *textStorage,
+/*void KSourceHighlighter::willHighlight(NSTextStorage *textStorage,
                                        NSRange editedRange) {
   // update instance-locals
   textStorage_ = [textStorage retain];
@@ -339,57 +366,241 @@ void KSourceHighlighter::willHighlight(NSTextStorage *textStorage,
   fullRange_ = NSMakeRange(0, textStorage_.length);
   receivedWillHighlight_ = true;
   
+  // normalize a full range to a special-meaning NSNotFound "everything" range
   if (editedRange.location == 0 && editedRange.length == fullRange_.length) {
     editedRange.location = NSNotFound;
   }
 
   if (editedRange.location != NSNotFound) {
     // find KSourceHighlightStateAttribute
+    fprintf(stderr, "------------------ willHighlight ------------------\n");
     NSRange effectiveRange;
     NSUInteger index = MIN(editedRange.location, fullRange_.length-1);
     KSourceHighlightState* attrValue =
         [textStorage attribute:KSourceHighlightStateAttribute
                        atIndex:index
-                effectiveRange:&effectiveRange];
+         longestEffectiveRange:&effectiveRange
+                       inRange:fullRange_];
     DLOG_RANGE(effectiveRange, text_);
+    DLOG("highlight state at edited index: %@", attrValue);
     // TODO: save info to be used by |highlight|
   }
-}
-
+}*/
 
 
 // this method is called when an edit was detected in |textStorage| or when
 // |textStorage| should be completely re-highlighted.
-void KSourceHighlighter::highlight(NSTextStorage *textStorage,
-                                   KStyle *style,
-                                   NSRange editedRange) {
-  // update instance-locals
-  if (!receivedWillHighlight_ || textStorage_ != textStorage) {
-    receivedWillHighlight_ = NO;
-    textStorage_ = [textStorage retain];
-    text_ = [[textStorage_ string] retain];
-    fullRange_ = NSMakeRange(0, textStorage_.length);
-  }
+NSRange KSourceHighlighter::highlight(NSTextStorage *textStorage,
+                                      KStyle *style,
+                                      NSRange editedRange,
+                                    KSourceHighlightState *editedHighlightState,
+                                      NSRange editedHighlightStateRange) {
+  #if !NDEBUG
+  fprintf(stderr, "------------------ highlight ------------------\n");
+  #endif
   
+  // update instance-locals
+  //if (!receivedWillHighlight_ || textStorage_ != textStorage) {
+  //receivedWillHighlight_ = NO;
+  assert(textStorage_ == nil);
+  textStorage_ = [textStorage retain];
+  text_ = [[textStorage_ string] retain];
+  fullRange_ = NSMakeRange(0, textStorage_.length);
+  //}
+  
+  // Hold on to the style
   style_ = [style retain];
   
-  NSRange highlightRange = fullRange_;
-  //NSRange highlightRange = [text_ lineRangeForRange:editedRange]; // FIXME
-  //DLOG_RANGE(editedRange, text_);
+  // Range of restored state
+  NSRange restoredStateRange = {NSNotFound,0};
   
+  // Effective length of edit (negative for deletions, positive for additions)
+  NSInteger changeLength = [textStorage_ changeInLength];
+  
+  // A edit range location of NSNotFound means "highlight everything"
+  if (editedRange.location == NSNotFound) {
+    highlightRange_ = fullRange_;
+    resetState();
+  } else {
+    // expand editedRange to span full lines
+    highlightRange_ = [text_ lineRangeForRange:editedRange];
+    DLOG_RANGE(highlightRange_, text_);
+    
+    // find any state at our starting point
+    NSUInteger index = MIN(highlightRange_.location, fullRange_.length-1);
+    KSourceHighlightState *state = stateAtIndex(index, &restoredStateRange);
+    DLOG("highlight state at starting point {%u}: %@", index, state);
+    DLOG_RANGE(restoredStateRange, text_);
+    
+    // set or reset state
+    if (state) {
+      setCurrentState(state);
+    } else {
+      resetState();
+    }
+  }
+  
+  if (editedHighlightState) {
+    // convert editedHighlightStateRange to contain the edit which has occured
+    editedHighlightStateRange.length += changeLength;
+  }
+  
+  // Union of all ranges we did highlight
+  NSRange highlightedRanges = highlightRange_;
+  
+  // ad-hoc set on one >1 pass to reference the expected exit state
+  KSourceHighlightState *expectedExitState = nil;
+  BOOL didTryToFindExpectedExitState = NO;
+  
+  // this is used to know if we have tried to expand our search based on
+  // editedHighlightState.
+  BOOL hasPassedEditedHighlightState = NO;
+  
+  // deletion
+  if (changeLength < 0) {
+    DLOG("[DELETE] editedHighlightState => %@", editedHighlightState);
+    expectedExitState = editedHighlightState;
+    didTryToFindExpectedExitState = YES;
+  } else {
+    DLOG("[INSERT/REPLACE]");
+  }
+  
+  // Save a local reference to the initial state
+  srchilite::HighlightStatePtr entryState = currentHighlightState_;
+  int possiblePassesLeft = 1024;
+  
+  while (possiblePassesLeft--) {
+    DLOG("highlightPass()");
+    DLOG_RANGE(highlightRange_, text_);
+    
+    // make one highlight pass
+    highlightPass();
+    
+    // check exit state
+    DLOG("entry state: %d, exit state: %d", entryState->getId(),
+         currentHighlightState_->getId());
+
+    // check exit state
+    if (expectedExitState) {
+      if (currentHighlightState_ == expectedExitState->highlightState) {
+        DLOG("reached expected exit state OK");
+        break;
+      }
+    } else if (currentHighlightState_ == entryState ||
+        editedRange.location == NSNotFound) {
+      // state is normal -- break highlight passes loop
+      break;
+    }
+
+    // exit state differ from entry state -- need another pass
+    DLOG("(currentHighlightState_ != entryState) -- running another pass");
+    
+    // find new range
+    highlightRange_.location += highlightRange_.length;
+    highlightRange_.length = 0;
+    if (highlightRange_.location >= fullRange_.length) {
+      // end of text
+      break;
+    }
+    
+    // local temps
+    NSUInteger highlightRangeEnd =
+        highlightRange_.location + highlightRange_.length;
+    NSUInteger prevHighlightRangeEnd = highlightRangeEnd;
+    
+    // do we have prior knowledge about the modified state?
+    if (editedHighlightState && !hasPassedEditedHighlightState) {
+      hasPassedEditedHighlightState = YES;
+      DLOG("using editedHighlightState");
+      
+      // find expected exit state (state before editedHighlightState)
+      if (!didTryToFindExpectedExitState) {
+        NSUInteger prevBlockIndex = editedHighlightStateRange.location;
+        if (prevBlockIndex > 0) {
+          assert(prevBlockIndex != NSNotFound);
+          prevBlockIndex--;
+          expectedExitState = stateAtIndex(prevBlockIndex, NULL);
+        }
+        didTryToFindExpectedExitState = YES;
+      }
+      
+      // expand highlightRange_ to contain the reminder of edited highlight
+      // state
+      NSUInteger editedHighlightStateRangeEnd =
+          editedHighlightStateRange.location + editedHighlightStateRange.length;
+      if (editedHighlightStateRangeEnd > highlightRangeEnd) {
+        highlightRange_.length +=
+            editedHighlightStateRangeEnd - highlightRangeEnd;
+      }
+      // just one more pass if the edit was an insert
+      if (changeLength > 0) {
+        possiblePassesLeft = 1;
+      }
+      highlightRangeEnd = highlightRange_.location + highlightRange_.length;
+    }
+    
+    // expand to end of line
+    NSCharacterSet *nlcs = [NSCharacterSet newlineCharacterSet];
+    static NSUInteger bufsize = 1024;
+    unichar buf[bufsize];
+    NSUInteger nlSearchLen =
+        MIN(fullRange_.length - highlightRangeEnd, bufsize);
+    NSRange nlSearchRange = NSMakeRange(highlightRangeEnd, nlSearchLen);
+    [text_ getCharacters:buf range:nlSearchRange];
+    unichar *bufp = buf;
+    while (*bufp++ != '\n') {
+      if (nlSearchLen-- == 0) {
+        // if we hit the end of string, reverse one char and break
+        bufp--;
+        break;
+      }
+    }
+    NSUInteger nlOffset = bufp-buf;
+    highlightRange_.length += nlOffset;
+    /*NSRange nlr = [text_ rangeOfCharacterFromSet:nlcs
+                                         options:NSLiteralSearch
+                                           range:nlSearchRange];*/
+    //highlightRange_ = [text_ lineRangeForRange:highlightRange_];
+    // if the range was extended backwards, limit it
+    //if (highlightRange_.location < prevHighlightRangeEnd) {
+    //  highlightRange_.length -= prevHighlightRangeEnd-highlightRange_.location;
+    //  highlightRange_.location = prevHighlightRangeEnd;
+    //}
+    
+    DLOG("extra highlight pass commencing...");
+    DLOG_RANGE(highlightRange_, text_);
+    
+    // add new highlight range to the union range
+    highlightedRanges = NSUnionRange(highlightedRanges, highlightRange_);
+  }
+
+  // clear temporal refs
+  h_objc_xch(&textStorage_, nil);
+  h_objc_xch(&text_, nil);
+  h_objc_xch(&style_, nil);
+  
+  // reset
+  //receivedWillHighlight_ = false;
+  
+  return highlightedRanges;
+}
+
+
+void KSourceHighlighter::highlightPass() {
+  // Reset matched range
   matchRange_.location = 0;
-  
   MatchingParameters mParams;
-  // TODO: set mParams.beginningOfLine = false if we are not at the beginning of
-  // a line.
+  // future: set mParams.beginningOfLine = false if we are not at the beginning of
+  // a line. Do this when we support highlighting of chunks smaller than whole
+  // lines (right now we are always highlighting full lines).
   
   // make a std::string copy
   std::string paragraph;
   NSUInteger size = [text_ populateStdString:paragraph
                                usingEncoding:NSUTF8StringEncoding
-                                       range:highlightRange];
+                                       range:highlightRange_];
   paragraph_ = &paragraph;
-  paragraphIsMultibyte_ = (size != highlightRange.length);
+  paragraphIsMultibyte_ = (size != highlightRange_.length);
   
   // get start and end iterators
   str_const_iterator paragraphStart = paragraph.begin();
@@ -408,11 +619,7 @@ void KSourceHighlighter::highlight(NSTextStorage *textStorage,
     start = end;
   } while (end != paragraphEnd);
   
-  h_objc_xch(&textStorage_, nil);
-  h_objc_xch(&text_, nil);
-  h_objc_xch(&style_, nil);
   paragraph_ = NULL;
-  receivedWillHighlight_ = false;
 }
 
 

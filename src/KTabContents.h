@@ -19,13 +19,14 @@
   KSourceHighlighterPtr sourceHighlighter_;
   HSemaphore *sourceHighlightSem_;
   KStyle *style_;
-  BOOL isProcessingTextStorageEdit_;
   
   // Current language
   NSString const *langId_;
   
   // Internal state
   hatomic_flags_t stateFlags_;
+  NSRange lastEditedHighlightStateRange_;
+  KSourceHighlightState *lastEditedHighlightState_;
 }
 
 @property(assign, nonatomic) BOOL isDirty;
