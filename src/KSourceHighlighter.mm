@@ -139,7 +139,7 @@ HighlightStatePtr KSourceHighlighter::getNextState(const HighlightToken &token) 
 }
 
 void KSourceHighlighter::enterState(HighlightStatePtr state) {
-  //DLOG("enterState: %d %s", state->getId(), state->getDefaultElement().c_str());
+  DLOG("enterState: %d %s", state->getId(), state->getDefaultElement().c_str());
   stateStack_->push_back(currentHighlightState_);
   currentHighlightState_ = state;
 }
@@ -149,8 +149,8 @@ void KSourceHighlighter::enterState(HighlightStatePtr state) {
  * @param level
  */
 void KSourceHighlighter::exitState(int level) {
-  //DLOG("exitState: %d %s", currentHighlightState_->getId(),
-  //     currentHighlightState_->getDefaultElement().c_str());
+  DLOG("exitState: %d %s", currentHighlightState_->getId(),
+       currentHighlightState_->getDefaultElement().c_str());
   
   // remove additional levels
   for (int l = 1; l < level; ++l) {
@@ -280,7 +280,6 @@ void KSourceHighlighter::highlightLine(str_const_iterator &paragraphStart,
   str_const_iterator location = start;
   bool matched = true;
   HighlightToken token;
-  mParams.beginningOfLine = true;
   
   // note that we go on even if the string is empty, since it is crucial
   // to try to match also the end of buffer (some rules rely on that)
@@ -415,6 +414,11 @@ NSRange KSourceHighlighter::highlight(NSTextStorage *textStorage,
   
   // Effective length of edit (negative for deletions, positive for additions)
   NSInteger changeLength = [textStorage_ changeInLength];
+  bool beginningOfLine = true;
+  
+  // convert editedHighlightStateRange to contain the edit which has occured
+  if (editedHighlightState)
+    editedHighlightStateRange.length += changeLength;
   
   // A edit range location of NSNotFound means "highlight everything"
   if (editedRange.location == NSNotFound) {
@@ -423,12 +427,41 @@ NSRange KSourceHighlighter::highlight(NSTextStorage *textStorage,
   } else {
     // expand editedRange to span full lines
     highlightRange_ = [text_ lineRangeForRange:editedRange];
-    DLOG_RANGE(highlightRange_, text_);
     
     // find any state at our starting point
-    NSUInteger index = MIN(highlightRange_.location, fullRange_.length-1);
-    KSourceHighlightState *state = stateAtIndex(index, &restoredStateRange);
-    DLOG("highlight state at starting point {%u}: %@", index, state);
+    //NSUInteger index = MIN(highlightRange_.location, fullRange_.length-1);
+    assert(highlightRange_.location < fullRange_.length);
+    KSourceHighlightState *state = stateAtIndex(highlightRange_.location,
+                                                &restoredStateRange);
+    
+    // xxx attempt 1
+    //if (editedHighlightState) {
+    //  highlightRange_ = editedRange;
+    //  beginningOfLine = false;
+    //  state = editedHighlightState;
+      /*
+      if ( (editedHighlightStateRange.location > highlightRange_.location) &&
+           (editedRange.location >= highlightRange_.location) &&
+           (highlightRange_.length > (editedHighlightStateRange.location - highlightRange_.location))
+             ) {
+        highlightRange_.length -=
+            (editedHighlightStateRange.location - highlightRange_.location);
+        highlightRange_.location = editedHighlightStateRange.location;
+        beginningOfLine = false;
+        state = editedHighlightState;
+        // expand highlightRange_.length to next newline
+        NSUInteger endLocation = highlightRange_.location +
+            (highlightRange_.length ? highlightRange_.length-1 : 0);
+        NSUInteger nlOffset = findNewlineOffset(endLocation, 1);
+        if (nlOffset > endLocation) {
+          highlightRange_.length += nlOffset - endLocation;
+        }
+      }*/
+    //}
+    
+    DLOG_RANGE(highlightRange_, text_);
+    DLOG("highlight state at starting point {%u}: %@", highlightRange_.location,
+         state);
     DLOG_RANGE(restoredStateRange, text_);
     
     // set or reset state
@@ -437,11 +470,6 @@ NSRange KSourceHighlighter::highlight(NSTextStorage *textStorage,
     } else {
       resetState();
     }
-  }
-  
-  if (editedHighlightState) {
-    // convert editedHighlightStateRange to contain the edit which has occured
-    editedHighlightStateRange.length += changeLength;
   }
   
   // Union of all ranges we did highlight
@@ -468,13 +496,175 @@ NSRange KSourceHighlighter::highlight(NSTextStorage *textStorage,
   srchilite::HighlightStatePtr entryState = currentHighlightState_;
   int passCount = 0;
   
+  uint32_t stateHashAtStart = currentStateHash();
+  long long stackSizeAtStart = stateStack_->size();
+  
   while (++passCount) {
     DLOG("highlightPass()");
     DLOG_RANGE(highlightRange_, text_);
     
-    // make one highlight pass
-    highlightPass();
+    uint32_t stateHashBeforeMakingPass = currentStateHash();
+    long long stackSizeBeforeMakingPass = stateStack_->size();
     
+    // make one highlight pass
+    highlightPass(beginningOfLine);
+    beginningOfLine = true; // xxx move this down later
+    
+    // end of file?
+    if (highlightRange_.location + highlightRange_.length >= fullRange_.length) {
+      DLOG("END OF TEXT[1] -- bailing");
+      break;
+    }
+    
+    // xxx
+    long long stackSizeOfEditedState = -1;
+    if (editedHighlightState)
+      stackSizeOfEditedState = editedHighlightState->stateStack->size();
+    long long stackSizeAfterMakingPass = stateStack_->size();
+    long long editedToExitStackSizeDelta =
+        stackSizeAfterMakingPass - stackSizeOfEditedState;
+    uint32_t stateHashAfterMakingPass = currentStateHash();
+    
+    DLOG("## stack size delta: (pass: %lld, edit: %lld, start: %lld) [] -- {H %x / %x} -- edit type: %s",
+         stackSizeAfterMakingPass - stackSizeBeforeMakingPass,
+         stackSizeAfterMakingPass - stackSizeOfEditedState,
+         stackSizeAfterMakingPass - stackSizeAtStart,
+         stateHashBeforeMakingPass, stateHashAfterMakingPass,
+         changeLength<0?"delete":"insert");
+    DLOG("## entry state: %d, edited state: %d, end state: %d",
+         entryState->getId(),
+         editedHighlightState ? editedHighlightState->highlightState->getId() : -1,
+         currentHighlightState_->getId());
+
+    // logic test 1
+    bool shouldLookFurther = false;
+    NSUInteger highlightRangeEnd;
+    
+    if (editedHighlightState &&
+        editedHighlightState->highlightState->getId()
+        != currentHighlightState_->getId()) {
+      // case: edited state was broken in some aspect (finalized, expanded or reduced)
+      if (changeLength < 1) { // is delete
+        // state was expanded
+        if (editedToExitStackSizeDelta > 0) {
+          // state was not finalized
+          shouldLookFurther = true;
+          
+          // advance highlightRange_
+          if (!advanceHighlightRange()) {
+            // end of text
+            DLOG("END OF TEXT[2] -- bailing");
+            break;
+          }
+          highlightRangeEnd = highlightRange_.location + highlightRange_.length;
+          // note: further down we will expand highlightRange_ to next line end
+        } else {
+          // state was finalized
+          shouldLookFurther = false;
+          DLOG(">>>>>>>>> entering the tricky case");
+          if (editedHighlightState) {
+            DLOG("editedHighlightState:");
+            //DLOG_RANGE(editedHighlightStateRange, text_);
+            NSUInteger editedHighlightStateRangeEnd =
+                editedHighlightStateRange.location +
+                editedHighlightStateRange.length;
+            highlightRangeEnd = highlightRange_.location + highlightRange_.length;
+            if (editedHighlightStateRangeEnd > highlightRangeEnd) {
+              highlightRange_.length +=
+                  editedHighlightStateRangeEnd - highlightRangeEnd;
+              if (highlightRange_.length+highlightRange_.location > fullRange_.length) {
+                highlightRange_.length -=
+                    ((highlightRange_.length+highlightRange_.location) -
+                     fullRange_.length);
+              }
+              shouldLookFurther = true;
+            }
+          }
+        }
+      } else { // is insert
+        // state was reduced -- evaluate reminder of the edited state
+        shouldLookFurther = true;
+        
+        // if insert and stack delta < 0 then only evaluate editedStateRange
+        #if 0
+        if ( hasPassedEditedHighlightState
+             /*&& expectedExitState
+             && (expectedExitState->highlightState->getId() ==
+                currentHighlightState_->getId())*/ ) {
+          DLOG("met expected exit state derived from previous block");
+          break;
+        }
+        #endif
+        
+        if (editedToExitStackSizeDelta == 0) {
+          DLOG("editedToExitStackSizeDelta is zero -- clean exit");
+          break;
+        }
+        
+        if ((stackSizeAfterMakingPass - stackSizeAtStart) == 0) {
+          if (entryState->getId() == currentHighlightState_->getId()) {
+            DLOG("entryToExitStackSizeDelta is zero and entryToExit state is nominal -- clean exit");
+            break;
+          } else {
+            DLOG("entryToExitStackSizeDelta is zero, but entryToExit state differ");
+          }
+        }
+        
+        // advance
+        if (!advanceHighlightRange()) {
+          // end of text
+          DLOG("END OF TEXT -- bailing");
+          break;
+        }
+        highlightRangeEnd = highlightRange_.location + highlightRange_.length;
+        
+        if (!hasPassedEditedHighlightState) {
+          // expand highlightRange_ to contain the reminder of edited highlight
+          // state
+          NSUInteger editedHighlightStateRangeEnd =
+              editedHighlightStateRange.location +
+              editedHighlightStateRange.length;
+          if (editedHighlightStateRangeEnd > highlightRangeEnd) {
+            highlightRange_.length +=
+                editedHighlightStateRangeEnd - highlightRangeEnd;
+          }
+          highlightRangeEnd = highlightRange_.location + highlightRange_.length;
+          
+          // find expected exit state (state before editedHighlightState)
+          NSUInteger prevBlockIndex = editedHighlightStateRange.location;
+          if (prevBlockIndex > 0) {
+            assert(prevBlockIndex != NSNotFound);
+            prevBlockIndex--;
+            expectedExitState = stateAtIndex(prevBlockIndex, NULL);
+          }
+          
+          hasPassedEditedHighlightState = YES;
+        }
+        //DLOG("new highlight range:");
+        //DLOG_RANGE(highlightRange_, text_);
+      }
+      
+      // exit state != modified state
+      DLOG("%s look further (state is %s)",
+           shouldLookFurther ? "should" : "should NOT",
+           changeLength < 1 ? "expanding -- we need to evaluate next lines... until currentState == editedState"
+                            : "being reduced -- we need to evaluate the range after the edit");
+    }
+    
+    if (expectedExitState) {
+      if (currentHighlightState_ == expectedExitState->highlightState) {
+        DLOG("did reach expected exit state");
+      } else {
+        DLOG("did NOT reach expected exit state");
+      }
+    }
+    
+    //if ((stackSizeAfterMakingPass - stackSizeBeforeMakingPass) == 0) {
+    if (!shouldLookFurther) {
+      break;
+    }
+    
+    /* version 1 code:
     // check exit state
     DLOG("entry state: %d, exit state: %d", entryState->getId(),
          currentHighlightState_->getId());
@@ -501,6 +691,7 @@ NSRange KSourceHighlighter::highlight(NSTextStorage *textStorage,
       // end of text
       break;
     }
+    
     
     // local temps
     NSUInteger highlightRangeEnd =
@@ -535,33 +726,13 @@ NSRange KSourceHighlighter::highlight(NSTextStorage *textStorage,
       //if (changeLength > 0)
       //  possiblePassesLeft = 1;
       highlightRangeEnd = highlightRange_.location + highlightRange_.length;
-    }
+    }*/
+    
     
     // expand to (N=passCount) lines
-    NSCharacterSet *nlcs = [NSCharacterSet newlineCharacterSet];
-    int nlsToFind = passCount;
-    NSUInteger nlOffset = 0;
-    while (nlsToFind--) {
-      static NSUInteger bufsize = 1024;
-      unichar buf[bufsize];
-      NSUInteger rangeEnd = highlightRangeEnd + nlOffset;
-      NSInteger nlSearchLen =
-          MIN(fullRange_.length - rangeEnd, bufsize);
-      NSRange nlSearchRange = NSMakeRange(rangeEnd, nlSearchLen);
-      [text_ getCharacters:buf range:nlSearchRange];
-      unichar *bufp = buf;
-      while (*bufp++ != '\n') {
-        if (nlSearchLen-- == 0) {
-          // if we hit the end of string, reverse one char and break
-          bufp--;
-          break;
-        }
-      }
-      nlOffset += bufp-buf;
-      if (nlSearchLen == -1) // end
-        break;
-    }
-    highlightRange_.length += nlOffset;
+    highlightRangeEnd = highlightRange_.location + highlightRange_.length;
+    NSUInteger nlOffset = findNewlineOffset(highlightRangeEnd, passCount);
+    highlightRange_.length += nlOffset-highlightRangeEnd;
     
     DLOG("extra highlight pass commencing...");
     
@@ -581,10 +752,11 @@ NSRange KSourceHighlighter::highlight(NSTextStorage *textStorage,
 }
 
 
-void KSourceHighlighter::highlightPass() {
+void KSourceHighlighter::highlightPass(bool beginningOfLine) {
   // Reset matched range
   matchRange_.location = 0;
   MatchingParameters mParams;
+  mParams.beginningOfLine = beginningOfLine;
   // future: set mParams.beginningOfLine = false if we are not at the beginning of
   // a line. Do this when we support highlighting of chunks smaller than whole
   // lines (right now we are always highlighting full lines).
@@ -604,15 +776,18 @@ void KSourceHighlighter::highlightPass() {
   str_const_iterator end = paragraphStart;
   
   // process each line
-  do {
+  while (true) {
     // fast-forward to next newline
     // TODO: Handle CR linebreaks. Currently only CRLF and LF are handled.
     while (end != paragraphEnd && *end++ != '\n') {}
     
     highlightLine(paragraphStart, start, end, mParams);
-
+    
+    if (end == paragraphEnd)
+      break;
+    mParams.beginningOfLine = true;
     start = end;
-  } while (end != paragraphEnd);
+  };
   
   paragraph_ = NULL;
 }

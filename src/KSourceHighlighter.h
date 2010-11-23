@@ -119,6 +119,7 @@ class KSourceHighlighter {
   NSRange highlightRange_;
   std::string *paragraph_; // weak
   bool paragraphIsMultibyte_;
+  int stateDepthDelta_;
   //bool receivedWillHighlight_;
   
   NSMutableArray *attributesBuffer_;
@@ -171,7 +172,42 @@ class KSourceHighlighter {
     //                                      effectiveRange:&selectedRange];
   }
   
-  void highlightPass();
+  void highlightPass(bool beginningOfLine);
+  
+  // advances |highlightRange_| to the end of itself and sets length to
+  // zero. Returns false if end of fullRange_ was hit (meaning there's no
+  // more ranges after the current range).
+  inline bool advanceHighlightRange() {
+    highlightRange_.location += highlightRange_.length;
+    highlightRange_.length = 0;
+    if (highlightRange_.location >= fullRange_.length) {
+      highlightRange_.location = fullRange_.length-1;
+      return false;
+    }
+    return true;
+  }
+  
+  // Find offset of newline(s)
+  inline NSUInteger findNewlineOffset(NSUInteger offset, int nlsToFind) {
+    while (nlsToFind--) {
+      static NSUInteger bufsize = 1024;
+      unichar buf[bufsize];
+      NSRange searchRange =
+          NSMakeRange(offset, MIN(fullRange_.length-offset, bufsize));
+      [text_ getCharacters:buf range:searchRange];
+      unichar *bufp = buf;
+      while (*bufp++ != '\n') {
+        if (searchRange.length-- == 0) {
+          // if we hit the end of string, reverse one char and break
+          bufp--;
+          offset += bufp-buf;
+          return offset;
+        }
+      }
+      offset += bufp-buf;
+    }
+    return offset-1;
+  }
   
  public:
   
