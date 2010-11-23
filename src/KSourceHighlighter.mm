@@ -466,9 +466,9 @@ NSRange KSourceHighlighter::highlight(NSTextStorage *textStorage,
   
   // Save a local reference to the initial state
   srchilite::HighlightStatePtr entryState = currentHighlightState_;
-  int possiblePassesLeft = 1024;
+  int passCount = 0;
   
-  while (possiblePassesLeft--) {
+  while (++passCount) {
     DLOG("highlightPass()");
     DLOG_RANGE(highlightRange_, text_);
     
@@ -532,42 +532,38 @@ NSRange KSourceHighlighter::highlight(NSTextStorage *textStorage,
             editedHighlightStateRangeEnd - highlightRangeEnd;
       }
       // just one more pass if the edit was an insert
-      if (changeLength > 0) {
-        possiblePassesLeft = 1;
-      }
+      //if (changeLength > 0)
+      //  possiblePassesLeft = 1;
       highlightRangeEnd = highlightRange_.location + highlightRange_.length;
     }
     
-    // expand to end of line
+    // expand to (N=passCount) lines
     NSCharacterSet *nlcs = [NSCharacterSet newlineCharacterSet];
-    static NSUInteger bufsize = 1024;
-    unichar buf[bufsize];
-    NSUInteger nlSearchLen =
-        MIN(fullRange_.length - highlightRangeEnd, bufsize);
-    NSRange nlSearchRange = NSMakeRange(highlightRangeEnd, nlSearchLen);
-    [text_ getCharacters:buf range:nlSearchRange];
-    unichar *bufp = buf;
-    while (*bufp++ != '\n') {
-      if (nlSearchLen-- == 0) {
-        // if we hit the end of string, reverse one char and break
-        bufp--;
-        break;
+    int nlsToFind = passCount;
+    NSUInteger nlOffset = 0;
+    while (nlsToFind--) {
+      static NSUInteger bufsize = 1024;
+      unichar buf[bufsize];
+      NSUInteger rangeEnd = highlightRangeEnd + nlOffset;
+      NSInteger nlSearchLen =
+          MIN(fullRange_.length - rangeEnd, bufsize);
+      NSRange nlSearchRange = NSMakeRange(rangeEnd, nlSearchLen);
+      [text_ getCharacters:buf range:nlSearchRange];
+      unichar *bufp = buf;
+      while (*bufp++ != '\n') {
+        if (nlSearchLen-- == 0) {
+          // if we hit the end of string, reverse one char and break
+          bufp--;
+          break;
+        }
       }
+      nlOffset += bufp-buf;
+      if (nlSearchLen == -1) // end
+        break;
     }
-    NSUInteger nlOffset = bufp-buf;
     highlightRange_.length += nlOffset;
-    /*NSRange nlr = [text_ rangeOfCharacterFromSet:nlcs
-                                         options:NSLiteralSearch
-                                           range:nlSearchRange];*/
-    //highlightRange_ = [text_ lineRangeForRange:highlightRange_];
-    // if the range was extended backwards, limit it
-    //if (highlightRange_.location < prevHighlightRangeEnd) {
-    //  highlightRange_.length -= prevHighlightRangeEnd-highlightRange_.location;
-    //  highlightRange_.location = prevHighlightRangeEnd;
-    //}
     
     DLOG("extra highlight pass commencing...");
-    DLOG_RANGE(highlightRange_, text_);
     
     // add new highlight range to the union range
     highlightedRanges = NSUnionRange(highlightedRanges, highlightRange_);
