@@ -27,6 +27,5 @@ typedef void (^HURLOnCompleteBlock)(NSError*,NSData*);
       onResponseBlock:(HURLOnResponseBlock)onResponse
           onDataBlock:(HURLOnDataBlock)onData
       onCompleteBlock:(HURLOnCompleteBlock)onComplete
-             delegate:(id)delegate
      startImmediately:(BOOL)startImmediately;
 @end
