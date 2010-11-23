@@ -198,8 +198,7 @@ void KSourceHighlighter::setCurrentState(KSourceHighlightState *state) {
 // --------------------------------------------------------------------------
 
 
-NSString * const KSourceHighlightStateAttribute =
-  @"KSourceHighlightState";
+NSString * const KSourceHighlightStateAttribute = @"KHighlightState";
 
 
 
