@@ -34,6 +34,8 @@ unsigned const ICUDotMatchesAll = UREGEX_DOTALL;
 unsigned const ICUMultiline = UREGEX_MULTILINE;
 unsigned const ICUUnicodeWordBoundaries = UREGEX_UWORD;
 
+NSString * const ICUPatternException = @"ICUPatternException";
+
 @interface ICUPattern (Private)
 -(void)setRe:(URegularExpression *)p;
 -(unsigned)flags;
@@ -66,7 +68,7 @@ unsigned const ICUUnicodeWordBoundaries = UREGEX_UWORD;
 	URegularExpression *e = uregex_open(regexStr, -1, flags, &err, &status);
 
 	if(U_FAILURE(status)) {
-		[NSException raise:@"Invalid Pattern Exception"
+		[NSException raise:ICUPatternException
 					format:@"Could not compile pattern: %s", u_errorName(status)];
 	}
 
@@ -96,17 +98,19 @@ unsigned const ICUUnicodeWordBoundaries = UREGEX_UWORD;
 
 -(void)setStringToSearch:(NSString *)aStringToSearchOver {
 	NSParameterAssert(aStringToSearchOver);
-	UChar *utf16String = [aStringToSearchOver copyUTF16String];
-	UErrorCode status = 0;
-
-	uregex_setText([self re], utf16String, -1, &status);
+  UErrorCode status = 0;
+  unichar *utf16String = NULL;
+  
+  utf16String = [aStringToSearchOver copyUTF16String];
+  uregex_setText([self re], utf16String, aStringToSearchOver.length, &status);
 
 	[self reset];
 
 	if(U_FAILURE(status)) {
-		free(utf16String);
-		[NSException raise:@"Invalid String Exception"
-					format:@"Could not set text to match against: %s", u_errorName(status)];
+    if (utf16String) free(utf16String);
+		[NSException raise:ICUPatternException
+                format:@"Could not set text to match against: %s",
+                       u_errorName(status)];
 	}
 
 	if(textToSearch)
@@ -125,7 +129,7 @@ unsigned const ICUUnicodeWordBoundaries = UREGEX_UWORD;
 	UErrorCode status = 0;
 	URegularExpression *r = uregex_clone([self re], &status);
 	if(U_FAILURE(status))
-		[NSException raise:@"Copy Exception"
+		[NSException raise:ICUPatternException
 					format:@"Could not copy pattern: %s", u_errorName(status)];
 
 	[p setRe:r];
@@ -138,7 +142,7 @@ unsigned const ICUUnicodeWordBoundaries = UREGEX_UWORD;
 	uregex_reset([self re], 0, &status);
 
 	if(U_FAILURE(status)) {
-		[NSException raise:@"Pattern Exception"
+		[NSException raise:ICUPatternException
 					format:@"Could not reset pattern: %s", u_errorName(status)];
 	}	
 }
@@ -171,7 +175,7 @@ unsigned const ICUUnicodeWordBoundaries = UREGEX_UWORD;
 		p = (UChar *)uregex_pattern(re, &len, &status);
 
 		if(U_FAILURE(status)) {
-			[NSException raise:@"ICUPatternException"
+			[NSException raise:ICUPatternException
                   format:@"Could not get pattern text from pattern."];
 		}
     
@@ -181,7 +185,7 @@ unsigned const ICUUnicodeWordBoundaries = UREGEX_UWORD;
       len = 0;
       unichar *ptr = p;
       for (; *ptr++; );
-      len = ptr-p;
+      len = (ptr-1)-p;
     }
     
     return [NSString stringWithCharacters:p length:len];
@@ -238,7 +242,7 @@ unsigned const ICUUnicodeWordBoundaries = UREGEX_UWORD;
 	}
 
 	if(U_FAILURE(status))
-		[NSException raise:@"Split Exception"
+		[NSException raise:ICUPatternException
 					format:@"Unable to split string: %@", u_errorName(status)];
 
 	return [NSArray arrayWithArray:results];	

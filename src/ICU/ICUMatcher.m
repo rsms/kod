@@ -50,9 +50,17 @@ typedef struct URegularExpression URegularExpression;
 }
 
 
+- (void)dealloc {
+  [pattern release];
+  [super dealloc];
+}
+
+
 
 -(void)setPattern:(ICUPattern *)p {
-	pattern = p;
+  id old = pattern;
+	pattern = [p retain];
+  [old release];
 }
 
 -(BOOL)matches {

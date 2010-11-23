@@ -19,6 +19,9 @@ extern const unsigned ICUDotMatchesAll;
 extern const unsigned ICUMultiline;
 extern const unsigned ICUUnicodeWordBoundaries;
 
+// NSException name
+extern NSString * const ICUPatternException;
+
 /*!
     @class		 ICUPattern
     @abstract    A compiled regular expression.

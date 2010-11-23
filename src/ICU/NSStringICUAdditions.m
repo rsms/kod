@@ -86,10 +86,10 @@ typedef struct URegularExpression URegularExpression;
 }
 
 -(void *)copyUTF16String {
-	unsigned int length = [self length];
-	unichar *utf16String = malloc((length+1)*sizeof(unichar));
-	[self getCharacters: utf16String];
-	utf16String[length] = 0;
+  NSRange range = {0, [self length]};
+	unichar *utf16String = malloc((range.length+1)*sizeof(unichar));
+	[self getCharacters:utf16String range:range];
+	utf16String[range.length] = 0;
 	return utf16String;
 }
 
