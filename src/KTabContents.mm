@@ -749,12 +749,14 @@ longestEffectiveRange:&range
 
 
 // Edits arrive in singles
-- (BOOL)textView:(NSTextView *)aTextView
+- (BOOL)textView:(NSTextView *)textView
 shouldChangeTextInRange:(NSRange)range
 replacementString:(NSString *)replacementString {
+  #if 0
   DLOG("replace text '%@' at %@ with '%@'",
        [textView_.textStorage.string substringWithRange:range],
        NSStringFromRange(range), replacementString);
+  #endif
   
   // find range of highlighting state at edit location
   NSTextStorage *textStorage = textView_.textStorage;
@@ -839,7 +841,7 @@ shouldChangeTextInRanges:(NSArray *)affectedRanges
   NSTextStorage	*textStorage = [notification object];
 	NSRange	editedRange = [textStorage editedRange];
 	int	changeInLen = [textStorage changeInLength];
-  if (changeInLen == 0) {
+  if (changeInLen == 0 && !lastEditedHighlightState_) {
     // text attributes changed -- not interested
     return;
   }
