@@ -1,8 +1,13 @@
+# @title Python
+# @matchuti public.python-script
+# @matchext py
+# @matchprogram python, pythonw, python2.5, python2.6, python2.7, python3
+
 preproc = "import|from"
 
-include "script_comment.lang"
+include "_script_comment.lang"
 
-include "number.lang"
+include "_number.lang"
 
 keyword = "and|assert|break|class|continue|def|del|elif|else|except|exec",
            "finally|for|global|if|in|is|lambda|not|or|pass",
@@ -19,8 +24,8 @@ string delim '([[:space:]]*\"{3})' '(\"{3})' multiline
 string delim "\"" "\"" escape "\\" 
 string delim "'" "'"  escape "\\" 
 
-include "symbols.lang"
+include "_symbols.lang"
 symbol = "{|}"
 
-include "function.lang"
+include "_function.lang"
 

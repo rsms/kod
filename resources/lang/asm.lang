@@ -1,8 +1,10 @@
-# language definition file for assembler
+# @title Assembly
+# @matchuti public.assembly-source
+# @matchext s, asm
 
 comment start ";"
 
-include "c_string.lang"
+include "_c_string.lang"
 
 preproc = '^[[:blank:]]*\.([[:alnum:]]+)'
 preproc = '^[[:blank:]]*([[:alnum:]]+):'
@@ -63,5 +65,5 @@ number = '0([0-9a-fA-F]+)([hHlLuU]*)'
 
 number = '((?:0x|0X)[0-9a-fA-F]+|\d*[\.\_]?\d+(?:[eE][\-\+]\d+)?[hHlLuU]*)'
 
-include "symbols.lang"
-include "number.lang"
+include "_symbols.lang"
+include "_number.lang"

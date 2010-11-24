@@ -1,3 +1,8 @@
+# @title LaTeX
+# @matchuti public.latex-source
+# @matchext tex, latex, cls, sty, dtx
+# @matchfirstline ^\\documentclass(\[.*\])?\{beamer\}
+
 comment start "%"
 
 symbol = "&|~"

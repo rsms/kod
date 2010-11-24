@@ -1,12 +1,17 @@
+# @title Manifest
+# @matchuti public.manifest-text
+# @matchext mf
+# @matchname Manifest, manifest
+
 # language definition for Manifest files
 
-include "script_comment.lang"
+include "_script_comment.lang"
 
 comment start "!"
 
 (type,normal,symbol) = `([^="+:;]+)([[:blank:]]*)(:=)`
 
-include "number.lang"
+include "_number.lang"
 include "url.lang"
 
 (string,symbol) = `(^[^:;]+)(:)`

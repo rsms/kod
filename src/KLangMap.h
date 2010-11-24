@@ -35,6 +35,10 @@
   NSMutableArray *firstLinePatternList_;
   HSpinLock firstLinePatternListLock_;
 
+  // Maps she-bang program to langId (e.g. "#!/bin/sh" => @"bash")
+  NSMutableDictionary *programToLangIdMap_;
+  HSpinLock programToLangIdMapLock_;
+
   // Maps filename to langId (e.g. "Makefile" => @"makefile")
   NSMutableDictionary *nameToLangIdMap_;
   HSpinLock nameToLangIdMapLock_;
@@ -52,15 +56,17 @@
 /**
  * Retrieve the most suiting language id for source |filename| including
  * testing |firstLine| for matches in |firstLinePatternList_|. Returns nil if
- * none match. If |uti| is non-nil, further precision might be met by matching
- * on known UTIs.
+ * none match.
  *
  * Search order priority:
  *
  * 1. UTI
- * 2. First line match
- * 3. Complete filename ("basename")
- * 4. Filename extension
+ * 2. First line "she-bang" program
+ * 3. First line regexp match
+ * 4. Case-sensitive filename
+ * 5. Case-sensitive extension
+ * 5.2. Case-insensitive extension
+ * 6. Case-insensitive filename
  *
  */
 - (NSString const*)langIdForSourceURL:(NSURL*)url

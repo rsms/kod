@@ -1,4 +1,6 @@
-# DOS batch files
+# @title DOS Batch file
+# @matchuti com.microsoft.dos-batch-script
+# @matchext bat
 
 comment start '[Rr][Ee][Mm]'
 comment start "::"
@@ -31,6 +33,6 @@ end
 variable = '%[[:digit:]]+'
 variable = '%%[[:alpha:]]'
 
-include "symbols.lang"
-include "number.lang"
+include "_symbols.lang"
+include "_number.lang"
 

@@ -1,4 +1,6 @@
-# language definition for AppleScript
+# @title Visual Basic
+# @matchuti public.visual-basic-script
+# @matchext vbscript, vbs
 
 comment start "'"
 
@@ -15,11 +17,11 @@ keyword="and|response|call|case|select|continue|date|dim|server",
 "cdbl|cdate|is|null|object|redirect|request|querystring|exit",
 "clng|redim|session|form|not|nothing|loop|while" nonsensitive
 
-include "function.lang"
+include "_function.lang"
 
 cbracket = "{|}"
 
-include "symbols.lang"
+include "_symbols.lang"
 
-include "number.lang"
+include "_number.lang"
 

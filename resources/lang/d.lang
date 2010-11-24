@@ -1,3 +1,8 @@
+# @title D
+# @matchuti com.digitalmars.d-source
+# @matchext d, di
+# @matchprogram dmd, gdmd
+
 # D language definition, http://www.digitalmars.com/d/2.0/index.html
 # most is reused from cpp.lang
 
@@ -37,3 +42,4 @@ subst keyword = "abstract|alias|align|asm|assert|auto|body",
 "typeof|union|unittest|version|void|volatile",
 "while|with|__gshared|__thread|__traits"
 
+# todo: add Tango stuff

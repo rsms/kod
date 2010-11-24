@@ -17,7 +17,7 @@ vardef SPECIAL2=
 # nested states
 # example <style foo="bar"> &amp; <br> not highlighted </style>
 state keyword = '<'+$SPECIAL begin
-    include "key_string.lang"
+    include "_key_string.lang"
     state keyword = '>' begin
     	keyword = '</'+$SPECIAL+'>' exit 2
 		normal = '[^<[:blank:]]+'
@@ -41,5 +41,5 @@ include "xml.lang"
 keyword = '<(/)?[[:alpha:]][[:alnum:]]*(/)?>'
 
 state keyword delim '<(/)?[[:alpha:]][[:alnum:]]*' '(/)?>' multiline begin
-	include "key_string.lang"
+	include "_key_string.lang"
 end

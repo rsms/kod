@@ -1,10 +1,13 @@
-# language definition for m4 files
+# @title M4
+# @matchuti public.perl-script
+# @matchext m4, ac, autoconf
+# @matchname autoconf
 
 state keyword start "dnl" begin
   # avoid spaces in front of urls or @[[:alpha:]]+ be caputured as prefixes
   comment = '[[:blank:]]+'
   include "url.lang"
-  include "html_simple.lang"
+  include "_html_basic.lang"
   type = '@[[:alpha:]]+'
   # everything else is a comment
   comment = '.+'

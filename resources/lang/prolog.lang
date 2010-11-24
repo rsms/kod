@@ -1,8 +1,12 @@
+# @title Prolog
+# @matchuti public.prolog-source
+# @matchext prolog
+# @matchprogram prolog
 preproc = "bgidriver|bgifont|check_determ|code|config|diagnostics|error|errorlevel|heap|gstacksize|nobreak|nowarnings|printermenu|project"
 
 comment start "%"
 
-include "number.lang"
+include "_number.lang"
 
 string delim "\"" "\"" escape "\\"
 string delim "'" "'"  escape "\\"
@@ -28,10 +32,10 @@ comment delim "/*" "*/" multiline nested
 
 type = "char|real|string|symbol|byte|sbyte|short|ushort|word|integer|unsigned|dword|long|ulong|binary|ref"
 
-include "symbols.lang"
+include "_symbols.lang"
 
 cbracket = "{|}"
 
-include "function.lang"
+include "_function.lang"
 
 variable = '[[:upper:]][[:word:]]*|_'

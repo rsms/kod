@@ -1,4 +1,6 @@
-# language definition for AppleScript
+# @title AppleScript
+# @matchuti com.apple.applescript.text
+# @matchext applescript
 
 comment start "--"
 
@@ -33,10 +35,10 @@ keyword = "and|as|at|beginning|considering|contain|contains|does|div|else|end",
 "start|starting|stop|string|table|text|title|true",
 "Unicode|update|user|value|visible|view|views|window|windows|write|year|years"
 
-include "function.lang"
+include "_function.lang"
 
 cbracket = "{|}"
 
-include "symbols.lang"
+include "_symbols.lang"
 
-include "number.lang"
+include "_number.lang"

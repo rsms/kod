@@ -1,6 +1,10 @@
-# highlighting for (Java) properties files
+# @title Properties
+# @matchuti com.sun.java-properties
+# @matchext properties
 
-include "script_comment.lang"
+# highlighting for Java properties files
+
+include "_script_comment.lang"
 
 comment start "!"
 

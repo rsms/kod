@@ -1,6 +1,11 @@
+# @title Caml
+# @matchuti public.caml-source
+# @matchext caml, ml, mli
+# @matchprogram ocaml
+
 preproc = '\<(?:external|open|include|[A-Z][\w\']*(?=\.))\>'
 
-include "number.lang"
+include "_number.lang"
 
 string delim "\"" "\"" escape "\\"
 
@@ -10,7 +15,7 @@ comment delim "(*" "*)" multiline nested
 
 type = '\<(?:[A-Z][\w\']*(?!\.)|int|int32|int64|nativeint|bool|char|exn|option|float|unit|string|list|array|ref|format|format4|lazy_t|in_channel|out_channel)\>'
 
-include "symbols.lang"
+include "_symbols.lang"
 
 cbracket = "{|}"
 

@@ -1,4 +1,9 @@
+# @title Ada
+# @matchuti public.ada-source
+# @matchext ada, adb
+
 # definitions for Ada, by Reto Buerki
+
 
 preproc = "with|use"
 
@@ -26,13 +31,13 @@ keyword = "abort|abs|abstract|accept|access|aliased|all|and|array|at",
 
 comment start "--"
 
-include "number.lang"
+include "_number.lang"
 
 string delim "\"" "\"" escape "\\"
 string delim "'" "'"  escape "\\"
 
 type = "Integer|Float|Duration|Character|String|Wide_String|Boolean" nonsensitive
 
-include "symbols.lang"
+include "_symbols.lang"
 
-include "function.lang"
+include "_function.lang"

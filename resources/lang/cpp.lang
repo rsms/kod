@@ -1,8 +1,7 @@
-# definitions for C++
-# most of it is shared with c.lang
 # @title C++
-# @matchuti public.c-header
+# @matchuti public.c-plus-plus-source,public.c-plus-plus-header,public.c-header
 # @matchext moc, cpp, C, cc, h, hh, H, hpp
+# most of it is shared with c.lang
 
 (keyword,normal,classname) = 
   `(\<(?:class|struct|typename))([[:blank:]]+)([[:alnum:]_]+)`

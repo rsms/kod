@@ -1,15 +1,17 @@
-# lang definition file for xorg configuration files
+# @title X.Org configuration
+# @matchuti org.x.configuration-script
+# @matchext xorg
 
-include "script_comment.lang"
+include "_script_comment.lang"
 
 state keyword delim "Section" "EndSection" multiline begin
-	include "number.lang"
-	include "c_string.lang"
-	include "script_comment.lang"
+	include "_number.lang"
+	include "_c_string.lang"
+	include "_script_comment.lang"
 	state keyword delim "SubSection" "EndSubSection" multiline begin
-		include "number.lang"
-		include "c_string.lang"
-		include "script_comment.lang"
+		include "_number.lang"
+		include "_c_string.lang"
+		include "_script_comment.lang"
 		(normal,type) = `(^[[:blank:]]*)([[:word:]]+)`
 	end
 

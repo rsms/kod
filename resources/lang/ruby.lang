@@ -1,6 +1,11 @@
+# @title Ruby
+# @matchuti public.ruby-script
+# @matchext rb, rbw
+# @matchprogram ruby
+
 preproc = "require"
 
-include "number.lang"
+include "_number.lang"
 
 string delim "\"" "\"" escape "\\"
 string delim "'" "'"  escape "\\"
@@ -17,16 +22,16 @@ type = '(\$[#]?|@@|@)([[:word:]]+|\'|\"|/)'
 # don't highlight ? and ! as symbols if they are part of a method call
 normal = '[[:alnum:]]+(\?|!)'
 
-include "symbols.lang"
+include "_symbols.lang"
 
 # for variable interpolation, #{ is not a comment
 (symbol,cbracket) = `(#)(\{)`
 
-include "script_comment.lang"
+include "_script_comment.lang"
 
 cbracket = "{|}"
 
 # no function highlighting for Ruby, since a method invocation
 # can be written even without parenthesis
-# include "function.lang"
+# include "_function.lang"
 

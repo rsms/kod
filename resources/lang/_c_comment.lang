@@ -3,7 +3,7 @@
 # comments with documentation tags
 environment comment start "///" begin
   include "url.lang"
-  include "html_simple.lang"
+  include "_html_basic.lang"
   type = '@[[:alpha:]]+'
   include "todo.lang"
 end
@@ -13,7 +13,7 @@ comment start "//"
 # comments with documentation tags
 environment comment delim "/**" "*/" multiline begin
   include "url.lang"
-  include "html_simple.lang"
+  include "_html_basic.lang"
   type = '@[[:alpha:]]+'
   include "todo.lang"
 end

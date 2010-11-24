@@ -2,6 +2,8 @@
 
 #import "KLangMap.h"
 #import "KConfig.h"
+#import "ICUPattern.h"
+#import "ICUMatcher.h"
 #import <libkern/OSAtomic.h>
 
 
@@ -126,8 +128,24 @@ static void kio_iterdirs_async(NSArray *dirs,
 static KLangMap const *gKLangMap = nil;
 static HSpinLock gKLangMapSpinLock; // used by +sharedLangMap
 
+// Shared regular expressions
+static ICUPattern *gSheBangDirectRegExp;
+static ICUPattern *gSheBangEnvRegExp;
+
 + (void)load {
   NSAutoreleasePool *pool = [NSAutoreleasePool new];
+  
+  // Shared regular expressions
+  // '#! /usr/bin/env perl'
+  gSheBangEnvRegExp = [[ICUPattern alloc] initWithString:
+  @"#[[:blank:]]*![[:blank:]]*(?:[\\./]*)(?:[[:alnum:]]+[\\./]+)*(?:env)[[:blank:]]+([[:alnum:]]+)"
+                                              flags:ICUCaseInsensitiveMatching];
+  assert(gSheBangEnvRegExp != nil);
+  // '#! /usr/bin/perl'
+  gSheBangDirectRegExp = [[ICUPattern alloc] initWithString:
+  @"#[[:blank:]]*![[:blank:]]*(?:[\\./]*)(?:[[:alnum:]]+[\\./]+)*([[:alnum:]]+)"
+                                              flags:ICUCaseInsensitiveMatching];
+  assert(gSheBangDirectRegExp != nil);
 
   // FIXME: cache results in KConfig and "watch" URLs in searchPaths_ and
   // langIdToInfo_ for changes and scan only those files which change.
@@ -141,11 +159,12 @@ static HSpinLock gKLangMapSpinLock; // used by +sharedLangMap
     DLOG("firstLinePatternList_ => %@", langMap->firstLinePatternList_);
     DLOG("nameToLangIdMap_ => %@", langMap->nameToLangIdMap_);
     DLOG("extToLangIdMap_ => %@", langMap->extToLangIdMap_);*/
-    #if 0
+    #if 1
     NSLog(@"searchPaths_ => %@", langMap->searchPaths_);
     NSLog(@"langIdToInfo_ => %@", langMap->langIdToInfo_);
     NSLog(@"UTIToLangIdMap_ => %@", langMap->UTIToLangIdMap_);
     NSLog(@"firstLinePatternList_ => %@", langMap->firstLinePatternList_);
+    NSLog(@"programToLangIdMap_ => %@", langMap->programToLangIdMap_);
     NSLog(@"nameToLangIdMap_ => %@", langMap->nameToLangIdMap_);
     NSLog(@"extToLangIdMap_ => %@", langMap->extToLangIdMap_);
     #endif
@@ -170,6 +189,7 @@ static HSpinLock gKLangMapSpinLock; // used by +sharedLangMap
   UTIToLangIdMap_ = [NSMutableDictionary new];
   extToLangIdMap_ = [NSMutableDictionary new];
   nameToLangIdMap_ = [NSMutableDictionary new];
+  programToLangIdMap_ = [NSMutableDictionary new];
   firstLinePatternList_ = [NSMutableArray new];
   return self;
 }
@@ -180,6 +200,7 @@ static HSpinLock gKLangMapSpinLock; // used by +sharedLangMap
   [UTIToLangIdMap_ release];
   [extToLangIdMap_ release];
   [nameToLangIdMap_ release];
+  [programToLangIdMap_ release];
   [firstLinePatternList_ release];
   [super dealloc];
 }
@@ -235,10 +256,11 @@ static HSpinLock gKLangMapSpinLock; // used by +sharedLangMap
    * Search order priority:
    *
    * 1. UTI
-   * 2. First line match
-   * 3. Case-sensitive filename
-   * 4. Case-sensitive extension
-   * 5. Case-insensitive extension
+   * 2. First line "she-bang" program
+   * 3. First line regexp match
+   * 4. Case-sensitive filename
+   * 5. Case-sensitive extension
+   * 6. Case-insensitive extension
    */
   NSString *langId = nil;
   
@@ -250,35 +272,74 @@ static HSpinLock gKLangMapSpinLock; // used by +sharedLangMap
     if (langId) return langId;
   }
   
-  // 2. First line
-  if (firstLine) {
-    for (KLangMapLinePattern *pattern in firstLinePatternList_) {
-      // todo: test agains firstLine
+  // Test on first line of content
+  if (firstLine && firstLine.length) {
+    ICUMatcher *m;
+    
+    // 2. She-bang program ('#! /usr/bin/env perl')
+    NSString *program = nil;
+    m = [ICUMatcher matcherWithPattern:gSheBangEnvRegExp overString:firstLine];
+    if ([m findNext]) {
+      assert([m numberOfGroups] > 0);
+      program = [m groupAtIndex:1];
+    } else {
+      // Try direct program name, e.g. '#! /usr/bin/perl'
+      [m setPattern:gSheBangDirectRegExp];
+      [gSheBangDirectRegExp setStringToSearch:firstLine];
+      if ([m findNext]) {
+        assert([m numberOfGroups] > 0);
+        program = [m groupAtIndex:1];
+      }
+    }
+    if (program) {
+      programToLangIdMapLock_.lock();
+      langId = [programToLangIdMap_ objectForKey:program];
+      programToLangIdMapLock_.unlock();
+      if (langId) return langId;
+    }
+  
+    // 3. First line pattern
+    HSpinLockSync(firstLinePatternListLock_) {
+      for (KLangMapLinePattern *pattern in firstLinePatternList_) {
+        assert(pattern->pattern != nil);
+        [m setPattern:pattern->pattern];
+        [pattern->pattern setStringToSearch:firstLine];
+        //DLOG("test '%@' with '%@'", firstLine, pattern->pattern);
+        if ([m findNext]) {
+          return pattern->langId;
+        }
+      }
     }
   }
   
   // The rest of the tests involve |url| -- bail unless non-nil
   if (!url) return nil;
   
-  // 3. Complete filename ("basename"), case-sensitive
+  // 4. Complete filename ("basename"), case-sensitive
   NSString *name = [url lastPathComponent];
   nameToLangIdMapLock_.lock();
   langId = [nameToLangIdMap_ objectForKey:name];
   nameToLangIdMapLock_.unlock();
   if (langId) return langId;
   
-  // 4. Filename extension
+  // 5. Filename extension
   NSString *ext = [name pathExtension];
   if (ext.length) {
     extToLangIdMapLock_.lock();
-    // case-sensitive
+    // 5.1. case-sensitive
     langId = [extToLangIdMap_ objectForKey:ext];
-    // case-insensitive
+    // 5.2. case-insensitive
     if (!langId)
       langId = [extToLangIdMap_ objectForKey:[ext lowercaseString]];
     extToLangIdMapLock_.unlock();
     if (langId) return langId;
   }
+  
+  // 6. Complete filename ("basename"), case-insensitive
+  nameToLangIdMapLock_.lock();
+  langId = [nameToLangIdMap_ objectForKey:[name lowercaseString]];
+  nameToLangIdMapLock_.unlock();
+  if (langId) return langId;
   
   return nil;
 }
@@ -324,6 +385,7 @@ static HSpinLock gKLangMapSpinLock; // used by +sharedLangMap
   #define MATCH_UTI 2
   #define MATCH_NAME 3
   #define MATCH_FIRSTLINE 4
+  #define MATCH_PROGRAM 5
   // # @match
   while (fgets(buf, bufz, f) != NULL) {
     char *p = buf;
@@ -370,6 +432,8 @@ static HSpinLock gKLangMapSpinLock; // used by +sharedLangMap
           match = MATCH_UTI;
         } else if (matchlen == 5 && strncmp(startp, "name", 4) == 0) {
           match = MATCH_NAME;
+        } else if (matchlen == 8 && strncmp(startp, "program", 7) == 0) {
+          match = MATCH_PROGRAM;
         } else if (matchlen == 10 && strncmp(startp, "firstline", 9) == 0) {
           match = MATCH_FIRSTLINE;
         } else {
@@ -379,7 +443,8 @@ static HSpinLock gKLangMapSpinLock; // used by +sharedLangMap
         // we got a match
         
         // register match
-        if (match == MATCH_EXT || match == MATCH_UTI || match == MATCH_NAME) {
+        if (match == MATCH_EXT || match == MATCH_UTI || match == MATCH_NAME ||
+            match == MATCH_PROGRAM) {
           while (*p && *p != '\n') { // for each component...
             startp = p;
             for (; *p && (*p != ',' && *p != '\n'); p++ );
@@ -391,15 +456,21 @@ static HSpinLock gKLangMapSpinLock; // used by +sharedLangMap
               if (match == MATCH_EXT) {
                 extToLangIdMapLock_.lock();
                 [extToLangIdMap_ setObject:ident forKey:s];
+                [extToLangIdMap_ setObject:ident forKey:[s lowercaseString]];
                 extToLangIdMapLock_.unlock();
               } else if (match == MATCH_UTI) {
                 UTIToLangIdMapLock_.lock();
                 [UTIToLangIdMap_ setObject:ident forKey:s];
                 UTIToLangIdMapLock_.unlock();
-              } else {
+              } else if (match == MATCH_NAME) {
                 nameToLangIdMapLock_.lock();
                 [nameToLangIdMap_ setObject:ident forKey:s];
+                [nameToLangIdMap_ setObject:ident forKey:[s lowercaseString]];
                 nameToLangIdMapLock_.unlock();
+              } else if (match == MATCH_PROGRAM) {
+                programToLangIdMapLock_.lock();
+                [programToLangIdMap_ setObject:ident forKey:s];
+                programToLangIdMapLock_.unlock();
               }
               [s release];
             }
@@ -438,8 +509,15 @@ static HSpinLock gKLangMapSpinLock; // used by +sharedLangMap
 - (void)rescanWithCallback:(void(^)(NSError*))callback {
   NSZone *zone = [self zone];
   kio_iterdirs_async(self.searchPaths, ^(NSError **ioerr, NSURL *url) {
-    if (*ioerr)
-      return NO; // abort on errors
+    if (*ioerr) {
+      // abort on error
+      return NO;
+    }
+    if ([[url lastPathComponent] hasPrefix:@"_"]) {
+      // don't scan "purely included" files
+      return YES;
+    }
+    // scan file
     return [self scanFileAtURL:url inAllocationZone:zone error:ioerr];
   }, callback);
 }

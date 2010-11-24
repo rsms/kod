@@ -1,4 +1,6 @@
-# language awk
+# @title Awk
+# @matchuti public.awk-script
+# @matchext awk
 
 regexp = '/([^/]*)/'
 
@@ -10,5 +12,5 @@ cbracket = "{|}"
 
 include "sh.lang"
 
-include "function.lang"
+include "_function.lang"
 

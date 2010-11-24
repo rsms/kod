@@ -1,4 +1,9 @@
-include "number.lang"
+# @title Lua
+# @matchuti public.lua-script
+# @matchext lua
+# @matchprogram lua
+
+include "_number.lang"
 
 string delim "[[" "]]" multiline nested
 
@@ -19,7 +24,7 @@ environment comment start "--" begin
   include "url.lang"
 end
 
-include "symbols.lang"
+include "_symbols.lang"
 
 cbracket = "{|}"
 

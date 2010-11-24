@@ -1,7 +1,21 @@
+# @title Configuration
+# @matchuti public.configuration-text
+# @matchext ini, conf, cnf
+
 # highlighting for generic configuration files
 
 include "properties.lang"
-include "desktop.lang"
+
+include "_script_comment.lang"
+
+section start '\[.*\]'
+
+(type,paren,normal,symbol) = `([^="\[]+)((?:\[.+\])*)([[:blank:]]*)(=)`
+
+include "_number.lang"
+include "_symbols.lang"
+include "_c_string.lang"
+
 include "xorg.lang"
 
 variable = '([[:alpha:]]|_)[[:word:]]*(?==)'

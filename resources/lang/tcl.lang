@@ -1,12 +1,15 @@
-# language definition for TCL
+# @title TCL
+# @matchuti public.tcl-script
+# @matchext tcl, tk
+# @matchprogram tcl
 
-include "script_comment.lang"
+include "_script_comment.lang"
 
-include "number.lang"
+include "_number.lang"
 
-include "c_string.lang"
+include "_c_string.lang"
 
-include "symbols.lang"
+include "_symbols.lang"
 
 cbracket = "{|}"
 

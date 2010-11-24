@@ -1,3 +1,7 @@
+# @title SQL
+# @matchuti public.sql-script
+# @matchext sql, ddl, dml
+
 type = "VARCHAR|TINYINT|TEXT|DATE|SMALLINT|MEDIUMINT|INT|BIGINT",
 "FLOAT|DOUBLE|DECIMAL|DATETIME|TIMESTAMP|TIME|YEAR|UNSIGNED",
 "CHAR|TINYBLOB|TINYTEXT|BLOB|MEDIUMBLOB|MEDIUMTEXT",
@@ -29,18 +33,18 @@ keyword = "ALL|ASC|AS|ALTER|AND|ADD|AUTO_INCREMENT",
 	"XOR"
 	nonsensitive
 
-include "c_string.lang"
+include "_c_string.lang"
 
 environment string delim "`" "`" begin
   specialchar = $SPECIALCHAR
 end
 
-include "script_comment.lang"
+include "_script_comment.lang"
 
-include "c_comment.lang"
+include "_c_comment.lang"
 
 comment start "--"
 
-include "symbols.lang"
+include "_symbols.lang"
 
-include "number.lang"
+include "_number.lang"

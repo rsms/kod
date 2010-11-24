@@ -1,4 +1,6 @@
-# definitions for C-sharp
+# @title C#
+# @matchuti public.c-sharp-source
+# @matchext cs, csharp
 # by S. HEMMI, updated by L. Bettini.
 preproc = "using"
 

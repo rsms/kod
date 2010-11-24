@@ -1,12 +1,16 @@
+# @title Scala
+# @matchuti org.scala-lang.scala-source
+# @matchext scala
+
 # written by Dean Wampler
 
 preproc = "import","package"
 
-include "c_comment.lang"
+include "_c_comment.lang"
 
-include "number.lang"
+include "_number.lang"
 
-include "c_string.lang"
+include "_c_string.lang"
 
 (keyword,normal,classname) = `(\<(?:class|trait))([[:blank:]]+)([$[:alnum:]_]+)`
 
@@ -22,7 +26,7 @@ keyword = "abstract|case|catch|class|def",
 
 type = "Int|Byte|Boolean|Char|Long|Float|Double|Short|Nil"
 
-include "symbols.lang"
+include "_symbols.lang"
 
 cbracket = "{|}"
 

@@ -1,0 +1,13 @@
+# @title pkg-config
+# @matchuti public.pkg-config-script
+# @matchext pc
+# @matchname pkgconfig
+
+include "properties.lang"
+
+variable = '\$\{([^[:blank:]]+)\}'
+
+include "_number.lang"
+include "url.lang"
+
+(string,symbol) = `(^[^:]+)(:)`

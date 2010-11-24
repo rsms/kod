@@ -1,5 +1,7 @@
-# Erlang lang definition file
-# by Caolan McMahon
+# @title Erlang
+# @matchuti org.erlang.erlang-source
+# @matchext erl, hrl
+# @author Caolan McMahon
 # from: http://caolanmcmahon.com/erlang_syntax_highlighting
 # patched by Miklos Vajna
 # further modifications by Lorenzo Bettini
@@ -8,7 +10,7 @@ keyword = "div|rem|or|xor|bor|bxor|bsl|bsr|and|band|not|bnot|abs|alive|apply|ato
 
 environment comment start "%" begin
   include "url.lang"
-  include "html_simple.lang"
+  include "_html_basic.lang"
   type = '@[[:alpha:]]+'
   include "todo.lang"
 end
@@ -16,7 +18,7 @@ end
 
 normal = "(|)|{|}|[|]|\||;|,|?|#"
 
-include "number.lang"
+include "_number.lang"
 
 #hex numbers
 number = '\$\\x+'

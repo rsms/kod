@@ -1,5 +1,7 @@
-# Language definition file for Texinfo
-# author: Lorenzo Bettini
+# @title Texinfo
+# @matchuti org.texinfo.texinfo-script
+# @matchext texi
+# @author Lorenzo Bettini
 
 normal = "@@","@{","@}"
 

@@ -1,4 +1,6 @@
-# for ldap syntax
+# @title LDAP
+# @matchuti public.ldap-script
+# @matchext ldap, ldif
 
 comment start "#"
 

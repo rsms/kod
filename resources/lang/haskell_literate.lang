@@ -1,3 +1,7 @@
+# @title Haskell literate
+# @matchuti org.haskell.haskell-literate-source
+# @matchext lhs
+
 # Haskel literate programming
 # both Bird and Latex style
 

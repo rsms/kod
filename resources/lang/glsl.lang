@@ -1,17 +1,20 @@
-# definitions for glsl
-include "c_comment.lang"
+# @title OpenGL Shading Language
+# @matchuti public.glsl-source
+# @matchext glsl
+
+include "_c_comment.lang"
 
 state preproc start '^[[:blank:]]*#(?:[[:blank:]]*include)' begin
         string delim "<" ">" 
         string delim "\"" "\"" escape "\\"
-        include "c_comment.lang"
+        include "_c_comment.lang"
 end
 
 preproc = '^[[:blank:]]*#([[:blank:]]*[[:word:]]*)'
 
-include "number.lang"
+include "_number.lang"
 
-include "c_string.lang"
+include "_c_string.lang"
 
 keyword = "attribute|const|uniform|varying",
   "centroid",
@@ -79,8 +82,8 @@ type = "float|int|void|bool|true|false",
   "sampler1D|sampler2D|sampler3D|samplercube",
   "sampler1Dshadow|sampler2Dshadow"
 
-include "symbols.lang"
+include "_symbols.lang"
 
 cbracket = "{|}"
 
-include "function.lang"
+include "_function.lang"

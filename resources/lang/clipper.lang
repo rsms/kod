@@ -1,6 +1,8 @@
-# lang def file for good ol' clipper  :-)
+# @title Clipper
+# @matchuti com.grafxsoft.clipper-source
+# @matchext clipper, prg
 
-include "c_comment.lang"
+include "_c_comment.lang"
 
 keyword = "announce|begin|break|case|declare|do|elseif|else|endif|enddo|end",
 "endcase|exit|external|field|for|if|local|loop|memvar|next|otherwise|parameters",
@@ -16,7 +18,7 @@ keyword = "announce|begin|break|case|declare|do|elseif|else|endif|enddo|end",
 "to|typeahead|text|total|type|unique|unlock|update|use|wrap|wait|zap"
 nonsensitive
 
-include "symbols.lang"
-include "c_string.lang"
-include "number.lang"
-include "function.lang"
+include "_symbols.lang"
+include "_c_string.lang"
+include "_number.lang"
+include "_function.lang"

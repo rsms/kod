@@ -1,3 +1,8 @@
+# @title Syslog
+# @matchuti public.syslog-text
+# @matchext log
+# @matchprogram syslog
+
 vardef basic_time = '[[:digit:]]{2}:[[:digit:]]{2}:[[:digit:]]{2}'
 vardef time = '\<' + $basic_time + '\>'
 vardef ip = '[[:digit:]]{1,3}\.[[:digit:]]{1,3}\.[[:digit:]]{1,3}\.[[:digit:]]{1,3}\>'

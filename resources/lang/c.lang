@@ -1,5 +1,8 @@
-# definitions for C
-include "c_comment.lang"
+# @title C
+# @matchuti public.c-source
+# @matchext c
+include "_c_comment.lang"
+include "_c_macroif_comment.lang"
 
 label = '^[[:blank:]]*[[:alnum:]]+:[[:blank:]]*\z'
 
@@ -9,14 +12,14 @@ label = '^[[:blank:]]*[[:alnum:]]+:[[:blank:]]*\z'
 state preproc start '^[[:blank:]]*#(?:[[:blank:]]*include)' begin
         string delim "<" ">" 
         string delim "\"" "\"" escape "\\"
-        include "c_comment.lang"
+        include "_c_comment.lang"
 end
 
 preproc = '^[[:blank:]]*#([[:blank:]]*[[:word:]]*)'
 
-include "number.lang"
+include "_number.lang"
 
-include "c_string.lang"
+include "_c_string.lang"
 
 keyword = "__asm|__cdecl|__declspec|__export|__far16",
   "__fastcall|__fortran|__import",
@@ -34,10 +37,10 @@ keyword = "__asm|__cdecl|__declspec|__export|__far16",
 type = "bool|char|double|float|int|long",
   "short|signed|unsigned|void|wchar_t"
 
-include "symbols.lang"
+include "_symbols.lang"
 
 cbracket = "{|}"
 
-include "function.lang"
+include "_function.lang"
 
-include "clike_vardeclaration.lang"
+include "_clike_vardeclaration.lang"

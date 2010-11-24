@@ -1,3 +1,7 @@
+# @title Perl
+# @matchuti public.perl-script
+# @matchext perl, pm, pl
+# @matchprogram perl
 preproc = "import"
 
 # these might be unreadable but I don't know how else to do that...
@@ -30,9 +34,9 @@ preproc = "import"
 (keyword,regexp,regexp,regexp,regexp,keyword) = 
     `(s)([^[:alnum:][:blank:]])(.*\2[[:blank:]]*)([^[:alnum:][:blank:]])(.*\4)([ixsmogce]*(?=[[:blank:]]*(?:\)|;)))`
 
-include "script_comment.lang"
+include "_script_comment.lang"
 
-include "number.lang"
+include "_number.lang"
 
 # this won't work if # has something (non blank) before
 vardef comment_in_exp = '[[:blank:]]+#.*'
@@ -126,9 +130,9 @@ comment delim '^\=(?:head1|head2|item)' '\=cut' multiline
 
 variable = '(?:\$[#]?|@|%)[/[:word:]]+'
 
-include "symbols.lang"
+include "_symbols.lang"
 
 cbracket = "{|}"
 
-include "function.lang"
+include "_function.lang"
 

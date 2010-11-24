@@ -1,3 +1,7 @@
+# @title Logtalk
+# @matchuti public.logtalk-source
+# @matchext lgt
+
 # highlighting for Logtalk source files (http://logtalk.org/)
 #
 #	written by Paulo Moura (pmoura@logtalk.org)

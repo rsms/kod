@@ -1128,8 +1128,16 @@ shouldChangeTextInRanges:(NSArray *)affectedRanges
                error:(NSError **)outError {
   DLOG("readFromData:%p ofType:%@", data, typeName);
   
+  // TODO: Guess encoding
+  
   // try to decode data as text encoded as textEncoding_
   NSString *text = [[NSString alloc] initWithData:data encoding:textEncoding_];
+  
+  // until we have a proper encoding guess algorithm, let's do a quick-n-dirty
+  if (!text) {
+    textEncoding_ = NSISOLatin1StringEncoding;
+    text = [[NSString alloc] initWithData:data encoding:textEncoding_];
+  }
   
   if (!text) {
     WLOG("Failed to parse data. text => nil (data length: %u)", [data length]);
@@ -1192,11 +1200,6 @@ originalContentsURL:(NSURL *)absoluteOriginalContentsURL
   // make a file wrapper (calls dataOfType:error:)
   NSFileWrapper *fileWrapper = [self fileWrapperOfType:typeName error:outError];
   if (!fileWrapper) return NO;
-  
-  // modify attributes
-  NSMutableDictionary* attrs = [fileWrapper.fileAttributes mutableCopy];
-  [attrs setObject:@"hello" forKey:@"se.hunch.kod.cursor"];
-  [fileWrapper setFileAttributes:attrs];
   
   // write it
   if (![fileWrapper writeToURL:absoluteURL

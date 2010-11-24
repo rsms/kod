@@ -1,3 +1,7 @@
+# @title Language definition
+# @matchuti org.gnu.source-highlight-langdef
+# @matchext lang
+
 # this is the language definition for the
 # language definition syntax itself
 comment start "#"

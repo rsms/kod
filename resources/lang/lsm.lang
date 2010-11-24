@@ -1,4 +1,6 @@
-# Linux Software Map language definition
+# @title Linux Software Map
+# @matchuti org.gnu.linux-software-map
+# @matchext lsm
 
 keyword = 'Begin[[:digit:]]*|End'
 

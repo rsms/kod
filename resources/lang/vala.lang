@@ -1,5 +1,7 @@
-# definitions for Vala
-# by Luca Bruno.
+# @title Vala
+# @matchuti org.gnome.vala-source
+# @matchext vala, vapi, gir
+# @author Luca Bruno.
 
 string delim "\"\"\"" "\"\"\"" multiline
 #preproc = '^[[:blank:]]*\[.+\]'

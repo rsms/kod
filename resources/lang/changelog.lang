@@ -1,3 +1,8 @@
+# @title Changelog
+# @matchuti public.changelog-text
+# @matchext changelog, chlog
+# @matchname CHANGELOG, changelog, CHANGES, changes
+
 state date start '[[:digit:]]{2,4}-?[[:digit:]]{2}-?[[:digit:]]{2}' begin
   include "url.lang"
   name = '([[:word:]]|[[:punct:]])+'
