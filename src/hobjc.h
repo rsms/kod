@@ -37,24 +37,5 @@ inline id h_objc_xch(id *dst, id src) {
   return old;
 }
 
-/* C++ ptr (WIP) 
-class HObjCPtr {
- public:
-  id object;
-  HObjCPtr(id obj) : object(obj) { [object retain]; }
-  ~HObjCPtr() { [object release]; }
-  HObjCPtr & operator=(HObjCPtr & r) {
-    [h_objc_swap(&object, [r.object retain]) release];
-    return *this;
-  }
-  id operator=(id r) {
-    [h_objc_swap(&object, [r retain]) release];
-    return object;
-  }
-  reference operator* () const { return *object; }
-  id * operator-> () const { return object; }
-  id * get() const { return object; }
-};*/
-
 #endif // __OBJC__
 #endif // H_OBJC_H_

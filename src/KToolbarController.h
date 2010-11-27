@@ -1,5 +1,9 @@
 #import <ChromiumTabs/ChromiumTabs.h>
 
+@class KAutocompleteTextField,
+       KAutocompleteTextFieldEditor,
+       KLocationBarController;
+
 // A controller for the toolbar in the browser window.
 //
 // This class is meant to be subclassed -- the default implementation will load
@@ -15,6 +19,12 @@
 //    and return a CTToolbarController based on your nib.
 //
 @interface KToolbarController : CTToolbarController {
+  IBOutlet KAutocompleteTextField* locationBarTextField_;
+  KAutocompleteTextFieldEditor *autocompleteTextFieldEditor_;
+  KLocationBarController *locationBarController_;
+  __weak CTTabContents *currentContents_;
 }
+
+@property(nonatomic, readonly) KAutocompleteTextField* locationBarTextField;
 
 @end

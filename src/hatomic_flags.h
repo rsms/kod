@@ -1,15 +1,15 @@
 /*
  * hatomic_flags -- atomically and independently set, test and clear 32 flags.
  *
- * Currently only support Mac OS X.
+ * Currently only supports Mac OS X.
  *
  * Example:
  *
  *    hatomic_flags_t flags = 0;
- *    hatomic_flags_set(&flags, 4);
- *    hatomic_flags_test(&flags, 4); // --> true
- *    hatomic_flags_clear(&flags, 4);
- *    hatomic_flags_test(&flags, 4); // --> false
+ *    hatomic_flags_set(&flags, 4);    // --> true  "did set"
+ *    hatomic_flags_test(&flags, 4);   // --> true  "is set"
+ *    hatomic_flags_clear(&flags, 4);  // --> true  "did clear"
+ *    hatomic_flags_test(&flags, 4);   // --> false "not set"
  *
  */
 #ifndef HATOMIC_FLAGS_H_
@@ -54,7 +54,7 @@ static inline void hatomic_flags_test() {
   
   #define hafdo(op, n) do { \
     bool rv = hatomic_flags_##op(&flags, n); \
-    fprintf(stderr, "hatomic_bool_%-5s(%2d) -> %s \t %s\n", \
+    fprintf(stderr, "hatomic_flags_%-5s(%2d) -> %s \t %s\n", \
     #op, n, rv?"true ":"false", debug_bits32(flags)); } while(0)
   
   hafdo(set, 31);

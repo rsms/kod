@@ -59,7 +59,6 @@ KSourceHighlighter::KSourceHighlighter()
     , textStorage_(nil)
     , style_(nil)
     , text_(nil)
-    , paragraph_(nil)
     , attributesBuffer_(nil)
     , paragraphIsMultibyte_(false) {
   mainHighlightState_ = g_empty_state;
@@ -407,13 +406,12 @@ NSRange KSourceHighlighter::highlight(NSTextStorage *textStorage,
   #endif
   
   // update instance-locals
-  //if (!receivedWillHighlight_ || textStorage_ != textStorage) {
-  //receivedWillHighlight_ = NO;
   assert(textStorage_ == nil);
   textStorage_ = [textStorage retain];
   text_ = [[textStorage_ string] retain];
   fullRange_ = NSMakeRange(0, textStorage_.length);
-  //}
+  if (fullRange_.length == 0)
+    return fullRange_;
   
   // Hold on to the style
   style_ = [style retain];
@@ -687,11 +685,13 @@ void KSourceHighlighter::highlightPass(bool beginningOfLine) {
   
   // make a std::string copy
   std::string paragraph;
-  NSUInteger size = [text_ populateStdString:paragraph
-                               usingEncoding:NSUTF8StringEncoding
-                                       range:highlightRange_];
-  paragraph_ = &paragraph;
-  paragraphIsMultibyte_ = (size != highlightRange_.length);
+  mappedString_.setNSString(text_, highlightRange_);
+  mappedString_.convert(paragraph);
+  //NSUInteger size = [text_ populateStdString:paragraph
+  //                             usingEncoding:NSUTF8StringEncoding
+  //                                     range:highlightRange_];
+  paragraphIsMultibyte_ = (paragraph.size() != highlightRange_.length);
+  DLOG("paragraphIsMultibyte_ => %@", paragraphIsMultibyte_?@"YES":@"NO");
   
   // get start and end iterators
   str_const_iterator paragraphStart = paragraph.begin();
@@ -712,8 +712,6 @@ void KSourceHighlighter::highlightPass(bool beginningOfLine) {
     mParams.beginningOfLine = true;
     start = end;
   };
-  
-  paragraph_ = NULL;
 }
 
 

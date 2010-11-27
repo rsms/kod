@@ -7,6 +7,7 @@
 #import "KFileTreeController.h"
 #import "KFileOutlineView.h"
 #import "KScroller.h"
+#import "KToolbarController.h"
 
 
 @implementation KBrowserWindowController
@@ -14,6 +15,29 @@
 @synthesize
     verticalSplitView = verticalSplitView_,
     leftmostSubviewOfVerticalSplitView = leftmostSubviewOfVerticalSplitView_;
+
+
+// TODO: move these into chromium-tabs
+
++ (KBrowserWindowController*)browserWindowControllerForWindow:(NSWindow*)window {
+  while (window) {
+    id controller = [window windowController];
+    if ([controller isKindOfClass:[KBrowserWindowController class]])
+      return (KBrowserWindowController*)controller;
+    window = [window parentWindow];
+  }
+  return nil;
+}
+
+
++ (KBrowserWindowController*)browserWindowControllerForView:(NSView*)view {
+  NSWindow* window = [view window];
+  return [KBrowserWindowController browserWindowControllerForWindow:window];
+}
+
+
+#pragma mark -
+#pragma mark Initialization
 
 
 - (id)initWithWindowNibPath:(NSString *)windowNibPath
@@ -45,6 +69,48 @@
 }
 
 
+- (id)init {
+  // subclasses could override this to provide a custom |CTBrowser|
+  return [self initWithBrowser:[KBrowser browser]];
+}
+
+
+#pragma mark -
+#pragma mark Actions
+
+
+/*- (void)setDocument:(NSDocument *)document {
+  DLOG("%s %@", __func__, document);
+  [super setDocument:document];
+}*/
+
+
+- (void)layoutTabContentArea:(NSRect)newFrame {
+  // Adjust height after the tabstrip have been introduced to the window top
+  NSRect splitViewFrame = verticalSplitView_.frame;
+  splitViewFrame.size.height = newFrame.size.height;
+  [verticalSplitView_ setFrame:splitViewFrame];
+  [super layoutTabContentArea:newFrame];
+}
+
+
+- (IBAction)focusLocationBar:(id)sender {
+  if (toolbarController_) {
+    [((KToolbarController*)toolbarController_).locationBarTextField becomeFirstResponder];
+  }
+}
+
+
+/*- (BOOL)validateMenuItem:(NSMenuItem *)item {
+  //KTabContents* tab = (KTabContents*)[self selectedTabContents];
+  BOOL y = [super validateMenuItem:item];
+  DLOG("validateMenuItem:%@ -> %@", item, y?@"YES":@"NO");
+}*/
+
+
+#pragma mark -
+#pragma mark NSSplitViewDelegate protocol
+
 - (BOOL)splitView:(NSSplitView*)sv shouldAdjustSizeOfSubview:(NSView*)subview {
   if (sv == verticalSplitView_ &&
       subview == leftmostSubviewOfVerticalSplitView_) {
@@ -52,6 +118,10 @@
   }
   return YES;
 }
+
+
+#pragma mark -
+#pragma mark NSWindowDelegate protocol
 
 
 - (NSRect) window:(NSWindow *)window
@@ -62,18 +132,10 @@ willPositionSheet:(NSWindow *)sheet
 }
 
 
-- (void)setDocument:(NSDocument *)document {
-  //DLOG("%s %@", __func__, document);
-  [super setDocument:document];
-}
-
-
-- (void)layoutTabContentArea:(NSRect)newFrame {
-  // Adjust height after the tabstrip have been introduced to the window top
-  NSRect splitViewFrame = verticalSplitView_.frame;
-  splitViewFrame.size.height = newFrame.size.height;
-  [verticalSplitView_ setFrame:splitViewFrame];
-  [super layoutTabContentArea:newFrame];
+- (id)windowWillReturnFieldEditor:(NSWindow*)sender toObject:(id)obj {
+  // Ask the toolbar controller if it wants to return a custom field editor
+  // for the specific object.
+  return [toolbarController_ customFieldEditorForObject:obj];
 }
 
 

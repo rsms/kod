@@ -37,8 +37,14 @@
   } while (0)
 
 
-#define NOTIMPLEMENTED() errx(4, "Not implemented reached in %s (%s:%d)", \
-                              __PRETTY_FUNCTION__, __SRC_FILENAME__, __LINE__)
+#ifdef __OBJC__
+  #define DLOG_TRACE2() \
+    _LOG('T', "%s %@", __PRETTY_FUNCTION__, [NSThread callStackSymbols])
+#else
+  #define DLOG_TRACE2() \
+    _LOG('T', "%s <stack trace not implemented>", __PRETTY_FUNCTION__)
+#endif
+
 
 #define K_DEPRECATED \
   WLOG("DEPRECATED %s (%s:%d)", __PRETTY_FUNCTION__, __SRC_FILENAME__, __LINE__)
@@ -67,8 +73,14 @@ static inline const char *debug_bits32(int32_t a) {
 }
 #endif
 
+#import "basictypes.h"
+#import "scoped_nsobject.h"
 #import "kexceptions.h"
 #import "hatomic_flags.h"
+#import "HSemaphore.h"
+#import "hobjc.h"
+
+// NS categories
 #import "NSString-utf8-range-conv.h"
 #import "NSString-cpp.h"
 #import "NSString-intern.h"
@@ -77,7 +89,6 @@ static inline const char *debug_bits32(int32_t a) {
 #import "NSColor-web.h"
 #import "NSCharacterSet-kod.h"
 #import "NSURL-blocks.h"
-#import "HSemaphore.h"
-#import "h-objc.h"
+#import "NSMutableArray-kod.h"
 
 #endif  // K_COMMON_H_

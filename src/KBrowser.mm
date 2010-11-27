@@ -1,35 +1,30 @@
 #import "KBrowser.h"
 #import "KTabContents.h"
+#import "KConfig.h"
 #import "KBrowserWindowController.h"
+#import "KToolbarController.h"
 #import <ChromiumTabs/common.h>
 
 @implementation KBrowser
 
 // This method is called when a new tab is being created. We need to return a
 // new CTTabContents object which will represent the contents of the new tab.
--(CTTabContents*)createBlankTabBasedOn:(CTTabContents*)baseContents {
+- (CTTabContents*)createBlankTabBasedOn:(CTTabContents*)baseContents {
   // Create a new instance of our tab type
   return [[[KTabContents alloc]
       initWithBaseTabContents:baseContents] autorelease];
 }
 
-// Create a new window controller. The default implementation will create a
-// controller loaded with a nib called "BrowserWindow". If the nib can't be
-// found in the main bundle, a fallback nib will be loaded from the framework.
-// This is usually enough since all UI which normally is customized is comprised
-// within each tab (CTTabContents view).
-// DEPRECATED in chromium-tabs
-/*-(CTBrowserWindowController *)createWindowController {
-  NSString *windowNibPath = [CTUtil pathForResource:@"BrowserWindow"
-                                             ofType:@"nib"];
-  KBrowserWindowController* windowController =
-      [[KBrowserWindowController alloc] initWithWindowNibPath:windowNibPath
-                                                      browser:self];
-  return [windowController autorelease];
-}*/
+
+- (CTToolbarController*)createToolbarController {
+  // subclasses could override this -- returning nil means no toolbar
+  return [[[KToolbarController alloc] initWithNibName:@"Toolbar"
+                                               bundle:KConfig.bundle
+                                              browser:self] autorelease];
+}
 
 
--(CTTabContents*)addTabContents:(CTTabContents*)tab
+- (CTTabContents*)addTabContents:(CTTabContents*)tab
                         atIndex:(int)index
                    inForeground:(BOOL)foreground {
   if (index == -1) {

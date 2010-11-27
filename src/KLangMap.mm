@@ -159,7 +159,7 @@ static ICUPattern *gSheBangEnvRegExp;
     DLOG("firstLinePatternList_ => %@", langMap->firstLinePatternList_);
     DLOG("nameToLangIdMap_ => %@", langMap->nameToLangIdMap_);
     DLOG("extToLangIdMap_ => %@", langMap->extToLangIdMap_);*/
-    #if 1
+    #if 0
     NSLog(@"searchPaths_ => %@", langMap->searchPaths_);
     NSLog(@"langIdToInfo_ => %@", langMap->langIdToInfo_);
     NSLog(@"UTIToLangIdMap_ => %@", langMap->UTIToLangIdMap_);
@@ -349,7 +349,8 @@ static ICUPattern *gSheBangEnvRegExp;
      inAllocationZone:(NSZone*)zone
                 error:(NSError**)outError {
   // TODO: Post notifications when things change OR implement KVO
-  
+  // TODO: Replace this scanner with a Ragel machine
+
   // open file for reading
   NSString *pathstr = [url path];
   const char *path = [pathstr UTF8String];

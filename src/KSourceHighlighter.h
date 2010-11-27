@@ -8,6 +8,7 @@
 #include <boost/shared_ptr.hpp>
 #import "HUnorderedMap.h"
 #import "KTextStorage.h"
+#import "HUTF8MappedUTF16String.h"
 
 #include <srchilite/eventgenerator.h>
 #include <srchilite/highlightstate.h>
@@ -117,8 +118,8 @@ class KSourceHighlighter {
   NSString *text_; // weak
   NSRange fullRange_;
   NSRange highlightRange_;
-  std::string *paragraph_; // weak
   bool paragraphIsMultibyte_;
+  HUTF8MappedUTF16String mappedString_;
   int stateDepthDelta_;
   //bool receivedWillHighlight_;
   
@@ -138,12 +139,18 @@ class KSourceHighlighter {
   inline NSRange matchUnicodeRange() {
     NSRange range;
     if (paragraphIsMultibyte_) {
-      range =[NSString UTF16RangeFromUTF8Range:matchRange_
-                                  inUTF8String:paragraph_->data()
-                                      ofLength:paragraph_->size()];
+      //return mappedString_.UTF16RangeForUTF8Range(matchRange_);
+      return mappedString_.unsafeUTF16RangeForUTF8Range(matchRange_);
+      //range = [NSString UTF16RangeFromUTF8Range:matchRange_
+      //                             inUTF8String:paragraph_->data()
+      //                                 ofLength:paragraph_->size()];
     } else {
       range = matchRange_;
     }
+    
+    // idea: keep state on UTF8 range offset since we know that formatting is
+    // unidirectional, thus we always get called for a "next substring".
+    
     // convert/offset to textStorage_'s space
     range.location += highlightRange_.location;
     return range;

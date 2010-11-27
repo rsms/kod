@@ -16,6 +16,7 @@ enum {
   kHighlightingIsQueued = HATOMIC_FLAG_MIN,
   kHighlightingIsProcessing,
   kTestStorageEditingIsProcessing,
+  kHighlightingIsFlushing,
 };
 
 
@@ -336,12 +337,12 @@ static int debugSimulateTextAppendingIteration = 0;
 }
 
 
-- (BOOL)validateMenuItem:(NSMenuItem *)item {
+- (BOOL)validateUserInterfaceItem:(id < NSValidatedUserInterfaceItem >)item {
   BOOL y;
   if ([item action] == @selector(saveDocument:)) {
     y = [self isDocumentEdited] || ![self fileURL];
   } else {
-    y = [super validateMenuItem:item];
+    y = [super validateUserInterfaceItem:item];
   }
   return y;
 }
@@ -490,6 +491,7 @@ static int debugSimulateTextAppendingIteration = 0;
 
 
 - (void)setFileURL:(NSURL *)url {
+  DLOG("setFileURL:%@", url);
   if (url != [self fileURL]) {
     [super setFileURL:url];
     if (url) {
@@ -716,16 +718,45 @@ longestEffectiveRange:&range
 
 - (BOOL)highlightTextStorage:(NSTextStorage*)textStorage
                      inRange:(NSRange)range {
+  if (textStorage.length == 0) {
+    return YES;
+  }
+  
   if (!hatomic_flags_set(&stateFlags_, kHighlightingIsProcessing)) {
     // someone else is already processing
     return NO;
   }
+  
+  DLOG("highlightTextStorage --START-- (%s)",
+       [NSThread isMainThread] ? "on main thread" : "in background");
+  sourceHighlighter_->beginBufferingOfAttributes();
+  NSRange affectedRange =
+      sourceHighlighter_->highlight(textStorage, style_, range,
+                                    lastEditedHighlightState_,
+                                    lastEditedHighlightStateRange_);
+  // this is needed to minimize the time the UI is locked
+  // BUG: when deleting a large piece of text, a "lagging"/"slow rendering"
+  // effect occurs which is very weird
+  DLOG("highlightTextStorage --FLUSH-- %@", NSStringFromRange(affectedRange));
   [textStorage beginEditing];
-  sourceHighlighter_->highlight(textStorage, style_, range,
-                                lastEditedHighlightState_,
-                                lastEditedHighlightStateRange_);
+  BOOL did_set = hatomic_flags_set(&stateFlags_, kHighlightingIsFlushing);
+  assert(did_set == YES);
+  sourceHighlighter_->endFlushBufferedAttributes(textStorage);
   [textStorage endEditing];
-  hatomic_flags_clear(&stateFlags_, kHighlightingIsProcessing);
+  DLOG("highlightTextStorage --END--");
+  // We need to clear the kHighlightingIsFlushing flag on the main thread
+  // because directly after endEditing is called above,
+  // |textStorageDidProcessEditing| will be invoked since Cocoa holds a lock and
+  // waits during |beginEditing|->|endEditing|.
+  // Now, in |textStorageDidProcessEditing| we check if we are currently
+  // flushing highlight attributes, thus the flag must still be set, but cleared
+  // at the next runloop tick, which is what this block accomplishes.
+  // The |kHighlightingIsProcessing| flag needs to be cleared after the
+  // |kHighlightingIsFlushing| flag, so we simply clear it in the same block.
+  K_DISPATCH_MAIN_ASYNC({
+    hatomic_flags_clear(&stateFlags_, kHighlightingIsFlushing);
+    hatomic_flags_clear(&stateFlags_, kHighlightingIsProcessing);
+  });
   return YES;
 }
 
@@ -834,8 +865,9 @@ shouldChangeTextInRanges:(NSArray *)affectedRanges
 	// invoked after an editing occured, but before it's been committed
 
   // Don't process editing if we are in a loading state (i.e. the edit might
-  // have been caused by input data arrival)
-  if (isLoading_)
+  // have been caused by input data arrival) or if we are currently flushing
+  // highlight edits
+  if (isLoading_ || hatomic_flags_test(&stateFlags_, kHighlightingIsFlushing))
     return;
 
   NSTextStorage	*textStorage = [notification object];
@@ -865,10 +897,12 @@ shouldChangeTextInRanges:(NSArray *)affectedRanges
   }
   
   // Syntax highlight (it's a no-op if aldready processing a "highlight")
-  //selectionsBeforeEdit_ = [textView_ selectedRanges];
-  if ([self highlightTextStorage:textStorage inRange:editedRange]) {
-    //[textView_ setSelectedRanges:selections];
-  }
+  K_DISPATCH_BG_ASYNC({
+    //selectionsBeforeEdit_ = [textView_ selectedRanges];
+    if ([self highlightTextStorage:textStorage inRange:editedRange]) {
+      //[textView_ setSelectedRanges:selections];
+    }
+  });
   
   // this makes the edit an undoable entry (otherwise each "group" of edits will
   // be undoable, which is not fine-grained enough for us)
@@ -987,12 +1021,10 @@ shouldChangeTextInRanges:(NSArray *)affectedRanges
       if (err) {
         self.isCrashed = YES; // FIXME
         [NSApp presentError:err];
+      } else {
+        // we are done -- allow editing
+        [textView_ setEditable:YES];
       }
-      
-      // we are done -- allow editing
-      [textView_ setEditable:YES];
-      
-      // TODO: syntax highlighting
     }
     startImmediately:NO];
   
@@ -1016,7 +1048,22 @@ shouldChangeTextInRanges:(NSArray *)affectedRanges
     // utilize mmap to load a file
     NSString *path = [absoluteURL path];
     NSData *data = [NSData dataWithContentsOfMappedFile:path];
-    if (!data) return NO;
+    if (!data) {
+      if ([absoluteURL checkResourceIsReachableAndReturnError:outError]) {
+        // reachable, but might be something else than a regular file
+        NSFileManager *fm = [NSFileManager defaultManager];
+        BOOL isDir;
+        BOOL exists = [fm fileExistsAtPath:path isDirectory:&isDir];
+        assert(exists == true); // since checkResourceIsReachableAndReturnError
+        if (isDir) {
+          *outError = [NSError kodErrorWithFormat:
+              @"Opening a directory is currently unsupported"];
+        } else {
+          *outError = [NSError kodErrorWithFormat:@"Unknown I/O read error"];
+        }
+      }
+      return NO;
+    }
     
     // read xattrs
     NSRange selectedRange = {0};

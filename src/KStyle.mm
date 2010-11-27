@@ -93,7 +93,7 @@ static KStyle *gEmptyStyle_ = nil;
 
 static void _loadStyle_finalize(NSString const *key, KStyle *style,
                                 NSError* err) {
-  DLOG("finalize key %@, style %@, err %@", key, style, err);
+  //DLOG("finalize key %@, style %@, err %@", key, style, err);
   NSMutableSet *callbacks;
   HSemaphoreSection(gInstancesSemaphore_) {
     if (style) {
@@ -360,6 +360,12 @@ static inline void _freeElementsMapTable(NSMapTable **elements) {
     }
     //DLOG("%s %@", elem.c_str(), NSStringFromRange(range));
   }];
+}
+
+
+- (NSString*)description {
+  return [NSString stringWithFormat:@"<%@@%p %@>",
+      NSStringFromClass([self class]), self, cssContext_];
 }
 
 

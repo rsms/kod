@@ -45,6 +45,7 @@ static const unsigned char utf8ExtraUTF16Characters[] = {
   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
   1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2 };
 
+
 @implementation NSString (UTF8_range_conversion)
 
 + (NSRange)UTF16RangeFromUTF8Range:(NSRange)utf8range
@@ -57,9 +58,10 @@ static const unsigned char utf8ExtraUTF16Characters[] = {
 
   NSUInteger utf16len = 0;
   NSRange utf16range = NSMakeRange(NSNotFound, 0);
+  NSUInteger utf8rangeEnd = NSMaxRange(utf8range);
   const char *p = utf8pch;
 
-  while ((NSUInteger)(p - utf8pch) < NSMaxRange(utf8range)) {
+  while ((NSUInteger)(p - utf8pch) < utf8rangeEnd) {
     if ((NSUInteger)(p - utf8pch) == utf8range.location) {
       utf16range.location = utf16len;
     }

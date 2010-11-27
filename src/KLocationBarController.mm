@@ -1,0 +1,252 @@
+#import "KLocationBarController.h"
+#import "KBrowserWindowController.h"
+#import "KDocumentController.h"
+#import <ChromiumTabs/ChromiumTabs.h>
+#import "virtual_key_codes.h"
+
+@implementation KLocationBarController
+
+- (id)initWithAutocompleteTextField:(KAutocompleteTextField*)atf {
+  if ((self = [super init])) {
+    autocompleteTextField_ = atf; // weak, owned by toolbar controller
+    autocompleteTextField_.delegate = self;
+  }
+  return self;
+}
+
+
+- (void)dealloc {
+  [currentContents_ release];
+  [originalAttributedStringValue_ release];
+  [super dealloc];
+}
+
+
+
+- (void)recordStateWithContents:(CTTabContents*)contents {
+  // Record state so we can restore it later
+  h_objc_xch(&currentContents_, contents);
+  h_objc_xch(&originalAttributedStringValue_,
+             [[autocompleteTextField_ cell] attributedStringValue]);
+}
+
+
+- (void)restoreState {
+  if (originalAttributedStringValue_) {
+    [[autocompleteTextField_ cell]
+        setAttributedStringValue:originalAttributedStringValue_];
+    h_objc_xch(&originalAttributedStringValue_, nil);
+  }
+}
+
+
+- (NSURL*)absoluteURLFromString:(NSString*)locationText {
+  NSURL *absoluteURL = nil;
+  if ([locationText hasPrefix:@"~"]) {
+    // "~/foo/../bar/baz" -- absolute file in home directory
+    NSString *absPath = [locationText stringByExpandingTildeInPath];
+    absPath = [absPath stringByStandardizingPath];
+    absoluteURL = [NSURL fileURLWithPath:absPath];
+  } else if ([locationText hasPrefix:@"/"]) {
+    // "/foo/../bar/baz" -- absolute file
+    NSString *absPath = [locationText stringByStandardizingPath];
+    absoluteURL = [NSURL fileURLWithPath:absPath];
+  } else if ( ([locationText rangeOfString:@":"].location == NSNotFound) &&
+              currentContents_) {
+    // "foo/../bar/baz" -- relative to current url
+    absoluteURL = [NSURL URLWithString:locationText
+                         relativeToURL:currentContents_.fileURL];
+    absoluteURL = [absoluteURL absoluteURL];
+  } else {
+    // Hopefully a qualified URL
+    absoluteURL = [NSURL URLWithString:locationText];
+    absoluteURL = [absoluteURL absoluteURL];
+  }
+  return absoluteURL;
+}
+
+
+- (NSURL*)absoluteURL {
+  return [self absoluteURLFromString:[autocompleteTextField_ stringValue]];
+}
+
+
+- (void)commitEditing:(NSUInteger)modifierFlags {
+  BOOL cmdPressed = (modifierFlags & NSCommandKeyMask) != 0;
+  BOOL ctrlPressed = (modifierFlags & NSControlKeyMask) != 0;
+  BOOL altPressed = (modifierFlags & NSAlternateKeyMask) != 0;
+  DLOG("commitEditing (cmd: %d, ctrl: %d, alt: %d)", cmdPressed, ctrlPressed,
+       altPressed);
+  
+  // get current string
+  NSString *locationText = [autocompleteTextField_ stringValue];
+  locationText = [locationText
+      stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+  if (locationText.length == 0) {
+    // empty -- noop
+    return;
+  }
+  
+  // build a URL
+  NSURL *absoluteURL = [self absoluteURL];
+  if (!absoluteURL) {
+    // TODO: Coman, please ... better UX. Like making the text red or something
+    [NSApp presentError:[NSError kodErrorWithFormat:@"Failed to parse URL"]];
+    [autocompleteTextField_ setTextColor:[NSColor redColor]];
+  } else if ([absoluteURL isEqual:currentContents_.fileURL]) {
+    // Same URL -- noop
+    
+  } else {
+    // find our window controller
+    KBrowserWindowController *windowController = [KBrowserWindowController 
+        browserWindowControllerForView:autocompleteTextField_];
+    assert(windowController != nil);
+    
+    // find shared document controller
+    KDocumentController *documentController =
+        (KDocumentController*)[NSDocumentController sharedDocumentController];
+    assert(documentController != nil);
+    
+    // open a new document in background
+    K_DISPATCH_BG_ASYNC({
+      // TODO: callback support
+      NSError *error = nil;
+      KTabContents *contents =
+          [documentController openDocumentWithContentsOfURL:absoluteURL
+                                       withWindowController:windowController
+                                                    display:YES
+                                                      error:&error];
+      if (!contents) {
+        [NSApp presentError:error];
+      } else {
+        // do something useful?
+      }
+    });
+  }
+}
+
+
+- (void)contentsDidChange:(CTTabContents*)contents {
+  [self recordStateWithContents:contents];
+}
+
+#pragma mark -
+#pragma mark KAutocompleteTextFieldDelegate protocol
+
+// Informs the receiver that the user has pressed or released a modifier key
+// (Shift, Control, and so on) while the text field is first responder.
+- (void)flagsChanged:(NSEvent*)theEvent
+inAutocompleteTextField:(KAutocompleteTextField*)atf {
+}
+
+// Called when the user pastes into the field.
+- (void)pastedInAutocompleteTextField:(KAutocompleteTextField*)atf {
+}
+
+// Return |true| if there is a selection to copy.
+- (BOOL)canCopyFromAutocompleteTextField:(KAutocompleteTextField*)atf {
+  NOTIMPLEMENTED();
+}
+
+// Clears the |pboard| and adds the field's current selection.
+// Called when the user does a copy or drag.
+- (void)copyAutocompleteTextField:(KAutocompleteTextField*)atf
+                     toPasteboard:(NSPasteboard*)pboard {
+  NOTIMPLEMENTED();
+}
+
+// Returns true if the current clipboard text supports paste and go
+// (or paste and search).
+- (BOOL)canPasteAndGoInAutocompleteTextField:(KAutocompleteTextField*)atf {
+  return NO;
+}
+
+// Returns the appropriate "Paste and Go" or "Paste and Search"
+// context menu string, depending on what is currently in the
+// clipboard.  Only called if canPasteAndGoInAutocompleteTextField: returns
+// true.
+- (NSString*)pasteActionLabelForAutocompleteTextField:
+    (KAutocompleteTextField*)atf {
+  NOTREACHED();
+}
+
+// Called when the user initiates a "paste and go" or "paste and
+// search" into the field.
+- (void)pasteAndGoInAutocompleteTextField:(KAutocompleteTextField*)atf {
+  NOTREACHED();
+}
+
+// Called when the field's frame changes.
+- (void)frameDidChangeForAutocompleteTextField:(KAutocompleteTextField*)atf {
+  DLOG("TODO %s", __func__);
+}
+
+// Called when the popup is no longer appropriate, such as when the
+// field's window loses focus or a page action is clicked.
+- (void)closePopupInAutocompleteTextField:(KAutocompleteTextField*)atf {
+  DLOG("TODO %s", __func__);
+}
+
+// Called when the user begins editing the field, for every edit,
+// and when the user is done editing the field.
+- (void)didBeginEditingInAutocompleteTextField:(KAutocompleteTextField*)atf {
+}
+- (void)didModifyAutocompleteTextField:(KAutocompleteTextField*)atf {
+  DLOG("TODO %s", __func__);
+}
+- (void)didEndEditingInAutocompleteTextField:(KAutocompleteTextField*)atf {
+  DLOG("didEndEditingInAutocompleteTextField (%@)", [NSApp currentEvent]);
+  NSEvent *ev = [NSApp currentEvent];
+  if (ev.type == NSKeyDown && ev.keyCode == kVK_Return) {
+    // Note that if the user presses Cmd, CTRL or Alt the editing will not end,
+    // but rather call doCommandBySelector:
+    [self commitEditing:[ev modifierFlags]];
+  } else {
+    // this most likely means that the user "cancelled" editing by giving
+    // someone first responder focus -- if we represent the empty string we
+    // shoud restore our original state.
+    if ([autocompleteTextField_ stringValue].length == 0) {
+      [self restoreState];
+    }
+  }
+  
+}
+
+// NSResponder translates certain keyboard actions into selectors
+// passed to -doCommandBySelector:.  The selector is forwarded here,
+// return true if |cmd| is handled, false if the caller should
+// handle it.
+// TODO(shess): For now, I think having the code which makes these
+// decisions closer to the other autocomplete code is worthwhile,
+// since it calls a wide variety of methods which otherwise aren't
+// clearly relevent to expose here.  But consider pulling more of
+// the AutocompleteEditViewMac calls up to here.
+- (BOOL)doCommandBySelector:(SEL)cmd
+    inAutocompleteTextField:(KAutocompleteTextField*)atf {
+  DLOG("doCommandBySelector:%@ (%@)", NSStringFromSelector(cmd), [NSApp currentEvent]);
+  NSEvent *ev = [NSApp currentEvent];
+  if (ev.keyCode == kVK_Return) {
+    [self commitEditing:[ev modifierFlags]];
+    return YES;
+  }
+  return NO;
+}
+
+// Called whenever the autocomplete text field gets focused.
+// To test if a modifier key is being pressed, inspect |ev|:
+//
+//    BOOL cmdPressed = ([ev modifierFlags] & NSCommandKeyMask) != 0;
+//
+- (void)autocompleteTextField:(KAutocompleteTextField*)atf
+     willBecomeFirstResponder:(NSEvent*)ev {
+  DLOG("TODO %s", __func__);
+}
+
+// Called whenever the autocomplete text field is losing focus.
+- (void)autocompleteTextField:(KAutocompleteTextField*)atf
+     willResignFirstResponder:(NSEvent*)ev {
+  DLOG("TODO %s", __func__);
+}
+
+
+@end

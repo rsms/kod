@@ -10,7 +10,15 @@
   KFileTreeController *fileTreeController_;
 }
 
++ (KBrowserWindowController*)browserWindowControllerForWindow:(NSWindow*)window;
++ (KBrowserWindowController*)browserWindowControllerForView:(NSView*)view;
+
 @property(readonly) NSSplitView *verticalSplitView;
 @property(readonly) NSView *leftmostSubviewOfVerticalSplitView;
+
+// TODO: fullscreen
+// implement lockBarVisibilityForOwner... and friends (see chromium source)
+
+- (IBAction)focusLocationBar:(id)sender;
 
 @end
