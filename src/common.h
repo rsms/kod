@@ -38,11 +38,29 @@
 
 
 #ifdef __OBJC__
-  #define DLOG_TRACE2() \
-    _LOG('T', "%s %@", __PRETTY_FUNCTION__, [NSThread callStackSymbols])
+  #define K_CALLSTACK_SYMBOLS() [NSThread callStackSymbols]
+  #define K_CALLSTACK_SYMBOLS_FORMATTER "%@"
 #else
-  #define DLOG_TRACE2() \
-    _LOG('T', "%s <stack trace not implemented>", __PRETTY_FUNCTION__)
+  #define K_CALLSTACK_SYMBOLS() "<callstack not available>"
+  #define K_CALLSTACK_SYMBOLS_FORMATTER "%s"
+#endif
+#define DLOG_TRACE2() \
+  _LOG('T', "%s " K_CALLSTACK_SYMBOLS_FORMATTER, __PRETTY_FUNCTION__, \
+       K_CALLSTACK_SYMBOLS())
+
+
+#if !NDEBUG
+  #define kassert(expr) do { \
+    if (!(expr)) { \
+      _LOG('E', "Assertion failed: (" #expr ") in %s " \
+           K_CALLSTACK_SYMBOLS_FORMATTER, __PRETTY_FUNCTION__, \
+           K_CALLSTACK_SYMBOLS()); \
+      Debugger(); \
+      kill(getpid(), SIGABRT); \
+    } \
+  } while(0)
+#else
+  #define kassert(expr) ((void)0)
 #endif
 
 

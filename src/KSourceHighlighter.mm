@@ -97,7 +97,7 @@ bool KSourceHighlighter::setLanguage(NSString const *langId, NSURL *url) {
   }
   
   // we currently only support local files
-  assert([url isFileURL]);
+  kassert([url isFileURL]);
   
   // Load state
   NSString *path = [[url absoluteURL] path];
@@ -223,7 +223,7 @@ void KSourceHighlighter::bufferAttributes(NSDictionary* attrs, NSRange range) {
 
 void KSourceHighlighter::endFlushBufferedAttributes(NSTextStorage *textStorage) {
   NSUInteger i, count = attributesBuffer_.count;
-  assert(textStorage != nil || textStorage_ != nil);
+  kassert(textStorage != nil || textStorage_ != nil);
   if (!textStorage) textStorage = textStorage_;
   for (i = 0; i < count; i += 2) {
     NSDictionary *attrs = [attributesBuffer_ objectAtIndex:i];
@@ -405,13 +405,19 @@ NSRange KSourceHighlighter::highlight(NSTextStorage *textStorage,
   fprintf(stderr, "------------------ highlight ------------------\n");
   #endif
   
+  // simulate slowness
+  //sleep(2);
+  
   // update instance-locals
-  assert(textStorage_ == nil);
+  kassert(textStorage != nil);
+  fullRange_ = NSMakeRange(0, textStorage.length);
+  if (fullRange_.length == 0) {
+    DLOG_HL("textStorage.length == 0 -- returning directly");
+    return fullRange_;
+  }
+  kassert(textStorage_ == nil);
   textStorage_ = [textStorage retain];
   text_ = [[textStorage_ string] retain];
-  fullRange_ = NSMakeRange(0, textStorage_.length);
-  if (fullRange_.length == 0)
-    return fullRange_;
   
   // Hold on to the style
   style_ = [style retain];
@@ -438,7 +444,7 @@ NSRange KSourceHighlighter::highlight(NSTextStorage *textStorage,
     
     // find any state at our starting point
     //NSUInteger index = MIN(highlightRange_.location, fullRange_.length-1);
-    assert(highlightRange_.location < fullRange_.length);
+    kassert(highlightRange_.location < fullRange_.length);
     KSourceHighlightState *state = stateAtIndex(highlightRange_.location,
                                                 &restoredStateRange);
     
@@ -613,7 +619,7 @@ NSRange KSourceHighlighter::highlight(NSTextStorage *textStorage,
           // find expected exit state (state before editedHighlightState)
           NSUInteger prevBlockIndex = editedHighlightStateRange.location;
           if (prevBlockIndex > 0) {
-            assert(prevBlockIndex != NSNotFound);
+            kassert(prevBlockIndex != NSNotFound);
             prevBlockIndex--;
             expectedExitState = stateAtIndex(prevBlockIndex, NULL);
           }
@@ -691,7 +697,7 @@ void KSourceHighlighter::highlightPass(bool beginningOfLine) {
   //                             usingEncoding:NSUTF8StringEncoding
   //                                     range:highlightRange_];
   paragraphIsMultibyte_ = (paragraph.size() != highlightRange_.length);
-  DLOG("paragraphIsMultibyte_ => %@", paragraphIsMultibyte_?@"YES":@"NO");
+  DLOG_HL("paragraphIsMultibyte_ => %@", paragraphIsMultibyte_?@"YES":@"NO");
   
   // get start and end iterators
   str_const_iterator paragraphStart = paragraph.begin();

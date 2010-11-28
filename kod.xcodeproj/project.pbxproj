@@ -26,7 +26,7 @@
 		3A25E4981281A9D500B6A33E /* libboost_regex-mt.dylib in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 3A25E47A1281A6A200B6A33E /* libboost_regex-mt.dylib */; };
 		3A25E4B71281AE3700B6A33E /* KStyleElement.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A25E4B61281AE3700B6A33E /* KStyleElement.mm */; };
 		3A25E6101281CFEF00B6A33E /* NSColor-web.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A25E60F1281CFEF00B6A33E /* NSColor-web.m */; };
-		3A4D50ED1282E40300B06EEB /* NSString-utf8-range-conv.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A4D50EC1282E40300B06EEB /* NSString-utf8-range-conv.mm */; };
+		3A4D50ED1282E40300B06EEB /* NSString-utf8-range-conv.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A4D50EC1282E40300B06EEB /* NSString-utf8-range-conv.m */; };
 		3A62B9E6129D652700822274 /* KTextFieldDecoration.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A62B9E5129D652700822274 /* KTextFieldDecoration.mm */; };
 		3A62BA01129D686F00822274 /* KAutocompleteTextField.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A62BA00129D686F00822274 /* KAutocompleteTextField.mm */; };
 		3A62BA49129D756100822274 /* KAutocompleteTextFieldEditor.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A62BA48129D756100822274 /* KAutocompleteTextFieldEditor.mm */; };
@@ -172,7 +172,7 @@
 		3A25E60E1281CFEF00B6A33E /* NSColor-web.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSColor-web.h"; sourceTree = "<group>"; };
 		3A25E60F1281CFEF00B6A33E /* NSColor-web.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSColor-web.m"; sourceTree = "<group>"; };
 		3A4D50EB1282E40300B06EEB /* NSString-utf8-range-conv.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString-utf8-range-conv.h"; sourceTree = "<group>"; };
-		3A4D50EC1282E40300B06EEB /* NSString-utf8-range-conv.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = "NSString-utf8-range-conv.mm"; sourceTree = "<group>"; };
+		3A4D50EC1282E40300B06EEB /* NSString-utf8-range-conv.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString-utf8-range-conv.m"; sourceTree = "<group>"; };
 		3A62B9D1129D63AA00822274 /* basictypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = basictypes.h; sourceTree = "<group>"; };
 		3A62B9DF129D63F000822274 /* scoped_nsobject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = scoped_nsobject.h; sourceTree = "<group>"; };
 		3A62B9E4129D652700822274 /* KTextFieldDecoration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KTextFieldDecoration.h; sourceTree = "<group>"; };
@@ -503,7 +503,7 @@
 				3A25E60E1281CFEF00B6A33E /* NSColor-web.h */,
 				3A25E60F1281CFEF00B6A33E /* NSColor-web.m */,
 				3A4D50EB1282E40300B06EEB /* NSString-utf8-range-conv.h */,
-				3A4D50EC1282E40300B06EEB /* NSString-utf8-range-conv.mm */,
+				3A4D50EC1282E40300B06EEB /* NSString-utf8-range-conv.m */,
 				3A159310128B581E00339E6E /* NSString-ranges.h */,
 				3A159311128B581E00339E6E /* NSString-ranges.m */,
 				3A159369128B619800339E6E /* NSString-intern.h */,
@@ -639,7 +639,7 @@
 				3A9293CC1229ED4C00DA7E43 /* KDocumentController.mm in Sources */,
 				3A25E4B71281AE3700B6A33E /* KStyleElement.mm in Sources */,
 				3A25E6101281CFEF00B6A33E /* NSColor-web.m in Sources */,
-				3A4D50ED1282E40300B06EEB /* NSString-utf8-range-conv.mm in Sources */,
+				3A4D50ED1282E40300B06EEB /* NSString-utf8-range-conv.m in Sources */,
 				3A7E71801286F44D00D85E4C /* KFileOutlineView.mm in Sources */,
 				3A7E71831286F54A00D85E4C /* KFileTextFieldCell.mm in Sources */,
 				3A7E71901286F71100D85E4C /* KFileTreeNodeData.mm in Sources */,

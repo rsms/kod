@@ -8,6 +8,9 @@
 @class KStyle;
 @class KBrowserWindowController;
 
+typedef std::pair<std::pair<NSRange,NSRange>, HObjCPtr> KHighlightQueueEntry;
+typedef std::deque<KHighlightQueueEntry> KHighlightQueue;
+
 // This class represents a tab. In this example application a tab contains a
 // simple scrollable text area.
 @interface KTabContents : CTTabContents <NSTextViewDelegate,
@@ -16,8 +19,14 @@
   __weak NSUndoManager *undoManager_; // Owned by textView_
   BOOL isDirty_;
   NSStringEncoding textEncoding_;
+  
   KSourceHighlighterPtr sourceHighlighter_;
-  HSemaphore *sourceHighlightSem_;
+  BOOL highlightingEnabled_;
+  HSemaphore highlightSem_;
+  KHighlightQueue highlightQueue_; // FIFO (push_front -> pop_back)
+  //NSRange highlightQueuedRange_;
+  HSemaphore highlightQueueSem_;
+  
   KStyle *style_;
   
   // Current language
@@ -26,10 +35,11 @@
   // Internal state
   hatomic_flags_t stateFlags_;
   NSRange lastEditedHighlightStateRange_;
-  KSourceHighlightState *lastEditedHighlightState_;
+  __weak KSourceHighlightState *lastEditedHighlightState_;
 }
 
 @property(assign, nonatomic) BOOL isDirty;
+@property(assign, nonatomic) BOOL highlightingEnabled;
 @property(assign, nonatomic) NSStringEncoding textEncoding;
 @property(readonly) KBrowserWindowController* windowController;
 @property(readonly) NSMutableParagraphStyle *paragraphStyle; // compound
@@ -50,10 +60,14 @@
 - (BOOL)setNeedsHighlightingOfCompleteDocument;
 - (BOOL)highlightCompleteDocumentInBackgroundIfQueued;
 - (BOOL)highlightCompleteDocumentInBackground;
-- (BOOL)highlightCompleteDocument;
+
+- (BOOL)deferHighlightTextStorage:(NSTextStorage*)textStorage
+                          inRange:(NSRange)range;
 
 - (BOOL)highlightTextStorage:(NSTextStorage*)textStorage
-                     inRange:(NSRange)range;
+                     inRange:(NSRange)editedRange
+           withModifiedState:(KSourceHighlightState*)state
+                     inRange:(NSRange)stateRange;
 
 - (void)textStorageDidProcessEditing:(NSNotification*)notification;
 - (void)documentDidChangeDirtyState; // when isDirty_ changed
