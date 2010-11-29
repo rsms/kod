@@ -19,8 +19,12 @@ enum {
   kCompleteHighlightingIsProcessing,
   kHighlightingIsProcessing,
   kTestStorageEditingIsProcessing,
-  kHighlightingIsFlushing,
 };
+
+// used by lastEditChangedTextStatus_
+static const uint8_t kEditChangeStatusUnknown = 0;
+static const uint8_t kEditChangeStatusUserUnalteredText = 1;
+static const uint8_t kEditChangeStatusUserAlteredText = 2;
 
 
 @interface KTabContents (Private)
@@ -698,10 +702,6 @@ longestEffectiveRange:&range
 
 // returns true if processing was scheduled
 - (BOOL)highlightCompleteDocumentInBackground {
-  // make sure there are no queued edits
-  highlightQueueSem_.get();
-  highlightQueue_.clear();
-  highlightQueueSem_.put(); // important to release before calling below method
   return [self deferHighlightTextStorage:textView_.textStorage
                                  inRange:NSMakeRange(NSNotFound, 0)];
 }
@@ -716,153 +716,84 @@ longestEffectiveRange:&range
   // Make copies of these as they may change before we start processing
   KSourceHighlightState* state = lastEditedHighlightState_;
   NSRange stateRange = lastEditedHighlightStateRange_;
-  
-  // hatomic_flags_set(&stateFlags_, kCompleteHighlightingIsProcessing)
-  
-  // make sure we own access to the queue
-  HSemaphore::Scope qsem_scope(highlightQueueSem_);
+  int changeInLength = [textStorage changeInLength];
   
   // Aquire semaphore
-  bool gotsem = YES;
-  if (editedRange.location == NSNotFound) {
-    // Complete highlighting takes precedence
-    // TODO: Signal "cancel" to the KSourceHighlighter
+  if (!highlightSem_.tryGet()) {
+    // currently processing
+    DLOG("highlight --CANCEL & WAIT--");
+    
+    // Combine range of previous hl with current edit
+    NSRange prevHighlightRange = sourceHighlighter_->currentRange();
+    editedRange = NSUnionRange(prevHighlightRange, editedRange);
+    
+    // We can no longer rely on state
+    state = nil;
+    stateRange = (NSRange){NSNotFound,0};
+    
+    // TODO: some kind of funky logic here to deduce range changes
+    int prevChangeInLength = sourceHighlighter_->currentChangeInLength();
+    
+    // signal "cancel" and wait for lock
+    sourceHighlighter_->cancel();
     highlightSem_.get();
-    // waiting until the highlighter becomes free
-  } else {
-    gotsem = highlightSem_.tryGet();
-    // go on and eqnqueue since we're already processing
   }
   
-  // Only aquire semaphore if not already processing (otherwise queue)
-  if (gotsem) {
-    DLOG("highlight --LOCKED--");
-    dispatch_async(dispatch_get_global_queue(0,0),^{
-      if (textStorage.length == 0) {
-        highlightSem_.put();
-        return;
-      }
-      NSAutoreleasePool *pool = [NSAutoreleasePool new];
-      
-      // Begin processing, buffering all attributes created
-      sourceHighlighter_->beginBufferingOfAttributes();
-      
-      // Local variables
-      KSourceHighlightState* _state = state;
-      NSRange _stateRange = stateRange;
-      NSRange _editedRange = editedRange;
-      
-      // When in debug mode, build a union of all affected ranges
-      #if !NDEBUG
-      NSRange affectedRangeUnion = {NSNotFound,0};
-      #endif
-      
-      // We might need to perform many iterations (queued during processing)
-      BOOL haveRangesToProcess = YES;
-      while (haveRangesToProcess) {
-        // highlight
-        #if !NDEBUG
-        DLOG("highlight --PROCESS-- %@ %@ %@", NSStringFromRange(_editedRange),
-             _state, NSStringFromRange(_stateRange));
-        NSRange affectedRange =
-        #endif
-        sourceHighlighter_->highlight(textStorage, style_, _editedRange, _state,
-                                      _stateRange);
-      
-        // debug support
-        #if !NDEBUG
-        if (affectedRangeUnion.location == NSNotFound)
-          affectedRangeUnion = affectedRange;
-        else
-          affectedRangeUnion = NSUnionRange(affectedRangeUnion, affectedRange);
-        #endif
-      
-        // check if anything is queued
-        highlightQueueSem_.get();
-        if (!highlightQueue_.empty()) {
-          // dequeue oldest entry
-          KHighlightQueueEntry &entry = highlightQueue_.back();
-          _editedRange = entry.first.first;
-          _stateRange = entry.first.second;
-          _state = entry.second;
-          highlightQueue_.pop_back();
-        } else {
-          // nothing queued -- we're done
-          haveRangesToProcess = NO;
-        }
-        highlightQueueSem_.put();
-      }
-      
+  // Dispatch
+  DLOG("highlight --LOCKED--");
+  dispatch_async(dispatch_get_global_queue(0,0),^{
+    if (textStorage.length == 0) {
+      highlightSem_.put();
+      return;
+    }
+    NSAutoreleasePool *pool = [NSAutoreleasePool new];
+    
+    // Begin processing, buffering all attributes created
+    sourceHighlighter_->beginBufferingOfAttributes();
+
+    // highlight
+    #if !NDEBUG
+    DLOG("highlight --PROCESS-- %@ %@ %@", NSStringFromRange(editedRange),
+         state, NSStringFromRange(stateRange));
+    #endif
+    NSRange affectedRange =
+        sourceHighlighter_->highlight(textStorage, style_, editedRange, state,
+                                      stateRange, changeInLength);
+    
+    if (sourceHighlighter_->isCancelled()) {
+      // highlighting was cancelled
+      // Note: No need to call clearBufferedAttributes() here since we know that
+      // we are soon called again which implies clearing the buffer.
+      highlightSem_.put();
+    } else {
       // we are done processing -- time to flush our edits
       //
-      // this is needed to minimize the time the UI is locked
-      // BUG: when deleting a large piece of text, a "lagging"/"slow rendering"
-      // effect occurs which is very weird
-      DLOG("highlight --FLUSH-START-- %@", NSStringFromRange(affectedRangeUnion));
-      BOOL did_set = hatomic_flags_set(&stateFlags_, kHighlightingIsFlushing);
-      [textStorage beginEditing];
-      kassert(did_set == YES);
-      sourceHighlighter_->endFlushBufferedAttributes(textStorage);
-      [textStorage endEditing];
-      DLOG("highlight --FLUSH-END--");
-      
-      // We need to clear the kHighlightingIsFlushing flag on the main thread
-      // because directly after endEditing is called above,
-      // |textStorageDidProcessEditing| will be invoked since Cocoa holds a lock and
-      // waits during |beginEditing|->|endEditing|.
-      // Now, in |textStorageDidProcessEditing| we check if we are currently
-      // flushing highlight attributes, thus the flag must still be set, but cleared
-      // at the next runloop tick, which is what this block accomplishes.
+      // Notes:
+      //
+      // - this buffering and later flushing of attributes is needed to minimize
+      //   the time the UI is locked.
+      //
+      // - We perform this on the main thread to avoid scary _NSLayoutTree bugs
+      // 
       K_DISPATCH_MAIN_ASYNC({
-        hatomic_flags_clear(&stateFlags_, kHighlightingIsFlushing);
-        highlightSem_.put();
-        DLOG("highlight --FREED--");
-      });
-      
-      [pool drain];
-    });
-    return YES;
-  } else {
-    DLOG("highlight --ENQUEUE-- editedRange: %@ stateRange: %@",
-         NSStringFromRange(editedRange), NSStringFromRange(stateRange));
-    // std::pair<std::pair<NSRange,NSRange>, HObjCPtr>
-    //                 editedRange,stateRange,state
-    // std::deque<KHighlightQueueEntry>
-    BOOL merged = NO;
-    if (!highlightQueue_.empty()) {
-      KHighlightQueue::iterator it = highlightQueue_.begin(),
-                                end = highlightQueue_.end();
-      while (++it != end) {
-        KHighlightQueueEntry &entry = *it;
-        if (entry.second.get() == state) {
-          NSRange otherStateRange = entry.first.second;
-          
-          // if stateRange intersects otherStateRect, unify
-          if ( NSLocationInRange(stateRange.location, otherStateRange) ||
-               NSLocationInRange(stateRange.location+stateRange.length-1,
-                                 otherStateRange) ) {
-            entry.first.first = NSUnionRange(entry.first.first, editedRange);
-            entry.first.second = NSUnionRange(otherStateRange, stateRange);
-            DLOG("enqueueing highlighting: merging with other -> "
-                 "editedRange: %@ stateRange: %@",
-                 NSStringFromRange(entry.first.first),
-                 NSStringFromRange(entry.first.second));
-            merged = YES;
-            break;
-          }
+        if (!sourceHighlighter_->isCancelled()) {
+          DLOG("highlight --FLUSH-START-- %@", NSStringFromRange(affectedRange));
+          [textStorage beginEditing];
+          sourceHighlighter_->endFlushBufferedAttributes(textStorage);
+          //[textStorage invalidateAttributesInRange:affectedRange];
+          [textStorage endEditing];
+          DLOG("highlight --FLUSH-END--");
         }
-      } // while (++it != end)
-      
+        highlightSem_.put();
+        DLOG("highlight --FREED-- (cancelled: %@)",
+             sourceHighlighter_->isCancelled() ? @"YES":@"NO");
+      });
     }
     
-    // enqueue unless merged
-    if (!merged) {
-      highlightQueue_.push_front(KHighlightQueueEntry(
-          std::pair<NSRange,NSRange>(editedRange, stateRange), state));
-    }
-    
-  }
-  return NO;
+    [pool drain];
+  });
+  
+  return YES;
 }
 
 
@@ -870,7 +801,8 @@ longestEffectiveRange:&range
                      inRange:(NSRange)range
            withModifiedState:(KSourceHighlightState*)state
                      inRange:(NSRange)stateRange {
-  if (textStorage.length == 0) {
+K_DEPRECATED; // use deferHighlightTextStorage:inRange:
+/*  if (textStorage.length == 0) {
     return YES;
   }
   
@@ -903,7 +835,7 @@ longestEffectiveRange:&range
   K_DISPATCH_MAIN_ASYNC({
     hatomic_flags_clear(&stateFlags_, kHighlightingIsFlushing);
   });
-  return YES;
+  return YES;*/
 }
 
 
@@ -925,7 +857,8 @@ longestEffectiveRange:&range
 }*/
 
 
-// Edits arrive in singles
+// Edits arrive in singles. This method is only called for used edits, not
+// programmatical changes.
 - (BOOL)textView:(NSTextView *)textView
 shouldChangeTextInRange:(NSRange)range
 replacementString:(NSString *)replacementString {
@@ -940,6 +873,7 @@ replacementString:(NSString *)replacementString {
   if (textStorage.length != 0) {
     NSUInteger index;
     if (replacementString.length == 0) {
+      lastEditChangeStatus_ = kEditChangeStatusUserAlteredText;
       // deletion
       if (textStorage.length == 1) {
         index = NSNotFound;
@@ -947,9 +881,16 @@ replacementString:(NSString *)replacementString {
         index = MIN(range.location+1, textStorage.length-1);
       }
     } else {
+      if (![replacementString isEqualToString:
+            [textStorage.string substringWithRange:range]]) {
+        lastEditChangeStatus_ = kEditChangeStatusUserAlteredText;
+      } else {
+        lastEditChangeStatus_ = kEditChangeStatusUserUnalteredText;
+      }
       // insertion/replacement
       index = MIN(range.location, textStorage.length-1);
     }
+    
     if (index != NSNotFound) {
       lastEditedHighlightState_ =
         [textStorage attribute:KSourceHighlightStateAttribute
@@ -967,6 +908,18 @@ replacementString:(NSString *)replacementString {
     //  [textStorage.string substringWithRange:lastEditedHighlightStateRange_]);
   } else {
     lastEditedHighlightState_ = nil;
+    lastEditChangeStatus_ = (replacementString.length != 0)
+        ? kEditChangeStatusUserAlteredText
+        : kEditChangeStatusUserUnalteredText;
+  }
+  
+  // Cancel any in-flight highlighting
+  if (lastEditChangeStatus_ == kEditChangeStatusUserAlteredText &&
+      highlightingEnabled_) {
+    DLOG("text edited -- '%@' -> '%@' at %@",
+     [textView_.textStorage.string substringWithRange:range],
+     replacementString, NSStringFromRange(range));
+    sourceHighlighter_->cancel();
   }
 
   return YES;
@@ -1012,26 +965,52 @@ shouldChangeTextInRanges:(NSArray *)affectedRanges
 - (void)textStorageDidProcessEditing:(NSNotification *)notification {
 	// invoked after an editing occured, but before it's been committed
 
-  // Don't process editing if we are in a loading state (i.e. the edit might
-  // have been caused by input data arrival) or if we are currently flushing
-  // highlight edits
-  if (isLoading_ || hatomic_flags_test(&stateFlags_, kHighlightingIsFlushing))
-    return;
-
   NSTextStorage	*textStorage = [notification object];
-	NSRange	editedRange = [textStorage editedRange];
-	int	changeInLen = [textStorage changeInLength];
-  if (changeInLen == 0 && !lastEditedHighlightState_) {
-    // text attributes changed -- not interested
+  
+  // no-op unless characters where edited
+  if (!(textStorage.editedMask & NSTextStorageEditedCharacters)) {
     return;
   }
+
+	NSRange	editedRange = [textStorage editedRange];
+	int	changeInLength = [textStorage changeInLength];
+  /*if (changeInLength == 0 && !lastEditedHighlightState_) {
+    // text attributes changed -- not interested
+    return;
+  }*/
   
   BOOL wasInUndoRedo = [[self undoManager] isUndoing] ||
                        [[self undoManager] isRedoing];
   DLOG_RANGE(editedRange, textStorage.string);
-  DLOG("editedRange: %@, changeInLen: %d, wasInUndoRedo: %@",
-       NSStringFromRange(editedRange), changeInLen,
-       wasInUndoRedo ? @"YES":@"NO");
+  #if !NDEBUG
+  //unsigned em = textStorage.editedMask;
+  //NSString *editedMaskStr = ;
+  #endif
+  DLOG("editedRange: %@, changeInLength: %d, wasInUndoRedo: %@, editedMask: %d",
+       NSStringFromRange(editedRange), changeInLength,
+       wasInUndoRedo ? @"YES":@"NO", textStorage.editedMask);
+
+  // Don't process editing if we are in a loading state (i.e. the edit might
+  // have been caused by input data arrival) or if we are currently flushing
+  // highlight edits.
+  // Note: Currently spread out for debugging purposes
+  if (isLoading_) {
+    DLOG("textStorageDidProcessEditing: bailing because isLoading==YES");
+    lastEditChangeStatus_ = kEditChangeStatusUnknown;
+    return;
+  }
+  if (lastEditChangeStatus_ == kEditChangeStatusUserUnalteredText) {
+    DLOG("textStorageDidProcessEditing: bailing because no text changed");
+    lastEditChangeStatus_ = kEditChangeStatusUnknown;
+    return;
+  }
+  if (changeInLength == 0 && !lastEditedHighlightState_) {
+    DLOG("textStorageDidProcessEditing: bailing because "
+         "(changeInLength == 0 && !lastEditedHighlightState_)");
+    lastEditChangeStatus_ = kEditChangeStatusUnknown;
+    return;
+  }
+  
 
   // mark as dirty if not already dirty
   if (!isDirty_) {
@@ -1046,6 +1025,9 @@ shouldChangeTextInRanges:(NSArray *)affectedRanges
   // this makes the edit an undoable entry (otherwise each "group" of edits will
   // be undoable, which is not fine-grained enough for us)
   [textView_ breakUndoCoalescing];
+  
+  // reset lastEditChangedTextStatus_
+  lastEditChangeStatus_ = kEditChangeStatusUnknown;
 }
 
 

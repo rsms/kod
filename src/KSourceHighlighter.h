@@ -111,7 +111,6 @@ class KSourceHighlighter {
   }
   
   // -----------------------------
-  // highlighting support
   
   KTextStorage *textStorage_; // weak
   KStyle *style_; // weak
@@ -119,9 +118,11 @@ class KSourceHighlighter {
   NSRange fullRange_;
   NSRange highlightRange_;
   bool paragraphIsMultibyte_;
+  bool isCancelled_;
   HUTF8MappedUTF16String mappedString_;
   int stateDepthDelta_;
   //bool receivedWillHighlight_;
+  int changeInLength_;
   
   NSMutableArray *attributesBuffer_;
   
@@ -232,10 +233,30 @@ class KSourceHighlighter {
   // Clears the stack of states
   void clearStateStack();
   
+  // Attribute buffering
   bool beginBufferingOfAttributes();
   void bufferAttributes(NSDictionary *attrs, NSRange range);
   void endFlushBufferedAttributes(NSTextStorage *textStorage);
+  void clearBufferedAttributes();
   
+  // cancellation
+  inline bool isCancelled() { return isCancelled_; }
+  inline bool resetCancelled() {
+    OSMemoryBarrier();
+    isCancelled_ = false;
+  }
+  inline void cancel() {
+    OSMemoryBarrier();
+    isCancelled_ = true;
+  }
+  
+  // Range currently being highlighted
+  inline NSRange currentRange() { return highlightRange_; }
+  
+  // Change length delta for the current highlight process
+  inline int currentChangeInLength() { return changeInLength_; }
+  
+  // Syntax state
   srchilite::HighlightStatePtr getMainState() const {
     return mainHighlightState_;
   }
@@ -261,7 +282,7 @@ class KSourceHighlighter {
   //void willHighlight(NSTextStorage *textStorage, NSRange editedRange);
   NSRange highlight(NSTextStorage *textStorage, KStyle *style, NSRange inRange,
                     KSourceHighlightState *editedHighlightState,
-                    NSRange editedHighlightStateRange);
+                    NSRange editedHighlightStateRange, int changeInLength);
 };
 
 #endif K_SOURCE_HIGHLIGHTER_H_

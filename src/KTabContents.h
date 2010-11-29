@@ -23,9 +23,6 @@ typedef std::deque<KHighlightQueueEntry> KHighlightQueue;
   KSourceHighlighterPtr sourceHighlighter_;
   BOOL highlightingEnabled_;
   HSemaphore highlightSem_;
-  KHighlightQueue highlightQueue_; // FIFO (push_front -> pop_back)
-  //NSRange highlightQueuedRange_;
-  HSemaphore highlightQueueSem_;
   
   KStyle *style_;
   
@@ -36,6 +33,7 @@ typedef std::deque<KHighlightQueueEntry> KHighlightQueue;
   hatomic_flags_t stateFlags_;
   NSRange lastEditedHighlightStateRange_;
   __weak KSourceHighlightState *lastEditedHighlightState_;
+  uint8_t lastEditChangeStatus_;  // see contants in top of .m
 }
 
 @property(assign, nonatomic) BOOL isDirty;

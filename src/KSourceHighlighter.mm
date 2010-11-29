@@ -211,9 +211,7 @@ NSString * const KSourceHighlightStateAttribute = @"KHighlightState";
 
 
 bool KSourceHighlighter::beginBufferingOfAttributes() {
-  id old = attributesBuffer_;
-  attributesBuffer_ = [[NSMutableArray alloc] init];
-  [old release];
+  h_objc_swap(&attributesBuffer_, [NSMutableArray new]);
 }
 
 void KSourceHighlighter::bufferAttributes(NSDictionary* attrs, NSRange range) {
@@ -230,6 +228,10 @@ void KSourceHighlighter::endFlushBufferedAttributes(NSTextStorage *textStorage) 
     NSRange range = [[attributesBuffer_ objectAtIndex:i+1] rangeValue];
     [textStorage setAttributes:attrs range:range];
   }
+  h_objc_swap(&attributesBuffer_, nil);
+}
+
+void KSourceHighlighter::clearBufferedAttributes() {
   h_objc_swap(&attributesBuffer_, nil);
 }
 
@@ -291,10 +293,11 @@ void KSourceHighlighter::highlightLine(str_const_iterator &paragraphStart,
   
   // note that we go on even if the string is empty, since it is crucial
   // to try to match also the end of buffer (some rules rely on that)
-  while (matched) {
+  while (matched && !isCancelled()) {
     matched =
         currentHighlightState_->findBestMatch(location, end, token, mParams);
-    
+    if (isCancelled())
+      break;
     if (matched) {
       // format any prefix
       if (token.prefix.size()) {
@@ -400,7 +403,8 @@ NSRange KSourceHighlighter::highlight(NSTextStorage *textStorage,
                                       KStyle *style,
                                       NSRange editedRange,
                                     KSourceHighlightState *editedHighlightState,
-                                      NSRange editedHighlightStateRange) {
+                                      NSRange editedHighlightStateRange,
+                                      int changeInLength) {
   #if !NDEBUG && DEBUG_HL
   fprintf(stderr, "------------------ highlight ------------------\n");
   #endif
@@ -418,6 +422,8 @@ NSRange KSourceHighlighter::highlight(NSTextStorage *textStorage,
   kassert(textStorage_ == nil);
   textStorage_ = [textStorage retain];
   text_ = [[textStorage_ string] retain];
+  changeInLength_ = changeInLength;
+  resetCancelled();
   
   // Hold on to the style
   style_ = [style retain];
@@ -426,12 +432,11 @@ NSRange KSourceHighlighter::highlight(NSTextStorage *textStorage,
   NSRange restoredStateRange = {NSNotFound,0};
   
   // Effective length of edit (negative for deletions, positive for additions)
-  NSInteger changeLength = [textStorage_ changeInLength];
   bool beginningOfLine = true;
   
   // convert editedHighlightStateRange to contain the edit which has occured
   if (editedHighlightState)
-    editedHighlightStateRange.length += changeLength;
+    editedHighlightStateRange.length += changeInLength_;
   
   // A edit range location of NSNotFound means "highlight everything"
   //DLOG("editedRange %@", NSStringFromRange(editedRange));
@@ -473,7 +478,7 @@ NSRange KSourceHighlighter::highlight(NSTextStorage *textStorage,
   BOOL hasPassedEditedHighlightState = NO;
   
   // deletion
-  if (changeLength < 0) {
+  if (changeInLength_ < 0) {
     DLOG_HL("[DELETE] editedHighlightState => %@", editedHighlightState);
     expectedExitState = editedHighlightState;
     didTryToFindExpectedExitState = YES;
@@ -487,7 +492,7 @@ NSRange KSourceHighlighter::highlight(NSTextStorage *textStorage,
   
   long long stackSizeAtStart = stateStack_->size();
   
-  while (++passCount) {
+  while (++passCount && !isCancelled()) {
     DLOG_HL("highlightPass()");
     #if DEBUG_HL
     DLOG_RANGE(highlightRange_, text_);
@@ -499,7 +504,9 @@ NSRange KSourceHighlighter::highlight(NSTextStorage *textStorage,
     highlightPass(beginningOfLine);
     
     // end of text_?
-    if (highlightRange_.location + highlightRange_.length >= fullRange_.length) {
+    if (isCancelled() ||
+        highlightRange_.location + highlightRange_.length
+            >= fullRange_.length) {
       break;
     }
     
@@ -516,7 +523,7 @@ NSRange KSourceHighlighter::highlight(NSTextStorage *textStorage,
             stackSizeAfterMakingPass - stackSizeBeforeMakingPass,
             stackSizeAfterMakingPass - stackSizeOfEditedState,
             stackSizeAfterMakingPass - stackSizeAtStart,
-            changeLength<0?"delete":"insert");
+            changeInLength_<0?"delete":"insert");
     DLOG_HL("## entry state: %d, edited state: %d, end state: %d",
             entryState->getId(),
             editedHighlightState ? editedHighlightState->highlightState->getId() : -1,
@@ -530,7 +537,7 @@ NSRange KSourceHighlighter::highlight(NSTextStorage *textStorage,
         editedHighlightState->highlightState->getId()
         != currentHighlightState_->getId()) {
       // case: edited state was broken in some aspect (finalized, expanded or reduced)
-      if (changeLength < 1) { // is delete
+      if (changeInLength_ < 1) { // is delete
         // state was expanded
         if (editedToExitStackSizeDelta > 0) {
           // state was not finalized
@@ -633,7 +640,7 @@ NSRange KSourceHighlighter::highlight(NSTextStorage *textStorage,
       // debug logging (exit state != modified state)
       DLOG_HL("%s look further (state is %s)",
               shouldLookFurther ? "should" : "should NOT",
-              changeLength<1 ? "expanding -- need to evaluate following lines"
+              changeInLength_<1 ? "expanding -- need to evaluate following lines"
                              : "being reduced -- need to evaluate the range"
                                " after the edit");
     }
@@ -706,7 +713,7 @@ void KSourceHighlighter::highlightPass(bool beginningOfLine) {
   str_const_iterator end = paragraphStart;
   
   // process each line
-  while (true) {
+  while (!isCancelled()) {
     // fast-forward to next newline
     // TODO: Handle CR linebreaks. Currently only CRLF and LF are handled.
     while (end != paragraphEnd && *end++ != '\n') {}
