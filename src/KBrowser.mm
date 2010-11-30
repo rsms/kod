@@ -7,6 +7,16 @@
 
 @implementation KBrowser
 
+- (void) dealloc {
+  // fix for a bug where tabs keep lingering after their browser has died
+  for (KTabContents *tab in self) {
+    tab.browser = nil;
+  }
+  [super dealloc];
+}
+
+
+
 // This method is called when a new tab is being created. We need to return a
 // new CTTabContents object which will represent the contents of the new tab.
 - (CTTabContents*)createBlankTabBasedOn:(CTTabContents*)baseContents {

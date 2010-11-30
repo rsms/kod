@@ -123,7 +123,7 @@
 - (NSRect) window:(NSWindow *)window
 willPositionSheet:(NSWindow *)sheet
         usingRect:(NSRect)rect {
-  rect.origin.y -= 20.0;
+  rect.origin.y -= 17.0;
   return rect;
 }
 

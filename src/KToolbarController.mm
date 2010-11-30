@@ -3,6 +3,8 @@
 #import "KAutocompleteTextField.h"
 #import "KAutocompleteTextFieldEditor.h"
 #import "KLocationBarController.h"
+#import "KDocumentController.h"
+#import "KBrowserWindowController.h"
 
 #import "common.h"
 
@@ -124,8 +126,39 @@
 #pragma mark URLDropTargetController protocol impl
 
 - (void)dropURLs:(NSArray*)urls inView:(NSView*)view at:(NSPoint)point {
-  // TODO: implementation
-  NOTIMPLEMENTED();
+  // Filter to aboslute NSURL instances
+  NSMutableArray *absoluteURLs = [NSMutableArray arrayWithCapacity:urls.count];
+  for (id urlobj in urls) {
+    NSURL *url = nil;
+    if ([urlobj isKindOfClass:[NSString class]]) {
+      url = [NSURL URLWithString:urlobj];
+    } else if ([urlobj isKindOfClass:[NSURL class]]) {
+      url = urlobj;
+    }
+    if (url && (url = [url absoluteURL])) {
+      [absoluteURLs addObject:url];
+    }
+  }
+  
+  // bail if empty
+  if (absoluteURLs.count == 0)
+    return;
+  
+  // find our window controller
+  KBrowserWindowController *windowController = (KBrowserWindowController*)
+      [CTBrowserWindowController browserWindowControllerForView:view];
+  kassert(windowController != nil);
+  
+  // find shared document controller
+  KDocumentController *documentController =
+      (KDocumentController*)[NSDocumentController sharedDocumentController];
+  kassert(documentController != nil);
+  
+  // use the high-level "open" API
+  [documentController openDocumentsWithContentsOfURLs:absoluteURLs
+                                 withWindowController:windowController
+                                         priority:DISPATCH_QUEUE_PRIORITY_HIGH
+                                             callback:nil];
 }
 
 

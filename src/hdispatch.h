@@ -22,6 +22,16 @@
     [__arpool drain]; \
   })
 
+inline static void h_dispatch_async_main(dispatch_block_t block) {
+  block = [block copy];
+  dispatch_async(dispatch_get_main_queue(), ^{
+    NSAutoreleasePool *pool = [NSAutoreleasePool new];
+    block();
+    [block release];
+    [pool drain];
+  });
+}
+
 inline static void h_dispatch_delayed_main(unsigned delaymillis,
                                            dispatch_block_t block) {
   block = [block copy];

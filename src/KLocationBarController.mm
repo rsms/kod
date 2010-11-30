@@ -52,14 +52,18 @@
     absoluteURL = [NSURL fileURLWithPath:absPath];
   } else if ( ([locationText rangeOfString:@":"].location == NSNotFound) &&
               currentContents_) {
-    // "foo/../bar/baz" -- relative to current url
-    absoluteURL = [NSURL URLWithString:locationText
-                         relativeToURL:currentContents_.fileURL];
+    // assume "http://" prefix
+    if ([locationText rangeOfCharacterFromSet:
+         [NSCharacterSet slashCharacterSet]].location == NSNotFound) {
+      // no path -- assume hostname only -- append root path
+      locationText = [locationText stringByAppendingString:@"/"];
+    }
+    absoluteURL = [NSURL URLWithString:
+        [@"http://" stringByAppendingString:locationText]];
     absoluteURL = [absoluteURL absoluteURL];
   } else {
     // Hopefully a qualified URL
-    absoluteURL = [NSURL URLWithString:locationText];
-    absoluteURL = [absoluteURL absoluteURL];
+    absoluteURL = [[NSURL URLWithString:locationText] absoluteURL];
   }
   return absoluteURL;
 }
@@ -86,12 +90,12 @@
     return;
   }
   
+  
   // build a URL
   NSURL *absoluteURL = [self absoluteURL];
   if (!absoluteURL) {
     // TODO: Coman, please ... better UX. Like making the text red or something
     [NSApp presentError:[NSError kodErrorWithFormat:@"Failed to parse URL"]];
-    [textField_ setTextColor:[NSColor redColor]];
   } else if ([absoluteURL isEqual:currentContents_.fileURL]) {
     // Same URL -- noop
     
@@ -106,22 +110,12 @@
         (KDocumentController*)[NSDocumentController sharedDocumentController];
     assert(documentController != nil);
     
-    // open a new document in background
-    K_DISPATCH_BG_ASYNC({
-      // TODO: callback support
-      NSError *error = nil;
-      KTabContents *contents =
-          [documentController openDocumentWithContentsOfURL:absoluteURL
-                                       withWindowController:windowController
-                                          groupWithSiblings:YES
-                                                    display:YES
-                                                      error:&error];
-      if (!contents) {
-        [NSApp presentError:error];
-      } else {
-        // do something useful?
-      }
-    });
+    // use the high-level "open" API
+    NSArray *urls = [NSArray arrayWithObject:absoluteURL];
+    [documentController openDocumentsWithContentsOfURLs:urls
+                                   withWindowController:windowController
+                                           priority:DISPATCH_QUEUE_PRIORITY_HIGH
+                                               callback:nil];
   }
 }
 
@@ -188,7 +182,27 @@ inAutocompleteTextField:(KAutocompleteTextField*)atf {
 // Called when the user does a copy or drag.
 - (void)copyAutocompleteTextField:(KAutocompleteTextField*)atf
                      toPasteboard:(NSPasteboard*)pboard {
-  NOTIMPLEMENTED();
+  NSRange selectedRange = [[textField_ currentEditor] selectedRange];
+  NSString *stringValue = [textField_ stringValue];
+
+  [pboard clearContents];
+
+  if (selectedRange.location == 0 &&
+      selectedRange.length == stringValue.length) {
+    // full selection yields a valid URL and a textual rep
+    NSURL *url = [self absoluteURL];
+    NSArray *types = [NSArray arrayWithObjects:NSURLPboardType, NSStringPboardType, nil];
+    [pboard declareTypes:types owner:self];
+    [pboard setString:[url absoluteString] forType:NSStringPboardType];
+    NSData *urlData = [NSArchiver archivedDataWithRootObject:url];
+    [pboard setData:urlData forType:NSURLPboardType];
+  } else {
+    // selected substring yields only text
+    NSArray *types = [NSArray arrayWithObjects:NSStringPboardType, nil];
+    [pboard declareTypes:types owner:self];
+    NSString *str = [stringValue substringWithRange:selectedRange];
+    [pboard setString:str forType:NSStringPboardType];
+  }
 }
 
 // Returns true if the current clipboard text supports paste and go

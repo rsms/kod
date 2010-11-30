@@ -310,11 +310,22 @@ static int debugSimulateTextAppendingIteration = 0;
 
 
 - (void)setIsLoading:(BOOL)loading {
-  BOOL isLoadingPrev = isLoading_;
-  [super setIsLoading:loading];
-  // update icon if we went from "loading" to "not loading"
-  if (isLoadingPrev && !isLoading_) {
-    [self setIconBasedOnContents];
+  if (isLoading_ != loading) {
+    BOOL isLoadingPrev = isLoading_;
+    isLoading_= loading;
+    // this need to execute in main since animation is triggered from this
+    dispatch_block_t block = ^{
+      if (browser_) [browser_ updateTabStateForContent:self];
+      // update icon if we went from "loading" to "not loading"
+      if (isLoadingPrev && !isLoading_) {
+        [self setIconBasedOnContents];
+      }
+    };
+    if ([NSThread isMainThread]) {
+      block();
+    } else {
+      h_dispatch_async_main(block);
+    }
   }
 }
 
@@ -1178,10 +1189,18 @@ shouldChangeTextInRanges:(NSArray *)affectedRanges
   
   // different branches depending on local file or remote
   if ([absoluteURL isFileURL]) {
-    kassert(![NSThread isMainThread]); // running this on main is a _bad_ idea
-    return [self readFromFileURL:absoluteURL
-                          ofType:typeName
-                           error:outError];
+    if ([NSThread isMainThread]) {
+      // this happens when "reverting to saved"
+      K_DISPATCH_BG_ASYNC({
+        NSError *error = nil;
+        if (![self readFromFileURL:absoluteURL ofType:typeName error:&error])
+          [self presentError:error];
+      });
+      return YES;
+    } else {
+      // already called in the background
+      return [self readFromFileURL:absoluteURL ofType:typeName error:outError];
+    }
   } else {
     [self startReadingFromRemoteURL:absoluteURL ofType:typeName];
     return YES;

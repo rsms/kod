@@ -59,24 +59,31 @@
 #pragma mark Creating and opening documents
 
 
-- (IBAction)openDocument:(id)sender {
-  NSArray *urls = [self URLsFromRunningOpenPanel];
-  
-  // open the documents in the frontmost window controller
-  KBrowserWindowController *windowController = (KBrowserWindowController *)
-    [KBrowserWindowController mainBrowserWindowController];
-  
+- (void)openDocumentsWithContentsOfURLs:(NSArray*)urls
+                   withWindowController:(KBrowserWindowController*)windowController
+                               priority:(long)priority
+                               callback:(dispatch_block_t)callback {
   // countdown
-  NSUInteger i = urls.count;
+  NSUInteger i = urls ? urls.count : 0;
+  
+  // check for empty array
+  if (i == 0) {
+    if (callback) callback();
+    return;
+  }
   
   // dispatch queue to open the documents in
-  long priority = DISPATCH_QUEUE_PRIORITY_HIGH;
-  //long priority = DISPATCH_QUEUE_PRIORITY_DEFAULT;
   dispatch_queue_t dispatchQueue = dispatch_get_global_queue(priority, 0);
   
+  // callback countdown
+  kassert(i < INT32_MAX);
+  __block int32_t callbackCountdown = i;
+  if (callback)
+    callback = [callback copy];
+
   // Dispatch opening of each document
   for (NSURL *url in urls) {
-    --i;
+    int index = --i; // so it gets properly copied into the dispatched block
     dispatch_async(dispatchQueue, ^{
       NSAutoreleasePool *pool = [NSAutoreleasePool new];
       NSError *error = nil;
@@ -84,11 +91,17 @@
                                          withWindowController:windowController
                                             groupWithSiblings:YES
                                                 // display last document opened:
-                                                      display:i==0
+                                                      display:index==0
                                                         error:&error];
       // fail?
       if (!tab) {
         [windowController presentError:error];
+      }
+      
+      // done?
+      if (callback && OSAtomicDecrement32(&callbackCountdown) == 0) {
+        callback();
+        [callback release];
       }
       
       [pool drain];
@@ -97,11 +110,26 @@
 }
 
 
-/*- (NSArray*)URLsFromRunningOpenPanel {
-  NSArray *urls = [super URLsFromRunningOpenPanel];
-  DLOG("URLsFromRunningOpenPanel -> %@\n%@", urls, [NSThread callStackSymbols]);
-  return urls;
-}*/
+- (void)openDocumentsWithContentsOfURLs:(NSArray*)urls
+                               callback:(dispatch_block_t)callback {
+  // open the documents in the frontmost window controller
+  KBrowserWindowController *windowController = (KBrowserWindowController *)
+    [KBrowserWindowController mainBrowserWindowController];
+  
+  [self openDocumentsWithContentsOfURLs:urls
+                   withWindowController:windowController
+                               priority:DISPATCH_QUEUE_PRIORITY_HIGH
+                               callback:callback];
+}
+
+
+- (IBAction)openDocument:(id)sender {
+  // Run open panel in modal state and continue with a list of URLs
+  NSArray *urls = [self URLsFromRunningOpenPanel];
+  
+  // Open urls in frontmost window with high priority
+  [self openDocumentsWithContentsOfURLs:urls callback:nil];
+}
 
 
 - (id)makeUntitledDocumentOfType:(NSString *)typeName error:(NSError **)error {

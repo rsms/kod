@@ -21,6 +21,24 @@
           inForeground:(BOOL)foreground
      groupWithSiblings:(BOOL)groupWithSiblings;
 
+// --------------------------------------------------------------------
+// high-level operners which will dispatch opening to the background
+
+// Open |urls| concurrently in the background, inserting tabs by closest sibling
+// edit distance (groupWithSiblings:YES). Only the last tab opened will be
+// brought to foreground and become first responder.
+- (void)openDocumentsWithContentsOfURLs:(NSArray*)urls
+                   withWindowController:(KBrowserWindowController*)windowController
+                               priority:(long)priority
+                               callback:(dispatch_block_t)callback;
+
+// Open |urls| in frontmost window with high priority
+- (void)openDocumentsWithContentsOfURLs:(NSArray*)urls
+                               callback:(dispatch_block_t)callback;
+
+// --------------------------------------------------------------------
+// lower level openers which run in the current thread
+
 - (id)openDocumentWithContentsOfURL:(NSURL *)absoluteURL
                withWindowController:(KBrowserWindowController*)windowController
                   groupWithSiblings:(BOOL)groupWithSiblings
