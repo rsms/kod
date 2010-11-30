@@ -263,6 +263,11 @@ inAutocompleteTextField:(KAutocompleteTextField*)atf {
   if (ev.keyCode == kVK_Return) {
     [self commitEditing:[ev modifierFlags]];
     return YES;
+  } else if (cmd == @selector(cancelOperation:)) {
+    [self restoreState];
+    // Lose focus to editor
+    if (currentContents_)
+      [currentContents_ becomeFirstResponder];
   }
   return NO;
 }
