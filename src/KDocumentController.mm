@@ -31,6 +31,18 @@
 @implementation KDocumentController
 
 
+- (id)init {
+  if ((self = [super init])) {
+    untitledNumberCounter_ = -1; // so we start at 0
+  }
+  return self;
+}
+
+
+- (int32_t)nextUntitledNumber {
+  return OSAtomicIncrement32(&untitledNumberCounter_);
+}
+
 
 - (NSSet*)windows {
   NSArray* documents = [self documents];
@@ -47,11 +59,69 @@
 #pragma mark Creating and opening documents
 
 
+- (IBAction)openDocument:(id)sender {
+  NSArray *urls = [self URLsFromRunningOpenPanel];
+  
+  // open the documents in the frontmost window controller
+  KBrowserWindowController *windowController = (KBrowserWindowController *)
+    [KBrowserWindowController mainBrowserWindowController];
+  
+  // countdown
+  NSUInteger i = urls.count;
+  
+  // dispatch queue to open the documents in
+  long priority = DISPATCH_QUEUE_PRIORITY_HIGH;
+  //long priority = DISPATCH_QUEUE_PRIORITY_DEFAULT;
+  dispatch_queue_t dispatchQueue = dispatch_get_global_queue(priority, 0);
+  
+  // Dispatch opening of each document
+  for (NSURL *url in urls) {
+    --i;
+    dispatch_async(dispatchQueue, ^{
+      NSAutoreleasePool *pool = [NSAutoreleasePool new];
+      NSError *error = nil;
+      KTabContents *tab = [self openDocumentWithContentsOfURL:url
+                                         withWindowController:windowController
+                                            groupWithSiblings:YES
+                                                // display last document opened:
+                                                      display:i==0
+                                                        error:&error];
+      // fail?
+      if (!tab) {
+        [windowController presentError:error];
+      }
+      
+      [pool drain];
+    });
+  }
+}
+
+
+/*- (NSArray*)URLsFromRunningOpenPanel {
+  NSArray *urls = [super URLsFromRunningOpenPanel];
+  DLOG("URLsFromRunningOpenPanel -> %@\n%@", urls, [NSThread callStackSymbols]);
+  return urls;
+}*/
+
+
 - (id)makeUntitledDocumentOfType:(NSString *)typeName error:(NSError **)error {
   KTabContents* tab = [[KTabContents alloc] initWithBaseTabContents:nil];
   assert(tab); // since we don't set error
+  
+  // Give the new tab a "Untitled #" name
+  int32_t number = self.nextUntitledNumber;
+  NSString *untitled = NSLocalizedString(@"Untitled", nil);
+  if (number == 0) {
+    // first tab is "Untitled"
+    tab.title = untitled;
+  } else {
+    // consecutive tabs are "Untitled #"
+    tab.title = [NSString stringWithFormat:@"%@ %u", untitled, number];
+  }
+
   return tab;
 }
+
 
 - (id)openUntitledDocumentWithWindowController:(NSWindowController*)windowController
                                        display:(BOOL)display
@@ -65,12 +135,14 @@
     }
     [self finalizeOpenDocument:tab
           withWindowController:(KBrowserWindowController*)windowController
+             groupWithSiblings:NO
                        display:display];
   } else {
     assert(!error || *error);
   }
   return tab;
 }
+
 
 - (id)openUntitledDocumentAndDisplay:(BOOL)display error:(NSError **)error {
   return [self openUntitledDocumentWithWindowController:nil
@@ -80,7 +152,9 @@
 
 
 - (void)addTabContents:(KTabContents*)tab
-  withWindowController:(KBrowserWindowController*)windowController {
+  withWindowController:(KBrowserWindowController*)windowController
+          inForeground:(BOOL)foreground
+     groupWithSiblings:(BOOL)groupWithSiblings {
   // NOTE: if we want to add a tab in the background, we should not use this
   // helper function (addTabContents:inBrowser:)
 
@@ -91,7 +165,8 @@
   KBrowser* browser = (KBrowser*)windowController.browser;
   if ([browser tabCount] == 1) {
     KTabContents* tab0 = (KTabContents*)[browser tabContentsAtIndex:0];
-    assert(tab0);
+    kassert(tab0);
+    // TODO: DRY this up and move into KTabContents
     BOOL existingTabIsVirgin = ![tab0 isDocumentEdited] && ![tab0 fileURL];
     BOOL newTabIsVirgin = ![tab isDocumentEdited] && ![tab fileURL];
     if (existingTabIsVirgin && !newTabIsVirgin) {
@@ -100,12 +175,18 @@
     }
   }
   // Append a new tab after the currently selected tab
-  [browser addTabContents:tab];
+  [browser addTabContents:tab inForeground:foreground];
+  
+  // Move to a position beside the most natural sibling
+  if (groupWithSiblings) {
+    
+  }
 }
 
 
 - (void)finalizeOpenDocument:(KTabContents*)tab
         withWindowController:(KBrowserWindowController*)windowController
+           groupWithSiblings:(BOOL)groupWithSiblings
                      display:(BOOL)display {
   assert([NSThread isMainThread]);
   if (!windowController) {
@@ -122,15 +203,18 @@
     }
   }
 
-  [self addTabContents:tab withWindowController:windowController];
+  [self addTabContents:tab
+  withWindowController:windowController
+          inForeground:display
+     groupWithSiblings:groupWithSiblings];
 
-  if (display && ![[windowController window] isVisible]) {
+  if (display && !windowController.window.isVisible) {
     [windowController showWindow:self];
   }
 
   // Make sure the new tab gets focus
   if (display && tab.isVisible)
-    [[tab.view window] makeFirstResponder:tab.view];
+    [tab becomeFirstResponder];
 }
 
 
@@ -141,6 +225,7 @@
       [KBrowserWindowController mainBrowserWindowController];
   return [self openDocumentWithContentsOfURL:absoluteURL
                         withWindowController:windowController
+                           groupWithSiblings:YES
                                      display:display
                                        error:error];
 }
@@ -164,6 +249,7 @@
 
 - (id)openDocumentWithContentsOfURL:(NSURL *)url
                withWindowController:(KBrowserWindowController*)windowController
+                  groupWithSiblings:(BOOL)groupWithSiblings
                             display:(BOOL)display
                               error:(NSError **)error {
   // check if |url| is already open
@@ -187,11 +273,13 @@
       K_DISPATCH_MAIN_ASYNC({
         [self finalizeOpenDocument:tab
               withWindowController:windowController
+                 groupWithSiblings:groupWithSiblings
                            display:display];
       });
     } else {
       [self finalizeOpenDocument:tab
             withWindowController:windowController
+               groupWithSiblings:groupWithSiblings
                          display:display];
     }
   }
@@ -232,6 +320,12 @@
 }
 
 
+- (Class)documentClassForType:(NSString *)typeName {
+  // we only have one document type at the moment
+  return [KTabContents class];
+}
+
+
 #pragma mark -
 #pragma mark User interface
 
@@ -240,6 +334,9 @@
   DLOG("validateUserInterfaceItem:%@", item);
   return [super validateUserInterfaceItem:item];
 }*/
+
+
+//hasEditedDocuments
 
 
 #pragma mark -

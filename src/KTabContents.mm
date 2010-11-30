@@ -319,6 +319,12 @@ static int debugSimulateTextAppendingIteration = 0;
 }
 
 
+- (BOOL)hasRemoteSource {
+  NSURL *url = self.fileURL;
+  return url && ![url isFileURL];
+}
+
+
 - (NSString*)langId {
   return langId_;
 }
@@ -1474,6 +1480,14 @@ shouldChangeTextInRanges:(NSArray *)affectedRanges
 
 #pragma mark -
 #pragma mark Saving contents
+
+
+// Returns true to indicate a saveDocument: message is allowed, saving the
+// document to it's current URL
+- (BOOL)canSaveDocument {
+  NSURL *url = self.fileURL;
+  return !url || [url isFileURL];
+}
 
 
 // Generate data from text

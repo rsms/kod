@@ -38,6 +38,8 @@ typedef std::deque<KHighlightQueueEntry> KHighlightQueue;
 
 @property(assign, nonatomic) BOOL isDirty;
 @property(assign, nonatomic) BOOL highlightingEnabled;
+@property(readonly) BOOL canSaveDocument;
+@property(readonly) BOOL hasRemoteSource;
 @property(assign, nonatomic) NSStringEncoding textEncoding;
 @property(readonly) KBrowserWindowController* windowController;
 @property(readonly) NSMutableParagraphStyle *paragraphStyle; // compound

@@ -113,6 +113,7 @@
       KTabContents *contents =
           [documentController openDocumentWithContentsOfURL:absoluteURL
                                        withWindowController:windowController
+                                          groupWithSiblings:YES
                                                     display:YES
                                                       error:&error];
       if (!contents) {
@@ -213,13 +214,13 @@ inAutocompleteTextField:(KAutocompleteTextField*)atf {
 
 // Called when the field's frame changes.
 - (void)frameDidChangeForAutocompleteTextField:(KAutocompleteTextField*)atf {
-  DLOG("TODO %s", __func__);
+  //DLOG("TODO %s", __func__);
 }
 
 // Called when the popup is no longer appropriate, such as when the
 // field's window loses focus or a page action is clicked.
 - (void)closePopupInAutocompleteTextField:(KAutocompleteTextField*)atf {
-  DLOG("TODO %s", __func__);
+  //DLOG("TODO %s", __func__);
 }
 
 // Called when the user begins editing the field, for every edit,
@@ -227,7 +228,7 @@ inAutocompleteTextField:(KAutocompleteTextField*)atf {
 - (void)didBeginEditingInAutocompleteTextField:(KAutocompleteTextField*)atf {
 }
 - (void)didModifyAutocompleteTextField:(KAutocompleteTextField*)atf {
-  DLOG("TODO %s", __func__);
+  //DLOG("TODO %s", __func__);
 }
 - (void)didEndEditingInAutocompleteTextField:(KAutocompleteTextField*)atf {
   DLOG("didEndEditingInAutocompleteTextField (%@)", [NSApp currentEvent]);

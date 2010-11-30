@@ -103,9 +103,25 @@
 
 - (BOOL)validateMenuItem:(NSMenuItem *)item {
   // TODO: validateMenuItem
-  //KTabContents* tab = (KTabContents*)[self selectedTabContents];
-  BOOL y = [super validateMenuItem:item];
-  //DLOG("validateMenuItem:%@ -> %@", item, y?@"YES":@"NO");
+  BOOL y = NO;
+  KTabContents *selectedTab = (KTabContents*)[self selectedTabContents];
+  if (item.action == @selector(saveAllDocuments:)) {
+    return [[NSDocumentController sharedDocumentController] hasEditedDocuments];
+  } else if (item.action == @selector(saveDocument:)) {
+    return (selectedTab && selectedTab.canSaveDocument);
+  } else if (item.action == @selector(revertDocumentToSaved:)) {
+    if (selectedTab && selectedTab.hasRemoteSource) {
+      [item setTitle:NSLocalizedString(@"Reload",0)];
+      return YES; // can always reload a remote source
+    } else {
+      [item setTitle:NSLocalizedString(@"Revert to saved",0)];
+      return selectedTab && selectedTab.fileURL && selectedTab.isDocumentEdited;
+    }
+  } else {
+    y = [super validateMenuItem:item];
+    DLOG("validateMenuItem:%@ (%@) -> %@", item,
+         NSStringFromSelector(item.action), y?@"YES":@"NO");
+  }
   return y;
 }
 
