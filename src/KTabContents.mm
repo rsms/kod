@@ -144,9 +144,8 @@ static int debugSimulateTextAppendingIteration = 0;
   self.title = _kDefaultTitle;
   self.icon = _kDefaultIcon;
   
-  // use default text encoding unless explicitly set
+  // Default text encoding for new "Untitled" documents
   textEncoding_ = NSUTF8StringEncoding;
-      //KConfig.getInt(@"defaultReadTextEncoding", (int)NSUTF8StringEncoding);
   
   // Default highlighter
   sourceHighlighter_.reset(new KSourceHighlighter);
@@ -170,15 +169,16 @@ static int debugSimulateTextAppendingIteration = 0;
   [textView_ setAutomaticLinkDetectionEnabled:NO];
   [textView_ setSmartInsertDeleteEnabled:NO];
   [textView_ setAutomaticQuoteSubstitutionEnabled:NO];
+  [textView_ setAllowsDocumentBackgroundColorChange:NO];
   [textView_ setAllowsImageEditing:NO];
   [textView_ setRichText:NO];
+  [textView_ setImportsGraphics:NO];
   [textView_ turnOffKerning:self]; // we are monospace (robot voice)
-  [textView_ setAutoresizingMask:          NSViewMaxYMargin|
-                          NSViewMinXMargin|NSViewWidthSizable|NSViewMaxXMargin|
-                                           NSViewHeightSizable|
-                                           NSViewMinYMargin];
+  [textView_ setAutoresizingMask:NSViewWidthSizable];
   [textView_ setUsesFindPanel:YES];
   [textView_ setTextContainerInset:NSMakeSize(2.0, 4.0)];
+  [textView_ setVerticallyResizable:YES];
+	[textView_ setMaxSize:NSMakeSize(FLT_MAX, FLT_MAX)];
   
   // configure layout manager
   //NSLayoutManager *layoutManager = []
@@ -257,25 +257,16 @@ static int debugSimulateTextAppendingIteration = 0;
                      ofType:(NSString *)typeName
                       error:(NSError **)outError {
   // This may be called on a background thread
-  DLOG("initWithContentsOfURL:%@ ofType:%@", absoluteURL, typeName);
   self = [self initWithBaseTabContents:nil];
-  assert(self);
+  kassert(self);
   
-  // we are in a loading state
-  self.isLoading = YES;
-  
-  // this will take care of loading the contents at |absoluteURL|
-  //
-  // readFromURL:ofType:error: will call:
-  // - setFileURL:
-  // - setFileType:
-  // - setFileModificationDate:
-  // 
+  // call upon the mighty read-from-URL machinery
   if (![self readFromURL:absoluteURL ofType:typeName error:outError]) {
     [self release];
-    if (outError) assert(*outError != nil);
+    if (outError) kassert(*outError != nil);
     return nil;
   }
+  
   return self;
 }
 
@@ -397,13 +388,7 @@ static int debugSimulateTextAppendingIteration = 0;
       if ([url isFileURL]) {
         self.title = url.lastPathComponent;
       } else {
-        NSString *newTitle = [url absoluteString];
-        NSCharacterSet *illegalFilenameCharset =
-            [NSCharacterSet characterSetWithCharactersInString:@"/:"];
-        newTitle = [newTitle stringByTrimmingCharactersInSet:illegalFilenameCharset];
-        newTitle = [newTitle stringByReplacingOccurrencesOfString:@"/"
-                                                       withString:@"-"];
-        self.title = newTitle;
+        self.title = [url absoluteString];
       }
     } else {
       self.title = _kDefaultTitle;
@@ -1168,113 +1153,26 @@ shouldChangeTextInRanges:(NSArray *)affectedRanges
 #pragma mark Loading contents
 
 
-- (void)startReadingFromRemoteURL:(NSURL*)absoluteURL
-                           ofType:(NSString *)typeName {
-  // set state to "waiting"
-  self.isLoading = YES;
-  self.isWaitingForResponse = YES;
-  
-  // set text view to be read-only
-  [textView_ setEditable:NO];
-  
-  // set type (might change when we receive a response)
-  self.fileType = typeName;
-  
-  __block NSString *textEncodingNameFromResponse = nil;
-  
-  HURLConnection *conn = [absoluteURL
-    fetchWithOnResponseBlock:^(NSURLResponse *response) {
-      NSError *error = nil;
-      NSDate *fileModificationDate = nil;
-      
-      // change state from waiting to loading
-      self.isWaitingForResponse = NO;
-      
-      // handle HTTP response
-      if ([response isKindOfClass:[NSHTTPURLResponse class]]) {
-        // check status
-        NSInteger status = [(NSHTTPURLResponse*)response statusCode];
-        if (status < 200 || status > 299) {
-          error = [NSError HTTPErrorWithStatusCode:status];
-        }
-        // TODO: get fileModificationDate from response headers
-      }
-      
-      // try to derive UTI and read filename, unless error
-      if (!error) {
-        // get UTI based on MIME type
-        CFStringRef mimeType = (CFStringRef)[response MIMEType];
-        if (mimeType) {
-          NSString *uti = (NSString*)
-              UTTypeCreatePreferredIdentifierForTag(kUTTagClassMIMEType,
-                                                    mimeType, NULL);
-          if (uti)
-            self.fileType = uti;
-        }
-        
-        // get text encoding
-        textEncodingNameFromResponse = [response textEncodingName];
-      }
-      
-      // update URL, if needed (might have been redirected)
-      self.fileURL = response.URL;
-      
-      // set suggested title
-      self.title = response.suggestedFilename;
-      
-      // set modification date
-      self.fileModificationDate = fileModificationDate ? fileModificationDate
-                                                       : [NSDate date];
-      
-      return error;
-    }
-    onCompleteBlock:^(NSError *err, NSData *data) {
-      // Read data unless an error occured while reading URL
-      if (!err) {
-        // if we got a charset, try to convert it into a NSStringEncoding symbol
-        if (textEncodingNameFromResponse) {
-          textEncoding_ = CFStringConvertEncodingToNSStringEncoding(
-              CFStringConvertIANACharSetNameToEncoding(
-                  (CFStringRef)textEncodingNameFromResponse));
-        }
-        // parse data
-        [self readFromData:data ofType:self.fileType error:&err];
-      }
-      
-      // make sure isLoading is false
-      self.isLoading = NO;
-      
-      // if an error occured, handle it
-      if (err) {
-        self.isCrashed = YES; // FIXME
-        [NSApp presentError:err];
-      } else {
-        // we are done -- allow editing
-        [textView_ setEditable:YES];
-      }
-    }
-    startImmediately:NO];
-  
-  kassert(conn);
-  
-  // we want the blocks to be invoked on the main thread, thank you
-  [conn scheduleInRunLoop:[NSRunLoop mainRunLoop]
-                  forMode:NSDefaultRunLoopMode];
-  [conn start];
-}
-
-
-
+// High-level load method which is used both for reloading, replacing and
+// creating documents.
 - (BOOL)readFromURL:(NSURL *)absoluteURL
              ofType:(NSString *)typeName
               error:(NSError **)outError {
+  // May be called on a background thread
   DLOG("readFromURL:%@ ofType:%@", absoluteURL, typeName);
+
+  // we are in a loading state
+  self.isLoading = YES;
+  
+  // reset encoding (so it can be set by the loading machinery)
+  textEncoding_ = 0;
 
   // set url
   self.fileURL = absoluteURL;
   
   // different branches depending on local file or remote
   if ([absoluteURL isFileURL]) {
+    kassert(![NSThread isMainThread]); // running this on main is a _bad_ idea
     return [self readFromFileURL:absoluteURL
                           ofType:typeName
                            error:outError];
@@ -1395,6 +1293,102 @@ shouldChangeTextInRanges:(NSArray *)affectedRanges
 }
 
 
+- (void)startReadingFromRemoteURL:(NSURL*)absoluteURL
+                           ofType:(NSString *)typeName {
+  // set state to "waiting"
+  self.isLoading = YES;
+  self.isWaitingForResponse = YES;
+  
+  // set text view to be read-only
+  [textView_ setEditable:NO];
+  
+  // set type (might change when we receive a response)
+  self.fileType = typeName;
+  
+  __block NSString *textEncodingNameFromResponse = nil;
+  
+  HURLConnection *conn = [absoluteURL
+    fetchWithOnResponseBlock:^(NSURLResponse *response) {
+      NSError *error = nil;
+      NSDate *fileModificationDate = nil;
+      
+      // change state from waiting to loading
+      self.isWaitingForResponse = NO;
+      
+      // handle HTTP response
+      if ([response isKindOfClass:[NSHTTPURLResponse class]]) {
+        // check status
+        NSInteger status = [(NSHTTPURLResponse*)response statusCode];
+        if (status < 200 || status > 299) {
+          error = [NSError HTTPErrorWithStatusCode:status];
+        }
+        // TODO: get fileModificationDate from response headers
+      }
+      
+      // try to derive UTI and read filename, unless error
+      if (!error) {
+        // get UTI based on MIME type
+        CFStringRef mimeType = (CFStringRef)[response MIMEType];
+        if (mimeType) {
+          NSString *uti = (NSString*)
+              UTTypeCreatePreferredIdentifierForTag(kUTTagClassMIMEType,
+                                                    mimeType, NULL);
+          if (uti)
+            self.fileType = uti;
+        }
+        
+        // get text encoding
+        textEncodingNameFromResponse = [response textEncodingName];
+      }
+      
+      // update URL, if needed (might have been redirected)
+      self.fileURL = response.URL;
+      
+      // set suggested title
+      self.title = response.suggestedFilename;
+      
+      // set modification date
+      self.fileModificationDate = fileModificationDate ? fileModificationDate
+                                                       : [NSDate date];
+      
+      return error;
+    }
+    onCompleteBlock:^(NSError *err, NSData *data) {
+      // Read data unless an error occured while reading URL
+      if (!err) {
+        // if we got a charset, try to convert it into a NSStringEncoding symbol
+        if (textEncodingNameFromResponse) {
+          textEncoding_ = CFStringConvertEncodingToNSStringEncoding(
+              CFStringConvertIANACharSetNameToEncoding(
+                  (CFStringRef)textEncodingNameFromResponse));
+        }
+        // parse data
+        [self readFromData:data ofType:self.fileType error:&err];
+      }
+      
+      // make sure isLoading is false
+      self.isLoading = NO;
+      
+      // if an error occured, handle it
+      if (err) {
+        self.isCrashed = YES; // FIXME
+        [NSApp presentError:err];
+      } else {
+        // we are done -- allow editing
+        [textView_ setEditable:YES];
+      }
+    }
+    startImmediately:NO];
+  
+  kassert(conn);
+  
+  // we want the blocks to be invoked on the main thread, thank you
+  [conn scheduleInRunLoop:[NSRunLoop mainRunLoop]
+                  forMode:NSDefaultRunLoopMode];
+  [conn start];
+}
+
+
 // Sets the contents of this document by reading from a file wrapper of a
 // specified type (e.g. a directory).
 - (BOOL)readFromFileWrapper:(NSFileWrapper *)fileWrapper
@@ -1417,23 +1411,46 @@ shouldChangeTextInRanges:(NSArray *)affectedRanges
                error:(NSError **)outError {
   DLOG("readFromData:%p ofType:%@", data, typeName);
   
-  // TODO: Guess encoding
+  NSString *text = nil;
   
-  // try to decode data as text encoded as textEncoding_
-  NSString *text = [[NSString alloc] initWithData:data encoding:textEncoding_];
+  // If we have an explicit encoding, try decoding using that encoding
+  if (textEncoding_ != 0)
+    text = [data weakStringWithEncoding:textEncoding_];
   
-  // until we have a proper encoding guess algorithm, let's do a quick-n-dirty
+  // Guess encoding if no explicit encoding, or explicit decode failed
   if (!text) {
-    textEncoding_ = NSISOLatin1StringEncoding;
-    text = [[NSString alloc] initWithData:data encoding:textEncoding_];
+    NSUInteger bomOffset = 0;
+    textEncoding_ = [data guessEncodingWithPeekByteLimit:1024
+                                              headOffset:&bomOffset];
+    //DLOG("Guessed encoding: %@", textEncoding_==0 ? @"(none)" :
+    //     [NSString localizedNameOfStringEncoding:textEncoding_]);
+    // try decoding unless we failed to guess
+    if (textEncoding_ != 0) {
+      NSRange range = NSMakeRange(bomOffset, data.length-bomOffset);
+      text = [data weakStringWithEncoding:textEncoding_ range:range];
+    }
+  }
+  
+  // We failed to guess -- lets try some common encodings
+  if (!text) {
+    textEncoding_ = NSUTF8StringEncoding;
+    text = [data weakStringWithEncoding:textEncoding_];
+    if (!text) {
+      // This should _always_ work as it spans the complete byte range
+      textEncoding_ = NSISOLatin1StringEncoding;
+      text = [data weakStringWithEncoding:textEncoding_];
+    }
   }
   
   if (!text) {
+    // We're out of hope
+    textEncoding_ = 0;
     WLOG("Failed to parse data. text => nil (data length: %u)", [data length]);
     *outError = [NSError kodErrorWithDescription:@"Failed to parse file"];
     return NO;
   } else {
-    NSTextStorage *textStorage = textView_.textStorage;
+    // Yay, we decoded the damn text
+    //NSTextStorage *textStorage = textView_.textStorage;
     [textView_ setString:text];
     [textView_ setSelectedRange:NSMakeRange(0, 0)];
     [self updateChangeCount:NSChangeCleared];
@@ -1450,8 +1467,6 @@ shouldChangeTextInRanges:(NSArray *)affectedRanges
       if (isVisible_)
         [self setNeedsHighlightingOfCompleteDocument];
     }
-    
-    [text release];
   }
   return YES;
 }

@@ -62,6 +62,7 @@
 		3A929887122AC39100DA7E43 /* ChromiumTabs.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 3A9297E4122AB49D00DA7E43 /* ChromiumTabs.framework */; };
 		3A93A8401299E14300185857 /* NSURL-blocks.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A93A83F1299E14300185857 /* NSURL-blocks.m */; };
 		3ABF49C012A450660020233C /* NSView-kod.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3ABF49BF12A450660020233C /* NSView-kod.mm */; };
+		3ABF4C6D12A48E7D0020233C /* NSData-kod.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3ABF4C6C12A48E7D0020233C /* NSData-kod.mm */; };
 		3AC2D3FD1298C40A0066B586 /* KSourceHighlightState.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3AC2D3FC1298C40A0066B586 /* KSourceHighlightState.mm */; };
 		3AC2D4A71298D8050066B586 /* KTextStorage.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3AC2D4A61298D8050066B586 /* KTextStorage.mm */; };
 		3AC2D74012998D590066B586 /* CSS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3AE5EB871292DB5C00B17C4F /* CSS.framework */; };
@@ -249,6 +250,8 @@
 		3ABF483812A406AF0020233C /* hdispatch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = hdispatch.h; sourceTree = "<group>"; };
 		3ABF49BE12A450660020233C /* NSView-kod.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSView-kod.h"; sourceTree = "<group>"; };
 		3ABF49BF12A450660020233C /* NSView-kod.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = "NSView-kod.mm"; sourceTree = "<group>"; };
+		3ABF4C6B12A48E7D0020233C /* NSData-kod.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSData-kod.h"; sourceTree = "<group>"; };
+		3ABF4C6C12A48E7D0020233C /* NSData-kod.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = "NSData-kod.mm"; sourceTree = "<group>"; };
 		3AC2D3FB1298C40A0066B586 /* KSourceHighlightState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSourceHighlightState.h; sourceTree = "<group>"; };
 		3AC2D3FC1298C40A0066B586 /* KSourceHighlightState.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KSourceHighlightState.mm; sourceTree = "<group>"; };
 		3AC2D4A51298D8050066B586 /* KTextStorage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KTextStorage.h; sourceTree = "<group>"; };
@@ -349,21 +352,13 @@
 			children = (
 				3A92911C1229B9D500DA7E43 /* KToolbarController.h */,
 				3A92911D1229B9D500DA7E43 /* KToolbarController.mm */,
-				3A62BB4C129D9E9D00822274 /* KLocationBarController.h */,
-				3A62BB4D129D9E9D00822274 /* KLocationBarController.mm */,
 				3A84117E129D5CAE00F4A36D /* KTextField.h */,
 				3A84117F129D5CAE00F4A36D /* KTextField.mm */,
 				3A841181129D5D5C00F4A36D /* KTextFieldCell.h */,
 				3A841182129D5D5C00F4A36D /* KTextFieldCell.mm */,
-				3A62B9FF129D686F00822274 /* KAutocompleteTextField.h */,
-				3A62BA00129D686F00822274 /* KAutocompleteTextField.mm */,
-				3A62BA0A129D6A0100822274 /* KAutocompleteTextFieldDelegate.h */,
-				3A8411C0129D615800F4A36D /* KAutocompleteTextFieldCell.h */,
-				3A8411C1129D615800F4A36D /* KAutocompleteTextFieldCell.mm */,
-				3A62BA47129D756100822274 /* KAutocompleteTextFieldEditor.h */,
-				3A62BA48129D756100822274 /* KAutocompleteTextFieldEditor.mm */,
 				3A62B9E4129D652700822274 /* KTextFieldDecoration.h */,
 				3A62B9E5129D652700822274 /* KTextFieldDecoration.mm */,
+				3ABF4BCF12A481E90020233C /* Location bar */,
 			);
 			name = Toolbar;
 			sourceTree = "<group>";
@@ -453,6 +448,22 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		3ABF4BCF12A481E90020233C /* Location bar */ = {
+			isa = PBXGroup;
+			children = (
+				3A62BB4C129D9E9D00822274 /* KLocationBarController.h */,
+				3A62BB4D129D9E9D00822274 /* KLocationBarController.mm */,
+				3A62B9FF129D686F00822274 /* KAutocompleteTextField.h */,
+				3A62BA00129D686F00822274 /* KAutocompleteTextField.mm */,
+				3A62BA0A129D6A0100822274 /* KAutocompleteTextFieldDelegate.h */,
+				3A8411C0129D615800F4A36D /* KAutocompleteTextFieldCell.h */,
+				3A8411C1129D615800F4A36D /* KAutocompleteTextFieldCell.mm */,
+				3A62BA47129D756100822274 /* KAutocompleteTextFieldEditor.h */,
+				3A62BA48129D756100822274 /* KAutocompleteTextFieldEditor.mm */,
+			);
+			name = "Location bar";
+			sourceTree = "<group>";
+		};
 		3AE5E8AA12915ABA00B17C4F /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -521,6 +532,8 @@
 				3A62BAA4129D84F900822274 /* NSMutableArray-kod.m */,
 				3ABF49BE12A450660020233C /* NSView-kod.h */,
 				3ABF49BF12A450660020233C /* NSView-kod.mm */,
+				3ABF4C6B12A48E7D0020233C /* NSData-kod.h */,
+				3ABF4C6C12A48E7D0020233C /* NSData-kod.mm */,
 			);
 			name = "NS categories";
 			sourceTree = "<group>";
@@ -685,6 +698,7 @@
 				3A62BB4E129D9E9D00822274 /* KLocationBarController.mm in Sources */,
 				3A74A4D3129FF6E000BB5503 /* HUTF8MappedUTF16String.mm in Sources */,
 				3ABF49C012A450660020233C /* NSView-kod.mm in Sources */,
+				3ABF4C6D12A48E7D0020233C /* NSData-kod.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

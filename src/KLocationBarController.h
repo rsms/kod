@@ -4,7 +4,7 @@
 
 @interface KLocationBarController : NSObject<KAutocompleteTextFieldDelegate> {
   // weak, owned by toolbar controller
-  __weak KAutocompleteTextField *autocompleteTextField_;
+  __weak KAutocompleteTextField *textField_;
   
   // state stored while an edit is active
   NSAttributedString *originalAttributedStringValue_;

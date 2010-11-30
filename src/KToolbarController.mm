@@ -73,8 +73,8 @@
 // Call is delegated from KBrowserWindowController
 - (void)updateToolbarWithContents:(CTTabContents*)contents
                shouldRestoreState:(BOOL)shouldRestore {
-  DLOG("updateToolbarWithContents:%@ shouldRestoreState:%@", contents,
-       shouldRestore?@"YES":@"NO");
+  DLOG("updateToolbarWithContents:%@ shouldRestoreState:%@ %@", contents,
+       shouldRestore?@"YES":@"NO", [NSThread callStackSymbols]);
   [self setCurrentContents:contents];
 }
 

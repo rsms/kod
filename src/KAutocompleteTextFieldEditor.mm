@@ -63,8 +63,7 @@
   DCHECK(atfDelegate);
   if (atfDelegate && [atfDelegate canCopyFromAutocompleteTextField:atf]) {
     NSPasteboard* pboard = [NSPasteboard generalPasteboard];
-    [atfDelegate copyAutocompleteTextField:atf
-                              toPasteboard:pboard];
+    [atfDelegate copyAutocompleteTextField:atf toPasteboard:pboard];
   }
 }
 
@@ -93,7 +92,7 @@
   KAutocompleteTextField *atf = [self delegate];
   id<KAutocompleteTextFieldDelegate> atfDelegate = atf.delegate;
   if (atfDelegate) {
-    [atfDelegate pastedInAutocompleteTextField:atf];
+    [atfDelegate pasteInAutocompleteTextField:atf];
   }
 }
 

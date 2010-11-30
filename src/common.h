@@ -89,5 +89,6 @@ static inline const char *debug_bits32(int32_t a) {
 #import "NSURL-blocks.h"
 #import "NSMutableArray-kod.h"
 #import "NSView-kod.h"
+#import "NSData-kod.h"
 
 #endif  // K_COMMON_H_

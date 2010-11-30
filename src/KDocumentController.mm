@@ -169,8 +169,12 @@
   // check if |url| is already open
   KTabContents *tab = (KTabContents *)[self documentForURL:url];
   if (tab) {
-    // make sure the tab is presented to the user
-    [tab makeKeyAndOrderFront:self];
+    // make sure the tab is presented to the user (need to run on main)
+    if (![NSThread isMainThread]) {
+      K_DISPATCH_MAIN_ASYNC({ [tab makeKeyAndOrderFront:self]; });
+    } else {
+      [tab makeKeyAndOrderFront:self];
+    }
     return tab;
   }
   

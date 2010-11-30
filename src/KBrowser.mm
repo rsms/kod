@@ -35,14 +35,14 @@
 }
 
 
--(void)updateTabStateForContent:(CTTabContents*)contents {
+/*-(void)updateTabStateForContent:(CTTabContents*)contents {
   DLOG("updateTabStateForContent:%@", contents);
   int index = tabStripModel_->GetIndexOfTabContents(contents);
   DLOG_EXPR(index);
   if (index != -1) {
     tabStripModel_->UpdateTabContentsStateAt(index, CTTabChangeTypeAll);
   }
-}
+}*/
 
 
 /*-(void)newWindow {

@@ -8,8 +8,8 @@
 
 - (id)initWithAutocompleteTextField:(KAutocompleteTextField*)atf {
   if ((self = [super init])) {
-    autocompleteTextField_ = atf; // weak, owned by toolbar controller
-    autocompleteTextField_.delegate = self;
+    textField_ = atf; // weak, owned by toolbar controller
+    textField_.delegate = self;
   }
   return self;
 }
@@ -27,14 +27,13 @@
   // Record state so we can restore it later
   h_objc_xch(&currentContents_, contents);
   h_objc_xch(&originalAttributedStringValue_,
-             [[autocompleteTextField_ cell] attributedStringValue]);
+             [[textField_ cell] attributedStringValue]);
 }
 
 
 - (void)restoreState {
   if (originalAttributedStringValue_) {
-    [[autocompleteTextField_ cell]
-        setAttributedStringValue:originalAttributedStringValue_];
+    [[textField_ cell] setAttributedStringValue:originalAttributedStringValue_];
     h_objc_xch(&originalAttributedStringValue_, nil);
   }
 }
@@ -67,7 +66,7 @@
 
 
 - (NSURL*)absoluteURL {
-  return [self absoluteURLFromString:[autocompleteTextField_ stringValue]];
+  return [self absoluteURLFromString:[textField_ stringValue]];
 }
 
 
@@ -79,7 +78,7 @@
        altPressed);
   
   // get current string
-  NSString *locationText = [autocompleteTextField_ stringValue];
+  NSString *locationText = [textField_ stringValue];
   locationText = [locationText
       stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
   if (locationText.length == 0) {
@@ -92,14 +91,14 @@
   if (!absoluteURL) {
     // TODO: Coman, please ... better UX. Like making the text red or something
     [NSApp presentError:[NSError kodErrorWithFormat:@"Failed to parse URL"]];
-    [autocompleteTextField_ setTextColor:[NSColor redColor]];
+    [textField_ setTextColor:[NSColor redColor]];
   } else if ([absoluteURL isEqual:currentContents_.fileURL]) {
     // Same URL -- noop
     
   } else {
     // find our window controller
     KBrowserWindowController *windowController = [KBrowserWindowController 
-        browserWindowControllerForView:autocompleteTextField_];
+        browserWindowControllerForView:textField_];
     assert(windowController != nil);
     
     // find shared document controller
@@ -140,12 +139,48 @@ inAutocompleteTextField:(KAutocompleteTextField*)atf {
 }
 
 // Called when the user pastes into the field.
-- (void)pastedInAutocompleteTextField:(KAutocompleteTextField*)atf {
+- (void)pasteInAutocompleteTextField:(KAutocompleteTextField*)atf {
+  // This code currently expects |field_| to be focussed.
+  kassert([textField_ currentEditor]);
+  
+  NSPasteboard *pboard = [NSPasteboard generalPasteboard];
+  NSArray *classes = [NSArray arrayWithObject:[NSString class]];
+  NSArray *items = [pboard readObjectsForClasses:classes options:nil];
+  DLOG("pasted items: %@", items);
+  if (items.count == 0)
+    return;
+  
+  NSString *s = [items objectAtIndex:0];
+  
+  // -shouldChangeTextInRange:* and -didChangeText are documented in
+  // NSTextView as things you need to do if you write additional
+  // user-initiated editing functions.  They cause the appropriate
+  // delegate methods to be called.
+  // TODO(shess): It would be nice to separate the Cocoa-specific code
+  // from the Chrome-specific code.
+  NSTextView* editor = static_cast<NSTextView*>([textField_ currentEditor]);
+  const NSRange selectedRange = [editor selectedRange];
+  if ([editor shouldChangeTextInRange:selectedRange replacementString:s]) {
+    // If this paste will be replacing all the text, record that, so
+    // we can do different behaviors in such a case.
+    //if (IsSelectAll())
+    //  model_->on_paste_replacing_all();
+
+    // Force a Paste operation to trigger the text_changed code in
+    // OnAfterPossibleChange(), even if identical contents are pasted
+    // into the text box.
+    //text_before_change_.clear();
+
+    [editor replaceCharactersInRange:selectedRange withString:s];
+    [editor didChangeText];
+  }
 }
 
 // Return |true| if there is a selection to copy.
 - (BOOL)canCopyFromAutocompleteTextField:(KAutocompleteTextField*)atf {
-  NOTIMPLEMENTED();
+  kassert([textField_ currentEditor]);
+  NSRange selectedRange = [[textField_ currentEditor] selectedRange];
+  return selectedRange.length > 0;
 }
 
 // Clears the |pboard| and adds the field's current selection.
@@ -205,7 +240,7 @@ inAutocompleteTextField:(KAutocompleteTextField*)atf {
     // this most likely means that the user "cancelled" editing by giving
     // someone first responder focus -- if we represent the empty string we
     // shoud restore our original state.
-    if ([autocompleteTextField_ stringValue].length == 0) {
+    if ([textField_ stringValue].length == 0) {
       [self restoreState];
     }
   }

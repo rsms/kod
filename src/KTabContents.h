@@ -73,8 +73,14 @@ typedef std::deque<KHighlightQueueEntry> KHighlightQueue;
 - (void)textStorageDidProcessEditing:(NSNotification*)notification;
 - (void)documentDidChangeDirtyState; // when isDirty_ changed
 
+
+// These two are called by readFromURL:ofType:error:
+
 - (BOOL)readFromFileURL:(NSURL *)absoluteURL
                  ofType:(NSString *)typeName
                   error:(NSError **)outError;
+
+- (void)startReadingFromRemoteURL:(NSURL*)absoluteURL
+                           ofType:(NSString *)typeName;
 
 @end

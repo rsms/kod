@@ -8,7 +8,7 @@
 inAutocompleteTextField:(KAutocompleteTextField*)atf;
 
 // Called when the user pastes into the field.
-- (void)pastedInAutocompleteTextField:(KAutocompleteTextField*)atf;
+- (void)pasteInAutocompleteTextField:(KAutocompleteTextField*)atf;
 
 // Return |true| if there is a selection to copy.
 - (BOOL)canCopyFromAutocompleteTextField:(KAutocompleteTextField*)atf;
