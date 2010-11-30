@@ -924,7 +924,13 @@ longestEffectiveRange:&range
         if (!sourceHighlighter_->isCancelled()) {
           DLOG("highlight --FLUSH-START-- %@", NSStringFromRange(affectedRange));
           [textStorage beginEditing];
-          sourceHighlighter_->endFlushBufferedAttributes(textStorage);
+          @try {
+            sourceHighlighter_->endFlushBufferedAttributes(textStorage);
+          } @catch (NSException *e) {
+            WLOG("Caught exception while trying to flush highlighting "
+                 "attributes contained within %@: %@",
+                 NSStringFromRange(affectedRange), e);
+          }
           //[textStorage invalidateAttributesInRange:affectedRange];
           [textStorage endEditing];
           DLOG("highlight --FLUSH-END--");
