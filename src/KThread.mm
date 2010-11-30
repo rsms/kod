@@ -79,6 +79,9 @@ static dispatch_semaphore_t backgroundThreadSemaphore_;
   // locks w/o causing contention and thus an expensive call to the kernel.
   for (int i = 5; i--;) dispatch_semaphore_signal(runSemaphore_);
   
+  // for anyone waiting at +backgroundThread
+  dispatch_semaphore_signal(backgroundThreadSemaphore_);
+  
   NSAutoreleasePool *pool;
   while (![self isCancelled]) {
     pool = [NSAutoreleasePool new];

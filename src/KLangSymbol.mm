@@ -9,7 +9,6 @@ const std::string &KLangSymbol::symbolize(const std::string &name,
   // TODO: atomicity
   KLangSymbolMap::iterator it = gNames.find(name);
   if (it == gNames.end()) {
-    //DLOG("NOTFOUND %s", name.c_str());
     // new symbol
     NSString *sym =
         [[NSString alloc] initWithBytesNoCopy:(void*)name.data()
@@ -20,7 +19,7 @@ const std::string &KLangSymbol::symbolize(const std::string &name,
     if (internedSymbol != sym)
       [sym release];
     gNames.insert(std::pair<std::string, NSString*>(name, internedSymbol));
-    //DLOG("REGISTER ('%s'@%p, '%@')", name.c_str(), name.data(), internedSymbol);
+    //DLOG("REGISTER ('%s'@%p, '%@')", name.c_str(), name.data(),internedSymbol);
     if (symbol) *symbol = internedSymbol;
     return name;
   } else {

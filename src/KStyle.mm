@@ -4,23 +4,72 @@
 
 NSString const * KStyleDidChangeNotification = @"KStyleDidChangeNotification";
 
+static lwc_string *kBodyLWCString;
+
 // CSS select handler functions
 static css_error css_node_name(void *pw, void *n, lwc_string **name) {
 	lwc_string *node = (lwc_string *)n;
 	*name = lwc_string_ref(node);
 	return CSS_OK;
 }
+
 static css_error css_node_has_name(void *pw, void *n, lwc_string *name,
                                    bool *match) {
 	lwc_string *node = (lwc_string *)n;
 	assert(lwc_string_caseless_isequal(node, name, match) == lwc_error_ok);
+  //DLOG("css_node_has_name(pw, '%@', '%@') -> %@",
+  //     [NSString stringWithLWCString:node],
+  //     [NSString stringWithLWCString:name],
+  //     match ? @"YES" : @"NO");
 	return CSS_OK;
 }
+
 static css_error css_node_has_class(void *pw, void *n, lwc_string *name,
                                     bool *match) {
 	*match = false;
 	return CSS_OK;
 }
+
+static css_error css_parent_node(void *pw, void *n, void **parent) {
+  lwc_string *node = (lwc_string *)n;
+  bool isBodyNode = true;
+  lwc_string_caseless_isequal(node, kBodyLWCString, &isBodyNode);
+  if (!isBodyNode) {
+    //DLOG("css_parent_node for '%@' -> 'body'",
+    //     [NSString stringWithLWCString:node]);
+    *parent = (void*)lwc_string_ref(kBodyLWCString);
+  } else {
+    *parent = NULL;
+  }
+	return CSS_OK;
+}
+
+static css_error ua_default_for_property(void *pw, uint32_t property,
+                                         css_hint *hint) {
+	if (property == CSS_PROP_COLOR) {
+		hint->data.color = 0x111111ff;
+		hint->status = CSS_BACKGROUND_COLOR_COLOR;
+		//hint->status = CSS_COLOR_INHERIT;
+	} else if (property == CSS_PROP_BACKGROUND_COLOR) {
+		hint->data.color = 0xeeeeeeff;
+		hint->status = CSS_COLOR_COLOR;
+		//hint->status = CSS_COLOR_INHERIT;
+	} else if (property == CSS_PROP_FONT_FAMILY) {
+		hint->data.strings = NULL;
+		hint->status = CSS_FONT_FAMILY_MONOSPACE;
+    //hint->status = CSS_FONT_FAMILY_INHERIT;
+	} else if (property == CSS_PROP_QUOTES) {
+		hint->data.strings = NULL;
+		hint->status = CSS_QUOTES_NONE;
+	} else if (property == CSS_PROP_VOICE_FAMILY) {
+		hint->data.strings = NULL;
+		hint->status = 0;
+	} else {
+		return CSS_INVALID;
+	}
+	return CSS_OK;
+}
+
 
 
 @implementation KStyle
@@ -38,9 +87,13 @@ static CSSStylesheet* gBaseStylesheet_ = nil;
 static HSemaphore gBaseStylesheetSemaphore_(1);
 
 static KStyle *gEmptyStyle_ = nil;
+static NSString const *gDefaultElementSymbol;
 
 + (void)load {
   NSAutoreleasePool *pool = [NSAutoreleasePool new];
+  
+  // shared lwc_strings
+  lwc_intern_string("body", 4, &kBodyLWCString);
   
   // instances
   gInstancesDict_ = [NSMutableDictionary new];
@@ -51,10 +104,13 @@ static KStyle *gEmptyStyle_ = nil;
   gCSSHandler.node_name = &css_node_name;
   gCSSHandler.node_has_name = &css_node_has_name;
   gCSSHandler.node_has_class = &css_node_has_class;
+  gCSSHandler.parent_node = &css_parent_node;
+  gCSSHandler.ua_default_for_property = &ua_default_for_property;
   
   // Empty style
+  gDefaultElementSymbol = [[@"body" internedString] retain];
   gEmptyStyle_ =
-      [[KStyle alloc] initWithCatchAllElement:new KStyleElement(@"body")];
+      [[KStyle alloc] initWithCatchAllElement:new KStyleElement(gDefaultElementSymbol)];
   
   [pool drain];
 }
@@ -70,11 +126,10 @@ static KStyle *gEmptyStyle_ = nil;
 
 
 + (CSSStylesheet*)baseStylesheet {
-  // Maybe: in the future, this should be a computed with regards to the current
-  // editor background color.
   HSemaphore::Scope dss(gBaseStylesheetSemaphore_);
   if (!gBaseStylesheet_) {
-    NSData *data = [@"body { color:#fff; }" dataUsingEncoding:NSUTF8StringEncoding];
+    NSData *data = [@"body { color:white; background-color:black; }"
+                    dataUsingEncoding:NSUTF8StringEncoding];
     gBaseStylesheet_ = [[CSSStylesheet alloc] initWithURL:nil];
     __block NSError *error = nil;
     [gBaseStylesheet_ loadData:data withCallback:^(NSError *err) {
@@ -101,6 +156,15 @@ static void _loadStyle_finalize(NSString const *key, KStyle *style,
     }
     callbacks = [[gInstanceLoadQueueDict_ objectForKey:key] retain];
     [gInstanceLoadQueueDict_ removeObjectForKey:key];
+  }
+  
+  // post KStyleDidChangeNotification before calling callbacks. This way code
+  // inside the callback can register for the notification without receiving
+  // a notification directly afterwards, which obvisouly indicate the same load
+  // as the actual invocation of the callback.
+  if (style) {
+    NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
+    [nc postNotificationName:KStyleDidChangeNotification object:style];
   }
   
   // invoke queued callbacks
@@ -267,6 +331,7 @@ static inline void _freeElementsMapTable(NSMapTable **elements) {
 - (void)dealloc {
   [cssContext_ release];
   if (catchAllElement_) delete catchAllElement_;
+  [defaultStyle_ release];
   [super dealloc];
 }
 
@@ -277,7 +342,18 @@ static inline void _freeElementsMapTable(NSMapTable **elements) {
 /// Return the style element for symbolic key
 - (KStyleElement*)styleElementForSymbol:(NSString const*)key {
   if (catchAllElement_) return catchAllElement_;
+  
   OSSpinLockLock(&elementsSpinLock_);
+  
+  // assure the default element is loaded before continuing
+  if (key != gDefaultElementSymbol) {
+    if (elements_.get(key) == nil) {
+      OSSpinLockUnlock(&elementsSpinLock_); // give lock to...
+      [self defaultStyleElement];
+      OSSpinLockLock(&elementsSpinLock_); // reaquire lock
+    }
+  }
+  
   KStyleElement *elem = elements_.get(key);
   if (!elem) {
     lwc_string *elementName = [key LWCString];
@@ -289,6 +365,14 @@ static inline void _freeElementsMapTable(NSMapTable **elements) {
                                        media:CSS_MEDIA_SCREEN
                                  inlineStyle:nil
                                 usingHandler:&gCSSHandler];
+      if (key == gDefaultElementSymbol) {
+        // save CSSStyle for default element ("body")
+        defaultStyle_ = [style retain];
+      } else {
+        // inherit style from default element ("body")
+        kassert(defaultStyle_);
+        style = [defaultStyle_ mergeWith:style];
+      }
     } @catch (NSException *e) {
       WLOG("CSSStyle select failed %@ -- %@", e, [e callStackSymbols]);
       DLOG("cssContext_ => %@", cssContext_);
@@ -305,62 +389,13 @@ static inline void _freeElementsMapTable(NSMapTable **elements) {
 }
 
 
+- (KStyleElement*)defaultStyleElement {
+  return [self styleElementForSymbol:gDefaultElementSymbol];
+}
+
+
 #pragma mark -
-#pragma mark Formatting
-
-
-- (void)applyStyle:(NSString const*)typeSymbol
-        toMAString:(NSMutableAttributedString*)mastr
-           inRange:(NSRange)range
-    //withAttributes:(NSDictionary*)extraAttrs
-     byReplacement:(BOOL)replace {
-  // lookup style element for element type
-  KStyleElement *element = [self styleElementForSymbol:typeSymbol];
-  NSDictionary *attrs = nil;
-
-  // Set text attributes
-  if (element) {
-    NSDictionary *attrs = element->textAttributes();
-    /*if (extraAttrs) {
-      attrs = [attrs ]
-    }*/
-    [mastr setAttributes:attrs range:range];
-    //[currentMAString_ addAttributes:element->textAttributes() range:range];
-    // Note: setAttributes is faster than addAttributes, but it replaces _any_
-    // attribute.
-  } else {
-    KStyleElement::clearAttributes(mastr, range, true);
-  }
-  #if 0
-  DLOG("%@ applyStyle:%@ %@ '%@' <-- %@", typeSymbol,
-             NSStringFromRange(range),
-             [mastr.string substringWithRange:range],
-             element ? element->textAttributes() : nil);
-  #endif
-}
-
-
-- (void)applyStyleToMAString:(NSMutableAttributedString*)mastr {
-  NSRange textRange = NSMakeRange(0, mastr.length);
-  NSAttributedStringEnumerationOptions opts = 0;
-  //opts = NSAttributedStringEnumerationLongestEffectiveRangeNotRequired;
-  [mastr enumerateAttribute:KStyleElementAttributeName
-                    inRange:textRange
-                    options:opts
-                 usingBlock:^(id value, NSRange range, BOOL *stop) {
-    NSString const *symbol = value;
-    
-    // clear any formatter attributes
-    KStyleElement::clearAttributes(mastr, range);
-    // find current formatter for |elem|
-    KStyleElement* formatter = [self styleElementForSymbol:symbol];
-    // apply the formatters' style to |range|
-    if (formatter) {
-      formatter->applyAttributes(mastr, range);
-    }
-    //DLOG("%s %@", elem.c_str(), NSStringFromRange(range));
-  }];
-}
+#pragma mark Etc
 
 
 - (NSString*)description {
@@ -368,5 +403,32 @@ static inline void _freeElementsMapTable(NSMapTable **elements) {
       NSStringFromClass([self class]), self, cssContext_];
 }
 
+
+@end
+
+
+@implementation NSMutableAttributedString (KStyle)
+
+- (void)setAttributesFromKStyle:(KStyle*)style range:(NSRange)range {
+  NSAttributedStringEnumerationOptions opts = 0;
+  //opts = NSAttributedStringEnumerationLongestEffectiveRangeNotRequired;
+  [self enumerateAttribute:KStyleElementAttributeName
+                   inRange:range
+                   options:opts
+                usingBlock:^(id value, NSRange range, BOOL *stop) {
+    NSString const *symbol = value;
+    
+    // clear any formatter attributes (so we can perform "add" later, without
+    // disrupting other attributes)
+    KStyleElement::clearAttributes(self, range);
+    
+    // find current formatter for |elem|
+    KStyleElement* formatter = [style styleElementForSymbol:symbol];
+    
+    // apply the formatters' style to |range|
+    if (formatter)
+      formatter->applyAttributes(self, range);
+  }];
+}
 
 @end

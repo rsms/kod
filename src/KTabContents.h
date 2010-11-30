@@ -33,7 +33,7 @@ typedef std::deque<KHighlightQueueEntry> KHighlightQueue;
   hatomic_flags_t stateFlags_;
   NSRange lastEditedHighlightStateRange_;
   __weak KSourceHighlightState *lastEditedHighlightState_;
-  uint8_t lastEditChangeStatus_;  // see contants in top of .m
+  int64_t highlightWaitBackOffNSec_; // nanoseconds
 }
 
 @property(assign, nonatomic) BOOL isDirty;
@@ -67,7 +67,14 @@ typedef std::deque<KHighlightQueueEntry> KHighlightQueue;
            withModifiedState:(KSourceHighlightState*)state
                      inRange:(NSRange)stateRange;
 
+- (void)clearHighlighting;
+- (void)refreshStyle;
+
 - (void)textStorageDidProcessEditing:(NSNotification*)notification;
 - (void)documentDidChangeDirtyState; // when isDirty_ changed
+
+- (BOOL)readFromFileURL:(NSURL *)absoluteURL
+                 ofType:(NSString *)typeName
+                  error:(NSError **)outError;
 
 @end

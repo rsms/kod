@@ -15,10 +15,14 @@ typedef void (^KStyleLoadCallback)(NSError*, KStyle*);
 @interface KStyle : NSObject {
   CSSContext* cssContext_;
   KStyleElement *catchAllElement_;
+  
+  // Style for default element ("body") used to create other elements
+  CSSStyle *defaultStyle_;
 
   /// Contains KStyleElement mapped by their string symbols.
   HUnorderedMapSharedPtr<NSString const*, KStyleElement> elements_;
   OSSpinLock elementsSpinLock_;
+  BOOL isLoading_;
 }
 
 #pragma mark -
@@ -55,19 +59,13 @@ typedef void (^KStyleLoadCallback)(NSError*, KStyle*);
  */
 - (KStyleElement*)styleElementForSymbol:(NSString const*)symbol;
 
+/// Return the default element for this style ("body")
+- (KStyleElement*)defaultStyleElement;
 
-#pragma mark -
-#pragma mark Formatting
-
-/**
- * Update colors in an already processed/colored NSMutableAttributedString.
- * Intended to be called when style has changed.
- */
-- (void)applyStyleToMAString:(NSMutableAttributedString*)mastr;
-
-- (void)applyStyle:(NSString const*)typeSymbol
-        toMAString:(NSMutableAttributedString*)mastr
-           inRange:(NSRange)range
-     byReplacement:(BOOL)replace;
 
 @end
+
+
+@interface NSMutableAttributedString (KStyle)
+- (void)setAttributesFromKStyle:(KStyle*)style range:(NSRange)range;
+@end;

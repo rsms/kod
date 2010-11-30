@@ -34,7 +34,6 @@ static const uint8_t kEditChangeStatusUserAlteredText = 2;
 @implementation KTabContents
 
 @synthesize isDirty = isDirty_,
-            highlightingEnabled = highlightingEnabled_,
             textEncoding = textEncoding_,
             style = style_;
 
@@ -152,9 +151,6 @@ static int debugSimulateTextAppendingIteration = 0;
   // Default highlighter
   sourceHighlighter_.reset(new KSourceHighlighter);
   highlightingEnabled_ = YES;
-  //highlightSem_ = new HSemaphore(1); // 1=free, 0=processing
-  //highlightQueueSem_ = new HSemaphore(1); // 1=unlocked, 0=locked
-  //highlightQueuedRange_.location = NSNotFound;
 
   // Save a weak reference to the undo manager (performance reasons)
   undoManager_ = [self undoManager]; assert(undoManager_);
@@ -218,16 +214,24 @@ static int debugSimulateTextAppendingIteration = 0;
   // Set the NSScrollView as our view
   view_ = sv;
   
-  // Default style
+  // Start with the empty style and load the default style
   style_ = [[KStyle emptyStyle] retain];
   [KStyle defaultStyleWithCallback:^(NSError *err, KStyle *style) {
-    if (err) {
-      [NSApp presentError:err];
-      return;
-    }
-    DLOG("style %@ loaded", style);
-    self.style = style;
+    if (err) [NSApp presentError:err];
+    else self.style = style;
   }];
+  
+  // debug xxx
+  /*[self retain];
+  h_dispatch_delayed_main(10000, ^{
+    DLOG("loading new style after 10s");
+    NSURL* url = KConfig.resourceURL(@"style/bright.css");
+    [KStyle styleAtURL:url withCallback:^(NSError *err, KStyle *style) {
+      if (err) [NSApp presentError:err];
+      else self.style = style;
+    }];
+    [self release];
+  });*/
 
   // Let the global document controller know we came to life
   [[NSDocumentController sharedDocumentController] addDocument:self];
@@ -290,6 +294,30 @@ static int debugSimulateTextAppendingIteration = 0;
 }
 
 
+#pragma mark -
+#pragma mark Properties
+
+
+- (BOOL)highlightingEnabled {
+  return highlightingEnabled_;
+}
+
+- (void)setHighlightingEnabled:(BOOL)enabled {
+  if (highlightingEnabled_ != enabled) {
+    highlightingEnabled_ = enabled;
+    // IDEA: here we could optimize the case where the user has highlighting
+    // turned on, thus contents are highlighted, then turns highlighting off,
+    // does not make any edits and the turns it back on again. We only need to
+    // re-apply the style in this case, not re-parse everything.
+    if (highlightingEnabled_) {
+      [self setNeedsHighlightingOfCompleteDocument];
+    } else {
+      [self clearHighlighting];
+    }
+  }
+}
+
+
 - (void)setIsLoading:(BOOL)loading {
   BOOL isLoadingPrev = isLoading_;
   [super setIsLoading:loading];
@@ -321,11 +349,6 @@ static int debugSimulateTextAppendingIteration = 0;
 }
 
 
-- (void)styleDidChange:(NSNotification*)notification {
-  // TODO: [self reloadStyle];
-}
-
-
 - (void)setStyle:(KStyle*)style {
   NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
   KStyle* old = h_objc_swap(&style_, style);
@@ -342,7 +365,106 @@ static int debugSimulateTextAppendingIteration = 0;
                 object:old];
     [old release];
   }
-  // don't reload style here
+  [self refreshStyle];
+}
+
+
+- (void)setIconBasedOnContents {
+  DLOG_TRACE();
+  NSWorkspace *workspace = [NSWorkspace sharedWorkspace];
+  NSURL *url = [self fileURL];
+  if (url) {
+    if ([url isFileURL]) {
+      self.icon = [workspace iconForFile:[url path]];
+    } else if (self.fileType) {
+      //DLOG("remote url -- self.fileType => %@", self.fileType);
+      NSString *guessedExt =
+          [workspace preferredFilenameExtensionForType:self.fileType];
+      self.icon = [workspace iconForFileType:guessedExt];
+    }
+  } else {
+    self.icon = _kDefaultIcon;
+  }
+}
+
+
+- (void)setFileURL:(NSURL *)url {
+  DLOG("setFileURL:%@", url);
+  if (url != [self fileURL]) {
+    [super setFileURL:url];
+    if (url) {
+      // set title
+      if ([url isFileURL]) {
+        self.title = url.lastPathComponent;
+      } else {
+        NSString *newTitle = [url absoluteString];
+        NSCharacterSet *illegalFilenameCharset =
+            [NSCharacterSet characterSetWithCharactersInString:@"/:"];
+        newTitle = [newTitle stringByTrimmingCharactersInSet:illegalFilenameCharset];
+        newTitle = [newTitle stringByReplacingOccurrencesOfString:@"/"
+                                                       withString:@"-"];
+        self.title = newTitle;
+      }
+    } else {
+      self.title = _kDefaultTitle;
+    }
+  }
+}
+
+
+- (NSString*)displayName {
+  return self.title;
+}
+
+
+- (KBrowserWindowController*)windowController {
+  NSArray *v = self.windowControllers;
+  if (v && [v count] == 1)
+    return (KBrowserWindowController*)[v objectAtIndex:0];
+  return nil;
+}
+
+
+- (NSWindow *)windowForSheet {
+  KBrowser* browser = (KBrowser*)self.browser;
+  if (browser) {
+    CTBrowserWindowController* windowController = browser.windowController;
+    if (windowController) {
+      return [windowController window];
+    }
+  }
+  return nil;
+}
+
+
+// NSDocument override
+- (void)setWindow:(NSWindow*)window {
+  // Called when this tab receives either |tabDidBecomeSelected| (with a window
+  // object) or |tabDidBecomeSelected| (with nil).
+  
+  [super setWindow:window];
+  
+  if (window) {
+    // case: we just became the key content of |window|
+    
+    // update window title
+    NSURL *url = [self fileURL];
+    // We need to set repr. filename to the empty string if we do not
+    // represent a local file since it's stateful in the context of window.
+    NSString *absolutePath = (url && [url isFileURL]) ? [url path] : @"";
+    [window setRepresentedFilename:absolutePath];
+    [window setTitle:self.title];
+  }
+}
+
+
+#pragma mark -
+#pragma mark Notifications
+
+
+- (void)styleDidChange:(NSNotification*)notification {
+  DLOG("styleDidChange:%@", notification);
+  // TODO: [self reloadStyle];
 }
 
 
@@ -369,23 +491,7 @@ static int debugSimulateTextAppendingIteration = 0;
 }
 
 
-/*- (void)tabDidInsertIntoBrowser:(CTBrowser*)browser
-                        atIndex:(NSInteger)index
-                   inForeground:(bool)foreground {
-  [super tabDidInsertIntoBrowser:browser atIndex:index inForeground:foreground];
-  DLOG("%@ tabDidInsertIntoBrowser:%@ atIndex:%d", self, browser, index);
-  //assert(browser);
-  //[self addWindowController:browser.windowController];
-}
-
-- (void)tabDidDetachFromBrowser:(CTBrowser*)browser atIndex:(NSInteger)index {
-  [super tabDidDetachFromBrowser:browser atIndex:index];
-  assert(browser);
-  [self removeWindowController:browser.windowController];
-}*/
-
-
--(void)tabDidBecomeSelected {
+- (void)tabDidBecomeSelected {
   [super tabDidBecomeSelected];
   if (browser_) {
     NSWindowController *wc = browser_.windowController;
@@ -393,12 +499,11 @@ static int debugSimulateTextAppendingIteration = 0;
       [self addWindowController:wc];
       [self setWindow:[wc window]];
     }
-    
   }
 }
 
 
--(void)tabDidResignSelected {
+- (void)tabDidResignSelected {
   [super tabDidResignSelected];
   if (browser_) {
     NSWindowController *wc = browser_.windowController;
@@ -411,6 +516,7 @@ static int debugSimulateTextAppendingIteration = 0;
 
 
 -(void)tabDidBecomeVisible {
+  [super tabDidBecomeVisible];
   [self highlightCompleteDocumentInBackgroundIfQueued];
 }
 
@@ -476,70 +582,9 @@ static int debugSimulateTextAppendingIteration = 0;
 
 //- (void)setFileType:(NSString*)typeName { [super setFileType:typeName]; }
 
+#pragma mark -
+#pragma mark UI actions
 
-- (void)setIconBasedOnContents {
-  DLOG_TRACE();
-  NSWorkspace *workspace = [NSWorkspace sharedWorkspace];
-  NSURL *url = [self fileURL];
-  if (url) {
-    if ([url isFileURL]) {
-      self.icon = [workspace iconForFile:[url path]];
-    } else if (self.fileType) {
-      //DLOG("remote url -- self.fileType => %@", self.fileType);
-      NSString *guessedExt =
-          [workspace preferredFilenameExtensionForType:self.fileType];
-      self.icon = [workspace iconForFileType:guessedExt];
-    }
-  } else {
-    self.icon = _kDefaultIcon;
-  }
-}
-
-
-- (void)setFileURL:(NSURL *)url {
-  DLOG("setFileURL:%@", url);
-  if (url != [self fileURL]) {
-    [super setFileURL:url];
-    if (url) {
-      // set title
-      if ([url isFileURL]) {
-        self.title = url.lastPathComponent;
-      } else {
-        NSString *newTitle = [url absoluteString];
-        NSCharacterSet *illegalFilenameCharset =
-            [NSCharacterSet characterSetWithCharactersInString:@"/:"];
-        newTitle = [newTitle stringByTrimmingCharactersInSet:illegalFilenameCharset];
-        newTitle = [newTitle stringByReplacingOccurrencesOfString:@"/"
-                                                       withString:@"-"];
-        self.title = newTitle;
-      }
-    } else {
-      self.title = _kDefaultTitle;
-    }
-  }
-}
-
-- (NSString*)displayName {
-  return self.title;
-}
-
-- (KBrowserWindowController*)windowController {
-  NSArray *v = self.windowControllers;
-  if (v && [v count] == 1)
-    return (KBrowserWindowController*)[v objectAtIndex:0];
-  return nil;
-}
-
-- (NSWindow *)windowForSheet {
-  KBrowser* browser = (KBrowser*)self.browser;
-  if (browser) {
-    CTBrowserWindowController* windowController = browser.windowController;
-    if (windowController) {
-      return [windowController window];
-    }
-  }
-  return nil;
-}
 
 - (IBAction)debugDumpAttributesAtCursor:(id)sender {
   NSTextStorage *textStorage = textView_.textStorage;
@@ -672,6 +717,67 @@ longestEffectiveRange:&range
   }
 }
 
+#pragma mark -
+#pragma mark Highlighting
+
+
+- (NSDictionary*)defaultTextAttributes {
+  NSDictionary *attrs;
+  if (style_) {
+    KStyleElement *styleElement = [style_ defaultStyleElement];
+    kassert(styleElement);
+    attrs = styleElement->textAttributes();
+  } else {
+    attrs = [NSDictionary dictionaryWithObjectsAndKeys:
+      textView_.font, NSFontAttributeName,
+      textView_.textColor, NSForegroundColorAttributeName,
+      nil];
+  }
+  return attrs;
+}
+
+
+// clear all highlighting attributes. Normally called after highlighting has
+// been turned off.
+- (void)clearHighlighting {
+  NSTextStorage *textStorage = textView_.textStorage;
+  [textStorage beginEditing];
+  [textStorage setAttributes:[self defaultTextAttributes]
+                       range:NSMakeRange(0, textStorage.length)];
+  [textStorage endEditing];
+}
+
+
+- (void)refreshStyle {
+  DLOG("refreshStyle");
+  KStyle *style = style_ ? style_ : [KStyle emptyStyle];
+  KStyleElement *defaultElem = [style defaultStyleElement];
+  
+  // textview bgcolor
+  NSColor *color = defaultElem->backgroundColor();
+  kassert(color);
+  [textView_ setBackgroundColor:color];
+  
+  // text attributes
+  NSTextStorage *textStorage = textView_.textStorage;
+  [textStorage beginEditing];
+  [textStorage setAttributesFromKStyle:style
+                                 range:NSMakeRange(0, textStorage.length)];
+  [textStorage endEditing];
+  
+  // find parent scroll view and mark it for redraw
+  /*NSScrollView *scrollView =
+      (NSScrollView*)[textView_ findFirstParentViewOfKind:[NSScrollView class]];
+  if (scrollView)
+    [scrollView setNeedsDisplay:YES];*/
+  
+  // mark everything in this window as needing redisplay (style is window-wide)
+  NSWindow *window = textView_.window;
+  if (window) {
+    [window setViewsNeedDisplay:YES];
+  }
+}
+
 
 // aka "enqueue complete highlighting"
 // returns true if processing was queued, otherwise false indicates processing
@@ -713,6 +819,9 @@ longestEffectiveRange:&range
   // WARNING: this must not be called on the same thread as the
   // dispatch_get_global_queue(0,0) run in -- it will cause a deadlock.
   
+  if (!highlightingEnabled_)
+    return NO;
+  
   // Make copies of these as they may change before we start processing
   KSourceHighlightState* state = lastEditedHighlightState_;
   NSRange stateRange = lastEditedHighlightStateRange_;
@@ -728,16 +837,50 @@ longestEffectiveRange:&range
     editedRange = NSUnionRange(prevHighlightRange, editedRange);
     
     // We can no longer rely on state
-    state = nil;
-    stateRange = (NSRange){NSNotFound,0};
+    //state = nil;
+    //stateRange = (NSRange){NSNotFound,0};
     
     // TODO: some kind of funky logic here to deduce range changes
-    int prevChangeInLength = sourceHighlighter_->currentChangeInLength();
+    //int prevChangeInLength = sourceHighlighter_->currentChangeInLength();
     
     // signal "cancel" and wait for lock
     sourceHighlighter_->cancel();
-    highlightSem_.get();
+    
+    // Since we put back the lock on main we need to reschedule for next tick.
+    // We will reschedule on to next tick until we get the semaphore.
+    if ([NSThread isMainThread]) {
+      // block to execute
+      dispatch_block_t block = ^{
+        NSAutoreleasePool *pool = [NSAutoreleasePool new];
+        // We can't rely on state in this case since we merged two edits
+        lastEditedHighlightState_ = nil;
+        lastEditedHighlightStateRange_ = NSMakeRange(NSNotFound,0);
+        [self deferHighlightTextStorage:textStorage inRange:editedRange];
+        [pool drain];
+      };
+      
+      // execute with back-off delay
+      if (highlightWaitBackOffNSec_ == 0) {
+        // ASAP on next tick
+        dispatch_async(dispatch_get_main_queue(), block);
+        // start back-off delay at 50ms (1 000 000 000 = 1 sec)
+        highlightWaitBackOffNSec_ = 50000000LL;
+      } else {
+        // backing off and executing after highlightWaitBackOffNSec_ nanosecs
+        dispatch_time_t delay = dispatch_time(0, highlightWaitBackOffNSec_);
+        dispatch_after(delay, dispatch_get_main_queue(), block);
+        // increase back-off delay (100, 200, 400, 800, 1600, 3200 ms and so on)
+        highlightWaitBackOffNSec_ *= 2;
+      }
+      
+      return YES;
+    } else {
+      highlightSem_.get();
+    }
   }
+  
+  // reset cancel-and-wait back-off timeout
+  highlightWaitBackOffNSec_ = 0;
   
   // Dispatch
   DLOG("highlight --LOCKED--");
@@ -774,7 +917,7 @@ longestEffectiveRange:&range
       //   the time the UI is locked.
       //
       // - We perform this on the main thread to avoid scary _NSLayoutTree bugs
-      // 
+      //
       K_DISPATCH_MAIN_ASYNC({
         if (!sourceHighlighter_->isCancelled()) {
           DLOG("highlight --FLUSH-START-- %@", NSStringFromRange(affectedRange));
@@ -839,24 +982,6 @@ K_DEPRECATED; // use deferHighlightTextStorage:inRange:
 }
 
 
-/*
-- (void)textStorageWillProcessEditing:(NSNotification *)notification {
-  // Edit event preamble (unless loading or already processing)
-  if (isLoading_ ||
-      hatomic_flags_test(&stateFlags_, kTestStorageEditingIsProcessing)) {
-    return;
-  }
-  
-  NSTextStorage	*textStorage = notification.object;
-  NSRange	editedRange = [textStorage editedRange];
-  
-  // Highlight preamble, unless already highlighting
-  if (!hatomic_flags_test(&stateFlags_, kHighlightingIsProcessing)) {
-    sourceHighlighter_->willHighlight(textStorage, editedRange);
-  }
-}*/
-
-
 // Edits arrive in singles. This method is only called for used edits, not
 // programmatical changes.
 - (BOOL)textView:(NSTextView *)textView
@@ -868,12 +993,14 @@ replacementString:(NSString *)replacementString {
        NSStringFromRange(range), replacementString);
   #endif
   
+  BOOL didEditCharacters = YES;
+  
   // find range of highlighting state at edit location
   NSTextStorage *textStorage = textView_.textStorage;
   if (textStorage.length != 0) {
     NSUInteger index;
     if (replacementString.length == 0) {
-      lastEditChangeStatus_ = kEditChangeStatusUserAlteredText;
+      didEditCharacters = YES;
       // deletion
       if (textStorage.length == 1) {
         index = NSNotFound;
@@ -881,12 +1008,8 @@ replacementString:(NSString *)replacementString {
         index = MIN(range.location+1, textStorage.length-1);
       }
     } else {
-      if (![replacementString isEqualToString:
-            [textStorage.string substringWithRange:range]]) {
-        lastEditChangeStatus_ = kEditChangeStatusUserAlteredText;
-      } else {
-        lastEditChangeStatus_ = kEditChangeStatusUserUnalteredText;
-      }
+      didEditCharacters = ![replacementString isEqualToString:
+                            [textStorage.string substringWithRange:range]];
       // insertion/replacement
       index = MIN(range.location, textStorage.length-1);
     }
@@ -906,16 +1029,13 @@ replacementString:(NSString *)replacementString {
     //                 inRange:NSMakeRange(0, textStorage.length)];
     //DLOG("state[2] at %u -> %@ '%@'", range.location, hlstate,
     //  [textStorage.string substringWithRange:lastEditedHighlightStateRange_]);
-  } else {
+  } else { // if (textStorage.length == 0)
     lastEditedHighlightState_ = nil;
-    lastEditChangeStatus_ = (replacementString.length != 0)
-        ? kEditChangeStatusUserAlteredText
-        : kEditChangeStatusUserUnalteredText;
+    didEditCharacters = (replacementString.length != 0);
   }
   
   // Cancel any in-flight highlighting
-  if (lastEditChangeStatus_ == kEditChangeStatusUserAlteredText &&
-      highlightingEnabled_) {
+  if (didEditCharacters && highlightingEnabled_) {
     DLOG("text edited -- '%@' -> '%@' at %@",
      [textView_.textStorage.string substringWithRange:range],
      replacementString, NSStringFromRange(range));
@@ -971,6 +1091,9 @@ shouldChangeTextInRanges:(NSArray *)affectedRanges
   if (!(textStorage.editedMask & NSTextStorageEditedCharacters)) {
     return;
   }
+  
+  // we do not process edits when we are loading
+  if (isLoading_) return;
 
 	NSRange	editedRange = [textStorage editedRange];
 	int	changeInLength = [textStorage changeInLength];
@@ -990,24 +1113,11 @@ shouldChangeTextInRanges:(NSArray *)affectedRanges
        NSStringFromRange(editedRange), changeInLength,
        wasInUndoRedo ? @"YES":@"NO", textStorage.editedMask);
 
-  // Don't process editing if we are in a loading state (i.e. the edit might
-  // have been caused by input data arrival) or if we are currently flushing
-  // highlight edits.
-  // Note: Currently spread out for debugging purposes
-  if (isLoading_) {
-    DLOG("textStorageDidProcessEditing: bailing because isLoading==YES");
-    lastEditChangeStatus_ = kEditChangeStatusUnknown;
-    return;
-  }
-  if (lastEditChangeStatus_ == kEditChangeStatusUserUnalteredText) {
-    DLOG("textStorageDidProcessEditing: bailing because no text changed");
-    lastEditChangeStatus_ = kEditChangeStatusUnknown;
-    return;
-  }
+  // This should never happen, right?!
   if (changeInLength == 0 && !lastEditedHighlightState_) {
     DLOG("textStorageDidProcessEditing: bailing because "
          "(changeInLength == 0 && !lastEditedHighlightState_)");
-    lastEditChangeStatus_ = kEditChangeStatusUnknown;
+    assert(!(changeInLength == 0 && !lastEditedHighlightState_));
     return;
   }
   
@@ -1025,11 +1135,7 @@ shouldChangeTextInRanges:(NSArray *)affectedRanges
   // this makes the edit an undoable entry (otherwise each "group" of edits will
   // be undoable, which is not fine-grained enough for us)
   [textView_ breakUndoCoalescing];
-  
-  // reset lastEditChangedTextStatus_
-  lastEditChangeStatus_ = kEditChangeStatusUnknown;
 }
-
 
 
 - (void)guessLanguageBasedOnUTI:(NSString*)uti textContent:(NSString*)text {
@@ -1057,6 +1163,9 @@ shouldChangeTextInRanges:(NSArray *)affectedRanges
                        consideringFirstLine:firstLine];
 }
 
+
+#pragma mark -
+#pragma mark Loading contents
 
 
 - (void)startReadingFromRemoteURL:(NSURL*)absoluteURL
@@ -1146,6 +1255,8 @@ shouldChangeTextInRanges:(NSArray *)affectedRanges
     }
     startImmediately:NO];
   
+  kassert(conn);
+  
   // we want the blocks to be invoked on the main thread, thank you
   [conn scheduleInRunLoop:[NSRunLoop mainRunLoop]
                   forMode:NSDefaultRunLoopMode];
@@ -1162,111 +1273,124 @@ shouldChangeTextInRanges:(NSArray *)affectedRanges
   // set url
   self.fileURL = absoluteURL;
   
+  // different branches depending on local file or remote
   if ([absoluteURL isFileURL]) {
-    // utilize mmap to load a file
-    NSString *path = [absoluteURL path];
-    NSData *data = [NSData dataWithContentsOfMappedFile:path];
-    if (!data) {
-      if ([absoluteURL checkResourceIsReachableAndReturnError:outError]) {
-        // reachable, but might be something else than a regular file
-        NSFileManager *fm = [NSFileManager defaultManager];
-        BOOL isDir;
-        BOOL exists = [fm fileExistsAtPath:path isDirectory:&isDir];
-        assert(exists == true); // since checkResourceIsReachableAndReturnError
-        if (isDir) {
-          *outError = [NSError kodErrorWithFormat:
-              @"Opening a directory is currently unsupported"];
-        } else {
-          *outError = [NSError kodErrorWithFormat:@"Unknown I/O read error"];
-        }
-      }
-      return NO;
-    }
-    
-    // read xattrs
-    NSRange selectedRange = {0};
-    int fd = open([path UTF8String], O_RDONLY);
-    if (fd < 0) {
-      WLOG("failed to open(\"%@\", O_RDONLY)", path);
-    } else {
-      const char *key;
-      ssize_t readsz;
-      static size_t bufsize = 512;
-      char *buf = new char[bufsize];
-      
-      key = "com.apple.TextEncoding";
-      // The value is a string "utf-8;134217984" where the last part (if
-      // present) is a CFStringEncoding encoded in base-10.
-      if ((readsz = fgetxattr(fd, key, (void*)buf, bufsize, 0, 0)) < 0) {
-        DLOG("failed to read xattr '%s' from '%@'", key, path);
-      } else if (readsz > 2) { // <2 chars doesnt make sense
-        NSString *s = [[NSString alloc] initWithBytesNoCopy:(void*)buf
-                                                     length:readsz
-                                                   encoding:NSUTF8StringEncoding
-                                               freeWhenDone:NO];
-        NSRange r = [s rangeOfString:@";"];
-        CFStringEncoding enc1 = 0;
-        if (r.location != NSNotFound) {
-          // try parsing a suffix integer value
-          enc1 = [[s substringFromIndex:r.location+1] integerValue];
-          NSStringEncoding enc2 =
-              CFStringConvertEncodingToNSStringEncoding(enc1);
-          if (enc2 < NSASCIIStringEncoding || enc2 > NSUTF32LittleEndianStringEncoding) {
-            // that didn't work, lets set s to the first part and continue
-            enc1 = -1;
-            s = [s substringToIndex:r.location];
-          }
-        }
-        if (enc1 == 0) {
-          // try to parse s as an IANA charset (e.g. "utf-8")
-          enc1 = CFStringConvertIANACharSetNameToEncoding((CFStringRef)s);
-        }
-        if (enc1 > 0) {
-          textEncoding_ = CFStringConvertEncodingToNSStringEncoding(enc1);
-        }
-        //DLOG("xattr read encoding '%@' %d -> %@ ([%d] %@)", s, (int)enc1,
-        //     CFStringConvertEncodingToIANACharSetName(enc1),
-        //     (int)textEncoding_,
-        //     [NSString localizedNameOfStringEncoding:textEncoding_]);
-      }
-      
-      key = "se.hunch.kod.selection";
-      if ((readsz = fgetxattr(fd, key, (void*)buf, bufsize, 0, 0)) < 0) {
-        DLOG("failed to read xattr '%s' from '%@'", key, path);
-      } else if (readsz > 2) { // <2 chars doesnt make sense
-        NSString *s = [[NSString alloc] initWithBytesNoCopy:(void*)buf
-                                                     length:readsz
-                                                   encoding:NSUTF8StringEncoding
-                                               freeWhenDone:NO];
-        selectedRange = NSRangeFromString(s);
-      }
-      
-      delete buf; buf = NULL;
-      close(fd);
-    }
-    
-    // read mtime
-    NSDate *mtime = nil;
-    if (![absoluteURL getResourceValue:&mtime
-                                forKey:NSURLContentModificationDateKey
-                                 error:outError]) {
-      return NO;
-    }
-    self.fileModificationDate = mtime;
-    
-    // read data
-    if (![self readFromData:data ofType:typeName error:outError]) {
-      return NO;
-    }
-    
-    // restore (or set) selection
-    if (selectedRange.location < textView_.textStorage.length) {
-      [textView_ setSelectedRange:selectedRange];
-    }
+    return [self readFromFileURL:absoluteURL
+                          ofType:typeName
+                           error:outError];
   } else {
-    // load a foreign/remote resource
     [self startReadingFromRemoteURL:absoluteURL ofType:typeName];
+    return YES;
   }
+}
+
+
+- (BOOL)readFromFileURL:(NSURL *)absoluteURL
+                 ofType:(NSString *)typeName
+                  error:(NSError **)outError {
+  // utilize mmap to load a file
+  NSString *path = [absoluteURL path];
+  NSData *data = [NSData dataWithContentsOfMappedFile:path];
+  
+  // if we failed to read the file, set outError with info
+  if (!data) {
+    if ([absoluteURL checkResourceIsReachableAndReturnError:outError]) {
+      // reachable, but might be something else than a regular file
+      NSFileManager *fm = [NSFileManager defaultManager];
+      BOOL isDir;
+      BOOL exists = [fm fileExistsAtPath:path isDirectory:&isDir];
+      assert(exists == true); // since checkResourceIsReachableAndReturnError
+      if (isDir) {
+        *outError = [NSError kodErrorWithFormat:
+            @"Opening a directory is not yet supported"];
+      } else {
+        *outError = [NSError kodErrorWithFormat:@"Unknown I/O read error"];
+      }
+    }
+    return NO;
+  }
+  
+  // read xattrs
+  NSRange selectedRange = {0};
+  int fd = open([path UTF8String], O_RDONLY);
+  if (fd < 0) {
+    WLOG("failed to open(\"%@\", O_RDONLY)", path);
+  } else {
+    const char *key;
+    ssize_t readsz;
+    static size_t bufsize = 512;
+    char *buf = new char[bufsize];
+    
+    key = "com.apple.TextEncoding";
+    // The value is a string "utf-8;134217984" where the last part (if
+    // present) is a CFStringEncoding encoded in base-10.
+    if ((readsz = fgetxattr(fd, key, (void*)buf, bufsize, 0, 0)) < 0) {
+      DLOG("failed to read xattr '%s' from '%@'", key, path);
+    } else if (readsz > 2) { // <2 chars doesnt make sense
+      NSString *s = [[NSString alloc] initWithBytesNoCopy:(void*)buf
+                                                   length:readsz
+                                                 encoding:NSUTF8StringEncoding
+                                             freeWhenDone:NO];
+      NSRange r = [s rangeOfString:@";"];
+      CFStringEncoding enc1 = 0;
+      if (r.location != NSNotFound) {
+        // try parsing a suffix integer value
+        enc1 = [[s substringFromIndex:r.location+1] integerValue];
+        NSStringEncoding enc2 =
+            CFStringConvertEncodingToNSStringEncoding(enc1);
+        if (enc2 < NSASCIIStringEncoding || enc2 > NSUTF32LittleEndianStringEncoding) {
+          // that didn't work, lets set s to the first part and continue
+          enc1 = -1;
+          s = [s substringToIndex:r.location];
+        }
+      }
+      if (enc1 == 0) {
+        // try to parse s as an IANA charset (e.g. "utf-8")
+        enc1 = CFStringConvertIANACharSetNameToEncoding((CFStringRef)s);
+      }
+      if (enc1 > 0) {
+        textEncoding_ = CFStringConvertEncodingToNSStringEncoding(enc1);
+      }
+      //DLOG("xattr read encoding '%@' %d -> %@ ([%d] %@)", s, (int)enc1,
+      //     CFStringConvertEncodingToIANACharSetName(enc1),
+      //     (int)textEncoding_,
+      //     [NSString localizedNameOfStringEncoding:textEncoding_]);
+    }
+    
+    key = "se.hunch.kod.selection";
+    if ((readsz = fgetxattr(fd, key, (void*)buf, bufsize, 0, 0)) < 0) {
+      DLOG("failed to read xattr '%s' from '%@'", key, path);
+    } else if (readsz > 2) { // <2 chars doesnt make sense
+      NSString *s = [[NSString alloc] initWithBytesNoCopy:(void*)buf
+                                                   length:readsz
+                                                 encoding:NSUTF8StringEncoding
+                                             freeWhenDone:NO];
+      selectedRange = NSRangeFromString(s);
+    }
+    
+    delete buf; buf = NULL;
+    close(fd);
+  }
+  
+  // read mtime
+  NSDate *mtime = nil;
+  if (![absoluteURL getResourceValue:&mtime
+                              forKey:NSURLContentModificationDateKey
+                               error:outError]) {
+    return NO;
+  }
+  self.fileModificationDate = mtime;
+  
+  // read data
+  if (![self readFromData:data ofType:typeName error:outError]) {
+    return NO;
+  }
+  
+  // restore (or set) selection
+  if (selectedRange.location < textView_.textStorage.length) {
+    [textView_ setSelectedRange:selectedRange];
+  }
+  
   return YES;
 }
 
@@ -1309,8 +1433,8 @@ shouldChangeTextInRanges:(NSArray *)affectedRanges
     *outError = [NSError kodErrorWithDescription:@"Failed to parse file"];
     return NO;
   } else {
+    NSTextStorage *textStorage = textView_.textStorage;
     [textView_ setString:text];
-    // TODO: restore selection(s), possibly by reading from ext. attrs.
     [textView_ setSelectedRange:NSMakeRange(0, 0)];
     [self updateChangeCount:NSChangeCleared];
     isDirty_ = NO;
@@ -1331,6 +1455,10 @@ shouldChangeTextInRanges:(NSArray *)affectedRanges
   }
   return YES;
 }
+
+
+#pragma mark -
+#pragma mark Saving contents
 
 
 // Generate data from text
@@ -1407,6 +1535,7 @@ originalContentsURL:(NSURL *)absoluteOriginalContentsURL
 }
 
 
+#pragma mark -
 #pragma mark CTTabContents implementation
 
 
@@ -1420,6 +1549,16 @@ originalContentsURL:(NSURL *)absoluteOriginalContentsURL
   NSRect frame = NSZeroRect;
   frame.size = [(NSScrollView*)(view_) contentSize];
   [tv setFrame:frame];
+}
+
+
+#pragma mark -
+#pragma mark NSObject etc
+
+
+- (NSString*)description {
+  return [NSString stringWithFormat:@"<%@@%p '%@'>",
+      NSStringFromClass([self class]), self, self.title];
 }
 
 @end

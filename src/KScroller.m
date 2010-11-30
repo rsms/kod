@@ -22,7 +22,6 @@ NSColor *KScrollerKnobColorHover;
     vertical_ = YES;
   else
     vertical_ = NO;
-  backgroundColor_ = [KFileOutlineViewBackgroundColor retain];
   NSTrackingArea *trackingArea =
       [[NSTrackingArea alloc] initWithRect:[self bounds]
                                    options:NSTrackingMouseEnteredAndExited
@@ -35,18 +34,15 @@ NSColor *KScrollerKnobColorHover;
 
 
 - (void)viewWillMoveToSuperview:(NSView*)superview {
-  if (!superview) return;
-  if ([superview isKindOfClass:[NSScrollView class]]) {
-    superview = [[superview subviews] lastObject];
-    if (!superview) return;
-  }
-  if ([superview isKindOfClass:[NSClipView class]]) {
-    superview = [[superview subviews] lastObject];
-    if (!superview) return;
-  }
-  if ([superview respondsToSelector:@selector(backgroundColor)]) {
-    id x = superview;
-    backgroundColor_ = [x backgroundColor];
+  if (superview &&
+      [superview isKindOfClass:[NSScrollView class]] &&
+      (superview = [[superview subviews] lastObject]) &&
+      [superview isKindOfClass:[NSClipView class]] &&
+      (superview = [[superview subviews] lastObject]) &&
+      [superview isKindOfClass:[NSTextView class]]) {
+    parentTextView_ = (NSTextView*)superview;
+  } else {
+    parentTextView_ = nil;
   }
 }
 
@@ -86,7 +82,10 @@ NSColor *KScrollerKnobColorHover;
 }
 
 - (void)drawKnobSlotInRect:(NSRect)slotRect highlight:(BOOL)highlight {
-	[backgroundColor_ set];
+  NSColor *color = nil;
+  if (parentTextView_) color = parentTextView_.backgroundColor;
+  if (!color) color = KFileOutlineViewBackgroundColor;
+  [color set];
 	NSRectFill([self bounds]);
 }
 

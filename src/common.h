@@ -8,27 +8,6 @@
 #import <assert.h>
 #import <libkern/OSAtomic.h>
 
-#define K_DISPATCH_MAIN_ASYNC(code)\
-  dispatch_async(dispatch_get_main_queue(),^{ \
-    NSAutoreleasePool *__arpool = [NSAutoreleasePool new]; \
-    code \
-    [__arpool drain]; \
-  })
-
-#define K_DISPATCH_MAIN_SYNC(code)\
-  dispatch_sync(dispatch_get_main_queue(),^{ \
-    NSAutoreleasePool *__arpool = [NSAutoreleasePool new]; \
-    code \
-    [__arpool drain]; \
-  })
-
-#define K_DISPATCH_BG_ASYNC(code)\
-  dispatch_async(dispatch_get_global_queue(0,0),^{ \
-    NSAutoreleasePool *__arpool = [NSAutoreleasePool new]; \
-    code \
-    [__arpool drain]; \
-  })
-
 
 #define DLOG_RANGE(r, str) do { \
     NSString *s = @"<index out of bounds>"; \
@@ -97,6 +76,7 @@ static inline const char *debug_bits32(int32_t a) {
 #import "hatomic_flags.h"
 #import "HSemaphore.h"
 #import "hobjc.h"
+#import "hdispatch.h"
 
 // NS categories
 #import "NSString-utf8-range-conv.h"
@@ -108,5 +88,6 @@ static inline const char *debug_bits32(int32_t a) {
 #import "NSCharacterSet-kod.h"
 #import "NSURL-blocks.h"
 #import "NSMutableArray-kod.h"
+#import "NSView-kod.h"
 
 #endif  // K_COMMON_H_

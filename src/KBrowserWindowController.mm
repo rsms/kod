@@ -101,11 +101,12 @@
 }
 
 
-/*- (BOOL)validateMenuItem:(NSMenuItem *)item {
+- (BOOL)validateMenuItem:(NSMenuItem *)item {
   //KTabContents* tab = (KTabContents*)[self selectedTabContents];
   BOOL y = [super validateMenuItem:item];
   DLOG("validateMenuItem:%@ -> %@", item, y?@"YES":@"NO");
-}*/
+  return y;
+}
 
 
 #pragma mark -

@@ -2,9 +2,9 @@
 <archive type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="8.00">
 	<data>
 		<int key="IBDocument.SystemTarget">1060</int>
-		<string key="IBDocument.SystemVersion">10F569</string>
+		<string key="IBDocument.SystemVersion">10H574</string>
 		<string key="IBDocument.InterfaceBuilderVersion">804</string>
-		<string key="IBDocument.AppKitVersion">1038.29</string>
+		<string key="IBDocument.AppKitVersion">1038.35</string>
 		<string key="IBDocument.HIToolboxVersion">461.00</string>
 		<object class="NSMutableDictionary" key="IBDocument.PluginVersions">
 			<string key="NS.key.0">com.apple.InterfaceBuilder.CocoaPlugin</string>
@@ -34,7 +34,7 @@
 				<string key="NSWindowRect">{{60, 229}, {750, 600}}</string>
 				<int key="NSWTFlags">536872960</int>
 				<string key="NSWindowTitle"/>
-				<string key="NSWindowClass">NSWindow</string>
+				<string key="NSWindowClass">CTBrowserWindow</string>
 				<nil key="NSViewClass"/>
 				<string key="NSWindowContentMaxSize">{1.79769e+308, 1.79769e+308}</string>
 				<string key="NSWindowContentMinSize">{400, 250}</string>
@@ -549,6 +549,17 @@
 				<object class="IBPartialClassDescription">
 					<string key="className">KBrowserWindowController</string>
 					<string key="superclassName">CTBrowserWindowController</string>
+					<object class="NSMutableDictionary" key="actions">
+						<string key="NS.key.0">focusLocationBar:</string>
+						<string key="NS.object.0">id</string>
+					</object>
+					<object class="NSMutableDictionary" key="actionInfosByName">
+						<string key="NS.key.0">focusLocationBar:</string>
+						<object class="IBActionInfo" key="NS.object.0">
+							<string key="name">focusLocationBar:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+					</object>
 					<dictionary class="NSMutableDictionary" key="outlets">
 						<string key="fileOutlineView_">KFileOutlineView</string>
 						<string key="leftmostSubviewOfVerticalSplitView_">NSView</string>
@@ -609,8 +620,23 @@
 					<string key="className">NSOutlineView</string>
 					<reference key="sourceIdentifier" ref="459878903"/>
 				</object>
+				<object class="IBPartialClassDescription">
+					<string key="className">NSView</string>
+					<object class="IBClassDescriptionSource" key="sourceIdentifier">
+						<string key="majorKey">IBProjectSource</string>
+						<string key="minorKey">src/NSView-kod.h</string>
+					</object>
+				</object>
 			</array>
 			<array class="NSMutableArray" key="referencedPartialClassDescriptionsV3.1+">
+				<object class="IBPartialClassDescription">
+					<string key="className">CTBrowserWindow</string>
+					<string key="superclassName">NSWindow</string>
+					<object class="IBClassDescriptionSource" key="sourceIdentifier" id="174247251">
+						<string key="majorKey">IBDocumentRelativeSource</string>
+						<string key="minorKey">../../chromium-tabs/src/CTBrowserWindow.h</string>
+					</object>
+				</object>
 				<object class="IBPartialClassDescription">
 					<string key="className">CTBrowserWindowController</string>
 					<string key="superclassName">CTTabWindowController</string>
@@ -683,6 +709,10 @@
 						<string key="majorKey">IBDocumentRelativeSource</string>
 						<string key="minorKey">../../chromium-tabs/src/chrome/browser/cocoa/CTTabWindowController.h</string>
 					</object>
+				</object>
+				<object class="IBPartialClassDescription">
+					<string key="className">NSWindow</string>
+					<reference key="sourceIdentifier" ref="174247251"/>
 				</object>
 			</array>
 		</object>

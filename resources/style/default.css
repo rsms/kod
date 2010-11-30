@@ -1,10 +1,10 @@
-body { background-color:#444; color: #ddd; }
+body { background-color:#444; color: #f00; }
 
 /* the color for context lines (when specified with line ranges) */
 context {  color: #444; }
 linenum { color: #444; }
 
-keyword { color: #66c8ef; }
+keyword { color: #66c8ef; background-color:inherit; }
 type { color: lightsalmon; }
 usertype { color: #CAC059; }
 classname { color: #eb7962; }
