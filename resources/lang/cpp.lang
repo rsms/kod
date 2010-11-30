@@ -1,6 +1,6 @@
 # @title C++
 # @matchuti public.c-plus-plus-source,public.c-plus-plus-header,public.c-header
-# @matchext moc, cpp, C, cc, h, hh, H, hpp
+# @matchext moc, cpp, C, cc, h, hh, H, hpp, mm
 # most of it is shared with c.lang
 
 (keyword,normal,classname) = 

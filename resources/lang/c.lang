@@ -1,6 +1,6 @@
 # @title C
 # @matchuti public.c-source
-# @matchext c
+# @matchext c, m
 include "_c_comment.lang"
 include "_c_macroif_comment.lang"
 
