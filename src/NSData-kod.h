@@ -7,6 +7,9 @@
 
 - (NSString*)weakStringWithEncoding:(NSStringEncoding)encoding;
 
+// If outEncoding is not nil, a successful encoding will be assigned (or zero)
+- (NSString*)weakStringByGuessingEncoding:(NSStringEncoding*)outEncoding;
+
 - (NSStringEncoding)guessEncodingWithPeekByteLimit:(NSUInteger)peekByteLimit
                                         headOffset:(NSUInteger*)outHeadOffset;
 

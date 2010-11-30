@@ -63,6 +63,7 @@
 		3A93A8401299E14300185857 /* NSURL-blocks.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A93A83F1299E14300185857 /* NSURL-blocks.m */; };
 		3ABF49C012A450660020233C /* NSView-kod.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3ABF49BF12A450660020233C /* NSView-kod.mm */; };
 		3ABF4C6D12A48E7D0020233C /* NSData-kod.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3ABF4C6C12A48E7D0020233C /* NSData-kod.mm */; };
+		3ABF4F3E12A55AFC0020233C /* NSString-levenstein.m in Sources */ = {isa = PBXBuildFile; fileRef = 3ABF4F3D12A55AFC0020233C /* NSString-levenstein.m */; };
 		3AC2D3FD1298C40A0066B586 /* KSourceHighlightState.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3AC2D3FC1298C40A0066B586 /* KSourceHighlightState.mm */; };
 		3AC2D4A71298D8050066B586 /* KTextStorage.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3AC2D4A61298D8050066B586 /* KTextStorage.mm */; };
 		3AC2D74012998D590066B586 /* CSS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3AE5EB871292DB5C00B17C4F /* CSS.framework */; };
@@ -252,6 +253,8 @@
 		3ABF49BF12A450660020233C /* NSView-kod.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = "NSView-kod.mm"; sourceTree = "<group>"; };
 		3ABF4C6B12A48E7D0020233C /* NSData-kod.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSData-kod.h"; sourceTree = "<group>"; };
 		3ABF4C6C12A48E7D0020233C /* NSData-kod.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = "NSData-kod.mm"; sourceTree = "<group>"; };
+		3ABF4F3C12A55AFC0020233C /* NSString-levenstein.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString-levenstein.h"; sourceTree = "<group>"; };
+		3ABF4F3D12A55AFC0020233C /* NSString-levenstein.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString-levenstein.m"; sourceTree = "<group>"; };
 		3AC2D3FB1298C40A0066B586 /* KSourceHighlightState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSourceHighlightState.h; sourceTree = "<group>"; };
 		3AC2D3FC1298C40A0066B586 /* KSourceHighlightState.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KSourceHighlightState.mm; sourceTree = "<group>"; };
 		3AC2D4A51298D8050066B586 /* KTextStorage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KTextStorage.h; sourceTree = "<group>"; };
@@ -526,6 +529,8 @@
 				3A15936A128B619800339E6E /* NSString-intern.m */,
 				3A15949D128B83F100339E6E /* NSString-cpp.h */,
 				3A15949E128B83F100339E6E /* NSString-cpp.mm */,
+				3ABF4F3C12A55AFC0020233C /* NSString-levenstein.h */,
+				3ABF4F3D12A55AFC0020233C /* NSString-levenstein.m */,
 				3A6D4D691295F0BA00DBA2A3 /* NSCharacterSet-kod.h */,
 				3A6D4D6A1295F0BA00DBA2A3 /* NSCharacterSet-kod.m */,
 				3A62BAA3129D84F900822274 /* NSMutableArray-kod.h */,
@@ -699,6 +704,7 @@
 				3A74A4D3129FF6E000BB5503 /* HUTF8MappedUTF16String.mm in Sources */,
 				3ABF49C012A450660020233C /* NSView-kod.mm in Sources */,
 				3ABF4C6D12A48E7D0020233C /* NSData-kod.mm in Sources */,
+				3ABF4F3E12A55AFC0020233C /* NSString-levenstein.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

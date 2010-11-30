@@ -266,8 +266,8 @@
   // If the escape key was pressed and no revert happened and we're in
   // fullscreen mode, make it resign key.
   if (cmd == @selector(cancelOperation:)) {
-    KBrowserWindowController* windowController =
-        [KBrowserWindowController browserWindowControllerForView:self];
+    CTBrowserWindowController* windowController =
+        [CTBrowserWindowController browserWindowControllerForView:self];
     if ([windowController isFullscreen]) {
       [windowController focusTabContents];
       return YES;
@@ -357,9 +357,9 @@
 
 // (URLDropTarget protocol)
 - (id<URLDropTargetController>)urlDropController {
-  KBrowserWindowController* windowController =
-      [KBrowserWindowController browserWindowControllerForView:self];
-  return [windowController toolbarController];
+  CTBrowserWindowController* windowController =
+      [CTBrowserWindowController browserWindowControllerForView:self];
+  return windowController.toolbarController;
 }
 
 // (URLDropTarget protocol)

@@ -97,8 +97,8 @@
     
   } else {
     // find our window controller
-    KBrowserWindowController *windowController = [KBrowserWindowController 
-        browserWindowControllerForView:textField_];
+    KBrowserWindowController *windowController = (KBrowserWindowController *)
+        [CTBrowserWindowController browserWindowControllerForView:textField_];
     assert(windowController != nil);
     
     // find shared document controller

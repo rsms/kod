@@ -16,26 +16,6 @@
     verticalSplitView = verticalSplitView_,
     leftmostSubviewOfVerticalSplitView = leftmostSubviewOfVerticalSplitView_;
 
-
-// TODO: move these into chromium-tabs
-
-+ (KBrowserWindowController*)browserWindowControllerForWindow:(NSWindow*)window {
-  while (window) {
-    id controller = [window windowController];
-    if ([controller isKindOfClass:[KBrowserWindowController class]])
-      return (KBrowserWindowController*)controller;
-    window = [window parentWindow];
-  }
-  return nil;
-}
-
-
-+ (KBrowserWindowController*)browserWindowControllerForView:(NSView*)view {
-  NSWindow* window = [view window];
-  return [KBrowserWindowController browserWindowControllerForWindow:window];
-}
-
-
 #pragma mark -
 #pragma mark Initialization
 
@@ -58,12 +38,10 @@
       (NSScrollView*)[[fileOutlineView_ superview] superview];
   DLOG("fileTreeScrollView => %@", fileTreeScrollView);
   KScroller *hScroller = [[KScroller alloc] initWithFrame:NSZeroRect];
-  /*[fileTreeScrollView setHasHorizontalScroller:YES];
-  [fileTreeScrollView setAutohidesScrollers:NO];
-  [fileTreeScrollView setHorizontalScroller:hScroller];*/
-  //[fileTreeScrollView setHasHorizontalScroller:YES];
-  //[fileTreeScrollView setHasVerticalScroller:YES];
-  //[fileTreeScrollView setAutohidesScrollers:NO];
+  
+  // We don't use the "New tab" button
+  if (tabStripController_)
+    [tabStripController_ showNewTabButton:NO];
 
   return self;
 }

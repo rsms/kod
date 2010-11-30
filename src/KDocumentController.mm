@@ -151,6 +151,11 @@
 }
 
 
+// levenstein edit distance threshold which must be passed in order for a tab
+// to be repositioned
+static double kSiblingAutoGroupThreshold = 0.6;
+
+
 - (void)addTabContents:(KTabContents*)tab
   withWindowController:(KBrowserWindowController*)windowController
           inForeground:(BOOL)foreground
@@ -174,13 +179,48 @@
       return;
     }
   }
-  // Append a new tab after the currently selected tab
-  [browser addTabContents:tab inForeground:foreground];
   
   // Move to a position beside the most natural sibling
+  kassert([NSThread isMainThread]);
+  
+  // index to insert the new tab. -1 means "after the current tab"
+  int insertIndex = -1;
+  
   if (groupWithSiblings) {
+    KTabContents *otherTab;
+    double bestSiblingDistance = 0.0;
+    int i = 0, tabCount = [browser tabCount];
+    
+    for (; i<tabCount; ++i) {
+      otherTab = (KTabContents*)[browser tabContentsAtIndex:i];
+      if (otherTab) {
+        double editDistance = [tab.title editDistanceToString:otherTab.title];
+        DLOG("editDistance('%@' > '%@') -> %f", tab.title, otherTab.title,
+             editDistance);
+        if (editDistance >= kSiblingAutoGroupThreshold &&
+            editDistance > bestSiblingDistance) {
+          bestSiblingDistance = editDistance;
+          insertIndex = i;
+        }
+      }
+    }
+    
+    if (insertIndex != -1) {
+      otherTab = (KTabContents*)[browser tabContentsAtIndex:insertIndex];
+      NSString *newExt = [tab.title pathExtension];
+      NSString *otherExt = [otherTab.title pathExtension];
+      if ([newExt caseInsensitiveCompare:otherExt] == NSOrderedDescending) {
+        // insert after
+        insertIndex++;
+      }
+      //DLOG("insert '%@' at %d (sibling: '%@')", tab.title, insertIndex,
+      //     otherTab);
+    }
     
   }
+  
+  // Append a new tab after the currently selected tab
+  [browser addTabContents:tab atIndex:insertIndex inForeground:foreground];
 }
 
 

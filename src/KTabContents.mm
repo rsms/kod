@@ -1392,6 +1392,9 @@ shouldChangeTextInRanges:(NSArray *)affectedRanges
   [conn scheduleInRunLoop:[NSRunLoop mainRunLoop]
                   forMode:NSDefaultRunLoopMode];
   [conn start];
+  
+  // TODO: keep a reference to the connection so we can cancel it if the tab is
+  // prematurely closed.
 }
 
 
@@ -1424,29 +1427,8 @@ shouldChangeTextInRanges:(NSArray *)affectedRanges
     text = [data weakStringWithEncoding:textEncoding_];
   
   // Guess encoding if no explicit encoding, or explicit decode failed
-  if (!text) {
-    NSUInteger bomOffset = 0;
-    textEncoding_ = [data guessEncodingWithPeekByteLimit:1024
-                                              headOffset:&bomOffset];
-    //DLOG("Guessed encoding: %@", textEncoding_==0 ? @"(none)" :
-    //     [NSString localizedNameOfStringEncoding:textEncoding_]);
-    // try decoding unless we failed to guess
-    if (textEncoding_ != 0) {
-      NSRange range = NSMakeRange(bomOffset, data.length-bomOffset);
-      text = [data weakStringWithEncoding:textEncoding_ range:range];
-    }
-  }
-  
-  // We failed to guess -- lets try some common encodings
-  if (!text) {
-    textEncoding_ = NSUTF8StringEncoding;
-    text = [data weakStringWithEncoding:textEncoding_];
-    if (!text) {
-      // This should _always_ work as it spans the complete byte range
-      textEncoding_ = NSISOLatin1StringEncoding;
-      text = [data weakStringWithEncoding:textEncoding_];
-    }
-  }
+  if (!text)
+    text = [data weakStringByGuessingEncoding:&textEncoding_];
   
   if (!text) {
     // We're out of hope

@@ -24,6 +24,39 @@
 }
 
 
+- (NSString*)weakStringByGuessingEncoding:(NSStringEncoding*)outEncoding {
+  NSString *text = nil;
+  NSStringEncoding encoding = 0;
+
+  // Guess encoding if no explicit encoding, or explicit decode failed
+  NSUInteger bomOffset = 0;
+  encoding = [self guessEncodingWithPeekByteLimit:1024 headOffset:&bomOffset];
+  //DLOG("Guessed encoding: %@", textEncoding_==0 ? @"(none)" :
+  //     [NSString localizedNameOfStringEncoding:textEncoding_]);
+  // try decoding unless we failed to guess
+  if (encoding != 0) {
+    NSRange range = NSMakeRange(bomOffset, self.length-bomOffset);
+    text = [self weakStringWithEncoding:encoding range:range];
+  }
+
+  // We failed to guess -- lets try some common encodings
+  if (!text) {
+    encoding = NSUTF8StringEncoding;
+    text = [self weakStringWithEncoding:encoding];
+    if (!text) {
+      // This should _always_ work as it spans the complete byte range
+      encoding = NSISOLatin1StringEncoding;
+      text = [self weakStringWithEncoding:encoding];
+    }
+  }
+
+  if (outEncoding)
+    *outEncoding = text ? encoding : 0;
+
+  return text;
+}
+
+
 - (NSStringEncoding)guessEncodingWithPeekByteLimit:(NSUInteger)peekByteLimit
                                         headOffset:(NSUInteger*)outHeadOffset {
   // First, check for BOM

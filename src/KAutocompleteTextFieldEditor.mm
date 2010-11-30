@@ -201,8 +201,8 @@
 
 // (URLDropTarget protocol)
 - (id<URLDropTargetController>)urlDropController {
-  KBrowserWindowController* windowController =
-      [KBrowserWindowController browserWindowControllerForView:self];
+  CTBrowserWindowController* windowController =
+      [CTBrowserWindowController browserWindowControllerForView:self];
   return windowController.toolbarController;
 }
 
