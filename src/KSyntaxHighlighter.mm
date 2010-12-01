@@ -553,8 +553,8 @@ static void _debugDumpHighlightEvent(const srchilite::HighlightEvent &event) {
     stateData->currentState = srchilite::HighlightStatePtr(currentState);
   }
   
-  objc_exch(&currentState_,
-            [[KHighlightState alloc] initWithData:(NSData*)stateData]);
+  h_objc_xch(&currentState_,
+             [[KHighlightState alloc] initWithData:(NSData*)stateData]);
 }
 
 -(void)_applyCurrentStateToLastFormattedRange {

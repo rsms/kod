@@ -1,0 +1,5 @@
+@interface KSplitView : NSSplitView {
+
+}
+
+@end

@@ -47,7 +47,7 @@
   WLOG("DEPRECATED %s (%s:%d)", __PRETTY_FUNCTION__, __SRC_FILENAME__, __LINE__)
 
 // Atomically perform (old = (dst = src)).
-inline static void *k_swapptr(void * volatile *dst, void *src) {
+static inline void *k_swapptr(void * volatile *dst, void *src) {
   void *old;
   while (1) {
     old = *dst;
@@ -70,13 +70,16 @@ static inline const char *debug_bits32(int32_t a) {
 }
 #endif
 
-#import "basictypes.h"
-#import "scoped_nsobject.h"
 #import "kexceptions.h"
 #import "hatomic_flags.h"
-#import "HSemaphore.h"
 #import "hobjc.h"
 #import "hdispatch.h"
+
+#ifdef __cplusplus
+#import "basictypes.h"
+#import "scoped_nsobject.h"
+#import "HSemaphore.h"
+#endif
 
 // NS categories
 #import "NSString-utf8-range-conv.h"

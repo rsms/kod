@@ -11,6 +11,7 @@
 #import "KScroller.h"
 #import "KScrollView.h"
 #import "KLangMap.h"
+#import "KTextView.h"
 
 
 // used in stateFlags_
@@ -154,31 +155,10 @@ static int debugSimulateTextAppendingIteration = 0;
   // Save a weak reference to the undo manager (performance reasons)
   undoManager_ = [self undoManager]; assert(undoManager_);
 
-  // Create a NSTextView
-  textView_ = [[NSTextView allocWithZone:zone] initWithFrame:NSZeroRect];
-  
-  // Create text storage
-  //KTextStorage *textStorage = [[KTextStorage alloc] init];
-  //textView_.layoutManager.textStorage = textStorage;
-  //[textStorage release];
-  
-  // Setup text view
+  // Create a KTextView
+  textView_ = [[KTextView allocWithZone:zone] initWithFrame:NSZeroRect];
   [textView_ setDelegate:self];
-  [textView_ setAllowsUndo:YES];
   [textView_ setFont:[isa defaultFont]];
-  [textView_ setAutomaticLinkDetectionEnabled:NO];
-  [textView_ setSmartInsertDeleteEnabled:NO];
-  [textView_ setAutomaticQuoteSubstitutionEnabled:NO];
-  [textView_ setAllowsDocumentBackgroundColorChange:NO];
-  [textView_ setAllowsImageEditing:NO];
-  [textView_ setRichText:NO];
-  [textView_ setImportsGraphics:NO];
-  [textView_ turnOffKerning:self]; // we are monospace (robot voice)
-  [textView_ setAutoresizingMask:NSViewWidthSizable];
-  [textView_ setUsesFindPanel:YES];
-  [textView_ setTextContainerInset:NSMakeSize(2.0, 4.0)];
-  [textView_ setVerticallyResizable:YES];
-	[textView_ setMaxSize:NSMakeSize(FLT_MAX, FLT_MAX)];
   
   // configure layout manager
   //NSLayoutManager *layoutManager = []
@@ -191,16 +171,6 @@ static int debugSimulateTextAppendingIteration = 0;
   [textView_ setDefaultParagraphStyle:paragraphStyle];
   //NSParagraphStyleAttributeName
   
-  // TODO: the following settings should follow the current style
-  [textView_ setBackgroundColor:
-      [NSColor colorWithCalibratedWhite:0.1 alpha:1.0]];
-  [textView_ setTextColor:[NSColor whiteColor]];
-  [textView_ setInsertionPointColor:
-      [NSColor colorWithCalibratedRed:1.0 green:0.2 blue:0.1 alpha:1.0]];
-  [textView_ setSelectedTextAttributes:[NSDictionary dictionaryWithObject:
-      [NSColor colorWithCalibratedRed:0.12 green:0.18 blue:0.27 alpha:1.0]
-      forKey:NSBackgroundColorAttributeName]];
-  
   // TODO: this defines the attributes to apply to "marked" text, input which is
   // pending, like "¨" waiting for "u" to build the character "ü". Should match
   // the current style.
@@ -209,7 +179,6 @@ static int debugSimulateTextAppendingIteration = 0;
   // Create a NSScrollView to which we add the NSTextView
   KScrollView *sv = [[KScrollView alloc] initWithFrame:NSZeroRect];
   [sv setDocumentView:textView_];
-  [sv setHasVerticalScroller:YES];
 
   // Set the NSScrollView as our view
   view_ = sv;
@@ -901,9 +870,16 @@ longestEffectiveRange:&range
     DLOG("highlight --PROCESS-- %@ %@ %@", NSStringFromRange(editedRange),
          state, NSStringFromRange(stateRange));
     #endif
-    NSRange affectedRange =
-        sourceHighlighter_->highlight(textStorage, style_, editedRange, state,
-                                      stateRange, changeInLength);
+    NSRange affectedRange = {NSNotFound,0};
+    @try {
+      affectedRange =
+          sourceHighlighter_->highlight(textStorage, style_, editedRange, state,
+                                        stateRange, changeInLength);
+    } @catch (NSException *e) {
+      WLOG("Caught exception while processing highlighting for range %@: %@",
+           NSStringFromRange(editedRange), e);
+      sourceHighlighter_->cancel();
+    }
     
     if (sourceHighlighter_->isCancelled()) {
       // highlighting was cancelled

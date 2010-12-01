@@ -5,6 +5,10 @@
 #import "KDocumentController.h"
 #import "common.h"
 
+#if K_WITH_F_SCRIPT
+#import <FScript/FScript.h>
+#endif
+
 @implementation KAppDelegate
 
 - (IBAction)newWindow:(id)sender {
@@ -37,6 +41,11 @@
            andSelector:@selector(openUrl:withReplyEvent:)
          forEventClass:kInternetEventClass
             andEventID:kAEGetURL];
+
+  // Add F-Script menu item if feasible
+  #if K_WITH_F_SCRIPT
+  [[NSApp mainMenu] addItem:[[FScriptMenuItem alloc] init]];
+  #endif
 }
 
 - (void)openUrl:(NSAppleEventDescriptor*)event

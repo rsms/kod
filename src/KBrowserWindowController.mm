@@ -97,8 +97,10 @@
     }
   } else {
     y = [super validateMenuItem:item];
+    #if 0
     DLOG("validateMenuItem:%@ (%@) -> %@", item,
          NSStringFromSelector(item.action), y?@"YES":@"NO");
+    #endif
   }
   return y;
 }

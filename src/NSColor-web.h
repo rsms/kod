@@ -13,6 +13,11 @@
  */
 + (NSColor*)colorWithSRGBHexString:(NSString*)str;
 
+/// A random color
++ (NSColor*)randomColorWithSaturation:(CGFloat)saturation
+                           brightness:(CGFloat)brightness
+                                alpha:(CGFloat)alpha;
+
 /// Create a RRGGBBAA string of hex digits representing this color in sRGB
 - (NSString*)sRGBhexString;
 
@@ -33,9 +38,5 @@
 
 /// Returns a color that is legible on this color. (Nothing to do with textColor)
 - (NSColor*)legibleTextColor;
-
-- (NSColor*)randomColorWithSaturation:(CGFloat)saturation
-                           brightness:(CGFloat)brightness
-                                alpha:(CGFloat)alpha;
 
 @end

@@ -64,6 +64,10 @@
 		3ABF49C012A450660020233C /* NSView-kod.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3ABF49BF12A450660020233C /* NSView-kod.mm */; };
 		3ABF4C6D12A48E7D0020233C /* NSData-kod.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3ABF4C6C12A48E7D0020233C /* NSData-kod.mm */; };
 		3ABF4F3E12A55AFC0020233C /* NSString-levenstein.m in Sources */ = {isa = PBXBuildFile; fileRef = 3ABF4F3D12A55AFC0020233C /* NSString-levenstein.m */; };
+		3ABF537A12A5D0D80020233C /* FScript.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3ABF537912A5D0D80020233C /* FScript.framework */; };
+		3ABF539612A5D52F0020233C /* KSplitView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3ABF539512A5D52F0020233C /* KSplitView.m */; };
+		3ABF541012A5DB1D0020233C /* KTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3ABF540F12A5DB1D0020233C /* KTextView.m */; };
+		3ABF541F12A5DC6F0020233C /* KClipView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3ABF541E12A5DC6F0020233C /* KClipView.m */; };
 		3AC2D3FD1298C40A0066B586 /* KSourceHighlightState.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3AC2D3FC1298C40A0066B586 /* KSourceHighlightState.mm */; };
 		3AC2D4A71298D8050066B586 /* KTextStorage.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3AC2D4A61298D8050066B586 /* KTextStorage.mm */; };
 		3AC2D74012998D590066B586 /* CSS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3AE5EB871292DB5C00B17C4F /* CSS.framework */; };
@@ -255,6 +259,13 @@
 		3ABF4C6C12A48E7D0020233C /* NSData-kod.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = "NSData-kod.mm"; sourceTree = "<group>"; };
 		3ABF4F3C12A55AFC0020233C /* NSString-levenstein.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString-levenstein.h"; sourceTree = "<group>"; };
 		3ABF4F3D12A55AFC0020233C /* NSString-levenstein.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString-levenstein.m"; sourceTree = "<group>"; };
+		3ABF537912A5D0D80020233C /* FScript.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FScript.framework; path = Library/Frameworks/FScript.framework; sourceTree = SDKROOT; };
+		3ABF539412A5D52F0020233C /* KSplitView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSplitView.h; sourceTree = "<group>"; };
+		3ABF539512A5D52F0020233C /* KSplitView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KSplitView.m; sourceTree = "<group>"; };
+		3ABF540E12A5DB1D0020233C /* KTextView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KTextView.h; sourceTree = "<group>"; };
+		3ABF540F12A5DB1D0020233C /* KTextView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KTextView.m; sourceTree = "<group>"; };
+		3ABF541D12A5DC6F0020233C /* KClipView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KClipView.h; sourceTree = "<group>"; };
+		3ABF541E12A5DC6F0020233C /* KClipView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KClipView.m; sourceTree = "<group>"; };
 		3AC2D3FB1298C40A0066B586 /* KSourceHighlightState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSourceHighlightState.h; sourceTree = "<group>"; };
 		3AC2D3FC1298C40A0066B586 /* KSourceHighlightState.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KSourceHighlightState.mm; sourceTree = "<group>"; };
 		3AC2D4A51298D8050066B586 /* KTextStorage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KTextStorage.h; sourceTree = "<group>"; };
@@ -284,6 +295,7 @@
 				3A25E47D1281A6A700B6A33E /* libsource-highlight.dylib in Frameworks */,
 				3A158AFF128A0A3700339E6E /* libicucore.dylib in Frameworks */,
 				3AC2D74012998D590066B586 /* CSS.framework in Frameworks */,
+				3ABF537A12A5D0D80020233C /* FScript.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -400,8 +412,9 @@
 				3A92911A1229B96A00DA7E43 /* KTabContents.mm */,
 				3AC2D4A51298D8050066B586 /* KTextStorage.h */,
 				3AC2D4A61298D8050066B586 /* KTextStorage.mm */,
+				3ABF539712A5D5360020233C /* Main views */,
 				3A84117D129D5C8800F4A36D /* Toolbar */,
-				3AE5E8D012916F2500B17C4F /* NSView subclasses */,
+				3AE5E8D012916F2500B17C4F /* Scrollbar */,
 				3A158AD3128A09D300339E6E /* ICU */,
 				3A7E717D1286F41C00D85E4C /* syntax-highlight */,
 				3A7E717C1286F40600D85E4C /* file-tree */,
@@ -438,6 +451,7 @@
 				3A25E47C1281A6A700B6A33E /* libsource-highlight.dylib */,
 				3A158AFE128A0A3700339E6E /* libicucore.dylib */,
 				3AE5EB871292DB5C00B17C4F /* CSS.framework */,
+				3ABF537912A5D0D80020233C /* FScript.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -467,6 +481,21 @@
 			name = "Location bar";
 			sourceTree = "<group>";
 		};
+		3ABF539712A5D5360020233C /* Main views */ = {
+			isa = PBXGroup;
+			children = (
+				3ABF539412A5D52F0020233C /* KSplitView.h */,
+				3ABF539512A5D52F0020233C /* KSplitView.m */,
+				3A7E751D1287403100D85E4C /* KScrollView.h */,
+				3A7E751E1287403100D85E4C /* KScrollView.m */,
+				3ABF541D12A5DC6F0020233C /* KClipView.h */,
+				3ABF541E12A5DC6F0020233C /* KClipView.m */,
+				3ABF540E12A5DB1D0020233C /* KTextView.h */,
+				3ABF540F12A5DB1D0020233C /* KTextView.m */,
+			);
+			name = "Main views";
+			sourceTree = "<group>";
+		};
 		3AE5E8AA12915ABA00B17C4F /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -476,15 +505,13 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		3AE5E8D012916F2500B17C4F /* NSView subclasses */ = {
+		3AE5E8D012916F2500B17C4F /* Scrollbar */ = {
 			isa = PBXGroup;
 			children = (
 				3A7E74A512873A7100D85E4C /* KScroller.h */,
 				3A7E74A612873A7100D85E4C /* KScroller.m */,
-				3A7E751D1287403100D85E4C /* KScrollView.h */,
-				3A7E751E1287403100D85E4C /* KScrollView.m */,
 			);
-			name = "NSView subclasses";
+			name = Scrollbar;
 			sourceTree = "<group>";
 		};
 		3AE5E8D112916F3300B17C4F /* Base */ = {
@@ -705,6 +732,9 @@
 				3ABF49C012A450660020233C /* NSView-kod.mm in Sources */,
 				3ABF4C6D12A48E7D0020233C /* NSData-kod.mm in Sources */,
 				3ABF4F3E12A55AFC0020233C /* NSString-levenstein.m in Sources */,
+				3ABF539612A5D52F0020233C /* KSplitView.m in Sources */,
+				3ABF541012A5DB1D0020233C /* KTextView.m in Sources */,
+				3ABF541F12A5DC6F0020233C /* KClipView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -767,6 +797,7 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = src/prefix.pch;
+				GCC_PREPROCESSOR_DEFINITIONS = "K_WITH_F_SCRIPT=1";
 				HEADER_SEARCH_PATHS = (
 					src/ICU/include,
 					"$(HEADER_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",

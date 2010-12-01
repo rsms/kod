@@ -449,7 +449,11 @@ NSRange KSourceHighlighter::highlight(NSTextStorage *textStorage,
     
     // find any state at our starting point
     //NSUInteger index = MIN(highlightRange_.location, fullRange_.length-1);
-    kassert(highlightRange_.location < fullRange_.length);
+    if (highlightRange_.location >= fullRange_.length) {
+      // warning: underlying text storage might have changed since we got called
+      highlightRange_.location = fullRange_.length-1;
+      //return {NSNotFound, 0};
+    }
     KSourceHighlightState *state = stateAtIndex(highlightRange_.location,
                                                 &restoredStateRange);
     

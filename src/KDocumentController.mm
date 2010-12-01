@@ -223,8 +223,8 @@ static double kSiblingAutoGroupThreshold = 0.6;
       otherTab = (KTabContents*)[browser tabContentsAtIndex:i];
       if (otherTab) {
         double editDistance = [tab.title editDistanceToString:otherTab.title];
-        DLOG("editDistance('%@' > '%@') -> %f", tab.title, otherTab.title,
-             editDistance);
+        //DLOG("editDistance('%@' > '%@') -> %f", tab.title, otherTab.title,
+        //     editDistance);
         if (editDistance >= kSiblingAutoGroupThreshold &&
             editDistance > bestSiblingDistance) {
           bestSiblingDistance = editDistance;

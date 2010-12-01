@@ -2,10 +2,8 @@
 #import "KFileTreeNodeData.h"
 #import "KFileTextFieldCell.h"
 #import "KFileOutlineView.h"
+#import "common.h"
 #import "KConfig.h"
-
-#import <ChromiumTabs/common.h>
-#import <dispatch/dispatch.h>
 
 static NSString *kNameColumnId = @"name";
 
@@ -35,7 +33,7 @@ static NSString *kNameColumnId = @"name";
 
 - (id)initWithOutlineView:(NSOutlineView*)outlineView {
   self = [self init];
-  objc_exch(&outlineView_, outlineView);
+  h_objc_xch(&outlineView_, outlineView);
   [outlineView_ setDelegate:self];
   [outlineView_ setDataSource:self];
   return self;

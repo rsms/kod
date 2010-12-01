@@ -18,7 +18,7 @@
  *
  *   [h_objc_swap(&member_, [newobj retain]) release];
  */
-inline id h_objc_swap(id volatile *dst, id src) {
+static inline id h_objc_swap(id volatile *dst, id src) {
   id old;
   while (1) {
     old = *dst;
@@ -30,7 +30,7 @@ inline id h_objc_swap(id volatile *dst, id src) {
 
 
 /// Exchange dst with src, retaining src and releasing dst afterwards.
-inline id h_objc_xch(id *dst, id src) {
+static inline id h_objc_xch(id *dst, id src) {
   id old = *dst;
   *dst = [src retain];
   [old release];

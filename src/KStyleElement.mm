@@ -58,7 +58,7 @@ KStyleElement::KStyleElement(NSString *name, CSSStyle *style) {
 
 
 KStyleElement::~KStyleElement() {
-  objc_exch(&textAttributes_, nil);
+  h_objc_xch(&textAttributes_, nil);
 }
 
 

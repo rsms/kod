@@ -1,0 +1,5 @@
+@interface KClipView : NSClipView {
+
+}
+
+@end

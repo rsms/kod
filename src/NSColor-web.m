@@ -115,6 +115,15 @@ static const CGFloat kLuminanceDarkCutoff_ = 0.6;
 }
 
 
++ (NSColor*)randomColorWithSaturation:(CGFloat)saturation
+                           brightness:(CGFloat)brightness
+                                alpha:(CGFloat)alpha {
+  srand(time(NULL));
+  CGFloat hue = (CGFloat)rand() / RAND_MAX;
+  return [NSColor colorWithCalibratedHue:hue saturation:0.5 brightness:0.9 alpha:1.0];
+}
+
+
 typedef union rgbauint32 {
   struct { uint8_t r; uint8_t g; uint8_t b; uint8_t a; } rgba;
   uint32_t uintValue;
@@ -179,13 +188,5 @@ static uint32_t _touint32(NSColor *color) {
   return [self isDarkColor] ? [NSColor whiteColor] : [NSColor blackColor];
 }
 
-
-- (NSColor*)randomColorWithSaturation:(CGFloat)saturation
-                           brightness:(CGFloat)brightness
-                                alpha:(CGFloat)alpha {
-  srand(time(NULL));
-  CGFloat hue = (CGFloat)rand() / RAND_MAX;
-  return [NSColor colorWithCalibratedHue:hue saturation:0.5 brightness:0.9 alpha:1.0];
-}
 
 @end
