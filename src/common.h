@@ -86,7 +86,7 @@ static inline const char *debug_bits32(int32_t a) {
 #import "NSString-cpp.h"
 #import "NSString-intern.h"
 #import "NSString-ranges.h"
-#import "NSString-levenstein.h"
+#import "NSString-editdistance.h"
 #import "NSError+KAdditions.h"
 #import "NSColor-web.h"
 #import "NSCharacterSet-kod.h"
