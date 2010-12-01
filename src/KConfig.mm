@@ -9,19 +9,19 @@ KConfiguration const *KConfiguration::instance_ = NULL;
 // in some _program constructors_ which might or might not execute before the
 // stack-global instance's constructor is called.
 void KConfiguration::init() {
-  assert(KConfiguration::instance_ == NULL); // must only be called once
+  kassert(KConfiguration::instance_ == NULL); // must only be called once
   KConfiguration::instance_ = this;
   
   // use a scope mempool since we can get called from wherever
   NSAutoreleasePool *pool = [NSAutoreleasePool new];
   
   bundle = [[NSBundle mainBundle] retain];
-  assert(bundle);
+  kassert(bundle);
   resourceURL_ = [[[bundle resourceURL] absoluteURL] retain];
-  assert(resourceURL_);
+  kassert(resourceURL_);
   
   defaults = [[NSUserDefaults standardUserDefaults] retain];
-  assert(defaults);
+  kassert(defaults);
 
   [pool drain];
 }

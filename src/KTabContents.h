@@ -24,8 +24,6 @@ typedef std::deque<KHighlightQueueEntry> KHighlightQueue;
   BOOL highlightingEnabled_;
   HSemaphore highlightSem_;
   
-  KStyle *style_;
-  
   // Current language
   NSString const *langId_;
   
@@ -43,7 +41,6 @@ typedef std::deque<KHighlightQueueEntry> KHighlightQueue;
 @property(assign, nonatomic) NSStringEncoding textEncoding;
 @property(readonly) KBrowserWindowController* windowController;
 @property(readonly) NSMutableParagraphStyle *paragraphStyle; // compound
-@property(retain, nonatomic) KStyle *style;
 @property(retain, nonatomic) NSString *langId;
 
 

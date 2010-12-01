@@ -7,8 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		3A025A971288B2A300206ECF /* KHighlightState.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A025A961288B2A300206ECF /* KHighlightState.mm */; };
-		3A1585681289791200339E6E /* KHighlightEventListener.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A1585671289791200339E6E /* KHighlightEventListener.mm */; };
 		3A158ADB128A09D300339E6E /* ICUMatcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A158AD5128A09D300339E6E /* ICUMatcher.m */; };
 		3A158ADC128A09D300339E6E /* ICUPattern.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A158AD7128A09D300339E6E /* ICUPattern.m */; };
 		3A158ADE128A09D300339E6E /* NSStringICUAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A158ADA128A09D300339E6E /* NSStringICUAdditions.m */; };
@@ -143,10 +141,6 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		3A025A951288B2A300206ECF /* KHighlightState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KHighlightState.h; sourceTree = "<group>"; };
-		3A025A961288B2A300206ECF /* KHighlightState.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KHighlightState.mm; sourceTree = "<group>"; };
-		3A1585661289791200339E6E /* KHighlightEventListener.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KHighlightEventListener.h; sourceTree = "<group>"; };
-		3A1585671289791200339E6E /* KHighlightEventListener.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KHighlightEventListener.mm; sourceTree = "<group>"; };
 		3A158AD4128A09D300339E6E /* ICUMatcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ICUMatcher.h; sourceTree = "<group>"; };
 		3A158AD5128A09D300339E6E /* ICUMatcher.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ICUMatcher.m; sourceTree = "<group>"; };
 		3A158AD6128A09D300339E6E /* ICUPattern.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ICUPattern.h; sourceTree = "<group>"; };
@@ -169,13 +163,10 @@
 		3A159684128C432800339E6E /* KStyle.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KStyle.mm; sourceTree = "<group>"; };
 		3A15968A128C501C00339E6E /* HSemaphore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HSemaphore.h; sourceTree = "<group>"; };
 		3A1596E5128C607700339E6E /* hobjc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = hobjc.h; sourceTree = "<group>"; };
-		3A25E477128194B400B6A33E /* KSyntaxHighlighter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSyntaxHighlighter.h; sourceTree = "<group>"; };
-		3A25E478128194B400B6A33E /* KSyntaxHighlighter.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KSyntaxHighlighter.mm; sourceTree = "<group>"; };
 		3A25E47A1281A6A200B6A33E /* libboost_regex-mt.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libboost_regex-mt.dylib"; path = "deps/srchilight/libboost_regex-mt.dylib"; sourceTree = "<group>"; };
 		3A25E47C1281A6A700B6A33E /* libsource-highlight.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libsource-highlight.dylib"; path = "deps/srchilight/libsource-highlight.dylib"; sourceTree = "<group>"; };
 		3A25E4B51281AE3700B6A33E /* KStyleElement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KStyleElement.h; sourceTree = "<group>"; };
 		3A25E4B61281AE3700B6A33E /* KStyleElement.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KStyleElement.mm; sourceTree = "<group>"; };
-		3A25E4FC1281B3D500B6A33E /* KHighlightStateData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KHighlightStateData.h; sourceTree = "<group>"; };
 		3A25E60E1281CFEF00B6A33E /* NSColor-web.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSColor-web.h"; sourceTree = "<group>"; };
 		3A25E60F1281CFEF00B6A33E /* NSColor-web.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSColor-web.m"; sourceTree = "<group>"; };
 		3A4D50EB1282E40300B06EEB /* NSString-utf8-range-conv.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString-utf8-range-conv.h"; sourceTree = "<group>"; };
@@ -330,16 +321,9 @@
 			name = "file-tree";
 			sourceTree = "<group>";
 		};
-		3A7E717D1286F41C00D85E4C /* syntax-highlight */ = {
+		3A7E717D1286F41C00D85E4C /* Syntax highlighting */ = {
 			isa = PBXGroup;
 			children = (
-				3A1585661289791200339E6E /* KHighlightEventListener.h */,
-				3A1585671289791200339E6E /* KHighlightEventListener.mm */,
-				3A25E4FC1281B3D500B6A33E /* KHighlightStateData.h */,
-				3A025A951288B2A300206ECF /* KHighlightState.h */,
-				3A025A961288B2A300206ECF /* KHighlightState.mm */,
-				3A25E477128194B400B6A33E /* KSyntaxHighlighter.h */,
-				3A25E478128194B400B6A33E /* KSyntaxHighlighter.mm */,
 				3AF14D1E128D928A00623011 /* KLangSymbol.h */,
 				3AF14D1F128D928A00623011 /* KLangSymbol.mm */,
 				3AF14C40128D792F00623011 /* KLangRegexRuleFactory.h */,
@@ -354,12 +338,8 @@
 				3A159628128C3BCB00339E6E /* KSourceHighlighter.mm */,
 				3AC2D3FB1298C40A0066B586 /* KSourceHighlightState.h */,
 				3AC2D3FC1298C40A0066B586 /* KSourceHighlightState.mm */,
-				3A159683128C432800339E6E /* KStyle.h */,
-				3A159684128C432800339E6E /* KStyle.mm */,
-				3A25E4B51281AE3700B6A33E /* KStyleElement.h */,
-				3A25E4B61281AE3700B6A33E /* KStyleElement.mm */,
 			);
-			name = "syntax-highlight";
+			name = "Syntax highlighting";
 			sourceTree = "<group>";
 		};
 		3A84117D129D5C8800F4A36D /* Toolbar */ = {
@@ -416,7 +396,8 @@
 				3A84117D129D5C8800F4A36D /* Toolbar */,
 				3AE5E8D012916F2500B17C4F /* Scrollbar */,
 				3A158AD3128A09D300339E6E /* ICU */,
-				3A7E717D1286F41C00D85E4C /* syntax-highlight */,
+				3ABF56AE12A69F9D0020233C /* Style */,
+				3A7E717D1286F41C00D85E4C /* Syntax highlighting */,
 				3A7E717C1286F40600D85E4C /* file-tree */,
 			);
 			path = src;
@@ -494,6 +475,17 @@
 				3ABF540F12A5DB1D0020233C /* KTextView.m */,
 			);
 			name = "Main views";
+			sourceTree = "<group>";
+		};
+		3ABF56AE12A69F9D0020233C /* Style */ = {
+			isa = PBXGroup;
+			children = (
+				3A159683128C432800339E6E /* KStyle.h */,
+				3A159684128C432800339E6E /* KStyle.mm */,
+				3A25E4B51281AE3700B6A33E /* KStyleElement.h */,
+				3A25E4B61281AE3700B6A33E /* KStyleElement.mm */,
+			);
+			name = Style;
 			sourceTree = "<group>";
 		};
 		3AE5E8AA12915ABA00B17C4F /* Products */ = {
@@ -698,8 +690,6 @@
 				3A7E723B1287024100D85E4C /* KFileTreeController.mm in Sources */,
 				3A7E74A712873A7100D85E4C /* KScroller.m in Sources */,
 				3A7E751F1287403100D85E4C /* KScrollView.m in Sources */,
-				3A025A971288B2A300206ECF /* KHighlightState.mm in Sources */,
-				3A1585681289791200339E6E /* KHighlightEventListener.mm in Sources */,
 				3A158ADB128A09D300339E6E /* ICUMatcher.m in Sources */,
 				3A158ADC128A09D300339E6E /* ICUPattern.m in Sources */,
 				3A158ADE128A09D300339E6E /* NSStringICUAdditions.m in Sources */,

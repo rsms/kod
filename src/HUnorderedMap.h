@@ -61,6 +61,12 @@ class HUnorderedMap {
 
   inline size_t size() const { return map_.size(); }
   inline size_t sizeSync() const { _HSLScope(spinlock_); return size(); }
+
+  bool empty() const { return size() == 0; }
+  bool emptySync() const { return sizeSync() == 0; }
+
+  void clear() { map_.clear(); }
+  void clearSync() { _HSLScope(spinlock_); clear(); }
 };
 
 

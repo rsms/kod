@@ -35,8 +35,7 @@ static const uint8_t kEditChangeStatusUserAlteredText = 2;
 @implementation KTabContents
 
 @synthesize isDirty = isDirty_,
-            textEncoding = textEncoding_,
-            style = style_;
+            textEncoding = textEncoding_;
 
 static NSImage* _kDefaultIcon = nil;
 static NSString* _kDefaultTitle = @"Untitled";
@@ -68,34 +67,6 @@ static NSFont* _kDefaultFont = nil;
 	BOOL y = [super respondsToSelector:selector];
   DLOG("respondsToSelector %@ -> %@", NSStringFromSelector(selector), y?@"YES":@"NO");
   return y;
-}*/
-
-
-
-
-// things which MUST execute on the main thread.
-/*- (void)_initOnMain {
-  if (![NSThread isMainThread]) {
-    K_DISPATCH_MAIN_ASYNC([self _initOnMain];);
-    return;
-  }
-
-	// Register for "text changed" notifications of our text storage:
-  NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
-	[nc addObserver:self
-         selector:@selector(textStorageDidProcessEditing:)
-             name:NSTextStorageDidProcessEditingNotification
-					 object:[textView_ textStorage]];
-	[nc addObserver:self
-         selector:@selector(textStorageWillProcessEditing:)
-             name:NSTextStorageWillProcessEditingNotification
-					 object:[textView_ textStorage]];
-
-  // Observe when the document is modified so we can update the UI accordingly
-	[nc addObserver:self
-         selector:@selector(undoManagerCheckpoint:)
-             name:NSUndoManagerCheckpointNotification
-					 object:undoManager_];
 }*/
 
 
@@ -184,11 +155,12 @@ static int debugSimulateTextAppendingIteration = 0;
   view_ = sv;
   
   // Start with the empty style and load the default style
-  style_ = [[KStyle emptyStyle] retain];
-  [KStyle defaultStyleWithCallback:^(NSError *err, KStyle *style) {
-    if (err) [NSApp presentError:err];
-    else self.style = style;
-  }];
+  KStyle *style = [KStyle sharedStyle];
+  kassert(style);
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                           selector:@selector(styleDidChange:)
+                                               name:KStyleDidChangeNotification
+                                             object:style];
   
   // debug xxx
   /*[self retain];
@@ -241,13 +213,11 @@ static int debugSimulateTextAppendingIteration = 0;
 
 
 - (void)dealloc {
-  if (style_) {
-    NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
-    [nc removeObserver:self
-                  name:KStyleDidChangeNotification
-                object:style_];
-    [style_ release];
-  }
+  KStyle *style = [KStyle sharedStyle];
+  NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
+  [nc removeObserver:self
+                name:KStyleDidChangeNotification
+              object:style];
   //delete highlightSem_; highlightSem_ = NULL;
   //delete highlightQueueSem_; highlightQueueSem_ = NULL;
   [super dealloc];
@@ -323,26 +293,6 @@ static int debugSimulateTextAppendingIteration = 0;
 
 - (NSMutableParagraphStyle*)paragraphStyle {
   return (NSMutableParagraphStyle*)textView_.defaultParagraphStyle;
-}
-
-
-- (void)setStyle:(KStyle*)style {
-  NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
-  KStyle* old = h_objc_swap(&style_, style);
-  if (style_) {
-    [nc addObserver:self
-           selector:@selector(styleDidChange:)
-               name:KStyleDidChangeNotification
-             object:style_];
-    [style_ retain];
-  }
-  if (old) {
-    [nc removeObserver:self
-                  name:KStyleDidChangeNotification
-                object:old];
-    [old release];
-  }
-  [self refreshStyle];
 }
 
 
@@ -434,8 +384,7 @@ static int debugSimulateTextAppendingIteration = 0;
 
 
 - (void)styleDidChange:(NSNotification*)notification {
-  DLOG("styleDidChange:%@", notification);
-  // TODO: [self reloadStyle];
+  [self refreshStyle];
 }
 
 
@@ -699,16 +648,11 @@ longestEffectiveRange:&range
 
 - (NSDictionary*)defaultTextAttributes {
   NSDictionary *attrs;
-  if (style_) {
-    KStyleElement *styleElement = [style_ defaultStyleElement];
-    kassert(styleElement);
-    attrs = styleElement->textAttributes();
-  } else {
-    attrs = [NSDictionary dictionaryWithObjectsAndKeys:
-      textView_.font, NSFontAttributeName,
-      textView_.textColor, NSForegroundColorAttributeName,
-      nil];
-  }
+  KStyle *style = [KStyle sharedStyle];
+  kassert(style);
+  KStyleElement *styleElement = [style defaultStyleElement];
+  kassert(styleElement);
+  attrs = styleElement->textAttributes();
   return attrs;
 }
 
@@ -726,7 +670,8 @@ longestEffectiveRange:&range
 
 - (void)refreshStyle {
   DLOG("refreshStyle");
-  KStyle *style = style_ ? style_ : [KStyle emptyStyle];
+  KStyle *style = [KStyle sharedStyle];
+  kassert(style);
   KStyleElement *defaultElem = [style defaultStyleElement];
   
   // textview bgcolor
@@ -877,8 +822,9 @@ longestEffectiveRange:&range
     #endif
     NSRange affectedRange = {NSNotFound,0};
     @try {
+      KStyle *style = [KStyle sharedStyle];
       affectedRange =
-          sourceHighlighter_->highlight(textStorage, style_, editedRange, state,
+          sourceHighlighter_->highlight(textStorage, style, editedRange, state,
                                         stateRange, changeInLength);
     } @catch (NSException *e) {
       WLOG("Caught exception while processing highlighting for range %@: %@",

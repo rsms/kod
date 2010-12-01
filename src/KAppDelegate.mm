@@ -3,6 +3,8 @@
 #import "KBrowserWindowController.h"
 #import "KTabContents.h"
 #import "KDocumentController.h"
+#import "KConfig.h"
+#import "KStyle.h"
 #import "common.h"
 
 #if K_WITH_F_SCRIPT
@@ -34,6 +36,21 @@
   
   // Register ourselves as service provider
   [NSApp setServicesProvider:self];
+  
+  // Start loading default style
+  NSURL *builtinURL = KConfig.resourceURL(@"style/default.css");
+  NSURL *url = KConfig.getURL(@"styleURL", builtinURL);
+  [[KStyle sharedStyle] loadFromURL:url withCallback:^(NSError *error) {
+    if (error) [NSApp presentError:error];
+  }];
+  
+  // XXX load another style after 5 seconds
+  /*h_dispatch_delayed_main(5000, ^{
+    NSURL *url2 = KConfig.resourceURL(@"style/bright.css");
+    [[KStyle sharedStyle] loadFromURL:url2 withCallback:^(NSError *error) {
+      if (error) [NSApp presentError:error];
+    }];
+  });*/
   
   // Register URL handler
   NSAppleEventManager *aem = [NSAppleEventManager sharedAppleEventManager];

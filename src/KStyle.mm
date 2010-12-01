@@ -2,7 +2,8 @@
 #import "KThread.h"
 #import "KConfig.h"
 
-NSString const * KStyleDidChangeNotification = @"KStyleDidChangeNotification";
+NSString const *KStyleWillChangeNotification = @"KStyleWillChangeNotification";
+NSString const *KStyleDidChangeNotification = @"KStyleDidChangeNotification";
 
 static lwc_string *kBodyLWCString;
 
@@ -77,16 +78,12 @@ static css_error ua_default_for_property(void *pw, uint32_t property,
 #pragma mark -
 #pragma mark Module construction
 
-static NSMutableDictionary *gInstancesDict_; // [urlstr => KStyle]
-static NSMutableDictionary *gInstanceLoadQueueDict_; // [urlstr => block]
-static HSemaphore gInstancesSemaphore_(1); // 1/0 = unlocked/locked
-
 static css_select_handler gCSSHandler;
 
 static CSSStylesheet* gBaseStylesheet_ = nil;
 static HSemaphore gBaseStylesheetSemaphore_(1);
 
-static KStyle *gEmptyStyle_ = nil;
+static KStyle *gSharedStyle_ = nil;
 static NSString const *gDefaultElementSymbol;
 
 + (void)load {
@@ -94,10 +91,6 @@ static NSString const *gDefaultElementSymbol;
   
   // shared lwc_strings
   lwc_intern_string("body", 4, &kBodyLWCString);
-  
-  // instances
-  gInstancesDict_ = [NSMutableDictionary new];
-  gInstanceLoadQueueDict_ = [NSMutableDictionary new];
 
   // CSS select handler
   CSSSelectHandlerInitToBase(&gCSSHandler);
@@ -107,10 +100,15 @@ static NSString const *gDefaultElementSymbol;
   gCSSHandler.parent_node = &css_parent_node;
   gCSSHandler.ua_default_for_property = &ua_default_for_property;
   
-  // Empty style
+  // Base element symbol
   gDefaultElementSymbol = [[@"body" internedString] retain];
-  gEmptyStyle_ =
-      [[KStyle alloc] initWithCatchAllElement:new KStyleElement(gDefaultElementSymbol)];
+
+  // The shared style is empty by default
+  gSharedStyle_ = [[KStyle alloc] initWithCatchAllElement:
+    new KStyleElement(gDefaultElementSymbol)];
+  
+  // Note: Loading of the default stylesheet is done by KAppDelegate in main()
+  //       branch.
   
   [pool drain];
 }
@@ -120,8 +118,8 @@ static NSString const *gDefaultElementSymbol;
 #pragma mark Getting shared instances
 
 
-+ (KStyle*)emptyStyle {
-  return gEmptyStyle_;
++ (KStyle*)sharedStyle {
+  return gSharedStyle_;
 }
 
 
@@ -146,165 +144,15 @@ static NSString const *gDefaultElementSymbol;
 }
 
 
-static void _loadStyle_finalize(NSString const *key, KStyle *style,
-                                NSError* err) {
-  //DLOG("finalize key %@, style %@, err %@", key, style, err);
-  NSMutableSet *callbacks;
-  HSemaphoreSection(gInstancesSemaphore_) {
-    if (style) {
-      [gInstancesDict_ setObject:style forKey:key];
-    }
-    callbacks = [[gInstanceLoadQueueDict_ objectForKey:key] retain];
-    [gInstanceLoadQueueDict_ removeObjectForKey:key];
-  }
-  
-  // post KStyleDidChangeNotification before calling callbacks. This way code
-  // inside the callback can register for the notification without receiving
-  // a notification directly afterwards, which obvisouly indicate the same load
-  // as the actual invocation of the callback.
-  if (style) {
-    NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
-    [nc postNotificationName:KStyleDidChangeNotification object:style];
-  }
-  
-  // invoke queued callbacks
-  if (callbacks) {
-    for (KStyleLoadCallback callback in callbacks) {
-      callback(err, style);
-    }
-    [callbacks release]; // implies releasing of callbacks
-  }
-}
-
-
-static void _loadStyle_load(NSURL* url) {
-//static void _loadStyle_load(void *data) { NSURL* url=(NSURL*)data;
-  // load stylesheet
-  CSSStylesheet *stylesheet = [[CSSStylesheet alloc] initWithURL:url];
-  BOOL started = [stylesheet loadFromRepresentedURLWithCallback:^(NSError *err) {
-    // retrieve key symbol
-    NSString const *key = [[url absoluteString] internedString];
-    
-    // error loading URL?
-    if (err) {
-      [stylesheet release];
-      _loadStyle_finalize(key, nil, err);
-      return;
-    }
-    
-    // Setup a new CSS context
-    CSSContext* cssContext =
-        [[CSSContext alloc] initWithStylesheet:[KStyle baseStylesheet]];
-    [cssContext addStylesheet:stylesheet];
-    assert(cssContext);
-    [stylesheet release]; // our local reference
-    
-    // Create a new KStyle with the CSS context
-    KStyle *style = [[KStyle alloc] initWithCSSContext:cssContext];
-    assert(style);
-    [cssContext release]; // our local reference
-    
-    // finalize -- register style and call all queued callbacks
-    _loadStyle_finalize(key, style, nil);
-  }];
-  
-  if (!started) {
-    [stylesheet release];
-    NSString const *key = [[url absoluteString] internedString];
-    NSError *err = [NSError kodErrorWithFormat:
-      @"Internal error: Failed to create URL connection for URL %@", url];
-    _loadStyle_finalize(key, nil, err);
-  }
-}
-
-
-static void _loadStyle(NSURL* url) {
-  //
-  // Defer loading to background
-  //
-  // Note: We do this in order to avoid many lingering threads just running
-  //       runloops which sit and wait for I/O, but also to avoid spending
-  //       precious time in the main thread, which would normally be the natural
-  //       choice (depending on the complexity of the loaded CSS, considerable
-  //       CPU cycles might be needed).
-  //
-  [url retain];
-  [[KThread backgroundThread] performBlock:^{
-    // shortcut to have the underlying NSURLConnection scheduled in the
-    // backgroundThread (i.e. the callback will be invoked in that thread
-    // -- the actual I/O is handled by a global Foundation-controlled thread).
-    _loadStyle_load(url);
-    [url release];
-  }];
-}
-
-
-+ (void)styleAtURL:(NSURL*)url
-      withCallback:(void(^)(NSError*,KStyle*))callback {
-  assert(callback != 0);
-  // scoped critical section
-  HSemaphore::Scope dss(gInstancesSemaphore_);
-  
-  // key for global dicts
-  NSString *key = [url absoluteString];
-  
-  // see if we already have a cached style
-  KStyle *style = [gInstancesDict_ objectForKey:key];
-  if (style) {
-    // ok, style is already loaded –- return immediately.
-    callback(nil, style);
-    return;
-  }
-
-  // add callback to load queue
-  callback = [callback copy];
-  assert(gInstanceLoadQueueDict_ != nil);
-  NSMutableSet *callbacks = [gInstanceLoadQueueDict_ objectForKey:key];
-  if (callbacks) {
-    // a load operation is already in-flight -- queue callback for invocation
-    [callbacks addObject:callback];
-    [callback release];
-    return;
-  }
-  
-  // we are first -- create queue and add ourselves to it
-  callbacks = [NSMutableSet setWithObject:callback];
-  [callback release];
-  [gInstanceLoadQueueDict_ setObject:callbacks forKey:key];
-  
-  // trigger loading of URL
-  _loadStyle(url);
-}
-
-
-+ (void)defaultStyleWithCallback:(void(^)(NSError*,KStyle*))callback {
+/*+ (void)defaultStyleWithCallback:(void(^)(NSError*,KStyle*))callback {
   NSURL* url = KConfig.getURL(@"defaultStyleURL",
                               KConfig.resourceURL(@"style/default.css"));
   [self styleAtURL:url withCallback:callback];
-}
+}*/
 
 
 #pragma mark -
 #pragma mark Initialization and deallocation
-
-// internal helper function for creating a new NSMapTable for elements_
-/*static inline CFMutableDictionaryRef *
-_newElementsMapWithInitialCapacity(NSUInteger capacity) {
-  NSMapTable *table = [NSMapTable alloc];
-  return [table initWithKeyOptions:NSMapTableObjectPointerPersonality
-                      valueOptions:NSMapTableStrongMemory
-                          capacity:1];
-}
-
-static inline void _freeElementsMapTable(NSMapTable **elements) {
-  // NSMapTable does not manage refcounting so we need to release contents
-  // before releasing the NSMapTable itself.
-  for (id element in *elements) {
-    delete element;
-  }
-  [*elements release];
-  *elements = NULL;
-}*/
 
 
 - (id)init {
@@ -333,6 +181,127 @@ static inline void _freeElementsMapTable(NSMapTable **elements) {
   if (catchAllElement_) delete catchAllElement_;
   [defaultStyle_ release];
   [super dealloc];
+}
+
+
+#pragma mark -
+#pragma mark Properties
+
+
+- (NSURL*)url {
+  if (cssContext_) {
+    NSUInteger numStylesheets = [cssContext_ count];
+    if (numStylesheets != 0) {
+      CSSStylesheet *lastStylesheet =
+          [cssContext_ stylesheetAtIndex:numStylesheets-1];
+      return lastStylesheet.url;
+    }
+  }
+  return nil;
+}
+
+
+#pragma mark -
+#pragma mark Loading
+
+
+- (void)_loadStylesheet:(NSURL*)url callback:(void(^)(NSError*))callback {
+  // load stylesheet
+  CSSStylesheet *stylesheet = [[CSSStylesheet alloc] initWithURL:url];
+  BOOL started = [stylesheet loadFromRepresentedURLWithCallback:^(NSError *err) {
+    // error loading URL?
+    if (err) {
+      [stylesheet release];
+      if (callback) {
+        callback(err);
+        [callback release];
+      }
+      return;
+    }
+    
+    // Get a ref to the lengthy named nc and post a "will" notification
+    NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
+    [nc postNotificationName:KStyleWillChangeNotification object:self];
+    
+    // Setup a new CSS context
+    // Is the baseStylesheet really needed?
+    CSSContext* cssContext =
+        [[CSSContext alloc] initWithStylesheet:[KStyle baseStylesheet]];
+    [cssContext addStylesheet:stylesheet];
+    kassert(cssContext);
+    [stylesheet release]; // our local reference
+    
+    // Replace or set out cssContext_
+    [h_objc_swap(&cssContext_, cssContext) release];
+    
+    // Clear any catchAllElement_
+    KStyleElement *catchAll =
+        (KStyleElement*)k_swapptr((void*volatile*)&catchAllElement_, NULL);
+    if (catchAll)
+      delete catchAll;
+
+    // Empty cached elements
+    OSSpinLockLock(&elementsSpinLock_);
+    elements_.clear();
+    OSSpinLockUnlock(&elementsSpinLock_);
+
+    // post KStyleDidChangeNotification before calling callback. This way code
+    // inside the callback can register for the notification without receiving
+    // a notification directly afterwards, which obvisouly indicate the same load
+    // as the actual invocation of the callback.
+    [nc postNotificationName:KStyleDidChangeNotification object:self];
+
+    // invoke callback
+    if (callback) {
+      callback(err);
+      [callback release];
+    }
+  }];
+  
+  // URL connection failed to start?
+  if (!started) {
+    [stylesheet release];
+    if (callback) {
+      callback([NSError kodErrorWithFormat:@"Failed to open URL %@", url]);
+      [callback release];
+    }
+  }
+}
+
+
+- (void)loadFromURL:(NSURL*)url withCallback:(void(^)(NSError*))callback {
+  // retain the callback
+  if (callback)
+    callback = [callback copy];
+  
+  // Defer loading to background
+  //
+  // Note: We do this in order to avoid many lingering threads just running
+  //       runloops which sit and wait for I/O (we might get called on a
+  //       temporary "dispatch queue" thread), but also to avoid spending
+  //       precious time in the main thread, which would normally be the natural
+  //       choice (depending on the complexity of the loaded CSS, considerable
+  //       CPU cycles might be needed).
+  //
+  [url retain];
+  [[KThread backgroundThread] performBlock:^{
+    // shortcut to have the underlying NSURLConnection scheduled in the
+    // backgroundThread (i.e. the callback will be invoked in that thread
+    // -- the actual I/O is handled by a global Foundation-controlled thread).
+    [self _loadStylesheet:url callback:callback];
+    [url release];
+  }];
+}
+
+
+- (void)reloadWithCallback:(void(^)(NSError*))callback {
+  NSURL *url = self.url;
+  if (url) {
+    [self loadFromURL:url withCallback:callback];
+  } else if (callback) {
+    callback([NSError kodErrorWithFormat:
+        @"No URL to reload -- style is not backed by an external source"]);
+  }
 }
 
 

@@ -3,18 +3,29 @@
 
 static KThread *backgroundThread_ = nil;
 static OSSpinLock backgroundThreadSpinLock_ = OS_SPINLOCK_INIT;
-static dispatch_semaphore_t backgroundThreadSemaphore_;
+static dispatch_semaphore_t backgroundThreadSemaphore_ = NULL;
     // 0 = starting, 1 = started
+
+static inline void _initbg() {
+  if (!backgroundThreadSemaphore_) {
+    dispatch_semaphore_t old = (dispatch_semaphore_t)
+        k_swapptr((void*volatile*)&backgroundThreadSemaphore_,
+                  (void*)dispatch_semaphore_create(1));
+    if (old) dispatch_release(old);
+  }
+}
 
 @implementation KThread
 
 
 + (void)load {
-  backgroundThreadSemaphore_ = dispatch_semaphore_create(1);
+  _initbg();
 }
 
 
 + (KThread*)backgroundThread {
+  _initbg();
+  dispatch_retain(backgroundThreadSemaphore_);
   dispatch_semaphore_wait(backgroundThreadSemaphore_, DISPATCH_TIME_FOREVER);
   if (!backgroundThread_) {
     backgroundThread_ = [[self alloc] init];
@@ -25,6 +36,7 @@ static dispatch_semaphore_t backgroundThreadSemaphore_;
   } else {
     dispatch_semaphore_signal(backgroundThreadSemaphore_);
   }
+  dispatch_release(backgroundThreadSemaphore_);
   return backgroundThread_;
 }
 

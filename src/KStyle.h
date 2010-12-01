@@ -6,8 +6,8 @@
 
 @class KStyle;
 
-extern NSString const * KStyleDidChangeNotification;
-typedef void (^KStyleLoadCallback)(NSError*, KStyle*);
+extern NSString const *KStyleWillChangeNotification;
+extern NSString const *KStyleDidChangeNotification;
 
 /**
  * Represents a style (e.g. default.css)
@@ -22,21 +22,16 @@ typedef void (^KStyleLoadCallback)(NSError*, KStyle*);
   /// Contains KStyleElement mapped by their string symbols.
   HUnorderedMapSharedPtr<NSString const*, KStyleElement> elements_;
   OSSpinLock elementsSpinLock_;
-  BOOL isLoading_;
 }
+
+/// Source url, or nil if not backed by an external source
+@property(readonly) NSURL *url;
 
 #pragma mark -
 #pragma mark Getting shared instances
 
-/// An empty style
-+ (KStyle*)emptyStyle;
-
-/// Retrieve a style
-+ (void)styleAtURL:(NSURL*)url
-      withCallback:(void(^)(NSError *err,KStyle *style))cb;
-
-/// Retrieve the default style (the users' current default style)
-+ (void)defaultStyleWithCallback:(void(^)(NSError *err,KStyle *style))cb;
+/// The shared style
++ (KStyle*)sharedStyle;
 
 #pragma mark -
 #pragma mark Initialization and deallocation
@@ -45,8 +40,14 @@ typedef void (^KStyleLoadCallback)(NSError*, KStyle*);
 
 - (id)initWithCatchAllElement:(KStyleElement*)element;
 
-/// Reload from underlying file (this is an atomic operation)
-//- (void)reloadWithCallback:(void(^)(NSError *err))callback;
+#pragma mark -
+#pragma mark Loading
+
+/// Load from |url| calling optional |callback|
+- (void)loadFromURL:(NSURL*)url withCallback:(void(^)(NSError *err))callback;
+
+/// Reload from underlying source with optional |callback|
+- (void)reloadWithCallback:(void(^)(NSError *err))callback;
 
 #pragma mark -
 #pragma mark Getting style elements
@@ -60,7 +61,7 @@ typedef void (^KStyleLoadCallback)(NSError*, KStyle*);
 - (KStyleElement*)styleElementForSymbol:(NSString const*)symbol;
 
 /// Return the default element for this style ("body")
-- (KStyleElement*)defaultStyleElement;
+@property(readonly) KStyleElement *defaultStyleElement;
 
 
 @end

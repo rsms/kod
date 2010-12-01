@@ -45,7 +45,10 @@ class KConfiguration {
   static KConfiguration const *instance_;
 };
 
-// global instance
+/**
+ * Globally shared instance.
+ * It's safe to call this even in static constructors.
+ */
 extern KConfiguration KConfig;
 
 // inline implementations
