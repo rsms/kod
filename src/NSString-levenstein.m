@@ -390,7 +390,7 @@ static void compareseq (int xoff, int xlim, int yoff, int ylim,
         symbol tables occur.
 
    RETURNS
-        double; 0 if the strings are entirly dissimilar, 1 if the
+        double; 1.0 if the strings are entirly dissimilar, 0.0 if the
         strings are identical, and a number in between if they are
         similar.  */
 
@@ -437,9 +437,9 @@ double levenstein_cmp (const unichar *string1, int string1len,
         ((number of chars in common) / (average length of the strings)).
      This is admittedly biased towards finding that the strings are
      similar, however it does produce meaningful results.  */
-  double r = ((double)(string1len + string2len
-                       - ctxt.yvec_edit_count - ctxt.xvec_edit_count)
-              / (string1len + string2len));
+  double r = 1.0 - ((double)(string1len + string2len
+                             - ctxt.yvec_edit_count - ctxt.xvec_edit_count)
+                    / (string1len + string2len));
   CFAllocatorDeallocate(kCFAllocatorDefault, buffer);
   return r;
 }

@@ -179,9 +179,9 @@
 }
 
 
-// levenstein edit distance threshold which must be passed in order for a tab
-// to be repositioned
-static double kSiblingAutoGroupThreshold = 0.6;
+// levenstein edit distance threshold which must be passed (go below this value)
+// in order for a tab to be repositioned
+static double kSiblingAutoGroupEditDistanceThreshold = 0.4;
 
 
 - (void)addTabContents:(KTabContents*)tab
@@ -216,28 +216,51 @@ static double kSiblingAutoGroupThreshold = 0.6;
   
   if (groupWithSiblings) {
     KTabContents *otherTab;
-    double bestSiblingDistance = 0.0;
+    double bestSiblingDistance = 1.0;
     int i = 0, tabCount = [browser tabCount];
+    NSString *tabExt = [tab.title pathExtension];
     
     for (; i<tabCount; ++i) {
       otherTab = (KTabContents*)[browser tabContentsAtIndex:i];
       if (otherTab) {
-        double editDistance = [tab.title editDistanceToString:otherTab.title];
-        //DLOG("editDistance('%@' > '%@') -> %f", tab.title, otherTab.title,
-        //     editDistance);
-        if (editDistance >= kSiblingAutoGroupThreshold &&
-            editDistance > bestSiblingDistance) {
-          bestSiblingDistance = editDistance;
-          insertIndex = i;
+        NSString *tabName = [tab.title stringByDeletingPathExtension];
+        NSString *otherName = [otherTab.title stringByDeletingPathExtension];
+        // test simple case-insensitive compare as this is a common use-case
+        // (this is an optimization for i.e. "foo.c", "Foo.h")
+        if ([tabName caseInsensitiveCompare:otherName] == NSOrderedSame) {
+          // same basename means zero editing distance
+          // did we already find a perfect match? Compare file extensions.
+          if (bestSiblingDistance == 0.0) {
+            kassert(insertIndex != -1);
+            otherTab = (KTabContents*)[browser tabContentsAtIndex:insertIndex];
+            NSString *otherExt = [otherTab.title pathExtension];
+            if ([tabExt caseInsensitiveCompare:otherExt] == NSOrderedDescending) {
+              // tabExt = z, otherExt = a -- use this tab instead of previously
+              // found tab
+              insertIndex = i;
+            }
+          } else {
+            bestSiblingDistance = 0.0;
+            insertIndex = i;
+          }
+        } else if (bestSiblingDistance != 0.0) {
+          // test levenstein distance
+          double editDistance = [tab.title editDistanceToString:otherTab.title];
+          //DLOG("editDistance('%@' > '%@') -> %f", tab.title, otherTab.title,
+          //     editDistance);
+          if (editDistance <= kSiblingAutoGroupEditDistanceThreshold &&
+              editDistance < bestSiblingDistance) {
+            bestSiblingDistance = editDistance;
+            insertIndex = i;
+          }
         }
       }
     }
     
     if (insertIndex != -1) {
       otherTab = (KTabContents*)[browser tabContentsAtIndex:insertIndex];
-      NSString *newExt = [tab.title pathExtension];
       NSString *otherExt = [otherTab.title pathExtension];
-      if ([newExt caseInsensitiveCompare:otherExt] == NSOrderedDescending) {
+      if ([tabExt caseInsensitiveCompare:otherExt] == NSOrderedDescending) {
         // insert after
         insertIndex++;
       }

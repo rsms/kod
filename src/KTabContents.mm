@@ -452,6 +452,11 @@ static int debugSimulateTextAppendingIteration = 0;
 
 - (void)tabWillCloseInBrowser:(CTBrowser*)browser atIndex:(NSInteger)index {
   [super tabWillCloseInBrowser:browser atIndex:index];
+  
+  // cancel and disable highlighting
+  highlightingEnabled_ = NO;
+  sourceHighlighter_->cancel();
+  
   NSWindowController *wc = browser.windowController;
   if (wc) {
     [self removeWindowController:wc];

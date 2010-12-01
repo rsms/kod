@@ -40,8 +40,8 @@
   KScroller *hScroller = [[KScroller alloc] initWithFrame:NSZeroRect];
   
   // We don't use the "New tab" button
-  if (tabStripController_)
-    [tabStripController_ showNewTabButton:NO];
+  kassert(tabStripController_);
+  self.showsNewTabButton = NO;
 
   return self;
 }
