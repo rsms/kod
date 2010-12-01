@@ -1,24 +1,35 @@
 #ifndef H_DISPATCH_H_
 #define H_DISPATCH_H_
 
-#define K_DISPATCH_MAIN_ASYNC(...)\
+#define K_DISPATCH_MAIN_ASYNC(inlineblock)\
   dispatch_async(dispatch_get_main_queue(),^{ \
     NSAutoreleasePool *__arpool = [NSAutoreleasePool new]; \
-    __VA_ARGS__ \
+    inlineblock \
     [__arpool drain]; \
   })
 
-#define K_DISPATCH_MAIN_SYNC(...)\
+// dispatches to main queue if not on main thread, otherwise runs |inlineblock|
+// directly. Note that this writes |inlineblock| twice, but in two different
+// branches.
+#define K_DISPATCH_MAIN_ASYNC2(inlineblock) do { \
+  if ([NSThread isMainThread]) { \
+    inlineblock \
+  } else { \
+    K_DISPATCH_MAIN_ASYNC(inlineblock); \
+  } \
+  } while(0)
+
+#define K_DISPATCH_MAIN_SYNC(inlineblock)\
   dispatch_sync(dispatch_get_main_queue(),^{ \
     NSAutoreleasePool *__arpool = [NSAutoreleasePool new]; \
-    __VA_ARGS__ \
+    inlineblock \
     [__arpool drain]; \
   })
 
-#define K_DISPATCH_BG_ASYNC(...)\
+#define K_DISPATCH_BG_ASYNC(inlineblock)\
   dispatch_async(dispatch_get_global_queue(0,0),^{ \
     NSAutoreleasePool *__arpool = [NSAutoreleasePool new]; \
-    __VA_ARGS__ \
+    inlineblock \
     [__arpool drain]; \
   })
 

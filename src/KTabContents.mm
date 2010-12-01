@@ -76,7 +76,7 @@ static NSFont* _kDefaultFont = nil;
 // things which MUST execute on the main thread.
 /*- (void)_initOnMain {
   if (![NSThread isMainThread]) {
-    K_DISPATCH_MAIN_ASYNC({ [self _initOnMain]; });
+    K_DISPATCH_MAIN_ASYNC([self _initOnMain];);
     return;
   }
 
@@ -901,7 +901,7 @@ longestEffectiveRange:&range
       //
       // - We perform this on the main thread to avoid scary _NSLayoutTree bugs
       //
-      K_DISPATCH_MAIN_ASYNC({
+      K_DISPATCH_MAIN_ASYNC(
         if (!sourceHighlighter_->isCancelled()) {
           DLOG("highlight --FLUSH-START-- %@", NSStringFromRange(affectedRange));
           [textStorage beginEditing];
@@ -919,7 +919,7 @@ longestEffectiveRange:&range
         highlightSem_.put();
         DLOG("highlight --FREED-- (cancelled: %@)",
              sourceHighlighter_->isCancelled() ? @"YES":@"NO");
-      });
+      );
     }
     
     [pool drain];
@@ -964,9 +964,9 @@ K_DEPRECATED; // use deferHighlightTextStorage:inRange:
   // at the next runloop tick, which is what this block accomplishes.
   // The |kHighlightingIsProcessing| flag needs to be cleared after the
   // |kHighlightingIsFlushing| flag, so we simply clear it in the same block.
-  K_DISPATCH_MAIN_ASYNC({
+  K_DISPATCH_MAIN_ASYNC(
     hatomic_flags_clear(&stateFlags_, kHighlightingIsFlushing);
-  });
+  );
   return YES;*/
 }
 
@@ -1444,23 +1444,43 @@ shouldChangeTextInRanges:(NSArray *)affectedRanges
     return NO;
   } else {
     // Yay, we decoded the damn text
-    //NSTextStorage *textStorage = textView_.textStorage;
-    [textView_ setString:text];
-    [textView_ setSelectedRange:NSMakeRange(0, 0)];
-    [self updateChangeCount:NSChangeCleared];
-    isDirty_ = NO;
-    self.isLoading = NO;
-    self.isWaitingForResponse = NO;
-    self.fileType = typeName;
+    // Now, we want to join on main since we're hitting weird NSRunLoop-related
+    // bugs when doing this in the background. E.g:
+    //
+    // "In '__CFRunLoopSourceLock', file
+    //  /SourceCache/CF/CF-550.42/RunLoop.subproj/CFRunLoop.c, line 614, during
+    //  lock, spin lock 0x117619df4 has value 0x1763abf0, which is neither
+    //  locked nor unlocked.  The memory has been smashed."
+    //
+    // That's scary.
     
-    // guess language if no language has been set
-    if (!langId_) {
-      // implies queueing of complete highlighting
-      [self guessLanguageBasedOnUTI:typeName textContent:text];
-    } else {
-      if (isVisible_)
-        [self setNeedsHighlightingOfCompleteDocument];
-    }
+    // we need to retain |data| and |text| since |text| contains a weak
+    // reference to bytes in |data|.
+    [data retain];
+    [text retain];
+    
+    K_DISPATCH_MAIN_ASYNC2(
+      //NSTextStorage *textStorage = textView_.textStorage;
+      [textView_ setString:text];
+      [textView_ setSelectedRange:NSMakeRange(0, 0)];
+      [self updateChangeCount:NSChangeCleared];
+      isDirty_ = NO;
+      self.isLoading = NO;
+      self.isWaitingForResponse = NO;
+      self.fileType = typeName;
+      
+      // guess language if no language has been set
+      if (!langId_) {
+        // implies queueing of complete highlighting
+        [self guessLanguageBasedOnUTI:typeName textContent:text];
+      } else {
+        if (isVisible_)
+          [self setNeedsHighlightingOfCompleteDocument];
+      }
+      
+      [text release];
+      [data release];
+    );
   }
   return YES;
 }

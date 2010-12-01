@@ -348,7 +348,7 @@ static double kSiblingAutoGroupEditDistanceThreshold = 0.4;
   if (tab) {
     // make sure the tab is presented to the user (need to run on main)
     if (![NSThread isMainThread]) {
-      K_DISPATCH_MAIN_ASYNC({ [tab makeKeyAndOrderFront:self]; });
+      K_DISPATCH_MAIN_ASYNC([tab makeKeyAndOrderFront:self];);
     } else {
       [tab makeKeyAndOrderFront:self];
     }
@@ -361,12 +361,12 @@ static double kSiblingAutoGroupEditDistanceThreshold = 0.4;
   if (tab) {
     // add the tab to |browser|
     if (![NSThread isMainThread]) {
-      K_DISPATCH_MAIN_ASYNC({
+      K_DISPATCH_MAIN_ASYNC(
         [self finalizeOpenDocument:tab
               withWindowController:windowController
                  groupWithSiblings:groupWithSiblings
                            display:display];
-      });
+      );
     } else {
       [self finalizeOpenDocument:tab
             withWindowController:windowController
