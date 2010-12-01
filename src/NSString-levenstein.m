@@ -1,5 +1,29 @@
 
-typedef struct levenstein_ctx {
+/* Derived from GNU diff 2.7, analyze.c et al.
+
+   The basic idea is to consider two vectors as similar if, when
+   transforming the first vector into the second vector through a
+   sequence of edits (inserts and deletes of one element each),
+   this sequence is short - or equivalently, if the ordered list
+   of elements that are untouched by these edits is long.  For a
+   good introduction to the subject, read about the "Levenshtein
+   distance" in Wikipedia.
+
+   The basic algorithm is described in:
+   "An O(ND) Difference Algorithm and its Variations", Eugene Myers,
+   Algorithmica Vol. 1 No. 2, 1986, pp. 251-266;
+   see especially section 4.2, which describes the variation used below.
+
+   The basic algorithm was independently discovered as described in:
+   "Algorithms for Approximate String Matching", E. Ukkonen,
+   Information and Control Vol. 64, 1985, pp. 100-118.
+
+   Unless the 'find_minimal' flag is set, this code uses the TOO_EXPENSIVE
+   heuristic, by Paul Eggert, to limit the cost to O(N**1.5 log N)
+   at the price of producing suboptimal output for large inputs with
+   many differences.  */
+
+typedef struct editdist_ctx {
   // Vectors being compared.
   const unichar *xvec;
   const unichar *yvec;
@@ -29,7 +53,7 @@ typedef struct levenstein_ctx {
 
   // Snakes bigger than this are considered `big'.
   #define SNAKE_LIMIT 20
-} levenstein_ctx_t;
+} editdist_ctx_t;
 
 #define NOTE_DELETE(ctxt, xoff) ctxt->xvec_edit_count++
 #define NOTE_INSERT(ctxt, yoff) ctxt->yvec_edit_count++
@@ -75,7 +99,7 @@ struct partition {
 
 static void diag(int xoff, int xlim, int yoff, int ylim,
                  bool find_minimal, struct partition *part,
-                 levenstein_ctx_t *ctxt) {
+                 editdist_ctx_t *ctxt) {
   int *const fd = ctxt->fdiag;       /* Give the compiler a chance. */
   int *const bd = ctxt->bdiag;       /* Additional help for the compiler. */
   const unichar *const xv = ctxt->xvec; /* Still more help for the compiler. */
@@ -336,7 +360,7 @@ static void diag(int xoff, int xlim, int yoff, int ylim,
  The results are recorded by invoking NOTE_DELETE and NOTE_INSERT.
 */
 static void compareseq (int xoff, int xlim, int yoff, int ylim,
-                        bool find_minimal, levenstein_ctx_t *ctxt) {
+                        bool find_minimal, editdist_ctx_t *ctxt) {
   unichar const *xv = ctxt->xvec; /* Help the compiler.  */
   unichar const *yv = ctxt->yvec;
   
@@ -394,9 +418,9 @@ static void compareseq (int xoff, int xlim, int yoff, int ylim,
         strings are identical, and a number in between if they are
         similar.  */
 
-double levenstein_cmp (const unichar *string1, int string1len,
-                       const unichar *string2, int string2len) {
-  levenstein_ctx_t ctxt;
+double editdist_cmp(const unichar *string1, int string1len,
+                    const unichar *string2, int string2len) {
+  editdist_ctx_t ctxt;
   int i;
   size_t fdiag_len;
   int *buffer;
@@ -447,9 +471,9 @@ double levenstein_cmp (const unichar *string1, int string1len,
 
 
 
-#import "NSString-levenstein.h"
+#import "NSString-editdistance.h"
 
-@implementation NSString (levenstein)
+@implementation NSString (EditDistance)
 
 
 - (double)editDistanceToString:(NSString*)otherString {
@@ -468,7 +492,7 @@ double levenstein_cmp (const unichar *string1, int string1len,
   [self getCharacters:string1 range:NSMakeRange(0, string1len)];
   [otherString getCharacters:string2 range:NSMakeRange(0, string2len)];
 
-  double distance = levenstein_cmp(string1, string1len, string2, string2len);
+  double distance = editdist_cmp(string1, string1len, string2, string2len);
   
   CFAllocatorDeallocate(kCFAllocatorDefault, string1);
   CFAllocatorDeallocate(kCFAllocatorDefault, string2);

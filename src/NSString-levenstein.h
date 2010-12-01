@@ -1,5 +1,4 @@
-@interface NSString (levenstein)
-
+@interface NSString (EditDistance)
 
 /**
  * Returns 1.0 if the strings are entirly different, 0.0 if the strings are
