@@ -17,10 +17,10 @@ NSFontDescriptor *KStyleElement::fontDescriptor() {
   if (!gBaseFontDescriptor) {
     NSFontManager *fontManager = [NSFontManager sharedFontManager];
     NSFont *font =
-        [fontManager fontWithFamily:@"M+ 1m" traits:0 weight:0 size:13.0];
+        [fontManager fontWithFamily:@"M+ 1m" traits:0 weight:0 size:11.0];
     if (!font) {
       //WLOG("unable to find default font \"M+\" -- using system default");
-      font = [NSFont userFixedPitchFontOfSize:13.0];
+      font = [NSFont userFixedPitchFontOfSize:11.0];
     }
     gBaseFontDescriptor = [[font fontDescriptor] retain];
   }
@@ -52,7 +52,7 @@ KStyleElement::KStyleElement(NSString *name, CSSStyle *style) {
   if (style) {
     setStyle(style);
   } else {
-    setFont([NSFont fontWithDescriptor:fontDescriptor() size:13.0]);
+    setFont([NSFont fontWithDescriptor:fontDescriptor() size:11.0]);
   }
 }
 
@@ -112,7 +112,7 @@ void KStyleElement::setStyle(CSSStyle *style) {
   }
   
   // derive new font with traits
-  NSFont *font = [NSFont fontWithDescriptor:fontDescriptor() size:13.0];
+  NSFont *font = [NSFont fontWithDescriptor:fontDescriptor() size:11.0];
   if (fontTraitMask) {
     NSFontManager *fontManager = [NSFontManager sharedFontManager];
     NSString *fontFamily = [[fontDescriptor() fontAttributes]

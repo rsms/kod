@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 42;
+	objectVersion = 46;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -24,6 +24,13 @@
 		3A25E4981281A9D500B6A33E /* libboost_regex-mt.dylib in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 3A25E47A1281A6A200B6A33E /* libboost_regex-mt.dylib */; };
 		3A25E4B71281AE3700B6A33E /* KStyleElement.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A25E4B61281AE3700B6A33E /* KStyleElement.mm */; };
 		3A25E6101281CFEF00B6A33E /* NSColor-web.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A25E60F1281CFEF00B6A33E /* NSColor-web.m */; };
+		3A40F8C612AFE5F7007B5879 /* KNodeProcess.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A40F8C512AFE5F7007B5879 /* KNodeProcess.mm */; };
+		3A40F92F12AFF21A007B5879 /* main.js in Resources */ = {isa = PBXBuildFile; fileRef = 3A40F92E12AFF21A007B5879 /* main.js */; };
+		3A40FA6612B02FD0007B5879 /* NSObject+SBJSON.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A40FA5D12B02FD0007B5879 /* NSObject+SBJSON.m */; };
+		3A40FA6712B02FD0007B5879 /* NSString+SBJSON.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A40FA5F12B02FD0007B5879 /* NSString+SBJSON.m */; };
+		3A40FA6812B02FD0007B5879 /* SBJsonBase.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A40FA6112B02FD0007B5879 /* SBJsonBase.m */; };
+		3A40FA6912B02FD0007B5879 /* SBJsonParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A40FA6312B02FD0007B5879 /* SBJsonParser.m */; };
+		3A40FA6A12B02FD0007B5879 /* SBJsonWriter.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A40FA6512B02FD0007B5879 /* SBJsonWriter.m */; };
 		3A4D50ED1282E40300B06EEB /* NSString-utf8-range-conv.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A4D50EC1282E40300B06EEB /* NSString-utf8-range-conv.m */; };
 		3A62B9E6129D652700822274 /* KTextFieldDecoration.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A62B9E5129D652700822274 /* KTextFieldDecoration.mm */; };
 		3A62BA01129D686F00822274 /* KAutocompleteTextField.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A62BA00129D686F00822274 /* KAutocompleteTextField.mm */; };
@@ -36,6 +43,8 @@
 		3A6D4B681295A85400DBA2A3 /* KLangMap.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A6D4B671295A85400DBA2A3 /* KLangMap.mm */; };
 		3A6D4D6B1295F0BA00DBA2A3 /* NSCharacterSet-kod.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A6D4D6A1295F0BA00DBA2A3 /* NSCharacterSet-kod.m */; };
 		3A74A4D3129FF6E000BB5503 /* HUTF8MappedUTF16String.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A74A4D2129FF6E000BB5503 /* HUTF8MappedUTF16String.mm */; };
+		3A7894A012B0362B00D08FD5 /* NSData+SBJSON.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A78949F12B0362B00D08FD5 /* NSData+SBJSON.m */; };
+		3A78955D12B043B400D08FD5 /* hdispatch.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A78955C12B043B400D08FD5 /* hdispatch.m */; };
 		3A7E71131286EAE800D85E4C /* BrowserWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3A7E71121286EAE800D85E4C /* BrowserWindow.xib */; };
 		3A7E71801286F44D00D85E4C /* KFileOutlineView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A7E717F1286F44D00D85E4C /* KFileOutlineView.mm */; };
 		3A7E71831286F54A00D85E4C /* KFileTextFieldCell.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A7E71821286F54A00D85E4C /* KFileTextFieldCell.mm */; };
@@ -43,6 +52,15 @@
 		3A7E723B1287024100D85E4C /* KFileTreeController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A7E723A1287024100D85E4C /* KFileTreeController.mm */; };
 		3A7E74A712873A7100D85E4C /* KScroller.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A7E74A612873A7100D85E4C /* KScroller.m */; };
 		3A7E751F1287403100D85E4C /* KScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A7E751E1287403100D85E4C /* KScrollView.m */; };
+		3A811A6E12AE7DE600BC08AE /* HDProcess.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A811A6312AE7DE600BC08AE /* HDProcess.m */; };
+		3A811A6F12AE7DE600BC08AE /* HDSemaphore.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A811A6512AE7DE600BC08AE /* HDSemaphore.m */; };
+		3A811A7012AE7DE600BC08AE /* HDStream.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A811A6712AE7DE600BC08AE /* HDStream.m */; };
+		3A811A7112AE7DE600BC08AE /* HEventEmitter.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A811A6912AE7DE600BC08AE /* HEventEmitter.m */; };
+		3A811A7212AE7DE600BC08AE /* HRefcountLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A811A6B12AE7DE600BC08AE /* HRefcountLogger.m */; };
+		3A811A7312AE7DE600BC08AE /* NSThread-condensedStackTrace.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A811A6D12AE7DE600BC08AE /* NSThread-condensedStackTrace.m */; };
+		3A811A7D12AE813800BC08AE /* KModeTextFieldDecoration.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A811A7C12AE813800BC08AE /* KModeTextFieldDecoration.mm */; };
+		3A811B4812AE8F1500BC08AE /* YAML.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A811B4712AE8F1500BC08AE /* YAML.framework */; };
+		3A811B8F12AE90AB00BC08AE /* YAML.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 3A811B4712AE8F1500BC08AE /* YAML.framework */; };
 		3A841180129D5CAE00F4A36D /* KTextField.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A84117F129D5CAE00F4A36D /* KTextField.mm */; };
 		3A841183129D5D5C00F4A36D /* KTextFieldCell.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A841182129D5D5C00F4A36D /* KTextFieldCell.mm */; };
 		3A8411C2129D615800F4A36D /* KAutocompleteTextFieldCell.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A8411C1129D615800F4A36D /* KAutocompleteTextFieldCell.mm */; };
@@ -124,16 +142,27 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		3A40F8DA12AFEB89007B5879 /* Copy Support Files */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 12;
+			files = (
+			);
+			name = "Copy Support Files";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		3A9291381229BBB600DA7E43 /* Copy Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				3A929887122AC39100DA7E43 /* ChromiumTabs.framework in Copy Frameworks */,
 				3AE5E9A3129180CB00B17C4F /* CSS.framework in Copy Frameworks */,
+				3A811B8F12AE90AB00BC08AE /* YAML.framework in Copy Frameworks */,
 				3A25E4981281A9D500B6A33E /* libboost_regex-mt.dylib in Copy Frameworks */,
 				3A25E4971281A9D300B6A33E /* libsource-highlight.dylib in Copy Frameworks */,
-				3A929887122AC39100DA7E43 /* ChromiumTabs.framework in Copy Frameworks */,
 			);
 			name = "Copy Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -169,6 +198,22 @@
 		3A25E4B61281AE3700B6A33E /* KStyleElement.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KStyleElement.mm; sourceTree = "<group>"; };
 		3A25E60E1281CFEF00B6A33E /* NSColor-web.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSColor-web.h"; sourceTree = "<group>"; };
 		3A25E60F1281CFEF00B6A33E /* NSColor-web.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSColor-web.m"; sourceTree = "<group>"; };
+		3A40F8C412AFE5F7007B5879 /* KNodeProcess.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KNodeProcess.h; sourceTree = "<group>"; };
+		3A40F8C512AFE5F7007B5879 /* KNodeProcess.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KNodeProcess.mm; sourceTree = "<group>"; };
+		3A40F8EF12AFEDA4007B5879 /* KConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KConfig.h; sourceTree = "<group>"; };
+		3A40F8F012AFEDB5007B5879 /* KConfig2.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KConfig2.m; sourceTree = "<group>"; };
+		3A40F92E12AFF21A007B5879 /* main.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = main.js; sourceTree = "<group>"; };
+		3A40FA5B12B02FD0007B5879 /* JSON.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSON.h; sourceTree = "<group>"; };
+		3A40FA5C12B02FD0007B5879 /* NSObject+SBJSON.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSObject+SBJSON.h"; sourceTree = "<group>"; };
+		3A40FA5D12B02FD0007B5879 /* NSObject+SBJSON.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSObject+SBJSON.m"; sourceTree = "<group>"; };
+		3A40FA5E12B02FD0007B5879 /* NSString+SBJSON.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+SBJSON.h"; sourceTree = "<group>"; };
+		3A40FA5F12B02FD0007B5879 /* NSString+SBJSON.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+SBJSON.m"; sourceTree = "<group>"; };
+		3A40FA6012B02FD0007B5879 /* SBJsonBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SBJsonBase.h; sourceTree = "<group>"; };
+		3A40FA6112B02FD0007B5879 /* SBJsonBase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SBJsonBase.m; sourceTree = "<group>"; };
+		3A40FA6212B02FD0007B5879 /* SBJsonParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SBJsonParser.h; sourceTree = "<group>"; };
+		3A40FA6312B02FD0007B5879 /* SBJsonParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SBJsonParser.m; sourceTree = "<group>"; };
+		3A40FA6412B02FD0007B5879 /* SBJsonWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SBJsonWriter.h; sourceTree = "<group>"; };
+		3A40FA6512B02FD0007B5879 /* SBJsonWriter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SBJsonWriter.m; sourceTree = "<group>"; };
 		3A4D50EB1282E40300B06EEB /* NSString-utf8-range-conv.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString-utf8-range-conv.h"; sourceTree = "<group>"; };
 		3A4D50EC1282E40300B06EEB /* NSString-utf8-range-conv.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString-utf8-range-conv.m"; sourceTree = "<group>"; };
 		3A62B9D1129D63AA00822274 /* basictypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = basictypes.h; sourceTree = "<group>"; };
@@ -199,6 +244,9 @@
 		3A6D4D6A1295F0BA00DBA2A3 /* NSCharacterSet-kod.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSCharacterSet-kod.m"; sourceTree = "<group>"; };
 		3A74A4D1129FF6E000BB5503 /* HUTF8MappedUTF16String.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HUTF8MappedUTF16String.h; sourceTree = "<group>"; };
 		3A74A4D2129FF6E000BB5503 /* HUTF8MappedUTF16String.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = HUTF8MappedUTF16String.mm; sourceTree = "<group>"; };
+		3A78949E12B0362B00D08FD5 /* NSData+SBJSON.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSData+SBJSON.h"; sourceTree = "<group>"; };
+		3A78949F12B0362B00D08FD5 /* NSData+SBJSON.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSData+SBJSON.m"; sourceTree = "<group>"; };
+		3A78955C12B043B400D08FD5 /* hdispatch.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = hdispatch.m; sourceTree = "<group>"; };
 		3A7E71121286EAE800D85E4C /* BrowserWindow.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = BrowserWindow.xib; sourceTree = "<group>"; };
 		3A7E717E1286F44D00D85E4C /* KFileOutlineView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KFileOutlineView.h; sourceTree = "<group>"; };
 		3A7E717F1286F44D00D85E4C /* KFileOutlineView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KFileOutlineView.mm; sourceTree = "<group>"; };
@@ -212,6 +260,22 @@
 		3A7E74A612873A7100D85E4C /* KScroller.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KScroller.m; sourceTree = "<group>"; };
 		3A7E751D1287403100D85E4C /* KScrollView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KScrollView.h; sourceTree = "<group>"; };
 		3A7E751E1287403100D85E4C /* KScrollView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KScrollView.m; sourceTree = "<group>"; };
+		3A811A6112AE7DE600BC08AE /* hcommon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = hcommon.h; path = "deps/hunch-cocoa/hcommon.h"; sourceTree = SOURCE_ROOT; };
+		3A811A6212AE7DE600BC08AE /* HDProcess.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HDProcess.h; path = "deps/hunch-cocoa/HDProcess.h"; sourceTree = SOURCE_ROOT; };
+		3A811A6312AE7DE600BC08AE /* HDProcess.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = HDProcess.m; path = "deps/hunch-cocoa/HDProcess.m"; sourceTree = SOURCE_ROOT; };
+		3A811A6412AE7DE600BC08AE /* HDSemaphore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HDSemaphore.h; path = "deps/hunch-cocoa/HDSemaphore.h"; sourceTree = SOURCE_ROOT; };
+		3A811A6512AE7DE600BC08AE /* HDSemaphore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = HDSemaphore.m; path = "deps/hunch-cocoa/HDSemaphore.m"; sourceTree = SOURCE_ROOT; };
+		3A811A6612AE7DE600BC08AE /* HDStream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HDStream.h; path = "deps/hunch-cocoa/HDStream.h"; sourceTree = SOURCE_ROOT; };
+		3A811A6712AE7DE600BC08AE /* HDStream.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = HDStream.m; path = "deps/hunch-cocoa/HDStream.m"; sourceTree = SOURCE_ROOT; };
+		3A811A6812AE7DE600BC08AE /* HEventEmitter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HEventEmitter.h; path = "deps/hunch-cocoa/HEventEmitter.h"; sourceTree = SOURCE_ROOT; };
+		3A811A6912AE7DE600BC08AE /* HEventEmitter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = HEventEmitter.m; path = "deps/hunch-cocoa/HEventEmitter.m"; sourceTree = SOURCE_ROOT; };
+		3A811A6A12AE7DE600BC08AE /* HRefcountLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HRefcountLogger.h; path = "deps/hunch-cocoa/HRefcountLogger.h"; sourceTree = SOURCE_ROOT; };
+		3A811A6B12AE7DE600BC08AE /* HRefcountLogger.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = HRefcountLogger.m; path = "deps/hunch-cocoa/HRefcountLogger.m"; sourceTree = SOURCE_ROOT; };
+		3A811A6C12AE7DE600BC08AE /* NSThread-condensedStackTrace.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSThread-condensedStackTrace.h"; path = "deps/hunch-cocoa/NSThread-condensedStackTrace.h"; sourceTree = SOURCE_ROOT; };
+		3A811A6D12AE7DE600BC08AE /* NSThread-condensedStackTrace.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSThread-condensedStackTrace.m"; path = "deps/hunch-cocoa/NSThread-condensedStackTrace.m"; sourceTree = SOURCE_ROOT; };
+		3A811A7B12AE813800BC08AE /* KModeTextFieldDecoration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KModeTextFieldDecoration.h; sourceTree = "<group>"; };
+		3A811A7C12AE813800BC08AE /* KModeTextFieldDecoration.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KModeTextFieldDecoration.mm; sourceTree = "<group>"; };
+		3A811B4712AE8F1500BC08AE /* YAML.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = YAML.framework; path = deps/syck/ext/cocoa/build/Deployment/YAML.framework; sourceTree = "<group>"; };
 		3A84117E129D5CAE00F4A36D /* KTextField.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KTextField.h; sourceTree = "<group>"; };
 		3A84117F129D5CAE00F4A36D /* KTextField.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KTextField.mm; sourceTree = "<group>"; };
 		3A841181129D5D5C00F4A36D /* KTextFieldCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KTextFieldCell.h; sourceTree = "<group>"; };
@@ -265,7 +329,7 @@
 		3AC4FADB1296D049004CDCFD /* KLangMapLinePattern.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KLangMapLinePattern.mm; sourceTree = "<group>"; };
 		3AE5E5161290955000B17C4F /* kod.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = kod.icns; path = icon/kod.icns; sourceTree = "<group>"; };
 		3AE5E8A912915ABA00B17C4F /* CSS.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = CSS.xcodeproj; path = "deps/libcss/cocoa-framework/CSS.xcodeproj"; sourceTree = "<group>"; };
-		3AE5EA551292B2D000B17C4F /* KConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KConfig.h; sourceTree = "<group>"; };
+		3AE5EA551292B2D000B17C4F /* KConfig2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KConfig2.h; sourceTree = "<group>"; };
 		3AE5EA561292B2D000B17C4F /* KConfig.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KConfig.mm; sourceTree = "<group>"; };
 		3AE5EB871292DB5C00B17C4F /* CSS.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CSS.framework; path = "deps/libcss/cocoa-framework/build/Release/CSS.framework"; sourceTree = "<group>"; };
 		3AE5ECB41292F7B800B17C4F /* KThread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KThread.h; sourceTree = "<group>"; };
@@ -282,10 +346,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				3A929886122AC38F00DA7E43 /* ChromiumTabs.framework in Frameworks */,
+				3AC2D74012998D590066B586 /* CSS.framework in Frameworks */,
+				3A811B4812AE8F1500BC08AE /* YAML.framework in Frameworks */,
 				3A25E47B1281A6A200B6A33E /* libboost_regex-mt.dylib in Frameworks */,
 				3A25E47D1281A6A700B6A33E /* libsource-highlight.dylib in Frameworks */,
 				3A158AFF128A0A3700339E6E /* libicucore.dylib in Frameworks */,
-				3AC2D74012998D590066B586 /* CSS.framework in Frameworks */,
 				3ABF537A12A5D0D80020233C /* FScript.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -305,6 +370,36 @@
 			);
 			path = ICU;
 			sourceTree = "<group>";
+		};
+		3A40F8C312AFE5D7007B5879 /* Node */ = {
+			isa = PBXGroup;
+			children = (
+				3A40F8C412AFE5F7007B5879 /* KNodeProcess.h */,
+				3A40F8C512AFE5F7007B5879 /* KNodeProcess.mm */,
+			);
+			name = Node;
+			sourceTree = "<group>";
+		};
+		3A40FA5A12B02FD0007B5879 /* JSON */ = {
+			isa = PBXGroup;
+			children = (
+				3A40FA5B12B02FD0007B5879 /* JSON.h */,
+				3A40FA5C12B02FD0007B5879 /* NSObject+SBJSON.h */,
+				3A40FA5D12B02FD0007B5879 /* NSObject+SBJSON.m */,
+				3A40FA5E12B02FD0007B5879 /* NSString+SBJSON.h */,
+				3A40FA5F12B02FD0007B5879 /* NSString+SBJSON.m */,
+				3A78949E12B0362B00D08FD5 /* NSData+SBJSON.h */,
+				3A78949F12B0362B00D08FD5 /* NSData+SBJSON.m */,
+				3A40FA6012B02FD0007B5879 /* SBJsonBase.h */,
+				3A40FA6112B02FD0007B5879 /* SBJsonBase.m */,
+				3A40FA6212B02FD0007B5879 /* SBJsonParser.h */,
+				3A40FA6312B02FD0007B5879 /* SBJsonParser.m */,
+				3A40FA6412B02FD0007B5879 /* SBJsonWriter.h */,
+				3A40FA6512B02FD0007B5879 /* SBJsonWriter.m */,
+			);
+			name = JSON;
+			path = "deps/json-framework/Classes";
+			sourceTree = SOURCE_ROOT;
 		};
 		3A7E717C1286F40600D85E4C /* file-tree */ = {
 			isa = PBXGroup;
@@ -342,6 +437,26 @@
 			name = "Syntax highlighting";
 			sourceTree = "<group>";
 		};
+		3A811A5812AE7DC400BC08AE /* hunch-cocoa */ = {
+			isa = PBXGroup;
+			children = (
+				3A811A6112AE7DE600BC08AE /* hcommon.h */,
+				3A811A6C12AE7DE600BC08AE /* NSThread-condensedStackTrace.h */,
+				3A811A6D12AE7DE600BC08AE /* NSThread-condensedStackTrace.m */,
+				3A811A6A12AE7DE600BC08AE /* HRefcountLogger.h */,
+				3A811A6B12AE7DE600BC08AE /* HRefcountLogger.m */,
+				3A811A6412AE7DE600BC08AE /* HDSemaphore.h */,
+				3A811A6512AE7DE600BC08AE /* HDSemaphore.m */,
+				3A811A6812AE7DE600BC08AE /* HEventEmitter.h */,
+				3A811A6912AE7DE600BC08AE /* HEventEmitter.m */,
+				3A811A6612AE7DE600BC08AE /* HDStream.h */,
+				3A811A6712AE7DE600BC08AE /* HDStream.m */,
+				3A811A6212AE7DE600BC08AE /* HDProcess.h */,
+				3A811A6312AE7DE600BC08AE /* HDProcess.m */,
+			);
+			name = "hunch-cocoa";
+			sourceTree = "<group>";
+		};
 		3A84117D129D5C8800F4A36D /* Toolbar */ = {
 			isa = PBXGroup;
 			children = (
@@ -351,8 +466,6 @@
 				3A84117F129D5CAE00F4A36D /* KTextField.mm */,
 				3A841181129D5D5C00F4A36D /* KTextFieldCell.h */,
 				3A841182129D5D5C00F4A36D /* KTextFieldCell.mm */,
-				3A62B9E4129D652700822274 /* KTextFieldDecoration.h */,
-				3A62B9E5129D652700822274 /* KTextFieldDecoration.mm */,
 				3ABF4BCF12A481E90020233C /* Location bar */,
 			);
 			name = Toolbar;
@@ -375,11 +488,9 @@
 			children = (
 				3AE5E8D112916F3300B17C4F /* Base */,
 				3AE5E8D212916F4100B17C4F /* NS categories */,
+				3A40FA5A12B02FD0007B5879 /* JSON */,
+				3A811A5812AE7DC400BC08AE /* hunch-cocoa */,
 				3A928C16122714E800DA7E43 /* main.m */,
-				3AE5EA551292B2D000B17C4F /* KConfig.h */,
-				3AE5EA561292B2D000B17C4F /* KConfig.mm */,
-				3AE5ECB41292F7B800B17C4F /* KThread.h */,
-				3AE5ECB51292F7B800B17C4F /* KThread.mm */,
 				3A928C14122714E800DA7E43 /* KAppDelegate.h */,
 				3A928C15122714E800DA7E43 /* KAppDelegate.mm */,
 				3A928C17122714E800DA7E43 /* KBrowser.h */,
@@ -392,9 +503,9 @@
 				3A92911A1229B96A00DA7E43 /* KTabContents.mm */,
 				3AC2D4A51298D8050066B586 /* KTextStorage.h */,
 				3AC2D4A61298D8050066B586 /* KTextStorage.mm */,
+				3A40F8C312AFE5D7007B5879 /* Node */,
 				3ABF539712A5D5360020233C /* Main views */,
 				3A84117D129D5C8800F4A36D /* Toolbar */,
-				3AE5E8D012916F2500B17C4F /* Scrollbar */,
 				3A158AD3128A09D300339E6E /* ICU */,
 				3ABF56AE12A69F9D0020233C /* Style */,
 				3A7E717D1286F41C00D85E4C /* Syntax highlighting */,
@@ -410,6 +521,7 @@
 				3A158DF1128A282F00339E6E /* style */,
 				3A158DF5128A296000339E6E /* lang */,
 				3A928C1A122714EE00DA7E43 /* Info.plist */,
+				3A40F92E12AFF21A007B5879 /* main.js */,
 				3A7E71121286EAE800D85E4C /* BrowserWindow.xib */,
 				3A928C1B122714EE00DA7E43 /* MainMenu.xib */,
 				3A9291171229B93C00DA7E43 /* Toolbar.xib */,
@@ -431,6 +543,7 @@
 				3A25E47A1281A6A200B6A33E /* libboost_regex-mt.dylib */,
 				3A25E47C1281A6A700B6A33E /* libsource-highlight.dylib */,
 				3A158AFE128A0A3700339E6E /* libicucore.dylib */,
+				3A811B4712AE8F1500BC08AE /* YAML.framework */,
 				3AE5EB871292DB5C00B17C4F /* CSS.framework */,
 				3ABF537912A5D0D80020233C /* FScript.framework */,
 			);
@@ -458,6 +571,10 @@
 				3A8411C1129D615800F4A36D /* KAutocompleteTextFieldCell.mm */,
 				3A62BA47129D756100822274 /* KAutocompleteTextFieldEditor.h */,
 				3A62BA48129D756100822274 /* KAutocompleteTextFieldEditor.mm */,
+				3A62B9E4129D652700822274 /* KTextFieldDecoration.h */,
+				3A62B9E5129D652700822274 /* KTextFieldDecoration.mm */,
+				3A811A7B12AE813800BC08AE /* KModeTextFieldDecoration.h */,
+				3A811A7C12AE813800BC08AE /* KModeTextFieldDecoration.mm */,
 			);
 			name = "Location bar";
 			sourceTree = "<group>";
@@ -465,6 +582,7 @@
 		3ABF539712A5D5360020233C /* Main views */ = {
 			isa = PBXGroup;
 			children = (
+				3AE5E8D012916F2500B17C4F /* Scrollbar */,
 				3ABF539412A5D52F0020233C /* KSplitView.h */,
 				3ABF539512A5D52F0020233C /* KSplitView.m */,
 				3A7E751D1287403100D85E4C /* KScrollView.h */,
@@ -515,6 +633,7 @@
 				3A62BE75129E0C3100822274 /* virtual_key_codes.h */,
 				3A62B9DF129D63F000822274 /* scoped_nsobject.h */,
 				3ABF483812A406AF0020233C /* hdispatch.h */,
+				3A78955C12B043B400D08FD5 /* hdispatch.m */,
 				3A6D4B03129591F300DBA2A3 /* kexceptions.h */,
 				3A6D4B04129591F300DBA2A3 /* kexceptions.m */,
 				3A1596E5128C607700339E6E /* hobjc.h */,
@@ -527,6 +646,12 @@
 				3A6D468912947AF700DBA2A3 /* HUnorderedMap.cc */,
 				3A74A4D1129FF6E000BB5503 /* HUTF8MappedUTF16String.h */,
 				3A74A4D2129FF6E000BB5503 /* HUTF8MappedUTF16String.mm */,
+				3AE5EA551292B2D000B17C4F /* KConfig2.h */,
+				3A40F8F012AFEDB5007B5879 /* KConfig2.m */,
+				3A40F8EF12AFEDA4007B5879 /* KConfig.h */,
+				3AE5EA561292B2D000B17C4F /* KConfig.mm */,
+				3AE5ECB41292F7B800B17C4F /* KThread.h */,
+				3AE5ECB51292F7B800B17C4F /* KThread.mm */,
 			);
 			name = Base;
 			sourceTree = "<group>";
@@ -573,6 +698,7 @@
 				3A928C1D1227151800DA7E43 /* Sources */,
 				3A928C1E1227151800DA7E43 /* Frameworks */,
 				3A9291381229BBB600DA7E43 /* Copy Frameworks */,
+				3A40F8DA12AFEB89007B5879 /* Copy Support Files */,
 			);
 			buildRules = (
 			);
@@ -591,7 +717,7 @@
 		3A928BEF1227143800DA7E43 /* Project object */ = {
 			isa = PBXProject;
 			buildConfigurationList = 3A928BF21227143800DA7E43 /* Build configuration list for PBXProject "kod" */;
-			compatibilityVersion = "Xcode 2.4";
+			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -662,6 +788,7 @@
 				3A158DF4128A282F00339E6E /* style in Resources */,
 				3A158E4C128A296100339E6E /* lang in Resources */,
 				3AE5E5171290955000B17C4F /* kod.icns in Resources */,
+				3A40F92F12AFF21A007B5879 /* main.js in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -672,6 +799,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3A78955D12B043B400D08FD5 /* hdispatch.m in Sources */,
 				3AE5EA571292B2D000B17C4F /* KConfig.mm in Sources */,
 				3A9291C51229BF7500DA7E43 /* main.m in Sources */,
 				3A9291C61229BFAD00DA7E43 /* KAppDelegate.mm in Sources */,
@@ -725,6 +853,20 @@
 				3ABF539612A5D52F0020233C /* KSplitView.m in Sources */,
 				3ABF541012A5DB1D0020233C /* KTextView.m in Sources */,
 				3ABF541F12A5DC6F0020233C /* KClipView.m in Sources */,
+				3A811A6E12AE7DE600BC08AE /* HDProcess.m in Sources */,
+				3A811A6F12AE7DE600BC08AE /* HDSemaphore.m in Sources */,
+				3A811A7012AE7DE600BC08AE /* HDStream.m in Sources */,
+				3A811A7112AE7DE600BC08AE /* HEventEmitter.m in Sources */,
+				3A811A7212AE7DE600BC08AE /* HRefcountLogger.m in Sources */,
+				3A811A7312AE7DE600BC08AE /* NSThread-condensedStackTrace.m in Sources */,
+				3A811A7D12AE813800BC08AE /* KModeTextFieldDecoration.mm in Sources */,
+				3A40F8C612AFE5F7007B5879 /* KNodeProcess.mm in Sources */,
+				3A40FA6612B02FD0007B5879 /* NSObject+SBJSON.m in Sources */,
+				3A40FA6712B02FD0007B5879 /* NSString+SBJSON.m in Sources */,
+				3A40FA6812B02FD0007B5879 /* SBJsonBase.m in Sources */,
+				3A40FA6912B02FD0007B5879 /* SBJsonParser.m in Sources */,
+				3A40FA6A12B02FD0007B5879 /* SBJsonWriter.m in Sources */,
+				3A7894A012B0362B00D08FD5 /* NSData+SBJSON.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -747,8 +889,7 @@
 		3A928BF01227143800DA7E43 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
-				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				COPY_PHASE_STRIP = NO;
 			};
 			name = Debug;
@@ -756,8 +897,7 @@
 		3A928BF11227143800DA7E43 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
-				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				COPY_PHASE_STRIP = YES;
 			};
 			name = Release;
@@ -774,12 +914,16 @@
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_3)",
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_4)",
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_5)",
+					"\"$(SRCROOT)/deps/syck/ext/cocoa/build/Development\"",
+					"\"$(SRCROOT)/deps/syck/ext/cocoa/build/Deployment\"",
+					"\"$(SRCROOT)/deps/libcss/cocoa-framework/build/Release\"",
 				);
 				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)\"";
 				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_2 = "\"$(SRCROOT)/../chromium-tabs/build/Debug\"";
 				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_3 = "\"$(SYSTEM_LIBRARY_DIR)/Frameworks/WebKit.framework/Versions/A/Frameworks\"";
 				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_4 = "\"$(SRCROOT)/../libcss/cocoa-framework/build/Release\"";
 				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_5 = "\"$(SRCROOT)/deps/libcss/cocoa-framework/build/Release\"";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_EXCEPTIONS = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
@@ -788,6 +932,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = src/prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = "K_WITH_F_SCRIPT=1";
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				HEADER_SEARCH_PATHS = (
 					src/ICU/include,
 					"$(HEADER_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
@@ -815,7 +960,7 @@
 				);
 				PREBINDING = NO;
 				PRODUCT_NAME = Kod;
-				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.6.sdk";
+				SDKROOT = macosx10.6;
 			};
 			name = Debug;
 		};
@@ -834,6 +979,9 @@
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_1)",
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_3)",
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_4)",
+					"\"$(SRCROOT)/deps/syck/ext/cocoa/build/Development\"",
+					"\"$(SRCROOT)/deps/syck/ext/cocoa/build/Deployment\"",
+					"\"$(SRCROOT)/deps/libcss/cocoa-framework/build/Release\"",
 				);
 				FRAMEWORK_SEARCH_PATHS_QUOTED_1 = "\"$(SYSTEM_LIBRARY_DIR)/Frameworks/WebKit.framework/Versions/A/Frameworks\"";
 				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)\"";
@@ -841,6 +989,7 @@
 				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_3 = "\"$(SRCROOT)/../libcss/cocoa-framework/build/Release\"";
 				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_4 = "\"$(SRCROOT)/deps/libcss/cocoa-framework/build/Release\"";
 				GCC_AUTO_VECTORIZATION = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DEBUGGING_SYMBOLS = used;
 				GCC_ENABLE_EXCEPTIONS = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
@@ -853,6 +1002,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = src/prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = "NDEBUG=1";
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				HEADER_SEARCH_PATHS = (
 					src/ICU/include,
 					"$(HEADER_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
@@ -880,7 +1030,7 @@
 				PREBINDING = NO;
 				PRESERVE_DEAD_CODE_INITS_AND_TERMS = YES;
 				PRODUCT_NAME = Kod;
-				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.6.sdk";
+				SDKROOT = macosx10.6;
 				STRIP_INSTALLED_PRODUCT = NO;
 				VALID_ARCHS = "i386 x86_64";
 				ZERO_LINK = NO;

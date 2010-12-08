@@ -74,6 +74,7 @@ static inline const char *debug_bits32(int32_t a) {
 #import "hatomic_flags.h"
 #import "hobjc.h"
 #import "hdispatch.h"
+#import "hcommon.h"
 
 #ifdef __cplusplus
 #import "basictypes.h"

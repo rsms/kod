@@ -4,3 +4,6 @@
 [submodule "deps/libcss"]
 	path = deps/libcss
 	url = git@github.com:rsms/libcss-osx.git
+[submodule "deps/json-framework"]
+	path = deps/json-framework
+	url = https://github.com/stig/json-framework.git

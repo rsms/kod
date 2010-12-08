@@ -61,11 +61,6 @@ typedef std::deque<KHighlightQueueEntry> KHighlightQueue;
 - (BOOL)deferHighlightTextStorage:(NSTextStorage*)textStorage
                           inRange:(NSRange)range;
 
-- (BOOL)highlightTextStorage:(NSTextStorage*)textStorage
-                     inRange:(NSRange)editedRange
-           withModifiedState:(KSourceHighlightState*)state
-                     inRange:(NSRange)stateRange;
-
 - (void)clearHighlighting;
 - (void)refreshStyle;
 

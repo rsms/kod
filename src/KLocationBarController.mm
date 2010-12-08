@@ -3,6 +3,8 @@
 #import "KDocumentController.h"
 #import <ChromiumTabs/ChromiumTabs.h>
 #import "virtual_key_codes.h"
+#import "KModeTextFieldDecoration.h"
+#import "KAutocompleteTextFieldCell.h"
 
 @implementation KLocationBarController
 
@@ -10,6 +12,12 @@
   if ((self = [super init])) {
     textField_ = atf; // weak, owned by toolbar controller
     textField_.delegate = self;
+    
+    // mode decoration
+    //KModeTextFieldDecoration *modeDecoration =
+    //    [[KModeTextFieldDecoration alloc] initWithName:@"C++"];
+    //KAutocompleteTextFieldCell *cell = (KAutocompleteTextFieldCell*)atf.cell;
+    //[cell addRightDecoration:modeDecoration];
   }
   return self;
 }

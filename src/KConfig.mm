@@ -53,3 +53,9 @@ NSString* KConfiguration::resourcePath(NSString* relpath) {
   return relpath ? [resourceURL(relpath) path] : [resourceURL_ path];
 }
 
+
+NSString* KConfiguration::supportPath(NSString* relpath) {
+  NSString *sharedSupportPath = [bundle sharedSupportPath];
+  return relpath ? [sharedSupportPath stringByAppendingPathComponent:relpath]
+                 : sharedSupportPath;
+}

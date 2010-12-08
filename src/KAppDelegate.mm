@@ -5,6 +5,7 @@
 #import "KDocumentController.h"
 #import "KConfig.h"
 #import "KStyle.h"
+#import "KNodeProcess.h"
 #import "common.h"
 
 #if K_WITH_F_SCRIPT
@@ -63,6 +64,9 @@
   #if K_WITH_F_SCRIPT
   [[NSApp mainMenu] addItem:[[FScriptMenuItem alloc] init]];
   #endif
+  
+  // Start node.js
+  [KNodeProcess sharedProcess];
 }
 
 - (void)openUrl:(NSAppleEventDescriptor*)event

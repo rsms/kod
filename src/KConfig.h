@@ -1,3 +1,5 @@
+#ifdef __cplusplus
+
 /**
  * Kod configuration
  */
@@ -40,6 +42,9 @@ class KConfiguration {
   // resources
   NSURL* resourceURL(NSString* relpath=nil);
   NSString* resourcePath(NSString* relpath=nil);
+  
+  // support files
+  NSString* supportPath(NSString* relpath=nil);
 
  protected:
   static KConfiguration const *instance_;
@@ -92,3 +97,5 @@ inline void KConfiguration::set(NSString* key, NSColor* v) {
   //[defaults setColor:v forKey:key];
 }
 #undef iimpl_setter
+
+#endif  // __cplusplus

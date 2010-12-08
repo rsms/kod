@@ -46,41 +46,4 @@ static inline bool hatomic_flags_test(hatomic_flags_t *flags, uint32_t flag) {
   return (*((char*)flags + (flag >> 3))) & (0x80 >> (flag & 7));
 }
 
-
-// a simple test (disabled by if-guard by default)
-#if 0
-static inline void hatomic_flags_test() {
-  hatomic_flags_t flags = 0;
-  
-  #define hafdo(op, n) do { \
-    bool rv = hatomic_flags_##op(&flags, n); \
-    fprintf(stderr, "hatomic_flags_%-5s(%2d) -> %s \t %s\n", \
-    #op, n, rv?"true ":"false", debug_bits32(flags)); } while(0)
-  
-  hafdo(set, 31);
-  hafdo(set, 1);
-  hafdo(set, 24);
-  hafdo(set, 7);
-  hafdo(test, 7);
-  hafdo(clear, 7);
-  hafdo(clear, 7);
-  hafdo(test, 7);
-  hafdo(test, 24);
-  hafdo(test, 31);
-  hafdo(test, 3);
-  hafdo(set, 3);
-  hafdo(test, 3);
-  flags = 0;
-  for (int i=0;i<32;++i) { hafdo(set, i); }
-  for (int i=0;i<32;++i) assert(hatomic_flags_test(&flags, i) == true);
-  for (int i=0;i<16;++i) { hafdo(clear, i); }
-  for (int i=0;i<16;++i) assert(hatomic_flags_test(&flags, i) == false);
-  for (int i=16;i<32;++i) assert(hatomic_flags_test(&flags, i) == true);
-  for (int i=16;i<32;++i) { hafdo(clear, i); }
-  for (int i=16;i<32;++i) assert(hatomic_flags_test(&flags, i) == false);
-  
-  #undef hafdo
-}
-#endif
-
 #endif  // HATOMIC_FLAGS_H_

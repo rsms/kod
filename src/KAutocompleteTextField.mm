@@ -27,9 +27,9 @@
 }
 
 - (void)awakeFromNib {
-  DCHECK([[self cell] isKindOfClass:[KAutocompleteTextFieldCell class]]);
-  [[self cell] setTruncatesLastVisibleLine:YES];
-  [[self cell] setLineBreakMode:NSLineBreakByTruncatingTail];
+  KAutocompleteTextFieldCell *cell = [self cell];
+  [cell setTruncatesLastVisibleLine:YES];
+  [cell setLineBreakMode:NSLineBreakByTruncatingMiddle];
   currentToolTips_.reset([[NSMutableArray alloc] init]);
 }
 
@@ -45,7 +45,6 @@
   NSCell* cell = [super cell];
   if (!cell)
     return nil;
-
   DCHECK([cell isKindOfClass:[KAutocompleteTextFieldCell class]]);
   return static_cast<KAutocompleteTextFieldCell*>(cell);
 }

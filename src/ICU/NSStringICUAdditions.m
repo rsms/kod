@@ -21,6 +21,7 @@ typedef struct URegularExpression URegularExpression;
 #define U_HIDE_DRAFT_API 1
 #define U_DISABLE_RENAMING 1
 #import <unicode/uregex.h>
+#import <unicode/ustring.h>
 
 @interface NSString (NSStringICUPrivateAdditions)
 

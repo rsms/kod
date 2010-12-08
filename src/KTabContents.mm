@@ -53,10 +53,10 @@ static NSFont* _kDefaultFont = nil;
 
 + (NSFont*)defaultFont {
   if (!_kDefaultFont) {
-    _kDefaultFont = [[NSFont fontWithName:@"M+ 1m light" size:13.0] retain];
+    _kDefaultFont = [[NSFont fontWithName:@"M+ 1m light" size:11.0] retain];
     if (!_kDefaultFont) {
       WLOG("unable to find default font \"M+\" -- using system default");
-      _kDefaultFont = [[NSFont userFixedPitchFontOfSize:13.0] retain];
+      _kDefaultFont = [[NSFont userFixedPitchFontOfSize:11.0] retain];
     }
   }
   return _kDefaultFont;
@@ -872,48 +872,6 @@ longestEffectiveRange:&range
   });
   
   return YES;
-}
-
-
-- (BOOL)highlightTextStorage:(NSTextStorage*)textStorage
-                     inRange:(NSRange)range
-           withModifiedState:(KSourceHighlightState*)state
-                     inRange:(NSRange)stateRange {
-K_DEPRECATED; // use deferHighlightTextStorage:inRange:
-/*  if (textStorage.length == 0) {
-    return YES;
-  }
-  
-  DLOG("highlightTextStorage --START-- (%s)",
-       [NSThread isMainThread] ? "on main thread" : "in background");
-  sourceHighlighter_->beginBufferingOfAttributes();
-  NSRange affectedRange =
-      sourceHighlighter_->highlight(textStorage, style_, range,
-                                    lastEditedHighlightState_,
-                                    lastEditedHighlightStateRange_);
-  // this is needed to minimize the time the UI is locked
-  // BUG: when deleting a large piece of text, a "lagging"/"slow rendering"
-  // effect occurs which is very weird
-  DLOG("highlightTextStorage --FLUSH-- %@", NSStringFromRange(affectedRange));
-  [textStorage beginEditing];
-  BOOL did_set = hatomic_flags_set(&stateFlags_, kHighlightingIsFlushing);
-  assert(did_set == YES);
-  sourceHighlighter_->endFlushBufferedAttributes(textStorage);
-  [textStorage endEditing];
-  DLOG("highlightTextStorage --END--");
-  // We need to clear the kHighlightingIsFlushing flag on the main thread
-  // because directly after endEditing is called above,
-  // |textStorageDidProcessEditing| will be invoked since Cocoa holds a lock and
-  // waits during |beginEditing|->|endEditing|.
-  // Now, in |textStorageDidProcessEditing| we check if we are currently
-  // flushing highlight attributes, thus the flag must still be set, but cleared
-  // at the next runloop tick, which is what this block accomplishes.
-  // The |kHighlightingIsProcessing| flag needs to be cleared after the
-  // |kHighlightingIsFlushing| flag, so we simply clear it in the same block.
-  K_DISPATCH_MAIN_ASYNC(
-    hatomic_flags_clear(&stateFlags_, kHighlightingIsFlushing);
-  );
-  return YES;*/
 }
 
 
