@@ -1,4 +1,5 @@
 #import <ChromiumTabs/common.h>
+#import <ChromiumTabs/fast_resize_view.h>
 
 #import "KBrowserWindowController.h"
 #import "KAppDelegate.h"
@@ -8,6 +9,7 @@
 #import "KFileOutlineView.h"
 #import "KScroller.h"
 #import "KToolbarController.h"
+#import "KStatusBarController.h"
 
 
 @implementation KBrowserWindowController
@@ -54,6 +56,19 @@
 
 
 #pragma mark -
+#pragma mark Properties
+
+
+- (CGFloat)statusBarHeight {
+  NSView *view;
+  if (statusBarController_ && (view = statusBarController_.view)) {
+    return view.frame.size.height;
+  }
+  return 0.0;
+}
+
+
+#pragma mark -
 #pragma mark Actions
 
 
@@ -61,15 +76,6 @@
   DLOG("%s %@", __func__, document);
   [super setDocument:document];
 }*/
-
-
-- (void)layoutTabContentArea:(NSRect)newFrame {
-  // Adjust height after the tabstrip have been introduced to the window top
-  NSRect splitViewFrame = verticalSplitView_.frame;
-  splitViewFrame.size.height = newFrame.size.height;
-  [verticalSplitView_ setFrame:splitViewFrame];
-  [super layoutTabContentArea:newFrame];
-}
 
 
 - (IBAction)focusLocationBar:(id)sender {
@@ -134,6 +140,20 @@ willPositionSheet:(NSWindow *)sheet
   // Ask the toolbar controller if it wants to return a custom field editor
   // for the specific object.
   return [toolbarController_ customFieldEditorForObject:obj];
+}
+
+
+#pragma mark -
+#pragma mark CTBrowserWindowController impl
+
+
+- (void)layoutTabContentArea:(NSRect)newFrame {
+  // Adjust height after the tabstrip have been introduced to the window top
+  NSRect splitViewFrame = verticalSplitView_.frame;
+  newFrame.size.height -= [self statusBarHeight];
+  splitViewFrame.size.height = newFrame.size.height;
+  [verticalSplitView_ setFrame:splitViewFrame];
+  [super layoutTabContentArea:newFrame];
 }
 
 

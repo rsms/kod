@@ -41,8 +41,7 @@ static OSSpinLock gLabColorSpaceSpinLock_ = OS_SPINLOCK_INIT;
     CGFloat range[4] = {-127, 127, -127, 127};
     CGColorSpaceRef cs = CGColorSpaceCreateLab(whitePoint, blackPoint, range);
     if (cs) {
-      gLabColorSpace_ =
-          [[[NSColorSpace alloc] initWithCGColorSpace:cs] autorelease];
+      gLabColorSpace_ = [[NSColorSpace alloc] initWithCGColorSpace:cs];
       CGColorSpaceRelease(cs);
     }
   }

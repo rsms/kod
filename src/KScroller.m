@@ -7,12 +7,22 @@
 NSColor *KScrollerKnobColorNormal;
 NSColor *KScrollerKnobColorHover;
 
+NSColor *KScrollerKnobSlotColorNormal;
+NSColor *KScrollerKnobSlotColorHover;
+
 + (void)load {
   NSAutoreleasePool *pool = [NSAutoreleasePool new];
+  
   KScrollerKnobColorNormal =
     [[NSColor colorWithCalibratedWhite:1.0 alpha:0.4] retain];
   KScrollerKnobColorHover =
     [[NSColor colorWithCalibratedWhite:1.0 alpha:0.9] retain];
+
+  KScrollerKnobSlotColorNormal =
+    [[NSColor colorWithCalibratedWhite:1.0 alpha:0.15] retain];
+  KScrollerKnobSlotColorHover =
+    [[NSColor colorWithCalibratedWhite:1.0 alpha:0.2] retain];
+  
   [pool drain];
 }
 
@@ -32,14 +42,6 @@ NSColor *KScrollerKnobColorHover;
     vertical_ = YES;
   else
     vertical_ = NO;
-  NSTrackingArea *trackingArea =
-      [[NSTrackingArea alloc] initWithRect:[self bounds]
-                                   options:NSTrackingMouseEnteredAndExited
-                                          |NSTrackingActiveInKeyWindow
-                                          |NSTrackingInVisibleRect
-                                     owner:self
-                                  userInfo:nil];
-  [self addTrackingArea:trackingArea];
 }
 
 
@@ -96,18 +98,20 @@ NSColor *KScrollerKnobColorHover;
 
 
 - (void)drawKnobSlotInRect:(NSRect)slotRect highlight:(BOOL)highlight {
-  /*NSColor *color = nil;
-  if (parentTextView_) color = parentTextView_.backgroundColor;
-  if (!color) color = KFileOutlineViewBackgroundColor;
-  [color set];
-  [[NSColor colorWithCalibratedWhite:1.0 alpha:0.2] set];
-  //[[NSColor randomColorWithSaturation:0.5 brightness:0.5 alpha:1.0] set];
-	NSRectFill([self bounds]);
-  return;*/
-  
   NSRect knobRect = [self rectForPart:NSScrollerKnob];
-  
   if (knobRect.size.width != 0.0) {
+    // enable mouse tracking
+    if (!trackingArea_) {
+      trackingArea_ =
+        [[NSTrackingArea alloc] initWithRect:[self bounds]
+                                     options:NSTrackingMouseEnteredAndExited
+                                            |NSTrackingActiveInKeyWindow
+                                            |NSTrackingInVisibleRect
+                                       owner:self
+                                    userInfo:nil];
+      [self addTrackingArea:trackingArea_];
+    }
+    
     // bubble
     if (vertical_) {
       slotRect.size.width = 9.0;
@@ -118,8 +122,15 @@ NSColor *KScrollerKnobColorHover;
     }
     NSBezierPath *bp =
         [NSBezierPath bezierPathWithRoundedRect:slotRect xRadius:4.5 yRadius:4.5];
-    [[NSColor colorWithCalibratedWhite:1.0 alpha:0.15] set];
+    [(hover_ ? KScrollerKnobSlotColorHover : KScrollerKnobSlotColorNormal) set];
     [bp fill];
+  } else {
+    // disable mouse tracking
+    if (trackingArea_) {
+      [self removeTrackingArea:trackingArea_];
+      [trackingArea_ release];
+      trackingArea_ = nil;
+    }
   }
 }
 

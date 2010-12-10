@@ -1,0 +1,6 @@
+
+@interface KStatusBarView : NSView {
+
+}
+
+@end

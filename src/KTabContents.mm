@@ -12,6 +12,7 @@
 #import "KScrollView.h"
 #import "KLangMap.h"
 #import "KTextView.h"
+#import "KStatusBarView.h"
 
 
 // used in stateFlags_
@@ -1484,6 +1485,7 @@ originalContentsURL:(NSURL *)absoluteOriginalContentsURL
   // We need to recalculate the frame of the NSTextView when the frame changes.
   // This happens when a tab is created and when it's moved between windows.
   //NSLog(@"viewFrameDidChange:%@", NSStringFromRect(newFrame));
+  //newFrame.size.height -= KStatusBarViewHeight;
   [super viewFrameDidChange:newFrame];
   NSClipView* clipView = [[view_ subviews] objectAtIndex:0];
   NSTextView* tv = [[clipView subviews] objectAtIndex:0];
