@@ -35,11 +35,6 @@
   fileTreeController_ =
       [[KFileTreeController alloc] initWithOutlineView:fileOutlineView_];
 
-  // Setup scrollers
-  NSScrollView *fileTreeScrollView =
-      (NSScrollView*)[[fileOutlineView_ superview] superview];
-  DLOG("fileTreeScrollView => %@", fileTreeScrollView);
-  KScroller *hScroller = [[KScroller alloc] initWithFrame:NSZeroRect];
   
   // We don't use the "New tab" button
   kassert(tabStripController_);
@@ -111,16 +106,32 @@
   return y;
 }
 
+#pragma mark NSSplitView Delegate Methods
 
-#pragma mark -
-#pragma mark NSSplitViewDelegate protocol
+// Add the resize handle rect to the split view hot zone
+- (NSRect)splitView:(NSSplitView *)splitView
+      effectiveRect:(NSRect)effectiveRect
+       forDrawnRect:(NSRect)drawnRect
+   ofDividerAtIndex:(NSInteger)dividerIndex {
+  // Note: we don't check splitView as we only have one split view
+  // Note: we don't check dividerIndex since we only have one divider
 
-- (BOOL)splitView:(NSSplitView*)sv shouldAdjustSizeOfSubview:(NSView*)subview {
-  if (sv == verticalSplitView_ &&
-      subview == leftmostSubviewOfVerticalSplitView_) {
-    return NO;
+  // Expand by 4px to the left (we can not expand to the right since the text
+  // view is tracked)
+  effectiveRect.origin.x -= 2.0;
+  effectiveRect.size.width += 2.0;
+
+  // extend into toolbar
+  if (toolbarController_) {
+    NSRect toolbarFrame = toolbarController_.view.frame;
+    effectiveRect.size.height += toolbarFrame.size.height;
+    effectiveRect.origin.y -= toolbarFrame.size.height;
   }
-  return YES;
+
+  // Note: we do not extend info status bar since the window can be moved by
+  //       dragging in the status bar, and that would mess things up.
+
+  return effectiveRect;
 }
 
 
@@ -147,13 +158,36 @@ willPositionSheet:(NSWindow *)sheet
 #pragma mark CTBrowserWindowController impl
 
 
+- (void)updateToolbarWithContents:(CTTabContents*)contents
+               shouldRestoreState:(BOOL)shouldRestore {
+  // safe even if toolbarController_ is nil
+  [toolbarController_ updateToolbarWithContents:contents
+                             shouldRestoreState:shouldRestore];
+  [statusBarController_ updateWithContents:(KTabContents*)contents];
+}
+
+
 - (void)layoutTabContentArea:(NSRect)newFrame {
   // Adjust height after the tabstrip have been introduced to the window top
   NSRect splitViewFrame = verticalSplitView_.frame;
   newFrame.size.height -= [self statusBarHeight];
-  splitViewFrame.size.height = newFrame.size.height;
+  newFrame.origin.y = [self statusBarHeight];
+  splitViewFrame.size = newFrame.size;
+  splitViewFrame.origin.x = 0.0;
+  splitViewFrame.origin.y = newFrame.origin.y;
   [verticalSplitView_ setFrame:splitViewFrame];
+  
   [super layoutTabContentArea:newFrame];
+}
+
+
+- (void)layoutSubviews {
+  [super layoutSubviews];
+  // Normally, we don't need to tell the toolbar whether or not to show the
+  // divider, but things break down during animation.
+  if (toolbarController_) {
+    [toolbarController_ setDividerOpacity:0.6];
+  }
 }
 
 

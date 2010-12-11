@@ -36,7 +36,8 @@ static const uint8_t kEditChangeStatusUserAlteredText = 2;
 @implementation KTabContents
 
 @synthesize isDirty = isDirty_,
-            textEncoding = textEncoding_;
+            textEncoding = textEncoding_,
+            textView = textView_;
 
 static NSImage* _kDefaultIcon = nil;
 static NSString* _kDefaultTitle = @"Untitled";
@@ -1485,13 +1486,13 @@ originalContentsURL:(NSURL *)absoluteOriginalContentsURL
   // We need to recalculate the frame of the NSTextView when the frame changes.
   // This happens when a tab is created and when it's moved between windows.
   //NSLog(@"viewFrameDidChange:%@", NSStringFromRect(newFrame));
-  //newFrame.size.height -= KStatusBarViewHeight;
   [super viewFrameDidChange:newFrame];
   NSClipView* clipView = [[view_ subviews] objectAtIndex:0];
   NSTextView* tv = [[clipView subviews] objectAtIndex:0];
   NSRect frame = NSZeroRect;
   frame.size = [(NSScrollView*)(view_) contentSize];
   [tv setFrame:frame];
+  DLOG("textView frame -> %@", NSStringFromRect(frame));
 }
 
 

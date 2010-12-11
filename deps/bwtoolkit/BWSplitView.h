@@ -24,12 +24,12 @@
 	BOOL isAnimating;
 }
 
-@property (retain) NSMutableDictionary *minValues, *maxValues, *minUnits, *maxUnits;
+@property (nonatomic, retain) NSMutableDictionary *minValues, *maxValues, *minUnits, *maxUnits;
 @property (retain) NSMutableDictionary *resizableSubviewPreferredProportion, *nonresizableSubviewPreferredSize;
 @property (retain) NSArray *stateForLastPreferredCalculations;
 @property (retain) NSButton *toggleCollapseButton;
 @property (assign) id secondaryDelegate;
-@property BOOL collapsibleSubviewCollapsed;
+@property (nonatomic) BOOL collapsibleSubviewCollapsed;
 @property int collapsiblePopupSelection;
 @property BOOL dividerCanCollapse;
 
@@ -37,7 +37,7 @@
 @property (copy) NSColor *color;
 
 // Flag for whether a custom divider color is enabled. If not, the standard divider color is used.
-@property BOOL colorIsEnabled;
+@property (nonatomic) BOOL colorIsEnabled;
 
 // Call this method to collapse or expand a subview configured as collapsible in the IB inspector.
 - (IBAction)toggleCollapse:(id)sender;

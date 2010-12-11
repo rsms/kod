@@ -78,7 +78,16 @@
 		3A929887122AC39100DA7E43 /* ChromiumTabs.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 3A9297E4122AB49D00DA7E43 /* ChromiumTabs.framework */; };
 		3A93A8401299E14300185857 /* NSURL-blocks.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A93A83F1299E14300185857 /* NSURL-blocks.m */; };
 		3AB97BD612B2836800F4ADB2 /* KStatusBarView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AB97BD512B2836800F4ADB2 /* KStatusBarView.m */; };
-		3AB97C3612B2893C00F4ADB2 /* KStatusBarController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AB97C3512B2893C00F4ADB2 /* KStatusBarController.m */; };
+		3AB97C3612B2893C00F4ADB2 /* KStatusBarController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3AB97C3512B2893C00F4ADB2 /* KStatusBarController.mm */; };
+		3AB97D4512B2990500F4ADB2 /* BWSplitView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AB97D4412B2990500F4ADB2 /* BWSplitView.m */; };
+		3AB97D4C12B2993200F4ADB2 /* NSColor+BWAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AB97D4B12B2993200F4ADB2 /* NSColor+BWAdditions.m */; };
+		3AB97D4F12B2993C00F4ADB2 /* NSEvent+BWAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AB97D4E12B2993C00F4ADB2 /* NSEvent+BWAdditions.m */; };
+		3AB97D5412B2998C00F4ADB2 /* BWAnchoredButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AB97D5112B2998C00F4ADB2 /* BWAnchoredButton.m */; };
+		3AB97D5512B2998C00F4ADB2 /* BWAnchoredButtonBar.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AB97D5312B2998C00F4ADB2 /* BWAnchoredButtonBar.m */; };
+		3AB97D5D12B2999B00F4ADB2 /* NSView+BWAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AB97D5C12B2999B00F4ADB2 /* NSView+BWAdditions.m */; };
+		3AB97DA612B2A00F00F4ADB2 /* BWCustomView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AB97DA512B2A00F00F4ADB2 /* BWCustomView.m */; };
+		3AB97DAC12B2A02300F4ADB2 /* NSApplication+BWAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AB97DA812B2A02300F4ADB2 /* NSApplication+BWAdditions.m */; };
+		3AB97DAD12B2A02300F4ADB2 /* NSWindow+BWAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AB97DAB12B2A02300F4ADB2 /* NSWindow+BWAdditions.m */; };
 		3ABF49C012A450660020233C /* NSView-kod.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3ABF49BF12A450660020233C /* NSView-kod.mm */; };
 		3ABF4C6D12A48E7D0020233C /* NSData-kod.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3ABF4C6C12A48E7D0020233C /* NSData-kod.mm */; };
 		3ABF4F3E12A55AFC0020233C /* NSString-editdistance.m in Sources */ = {isa = PBXBuildFile; fileRef = 3ABF4F3D12A55AFC0020233C /* NSString-editdistance.m */; };
@@ -313,7 +322,26 @@
 		3AB97BD412B2836800F4ADB2 /* KStatusBarView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KStatusBarView.h; sourceTree = "<group>"; };
 		3AB97BD512B2836800F4ADB2 /* KStatusBarView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KStatusBarView.m; sourceTree = "<group>"; };
 		3AB97C3412B2893C00F4ADB2 /* KStatusBarController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KStatusBarController.h; sourceTree = "<group>"; };
-		3AB97C3512B2893C00F4ADB2 /* KStatusBarController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KStatusBarController.m; sourceTree = "<group>"; };
+		3AB97C3512B2893C00F4ADB2 /* KStatusBarController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KStatusBarController.mm; sourceTree = "<group>"; };
+		3AB97D4312B2990500F4ADB2 /* BWSplitView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BWSplitView.h; path = deps/bwtoolkit/BWSplitView.h; sourceTree = SOURCE_ROOT; };
+		3AB97D4412B2990500F4ADB2 /* BWSplitView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = BWSplitView.m; path = deps/bwtoolkit/BWSplitView.m; sourceTree = SOURCE_ROOT; };
+		3AB97D4A12B2993200F4ADB2 /* NSColor+BWAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSColor+BWAdditions.h"; path = "deps/bwtoolkit/NSColor+BWAdditions.h"; sourceTree = SOURCE_ROOT; };
+		3AB97D4B12B2993200F4ADB2 /* NSColor+BWAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSColor+BWAdditions.m"; path = "deps/bwtoolkit/NSColor+BWAdditions.m"; sourceTree = SOURCE_ROOT; };
+		3AB97D4D12B2993C00F4ADB2 /* NSEvent+BWAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSEvent+BWAdditions.h"; path = "deps/bwtoolkit/NSEvent+BWAdditions.h"; sourceTree = SOURCE_ROOT; };
+		3AB97D4E12B2993C00F4ADB2 /* NSEvent+BWAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSEvent+BWAdditions.m"; path = "deps/bwtoolkit/NSEvent+BWAdditions.m"; sourceTree = SOURCE_ROOT; };
+		3AB97D5012B2998C00F4ADB2 /* BWAnchoredButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BWAnchoredButton.h; path = deps/bwtoolkit/BWAnchoredButton.h; sourceTree = SOURCE_ROOT; };
+		3AB97D5112B2998C00F4ADB2 /* BWAnchoredButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = BWAnchoredButton.m; path = deps/bwtoolkit/BWAnchoredButton.m; sourceTree = SOURCE_ROOT; };
+		3AB97D5212B2998C00F4ADB2 /* BWAnchoredButtonBar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BWAnchoredButtonBar.h; path = deps/bwtoolkit/BWAnchoredButtonBar.h; sourceTree = SOURCE_ROOT; };
+		3AB97D5312B2998C00F4ADB2 /* BWAnchoredButtonBar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = BWAnchoredButtonBar.m; path = deps/bwtoolkit/BWAnchoredButtonBar.m; sourceTree = SOURCE_ROOT; };
+		3AB97D5B12B2999B00F4ADB2 /* NSView+BWAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSView+BWAdditions.h"; path = "deps/bwtoolkit/NSView+BWAdditions.h"; sourceTree = SOURCE_ROOT; };
+		3AB97D5C12B2999B00F4ADB2 /* NSView+BWAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSView+BWAdditions.m"; path = "deps/bwtoolkit/NSView+BWAdditions.m"; sourceTree = SOURCE_ROOT; };
+		3AB97DA412B2A00F00F4ADB2 /* BWCustomView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BWCustomView.h; path = deps/bwtoolkit/BWCustomView.h; sourceTree = SOURCE_ROOT; };
+		3AB97DA512B2A00F00F4ADB2 /* BWCustomView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = BWCustomView.m; path = deps/bwtoolkit/BWCustomView.m; sourceTree = SOURCE_ROOT; };
+		3AB97DA712B2A02300F4ADB2 /* NSApplication+BWAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSApplication+BWAdditions.h"; path = "deps/bwtoolkit/NSApplication+BWAdditions.h"; sourceTree = SOURCE_ROOT; };
+		3AB97DA812B2A02300F4ADB2 /* NSApplication+BWAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSApplication+BWAdditions.m"; path = "deps/bwtoolkit/NSApplication+BWAdditions.m"; sourceTree = SOURCE_ROOT; };
+		3AB97DA912B2A02300F4ADB2 /* NSCustomView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NSCustomView.h; path = deps/bwtoolkit/NSCustomView.h; sourceTree = SOURCE_ROOT; };
+		3AB97DAA12B2A02300F4ADB2 /* NSWindow+BWAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSWindow+BWAdditions.h"; path = "deps/bwtoolkit/NSWindow+BWAdditions.h"; sourceTree = SOURCE_ROOT; };
+		3AB97DAB12B2A02300F4ADB2 /* NSWindow+BWAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSWindow+BWAdditions.m"; path = "deps/bwtoolkit/NSWindow+BWAdditions.m"; sourceTree = SOURCE_ROOT; };
 		3ABF483812A406AF0020233C /* hdispatch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = hdispatch.h; sourceTree = "<group>"; };
 		3ABF49BE12A450660020233C /* NSView-kod.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSView-kod.h"; sourceTree = "<group>"; };
 		3ABF49BF12A450660020233C /* NSView-kod.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = "NSView-kod.mm"; sourceTree = "<group>"; };
@@ -496,6 +524,7 @@
 				3AE5E8D212916F4100B17C4F /* NS categories */,
 				3A40FA5A12B02FD0007B5879 /* JSON */,
 				3A811A5812AE7DC400BC08AE /* hunch-cocoa */,
+				3AB97D3F12B298FB00F4ADB2 /* BWToolkit */,
 				3A928C16122714E800DA7E43 /* main.m */,
 				3A928C14122714E800DA7E43 /* KAppDelegate.h */,
 				3A928C15122714E800DA7E43 /* KAppDelegate.mm */,
@@ -571,9 +600,35 @@
 				3AB97BD412B2836800F4ADB2 /* KStatusBarView.h */,
 				3AB97BD512B2836800F4ADB2 /* KStatusBarView.m */,
 				3AB97C3412B2893C00F4ADB2 /* KStatusBarController.h */,
-				3AB97C3512B2893C00F4ADB2 /* KStatusBarController.m */,
+				3AB97C3512B2893C00F4ADB2 /* KStatusBarController.mm */,
 			);
 			name = "Status bar";
+			sourceTree = "<group>";
+		};
+		3AB97D3F12B298FB00F4ADB2 /* BWToolkit */ = {
+			isa = PBXGroup;
+			children = (
+				3AB97DA412B2A00F00F4ADB2 /* BWCustomView.h */,
+				3AB97DA512B2A00F00F4ADB2 /* BWCustomView.m */,
+				3AB97D4312B2990500F4ADB2 /* BWSplitView.h */,
+				3AB97D4412B2990500F4ADB2 /* BWSplitView.m */,
+				3AB97D5012B2998C00F4ADB2 /* BWAnchoredButton.h */,
+				3AB97D5112B2998C00F4ADB2 /* BWAnchoredButton.m */,
+				3AB97D5212B2998C00F4ADB2 /* BWAnchoredButtonBar.h */,
+				3AB97D5312B2998C00F4ADB2 /* BWAnchoredButtonBar.m */,
+				3AB97DA912B2A02300F4ADB2 /* NSCustomView.h */,
+				3AB97DA712B2A02300F4ADB2 /* NSApplication+BWAdditions.h */,
+				3AB97DA812B2A02300F4ADB2 /* NSApplication+BWAdditions.m */,
+				3AB97DAA12B2A02300F4ADB2 /* NSWindow+BWAdditions.h */,
+				3AB97DAB12B2A02300F4ADB2 /* NSWindow+BWAdditions.m */,
+				3AB97D5B12B2999B00F4ADB2 /* NSView+BWAdditions.h */,
+				3AB97D5C12B2999B00F4ADB2 /* NSView+BWAdditions.m */,
+				3AB97D4A12B2993200F4ADB2 /* NSColor+BWAdditions.h */,
+				3AB97D4B12B2993200F4ADB2 /* NSColor+BWAdditions.m */,
+				3AB97D4D12B2993C00F4ADB2 /* NSEvent+BWAdditions.h */,
+				3AB97D4E12B2993C00F4ADB2 /* NSEvent+BWAdditions.m */,
+			);
+			name = BWToolkit;
 			sourceTree = "<group>";
 		};
 		3ABF4BCF12A481E90020233C /* Location bar */ = {
@@ -888,7 +943,16 @@
 				3A4CB3E112B1872300B45858 /* NSString-data.m in Sources */,
 				3A4CB3FD12B1897B00B45858 /* SBJsonStreamWriter.m in Sources */,
 				3AB97BD612B2836800F4ADB2 /* KStatusBarView.m in Sources */,
-				3AB97C3612B2893C00F4ADB2 /* KStatusBarController.m in Sources */,
+				3AB97C3612B2893C00F4ADB2 /* KStatusBarController.mm in Sources */,
+				3AB97D4512B2990500F4ADB2 /* BWSplitView.m in Sources */,
+				3AB97D4C12B2993200F4ADB2 /* NSColor+BWAdditions.m in Sources */,
+				3AB97D4F12B2993C00F4ADB2 /* NSEvent+BWAdditions.m in Sources */,
+				3AB97D5412B2998C00F4ADB2 /* BWAnchoredButton.m in Sources */,
+				3AB97D5512B2998C00F4ADB2 /* BWAnchoredButtonBar.m in Sources */,
+				3AB97D5D12B2999B00F4ADB2 /* NSView+BWAdditions.m in Sources */,
+				3AB97DA612B2A00F00F4ADB2 /* BWCustomView.m in Sources */,
+				3AB97DAC12B2A02300F4ADB2 /* NSApplication+BWAdditions.m in Sources */,
+				3AB97DAD12B2A02300F4ADB2 /* NSWindow+BWAdditions.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

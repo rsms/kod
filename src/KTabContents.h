@@ -42,6 +42,7 @@ typedef std::deque<KHighlightQueueEntry> KHighlightQueue;
 @property(readonly) KBrowserWindowController* windowController;
 @property(readonly) NSMutableParagraphStyle *paragraphStyle; // compound
 @property(retain, nonatomic) NSString *langId;
+@property(readonly, nonatomic) NSTextView* textView;
 
 
 + (NSFont*)defaultFont;

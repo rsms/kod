@@ -47,7 +47,7 @@ static float scaleFactor = 1.0f;
 @end
 
 @interface BWSplitView ()
-@property BOOL checkboxIsEnabled;
+@property (nonatomic) BOOL checkboxIsEnabled;
 @end
 
 @implementation BWSplitView
@@ -86,7 +86,7 @@ static float scaleFactor = 1.0f;
 		
 		// Delegate set in nib has been decoded, but we want that to be the secondary delegate
 		[self setDelegate:[super delegate]];
-		[super setDelegate:self];
+		[super setDelegate:(id<NSSplitViewDelegate>)self];
 	}
 	return self;
 }
@@ -109,7 +109,7 @@ static float scaleFactor = 1.0f;
 	
 	// Set delegate back
 	[self setDelegate:[super delegate]];
-	[super setDelegate:self];
+	[super setDelegate:(id<NSSplitViewDelegate>)self];
 }
 
 - (void)awakeFromNib
