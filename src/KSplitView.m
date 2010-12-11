@@ -10,7 +10,7 @@
 
 - (void)drawDividerInRect:(NSRect)dividerRect {
   dividerRect_ = dividerRect;
-  NSLog(@"dividerRect %@", NSStringFromRect(dividerRect_));
+  //NSLog(@"dividerRect %@", NSStringFromRect(dividerRect_));
   [[NSColor colorWithCalibratedWhite:0.0 alpha:1.0]
       drawSwatchInRect:dividerRect_];
 }

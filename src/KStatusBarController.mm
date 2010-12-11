@@ -81,4 +81,12 @@
 }
 
 
+- (IBAction)toggleStatusBarVisibility:(id)sender {
+  [self.statusBarView setHidden:![self.statusBarView isHidden]];
+  /*NSRect frame = self.statusBarView.frame;
+  frame.size.height = 0.0;
+  self.statusBarView.frame = frame;*/
+}
+
+
 @end

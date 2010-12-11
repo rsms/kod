@@ -11,7 +11,7 @@
 			<string key="com.brandonwalkin.BWToolkit">1.2.5</string>
 		</dictionary>
 		<array class="NSMutableArray" key="IBDocument.EditedObjectIDs">
-			<integer value="1"/>
+			<integer value="121"/>
 			<integer value="56"/>
 		</array>
 		<array key="IBDocument.PluginDependencies">
@@ -47,17 +47,17 @@
 							<reference key="NSNextResponder" ref="1006"/>
 							<int key="NSvFlags">290</int>
 							<array class="NSMutableArray" key="NSSubviews">
-								<object class="NSCustomView" id="343493694">
+								<object class="NSCustomView" id="641094494">
 									<reference key="NSNextResponder" ref="844259437"/>
 									<int key="NSvFlags">274</int>
 									<array class="NSMutableArray" key="NSSubviews">
-										<object class="NSTextField" id="115416229">
-											<reference key="NSNextResponder" ref="343493694"/>
+										<object class="NSTextField" id="502405774">
+											<reference key="NSNextResponder" ref="641094494"/>
 											<int key="NSvFlags">268</int>
 											<string key="NSFrame">{{4, 1}, {76, 14}}</string>
-											<reference key="NSSuperview" ref="343493694"/>
+											<reference key="NSSuperview" ref="641094494"/>
 											<bool key="NSEnabled">YES</bool>
-											<object class="NSTextFieldCell" key="NSCell" id="1052876051">
+											<object class="NSTextFieldCell" key="NSCell" id="910064582">
 												<int key="NSCellFlags">68288064</int>
 												<int key="NSCellFlags2">306316352</int>
 												<string key="NSContents">(0, 0)</string>
@@ -66,12 +66,12 @@
 													<double key="NSSize">11</double>
 													<int key="NSfFlags">3100</int>
 												</object>
-												<reference key="NSControlView" ref="115416229"/>
+												<reference key="NSControlView" ref="502405774"/>
 												<object class="NSColor" key="NSBackgroundColor">
 													<int key="NSColorSpace">6</int>
 													<string key="NSCatalogName">System</string>
 													<string key="NSColorName">controlColor</string>
-													<object class="NSColor" key="NSColor" id="272833718">
+													<object class="NSColor" key="NSColor" id="158701216">
 														<int key="NSColorSpace">3</int>
 														<bytes key="NSWhite">MC42NjY2NjY2NjY3AA</bytes>
 													</object>
@@ -104,7 +104,7 @@
 										</object>
 										<reference key="NSControlView" ref="762666860"/>
 										<int key="NSButtonFlags">138690815</int>
-										<int key="NSButtonFlags2">402653318</int>
+										<int key="NSButtonFlags2">134</int>
 										<object class="NSCustomResource" key="NSNormalImage">
 											<string key="NSClassName">NSImage</string>
 											<string key="NSResourceName">NSGoLeftTemplate</string>
@@ -114,7 +114,7 @@
 											<string key="NSResourceName">NSStopProgressTemplate</string>
 										</object>
 										<string key="NSAlternateContents"/>
-										<string key="NSKeyEquivalent">s</string>
+										<string key="NSKeyEquivalent"/>
 										<int key="NSPeriodicDelay">400</int>
 										<int key="NSPeriodicInterval">75</int>
 									</object>
@@ -186,7 +186,7 @@
 																			<int key="NSColorSpace">6</int>
 																			<string key="NSCatalogName">System</string>
 																			<string key="NSColorName">controlBackgroundColor</string>
-																			<reference key="NSColor" ref="272833718"/>
+																			<reference key="NSColor" ref="158701216"/>
 																		</object>
 																		<object class="NSColor" key="NSTextColor">
 																			<int key="NSColorSpace">1</int>
@@ -486,7 +486,7 @@
 					<object class="IBOutletConnection" key="connection">
 						<string key="label">rightViewGroup_</string>
 						<reference key="source" ref="844259437"/>
-						<reference key="destination" ref="343493694"/>
+						<reference key="destination" ref="641094494"/>
 					</object>
 					<int key="connectionID">137</int>
 				</object>
@@ -494,7 +494,7 @@
 					<object class="IBOutletConnection" key="connection">
 						<string key="label">cursorPositionTextField_</string>
 						<reference key="source" ref="844259437"/>
-						<reference key="destination" ref="115416229"/>
+						<reference key="destination" ref="502405774"/>
 					</object>
 					<int key="connectionID">140</int>
 				</object>
@@ -505,6 +505,14 @@
 						<reference key="destination" ref="762666860"/>
 					</object>
 					<int key="connectionID">141</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBOutletConnection" key="connection">
+						<string key="label">splitView_</string>
+						<reference key="source" ref="1001"/>
+						<reference key="destination" ref="773950323"/>
+					</object>
+					<int key="connectionID">142</int>
 				</object>
 			</array>
 			<object class="IBMutableOrderedSet" key="objectRecords">
@@ -578,7 +586,7 @@
 						<reference key="object" ref="844259437"/>
 						<array class="NSMutableArray" key="children">
 							<reference ref="762666860"/>
-							<reference ref="343493694"/>
+							<reference ref="641094494"/>
 						</array>
 						<reference key="parent" ref="1006"/>
 					</object>
@@ -673,24 +681,24 @@
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">136</int>
-						<reference key="object" ref="343493694"/>
+						<reference key="object" ref="641094494"/>
 						<array class="NSMutableArray" key="children">
-							<reference ref="115416229"/>
+							<reference ref="502405774"/>
 						</array>
 						<reference key="parent" ref="844259437"/>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">138</int>
-						<reference key="object" ref="115416229"/>
+						<reference key="object" ref="502405774"/>
 						<array class="NSMutableArray" key="children">
-							<reference ref="1052876051"/>
+							<reference ref="910064582"/>
 						</array>
-						<reference key="parent" ref="343493694"/>
+						<reference key="parent" ref="641094494"/>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">139</int>
-						<reference key="object" ref="1052876051"/>
-						<reference key="parent" ref="115416229"/>
+						<reference key="object" ref="910064582"/>
+						<reference key="parent" ref="502405774"/>
 					</object>
 				</array>
 			</object>
@@ -757,7 +765,7 @@
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">141</int>
+			<int key="maxID">142</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<array class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -813,20 +821,29 @@
 				<object class="IBPartialClassDescription">
 					<string key="className">KBrowserWindowController</string>
 					<string key="superclassName">CTBrowserWindowController</string>
-					<object class="NSMutableDictionary" key="actions">
-						<string key="NS.key.0">focusLocationBar:</string>
-						<string key="NS.object.0">id</string>
-					</object>
-					<object class="NSMutableDictionary" key="actionInfosByName">
-						<string key="NS.key.0">focusLocationBar:</string>
-						<object class="IBActionInfo" key="NS.object.0">
+					<dictionary class="NSMutableDictionary" key="actions">
+						<string key="focusLocationBar:">id</string>
+						<string key="toggleSplitView:">id</string>
+						<string key="toggleStatusBarVisibility:">id</string>
+					</dictionary>
+					<dictionary class="NSMutableDictionary" key="actionInfosByName">
+						<object class="IBActionInfo" key="focusLocationBar:">
 							<string key="name">focusLocationBar:</string>
 							<string key="candidateClassName">id</string>
 						</object>
-					</object>
+						<object class="IBActionInfo" key="toggleSplitView:">
+							<string key="name">toggleSplitView:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+						<object class="IBActionInfo" key="toggleStatusBarVisibility:">
+							<string key="name">toggleStatusBarVisibility:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+					</dictionary>
 					<dictionary class="NSMutableDictionary" key="outlets">
 						<string key="fileOutlineView_">KFileOutlineView</string>
 						<string key="leftmostSubviewOfVerticalSplitView_">NSView</string>
+						<string key="splitView_">KSplitView</string>
 						<string key="statusBarController_">KStatusBarController</string>
 						<string key="verticalSplitView_">NSSplitView</string>
 					</dictionary>
@@ -838,6 +855,10 @@
 						<object class="IBToOneOutletInfo" key="leftmostSubviewOfVerticalSplitView_">
 							<string key="name">leftmostSubviewOfVerticalSplitView_</string>
 							<string key="candidateClassName">NSView</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="splitView_">
+							<string key="name">splitView_</string>
+							<string key="candidateClassName">KSplitView</string>
 						</object>
 						<object class="IBToOneOutletInfo" key="statusBarController_">
 							<string key="name">statusBarController_</string>
@@ -896,17 +917,20 @@
 				<object class="IBPartialClassDescription">
 					<string key="className">KStatusBarController</string>
 					<string key="superclassName">NSViewController</string>
-					<object class="NSMutableDictionary" key="actions">
-						<string key="NS.key.0">toggleSplitView:</string>
-						<string key="NS.object.0">id</string>
-					</object>
-					<object class="NSMutableDictionary" key="actionInfosByName">
-						<string key="NS.key.0">toggleSplitView:</string>
-						<object class="IBActionInfo" key="NS.object.0">
+					<dictionary class="NSMutableDictionary" key="actions">
+						<string key="toggleSplitView:">id</string>
+						<string key="toggleStatusBarVisibility:">id</string>
+					</dictionary>
+					<dictionary class="NSMutableDictionary" key="actionInfosByName">
+						<object class="IBActionInfo" key="toggleSplitView:">
 							<string key="name">toggleSplitView:</string>
 							<string key="candidateClassName">id</string>
 						</object>
-					</object>
+						<object class="IBActionInfo" key="toggleStatusBarVisibility:">
+							<string key="name">toggleStatusBarVisibility:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+					</dictionary>
 					<dictionary class="NSMutableDictionary" key="outlets">
 						<string key="splitView_">KSplitView</string>
 						<string key="toggleSplitViewButton_">NSButton</string>

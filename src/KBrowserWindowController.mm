@@ -56,7 +56,8 @@
 
 - (CGFloat)statusBarHeight {
   NSView *view;
-  if (statusBarController_ && (view = statusBarController_.view)) {
+  if (statusBarController_ && (view = statusBarController_.view) &&
+      ![view isHidden]) {
     return view.frame.size.height;
   }
   return 0.0;
@@ -77,6 +78,20 @@
   if (toolbarController_) {
     [((KToolbarController*)toolbarController_).locationBarTextField becomeFirstResponder];
   }
+}
+
+
+- (IBAction)toggleStatusBarVisibility:(id)sender {
+  if (statusBarController_) {
+    [statusBarController_ toggleStatusBarVisibility:sender];
+    [self layoutSubviews];
+    [self.window setNeedsDisplay:YES];
+  }
+}
+
+
+- (IBAction)toggleSplitView:(id)sender {
+  [splitView_ toggleCollapse:sender];
 }
 
 

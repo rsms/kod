@@ -7,9 +7,11 @@
   __weak KTabContents *currentContents_;
 }
 
-- (KStatusBarView*)statusBarView;
-- (IBAction)toggleSplitView:(id)sender;
+@property(readonly) KStatusBarView *statusBarView;
 
 - (void)updateWithContents:(KTabContents*)contents;
+
+- (IBAction)toggleSplitView:(id)sender;
+- (IBAction)toggleStatusBarVisibility:(id)sender;
 
 @end
