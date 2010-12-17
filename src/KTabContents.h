@@ -27,6 +27,12 @@ typedef std::deque<KHighlightQueueEntry> KHighlightQueue;
   // Current language
   NSString const *langId_;
   
+  // Mapped line breaks. Provides number of lines and a mapping from line number
+  // to actual character offset. The location of each range denotes the start
+  // of a linebreak and the length denotes how many characters are included in
+  // that linebreak (normally 1 or 2: LF, CR or CRLF).
+  std::vector<NSRange> lineToRangeVec_;
+  
   // Internal state
   hatomic_flags_t stateFlags_;
   NSRange lastEditedHighlightStateRange_;
@@ -43,6 +49,9 @@ typedef std::deque<KHighlightQueueEntry> KHighlightQueue;
 @property(readonly) NSMutableParagraphStyle *paragraphStyle; // compound
 @property(retain, nonatomic) NSString *langId;
 @property(readonly, nonatomic) NSTextView* textView;
+
+@property(readonly, nonatomic) NSUInteger lineCount;
+@property(readonly, nonatomic) NSUInteger charCountOfLastLine;
 
 
 + (NSFont*)defaultFont;
@@ -67,6 +76,9 @@ typedef std::deque<KHighlightQueueEntry> KHighlightQueue;
 
 - (void)textStorageDidProcessEditing:(NSNotification*)notification;
 - (void)documentDidChangeDirtyState; // when isDirty_ changed
+
+// Retrieve line number (first line is 1) for character |location|
+- (NSUInteger)lineNumberForLocation:(NSUInteger)location;
 
 
 // These two are called by readFromURL:ofType:error:

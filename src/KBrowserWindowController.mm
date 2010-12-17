@@ -8,6 +8,7 @@
 #import "KFileTreeController.h"
 #import "KFileOutlineView.h"
 #import "KScroller.h"
+#import "KSplitView.h"
 #import "KToolbarController.h"
 #import "KStatusBarController.h"
 
@@ -85,7 +86,7 @@
   if (statusBarController_) {
     [statusBarController_ toggleStatusBarVisibility:sender];
     [self layoutSubviews];
-    [self.window setNeedsDisplay:YES];
+    [self.window display];
   }
 }
 

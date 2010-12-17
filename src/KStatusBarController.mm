@@ -9,10 +9,16 @@
 - (void)_updateCursorPosition {
   NSString *label;
   if (!currentContents_) {
-    label = @"(0, 0)";
+    label = @"0, 0";
   } else {
     NSRange selection = [currentContents_.textView selectedRange];
-    NSString *line = @"0";
+    
+    // line
+    NSUInteger lineno =
+        [currentContents_ lineNumberForLocation:selection.location];
+    NSString *line = [NSString stringWithFormat:@"%lu", lineno];
+    
+    // column
     NSString *column;
     if (selection.length == 0) {
       column = [NSString stringWithFormat:@"%lu", selection.location];
@@ -20,7 +26,8 @@
       column = [NSString stringWithFormat:@"%lu:%lu", selection.location,
                 selection.length];
     }
-    label = [NSString stringWithFormat:@"(%@, %@)", line, column];
+    
+    label = [NSString stringWithFormat:@"%@, %@", line, column];
   }
   [self statusBarView].cursorPositionTextField.stringValue = label;
 }

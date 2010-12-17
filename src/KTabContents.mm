@@ -29,6 +29,21 @@ static const uint8_t kEditChangeStatusUserUnalteredText = 1;
 static const uint8_t kEditChangeStatusUserAlteredText = 2;
 
 
+static NSString *_NSStringFromRangeArray(std::vector<NSRange> &lineToRangeVec,
+                                         NSString *string) {
+  NSMutableString *str = [NSMutableString string];
+  size_t i = 0, count = lineToRangeVec.size();
+  for (; i < count; ++i) {
+    NSRange &r = lineToRangeVec[i];
+    NSString *sstr;
+    @try { sstr = string ? [string substringWithRange:r] : @""; }
+    @catch (NSException *e) { sstr = @"<out of range>"; }
+    [str appendFormat:@"\n%3zu => %@ '%@',", i, NSStringFromRange(r), sstr];
+  }
+  return str;
+}
+
+
 @interface KTabContents (Private)
 - (void)undoManagerCheckpoint:(NSNotification*)notification;
 @end
@@ -469,6 +484,51 @@ static int debugSimulateTextAppendingIteration = 0;
 }
 
 
+// Invoked when ranges of lines changed. |lineCountDelta| denotes how many lines
+// where added or removed, if any.
+- (void)linesDidChangeWithLineCountDelta:(NSInteger)lineCountDelta {
+  DLOG("linesDidChangeWithLineCountDelta:%ld %@", lineCountDelta,
+       _NSStringFromRangeArray(lineToRangeVec_, textView_.textStorage.string));
+}
+
+
+#pragma mark -
+#pragma mark Line info
+
+
+- (NSUInteger)charCountOfLastLine {
+  NSUInteger remainingCharCount = textView_.textStorage.length;
+  if (!lineToRangeVec_.empty()) {
+    NSRange &r = lineToRangeVec_.back();
+    remainingCharCount -= r.location + r.length;
+  }
+  return remainingCharCount;
+}
+
+
+- (NSUInteger)lineCount {
+  return lineToRangeVec_.size() + 1;
+}
+
+
+- (NSUInteger)lineNumberForLocation:(NSUInteger)location {
+  kassert([NSThread isMainThread]); // since lineToRangeVec_ is not thread safe
+
+  // TODO: we could be "smart" here and guess a position to start looking by
+  // comparing location to current number of total characters, which would give
+  // us an approximate position in lineToRangeVec_ at which to start looking.
+
+  NSUInteger lineno = 0;
+  for (; lineno < lineToRangeVec_.size(); ++lineno) {
+    NSRange &r = lineToRangeVec_[lineno];
+    if (location < r.location)
+      break;
+  }
+
+  return lineno + 1;
+}
+
+
 #pragma mark -
 #pragma mark NSTextViewDelegate implementation
 
@@ -739,6 +799,9 @@ longestEffectiveRange:&range
 // returns true if processing was scheduled
 - (BOOL)deferHighlightTextStorage:(NSTextStorage*)textStorage
                           inRange:(NSRange)editedRange {
+  //#define DLOG_HL DLOG
+  #define DLOG_HL(...) ((void)0)
+  
   // WARNING: this must not be called on the same thread as the
   // dispatch_get_global_queue(0,0) run in -- it will cause a deadlock.
   
@@ -753,7 +816,7 @@ longestEffectiveRange:&range
   // Aquire semaphore
   if (!highlightSem_.tryGet()) {
     // currently processing
-    DLOG("highlight --CANCEL & WAIT--");
+    DLOG_HL("highlight --CANCEL & WAIT--");
     
     // Combine range of previous hl with current edit
     NSRange prevHighlightRange = sourceHighlighter_->currentRange();
@@ -806,7 +869,7 @@ longestEffectiveRange:&range
   highlightWaitBackOffNSec_ = 0;
   
   // Dispatch
-  DLOG("highlight --LOCKED--");
+  DLOG_HL("highlight --LOCKED--");
   dispatch_async(dispatch_get_global_queue(0,0),^{
     if (textStorage.length == 0) {
       highlightSem_.put();
@@ -819,8 +882,8 @@ longestEffectiveRange:&range
 
     // highlight
     #if !NDEBUG
-    DLOG("highlight --PROCESS-- %@ %@ %@", NSStringFromRange(editedRange),
-         state, NSStringFromRange(stateRange));
+    DLOG_HL("highlight --PROCESS-- %@ %@ %@", NSStringFromRange(editedRange),
+            state, NSStringFromRange(stateRange));
     #endif
     NSRange affectedRange = {NSNotFound,0};
     @try {
@@ -851,7 +914,8 @@ longestEffectiveRange:&range
       //
       K_DISPATCH_MAIN_ASYNC(
         if (!sourceHighlighter_->isCancelled()) {
-          DLOG("highlight --FLUSH-START-- %@", NSStringFromRange(affectedRange));
+          DLOG_HL("highlight --FLUSH-START-- %@",
+                  NSStringFromRange(affectedRange));
           [textStorage beginEditing];
           @try {
             sourceHighlighter_->endFlushBufferedAttributes(textStorage);
@@ -862,11 +926,11 @@ longestEffectiveRange:&range
           }
           //[textStorage invalidateAttributesInRange:affectedRange];
           [textStorage endEditing];
-          DLOG("highlight --FLUSH-END--");
+          DLOG_HL("highlight --FLUSH-END--");
         }
         highlightSem_.put();
-        DLOG("highlight --FREED-- (cancelled: %@)",
-             sourceHighlighter_->isCancelled() ? @"YES":@"NO");
+        DLOG_HL("highlight --FREED-- (cancelled: %@)",
+                sourceHighlighter_->isCancelled() ? @"YES":@"NO");
       );
     }
     
@@ -874,6 +938,7 @@ longestEffectiveRange:&range
   });
   
   return YES;
+  #undef DLOG_HL
 }
 
 
@@ -970,6 +1035,210 @@ shouldChangeTextInRanges:(NSArray *)affectedRanges
 }*/
 
 
+
+// used for temporary storage ONLY ON MAIN THREAD
+//#define ucharbuf1_size 4096  // 1 memory page
+//static unichar ucharbuf1[ucharbuf1_size];
+
+
+/*!
+ * startIndex: first line range within |editedRange|
+ * endIndex: first line range after startIndex which is NOT within |editedRange|
+ *
+ * Last line range within |editedRange| is (endIndex -1)
+ */
+static BOOL _lb_lines_in_editedRange(std::vector<NSRange> &lineToRangeVec,
+                                     NSRange &editedRange,
+                                     size_t &startIndex, size_t &endIndex) {
+  NSUInteger editedRangeEndLocation = editedRange.location + editedRange.length;
+  size_t i = 0, count = lineToRangeVec.size();
+  startIndex = count;
+  endIndex = 0;
+  for (; i < count; ++i) {
+    NSRange &lineRange = lineToRangeVec[i];
+    NSUInteger lineRangeEnd = lineRange.location + lineRange.length;
+    
+    if (startIndex == count) {
+      // looking for start
+      if (lineRangeEnd > editedRange.location) {
+        // this line is the first one within the edited scope
+        startIndex = i;
+      }
+    } else {
+      // looking for end
+      if (lineRangeEnd > editedRangeEndLocation) {
+        // we have passed the end (previous line was the last affected one)
+        break;
+      }
+      endIndex = i;
+    }
+  }
+  
+  if (startIndex != count) {
+    if (startIndex > endIndex) {
+      // we did not find an end, which means the edit extends to the end of the
+      // document
+      endIndex = count;
+    } else {
+      ++endIndex;
+    }
+    return YES;
+  } else {
+    return NO;
+  }
+}
+
+
+static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
+                              size_t startIndex, NSUInteger offset) {
+  // add range offset to lines which goes after the affected line
+  size_t count = lineToRangeVec.size();
+  for (; startIndex < count; ++startIndex) {
+    NSRange &r = lineToRangeVec[startIndex];
+    r.location += offset;
+  }
+}
+
+
+- (void)_updateLinesToRangesInfoForTextStorage:(NSTextStorage*)textStorage
+                                       inRange:(NSRange)editedRange
+                                       changeDelta:(NSInteger)changeInLength {
+  // update linebreaks mapping
+  NSString *string = textStorage.string;
+
+  BOOL editSpansToEndOfDocument =
+      (editedRange.location + editedRange.length == string.length);
+  size_t lbStartIndex = 0, lbEndIndex = 0, offsetRangesStart = 0;
+  BOOL didAffectLines = NO;
+  __block NSInteger lineCountDelta = 0;
+  if (changeInLength != 0) {
+    // any edit causes line offsets after the edit to be offset
+    // first, find affected lines (last part performed by _lb_offset_ranges)
+    if (!editSpansToEndOfDocument || changeInLength < 0) {
+      didAffectLines = _lb_lines_in_editedRange(lineToRangeVec_, editedRange,
+                                                lbStartIndex, lbEndIndex);
+      offsetRangesStart = lbStartIndex;
+    }
+    //DLOG("didAffectLines: %@, lbStartIndex: %zu, lbEndIndex: %zu",
+    //     didAffectLines?@"YES":@"NO", lbStartIndex, lbEndIndex);
+  }
+  
+  if (changeInLength == 1 && editedRange.length == 1) {
+    unichar ch = [string characterAtIndex:editedRange.location];
+    if (ch == '\n' || ch == '\r') {
+      //DLOG("linebreak: inserted one explicitly");
+      NSUInteger lineStart, lineEnd, contentsEnd;
+      [string getLineStart:&lineStart
+                       end:&lineEnd
+               contentsEnd:&contentsEnd
+                  forRange:editedRange];
+      NSRange lineRange = NSMakeRange(contentsEnd, lineEnd - contentsEnd);
+      //DLOG_RANGE(lineRange, string);
+      
+      if (editSpansToEndOfDocument || !didAffectLines) {
+        // simply appended a new line to the end of the document
+        lineToRangeVec_.push_back(lineRange);
+      } else {
+        // inserted a new line in the middle of the document
+        // insert causes all lines after |lbStartIndex| to be shifted right
+        lineToRangeVec_.insert(lineToRangeVec_.begin() + lbStartIndex,
+                               lineRange);
+      }
+      // don't offset the range of the line we just registered
+      ++offsetRangesStart;
+      ++lineCountDelta;
+    } else if (editSpansToEndOfDocument) {
+      // inserted a non-linebreak char at end of document -- noop
+      return;
+    }
+
+  } else if (changeInLength > 0) {
+    // reset |i|
+    __block size_t i = lbStartIndex;
+    
+    // consider each line which was affected by the edit
+    [string enumerateSubstringsInRange:editedRange
+                               options:NSStringEnumerationByLines
+                                      |NSStringEnumerationSubstringNotRequired
+                            usingBlock:^(NSString *substring,  // nil, unused
+                                         NSRange substringRange,
+                                         NSRange enclosingRange,
+                                         BOOL *stop) {
+      // number of characters constituting the linebreak (0 means no line end,
+      // 1 might mean LF or CR while 2 probably means CRLF). However, valid
+      // newline chars are: U+000A–U+000D, U+0085
+      NSUInteger nlCharCount = enclosingRange.length - substringRange.length;
+      //DLOG("nlCharCount -> %lu", nlCharCount);
+      //DLOG_RANGE(substringRange, string);
+      //DLOG_RANGE(enclosingRange, string);
+      
+      if (!nlCharCount) {
+        // most likely the last line (no newline anyhow, so "continue")
+        return;
+      }
+      
+      // register range
+      if (i < lbEndIndex) {
+        NSRange &r = lineToRangeVec_[i];
+        r.location = substringRange.location + substringRange.length;
+        r.length = nlCharCount;
+      } else {
+        NSRange r = NSMakeRange(substringRange.location + substringRange.length,
+                                nlCharCount);
+        lineToRangeVec_.insert(lineToRangeVec_.begin() + i, r);
+        ++lineCountDelta;
+      }
+      ++i;
+    }];
+    
+    offsetRangesStart = i;
+
+  } else if (changeInLength < 0) {
+    // edit action was "deletion"
+
+    if (didAffectLines) {
+      
+      NSRange deletedRange = editedRange;
+      deletedRange.length = -changeInLength;
+      //DLOG("deletedRange -> %@", NSStringFromRange(deletedRange));
+      
+      // figure out if any lines where deleted
+      size_t i = lbStartIndex;
+      BOOL didFoundOneInside = NO;
+      for (; i < lbEndIndex && i < lineToRangeVec_.size(); ) {
+        NSRange &lineRange = lineToRangeVec_[i];
+        
+        if ( NSLocationInRange(lineRange.location, deletedRange) ||
+             (lineRange.length > 1 && 
+              NSLocationInRange(lineRange.location+lineRange.length-1,
+                                deletedRange)) ) {
+          //DLOG("[%lu] %@ was inside delete", i, NSStringFromRange(lineRange));
+          lineToRangeVec_.erase(lineToRangeVec_.begin() + i);
+          --lineCountDelta;
+          didFoundOneInside = YES;
+        } else if (didFoundOneInside) {
+          // in this case we have passed all removed lines
+          break;
+        } else {
+          ++i;
+        }
+      }
+    }
+  }
+
+  // offset affected ranges
+  if (didAffectLines) {
+    //DLOG("_lb_offset_ranges(%lu, %ld)", offsetRangesStart, changeInLength);
+    _lb_offset_ranges(lineToRangeVec_, offsetRangesStart, changeInLength);
+  }
+  
+  if (changeInLength != 0 &&
+      (lineToRangeVec_.size() != 0 || lineCountDelta != 0)) {
+    [self linesDidChangeWithLineCountDelta:lineCountDelta];
+  }
+}
+
+
 // invoked after an editing occured, but before it's been committed
 // Has the nasty side effect of losing the selection when applying attributes
 //- (void)textStorageWillProcessEditing:(NSNotification *)notification {}
@@ -978,32 +1247,31 @@ shouldChangeTextInRanges:(NSArray *)affectedRanges
 //- (void)textStorageDidProcessEditing:(NSNotification *)notification {}
 
 - (void)textStorageDidProcessEditing:(NSNotification *)notification {
-	// invoked after an editing occured, but before it's been committed
-
   NSTextStorage	*textStorage = [notification object];
+  kassert([NSThread isMainThread]);
   
   // no-op unless characters where edited
   if (!(textStorage.editedMask & NSTextStorageEditedCharacters)) {
     return;
   }
   
+  // range that was affected by the edit
+	NSRange	editedRange = [textStorage editedRange];
+  
+  // length delta of the edit (i.e. negative for deletions)
+	int	changeInLength = [textStorage changeInLength];
+
+  // update lineToRangeVec_
+  [self _updateLinesToRangesInfoForTextStorage:textStorage
+                                       inRange:editedRange
+                                   changeDelta:changeInLength];
+
   // we do not process edits when we are loading
   if (isLoading_) return;
-
-	NSRange	editedRange = [textStorage editedRange];
-	int	changeInLength = [textStorage changeInLength];
-  /*if (changeInLength == 0 && !lastEditedHighlightState_) {
-    // text attributes changed -- not interested
-    return;
-  }*/
   
   BOOL wasInUndoRedo = [[self undoManager] isUndoing] ||
                        [[self undoManager] isRedoing];
   DLOG_RANGE(editedRange, textStorage.string);
-  #if !NDEBUG
-  //unsigned em = textStorage.editedMask;
-  //NSString *editedMaskStr = ;
-  #endif
   DLOG("editedRange: %@, changeInLength: %d, wasInUndoRedo: %@, editedMask: %d",
        NSStringFromRange(editedRange), changeInLength,
        wasInUndoRedo ? @"YES":@"NO", textStorage.editedMask);
