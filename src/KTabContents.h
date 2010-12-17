@@ -80,6 +80,12 @@ typedef std::deque<KHighlightQueueEntry> KHighlightQueue;
 // Retrieve line number (first line is 1) for character |location|
 - (NSUInteger)lineNumberForLocation:(NSUInteger)location;
 
+// Range of line terminator for |lineNumber|
+- (NSRange)rangeOfLineTerminatorAtLineNumber:(NSUInteger)lineNumber;
+
+// Range of line at |lineNumber| including line terminator (first line is 1)
+- (NSRange)rangeOfLineAtLineNumber:(NSUInteger)lineNumber;
+
 
 // These two are called by readFromURL:ofType:error:
 

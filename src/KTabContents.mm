@@ -487,8 +487,8 @@ static int debugSimulateTextAppendingIteration = 0;
 // Invoked when ranges of lines changed. |lineCountDelta| denotes how many lines
 // where added or removed, if any.
 - (void)linesDidChangeWithLineCountDelta:(NSInteger)lineCountDelta {
-  DLOG("linesDidChangeWithLineCountDelta:%ld %@", lineCountDelta,
-       _NSStringFromRangeArray(lineToRangeVec_, textView_.textStorage.string));
+  //DLOG("linesDidChangeWithLineCountDelta:%ld %@", lineCountDelta,
+  //     _NSStringFromRangeArray(lineToRangeVec_, textView_.textStorage.string));
 }
 
 
@@ -511,6 +511,50 @@ static int debugSimulateTextAppendingIteration = 0;
 }
 
 
+- (NSRange)rangeOfLineTerminatorAtLineNumber:(NSUInteger)lineNumber {
+  kassert(lineNumber > 0); // 1-based
+  --lineNumber;
+  if (lineNumber < lineToRangeVec_.size()) {
+    return lineToRangeVec_[lineNumber];
+  } else if (!lineToRangeVec_.empty()) {
+    if (lineNumber == lineToRangeVec_.size()) {
+      NSRange range = lineToRangeVec_.back();
+      NSUInteger lastLineLength = textView_.textStorage.length -
+          (range.location + range.length);
+      range.location += range.length;
+      range.length = lastLineLength;
+      return range;
+    } else {
+      // |lineNumber| goes beyond number of total lines
+      return NSMakeRange(NSNotFound, 0);
+    }
+  } else {
+    // there are no line breaks (just the "last line")
+    return NSMakeRange(0, textView_.textStorage.length);
+  }
+}
+
+
+- (NSRange)rangeOfLineAtLineNumber:(NSUInteger)lineNumber {
+  NSRange lineRange = [self rangeOfLineTerminatorAtLineNumber:lineNumber];
+  
+  // find previous line end
+  NSUInteger startLocation = 0;
+  if (lineNumber == 1) {
+    lineRange.length += lineRange.location;
+    lineRange.location = 0;
+  } else {  // lineNumber > 1
+    NSRange prevLineRange = [self rangeOfLineTerminatorAtLineNumber:lineNumber-1];
+    NSUInteger lineEnd = lineRange.location + lineRange.length;
+    NSUInteger prevLineEnd = prevLineRange.location + prevLineRange.length;
+    lineRange.length = lineEnd - prevLineEnd;
+    lineRange.location = prevLineEnd;
+  }
+  
+  return lineRange;
+}
+
+
 - (NSUInteger)lineNumberForLocation:(NSUInteger)location {
   kassert([NSThread isMainThread]); // since lineToRangeVec_ is not thread safe
 
@@ -521,7 +565,7 @@ static int debugSimulateTextAppendingIteration = 0;
   NSUInteger lineno = 0;
   for (; lineno < lineToRangeVec_.size(); ++lineno) {
     NSRange &r = lineToRangeVec_[lineno];
-    if (location < r.location)
+    if (location < r.location + r.length)
       break;
   }
 
@@ -982,13 +1026,6 @@ replacementString:(NSString *)replacementString {
     } else {
       lastEditedHighlightState_ = nil;
     }
-    //KSourceHighlightState *hlstate =
-    //  [textStorage attribute:KSourceHighlightStateAttribute
-    //                 atIndex:range.location
-    //   longestEffectiveRange:&highlightStateRange
-    //                 inRange:NSMakeRange(0, textStorage.length)];
-    //DLOG("state[2] at %u -> %@ '%@'", range.location, hlstate,
-    //  [textStorage.string substringWithRange:lastEditedHighlightStateRange_]);
   } else { // if (textStorage.length == 0)
     lastEditedHighlightState_ = nil;
     didEditCharacters = (replacementString.length != 0);
@@ -996,9 +1033,11 @@ replacementString:(NSString *)replacementString {
   
   // Cancel any in-flight highlighting
   if (didEditCharacters && highlightingEnabled_) {
+    #if 0
     DLOG("text edited -- '%@' -> '%@' at %@",
      [textView_.textStorage.string substringWithRange:range],
      replacementString, NSStringFromRange(range));
+    #endif
     sourceHighlighter_->cancel();
   }
 
@@ -1114,13 +1153,16 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
   if (changeInLength != 0) {
     // any edit causes line offsets after the edit to be offset
     // first, find affected lines (last part performed by _lb_offset_ranges)
-    if (!editSpansToEndOfDocument || changeInLength < 0) {
-      didAffectLines = _lb_lines_in_editedRange(lineToRangeVec_, editedRange,
-                                                lbStartIndex, lbEndIndex);
-      offsetRangesStart = lbStartIndex;
-    }
-    //DLOG("didAffectLines: %@, lbStartIndex: %zu, lbEndIndex: %zu",
-    //     didAffectLines?@"YES":@"NO", lbStartIndex, lbEndIndex);
+    //if (!editSpansToEndOfDocument || changeInLength < 0) {
+    didAffectLines = _lb_lines_in_editedRange(lineToRangeVec_, editedRange,
+                                              lbStartIndex, lbEndIndex);
+    offsetRangesStart = lbStartIndex;
+    #if 0
+    DLOG("didAffectLines: %@, lbStartIndex: %zu, lbEndIndex: %zu, "
+         "editSpansToEndOfDocument: %@",
+         didAffectLines?@"YES":@"NO", lbStartIndex, lbEndIndex,
+         editSpansToEndOfDocument?@"YES":@"NO");
+    #endif
   }
   
   if (changeInLength == 1 && editedRange.length == 1) {

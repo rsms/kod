@@ -14,20 +14,47 @@
     NSRange selection = [currentContents_.textView selectedRange];
     
     // line
+    NSString *line;
     NSUInteger lineno =
         [currentContents_ lineNumberForLocation:selection.location];
-    NSString *line = [NSString stringWithFormat:@"%lu", lineno];
+    NSRange lineRange = [currentContents_ rangeOfLineAtLineNumber:lineno];
+    if (selection.length > 0 &&
+        (lineRange.location + lineRange.length)
+        < (selection.location + selection.length) ) {
+      // find end lineno
+      NSUInteger endLineno = [currentContents_ lineNumberForLocation:
+          (selection.location + selection.length - 1)];
+      if (endLineno != lineno) {
+        line = [NSString stringWithFormat:@"%lu:%lu", lineno, endLineno];
+      } else {
+        line = [NSString stringWithFormat:@"%lu", lineno];
+      }
+    } else {
+      line = [NSString stringWithFormat:@"%lu", lineno];
+    }
     
     // column
     NSString *column;
+    NSUInteger colno = selection.location - lineRange.location;
     if (selection.length == 0) {
-      column = [NSString stringWithFormat:@"%lu", selection.location];
+      column = [NSString stringWithFormat:@"%lu", colno];
     } else {
-      column = [NSString stringWithFormat:@"%lu:%lu", selection.location,
-                selection.length];
+      column = [NSString stringWithFormat:@"%lu:%lu", colno, selection.length];
     }
     
+  #if 0  // include character offset
+    // offset
+    NSString *offset;
+    if (selection.length == 0) {
+      offset = [NSString stringWithFormat:@"%lu", selection.location];
+    } else {
+      offset = [NSString stringWithFormat:@"%lu-%lu", selection.location,
+                selection.location + selection.length];
+    }
+    label = [NSString stringWithFormat:@"%@, %@, %@", line, column, offset];
+  #else
     label = [NSString stringWithFormat:@"%@, %@", line, column];
+  #endif
   }
   [self statusBarView].cursorPositionTextField.stringValue = label;
 }
