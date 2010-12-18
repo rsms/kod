@@ -4,9 +4,8 @@
 #import "KSourceHighlighter.h"
 #import "HSemaphore.h"
 
-@class KBrowser;
-@class KStyle;
-@class KBrowserWindowController;
+@class KBrowser, KStyle, KBrowserWindowController, KScrollView, KMetaRulerView;
+@class KTextView;
 
 typedef std::pair<std::pair<NSRange,NSRange>, HObjCPtr> KHighlightQueueEntry;
 typedef std::deque<KHighlightQueueEntry> KHighlightQueue;
@@ -15,7 +14,7 @@ typedef std::deque<KHighlightQueueEntry> KHighlightQueue;
 // simple scrollable text area.
 @interface KTabContents : CTTabContents <NSTextViewDelegate,
                                          NSTextStorageDelegate> {
-  __weak NSTextView* textView_; // Owned by NSScrollView which is our view_
+  __weak KTextView* textView_; // Owned by NSScrollView which is our view_
   __weak NSUndoManager *undoManager_; // Owned by textView_
   BOOL isDirty_;
   NSStringEncoding textEncoding_;
@@ -33,6 +32,9 @@ typedef std::deque<KHighlightQueueEntry> KHighlightQueue;
   // that linebreak (normally 1 or 2: LF, CR or CRLF).
   std::vector<NSRange> lineToRangeVec_;
   
+  // Meta ruler (nil if not shown)
+  __weak KMetaRulerView *metaRulerView_;
+  
   // Internal state
   hatomic_flags_t stateFlags_;
   NSRange lastEditedHighlightStateRange_;
@@ -42,13 +44,15 @@ typedef std::deque<KHighlightQueueEntry> KHighlightQueue;
 
 @property(assign, nonatomic) BOOL isDirty;
 @property(assign, nonatomic) BOOL highlightingEnabled;
+@property BOOL hasMetaRuler;
 @property(readonly) BOOL canSaveDocument;
 @property(readonly) BOOL hasRemoteSource;
 @property(assign, nonatomic) NSStringEncoding textEncoding;
 @property(readonly) KBrowserWindowController* windowController;
 @property(readonly) NSMutableParagraphStyle *paragraphStyle; // compound
 @property(retain, nonatomic) NSString *langId;
-@property(readonly, nonatomic) NSTextView* textView;
+@property(readonly, nonatomic) KTextView* textView;
+@property(readonly, nonatomic) KScrollView* scrollView;
 
 @property(readonly, nonatomic) NSUInteger lineCount;
 @property(readonly, nonatomic) NSUInteger charCountOfLastLine;
@@ -95,5 +99,10 @@ typedef std::deque<KHighlightQueueEntry> KHighlightQueue;
 
 - (void)startReadingFromRemoteURL:(NSURL*)absoluteURL
                            ofType:(NSString *)typeName;
+
+- (BOOL)readFromData:(NSData *)data
+              ofType:(NSString *)typeName
+               error:(NSError **)outError
+               callback:(void(^)(void))callback;
 
 @end

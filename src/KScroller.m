@@ -19,7 +19,7 @@ NSColor *KScrollerKnobSlotColorHover;
     [[NSColor colorWithCalibratedWhite:1.0 alpha:0.9] retain];
 
   KScrollerKnobSlotColorNormal =
-    [[NSColor colorWithCalibratedWhite:1.0 alpha:0.15] retain];
+    [[NSColor colorWithCalibratedWhite:1.0 alpha:0.06] retain];
   KScrollerKnobSlotColorHover =
     [[NSColor colorWithCalibratedWhite:1.0 alpha:0.2] retain];
   

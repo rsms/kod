@@ -22,10 +22,15 @@ extern NSString const *KStyleDidChangeNotification;
   /// Contains KStyleElement mapped by their string symbols.
   HUnorderedMapSharedPtr<NSString const*, KStyleElement> elements_;
   OSSpinLock elementsSpinLock_;
+  
+  // Font
+  NSFont* baseFont_;
 }
 
 /// Source url, or nil if not backed by an external source
 @property(readonly) NSURL *url;
+@property(readonly, nonatomic) NSFont* baseFont;
+@property(readonly, nonatomic) NSFontDescriptor* baseFontDescriptor;
 
 #pragma mark -
 #pragma mark Getting shared instances
@@ -51,6 +56,9 @@ extern NSString const *KStyleDidChangeNotification;
 
 #pragma mark -
 #pragma mark Getting style elements
+
+/// CSS style for element name (uncached)
+- (CSSStyle*)styleForElementName:(NSString*)elementName;
 
 /**
  * Return the style element for symbolic key.

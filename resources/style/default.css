@@ -1,9 +1,18 @@
 
-body { background-color:#222; color: #eee; }
+body {
+  font-family: "M+ 1m", monospace;
+  font-size: 11px;
+  background-color:#222;
+  color: #eee;
+}
 
 /* the color for context lines (when specified with line ranges) */
-context {  color: #444; }
-linenum { color: #444; }
+metaruler {
+  color: #666;
+  background: #333;
+  border-right: 2px solid #444;
+  font-size: 11px;
+}
 
 keyword { color: #66c8ef; }
 type { color: lightsalmon; }

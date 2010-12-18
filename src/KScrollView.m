@@ -27,6 +27,7 @@
     
     [self setHasVerticalScroller:YES];
     [self setHasHorizontalScroller:YES];
+    [self setHasHorizontalRuler:NO];
     //[self setAutohidesScrollers:YES]; // don't! Or pain will come when drawing
   }
   return self;

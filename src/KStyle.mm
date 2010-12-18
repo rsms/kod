@@ -86,6 +86,7 @@ static HSemaphore gBaseStylesheetSemaphore_(1);
 static KStyle *gSharedStyle_ = nil;
 static NSString const *gDefaultElementSymbol;
 
+
 + (void)load {
   NSAutoreleasePool *pool = [NSAutoreleasePool new];
   
@@ -201,6 +202,26 @@ static NSString const *gDefaultElementSymbol;
 }
 
 
+- (NSFontDescriptor*)baseFontDescriptor {
+  return [self.baseFont fontDescriptor];
+}
+
+
+- (NSFont*)baseFont {
+  if (!baseFont_) {
+    NSFontManager *fontManager = [NSFontManager sharedFontManager];
+    NSFont *font =
+        [fontManager fontWithFamily:@"M+ 1m" traits:0 weight:0 size:11.0];
+    if (!font) {
+      WLOG("unable to find default font \"M+\" -- using system default");
+      font = [NSFont userFixedPitchFontOfSize:11.0];
+    }
+    baseFont_ = [font retain];
+  }
+  return baseFont_;
+}
+
+
 #pragma mark -
 #pragma mark Loading
 
@@ -308,52 +329,57 @@ static NSString const *gDefaultElementSymbol;
 #pragma mark -
 #pragma mark Getting style elements
 
+
+/// Return the style element for symbolic key
+- (CSSStyle*)styleForElementName:(NSString*)elementNameStr {
+  // assure the default element is loaded before continuing
+  if (elementNameStr != gDefaultElementSymbol && !defaultStyle_) {
+    [self defaultStyleElement];
+  }
+
+  lwc_string *elementName = [elementNameStr LWCString];
+  CSSStyle *style = nil;
+  @try {
+    style = [CSSStyle selectStyleForObject:elementName
+                                 inContext:cssContext_
+                             pseudoElement:0
+                                     media:CSS_MEDIA_SCREEN
+                               inlineStyle:nil
+                              usingHandler:&gCSSHandler];
+    
+    if (elementNameStr == gDefaultElementSymbol) {
+      // save CSSStyle for default element ("body")
+      if (h_casptr(&defaultStyle_, nil, style))
+        [style retain];
+    } else {
+      // inherit style from default element ("body")
+      kassert(defaultStyle_);
+      style = [defaultStyle_ mergeWith:style];
+    }
+  } @catch (NSException *e) {
+    WLOG("CSSStyle select failed %@ -- %@", e, [e callStackSymbols]);
+    DLOG("cssContext_ => %@", cssContext_);
+    DLOG("elementName => %@", elementNameStr);
+  }
+  if (elementName)
+    lwc_string_unref(elementName);
+
+  return style;
+}
+
+
 /// Return the style element for symbolic key
 - (KStyleElement*)styleElementForSymbol:(NSString const*)key {
   if (catchAllElement_) return catchAllElement_;
-  
   OSSpinLockLock(&elementsSpinLock_);
-  
-  // assure the default element is loaded before continuing
-  if (key != gDefaultElementSymbol) {
-    if (elements_.get(key) == nil) {
-      OSSpinLockUnlock(&elementsSpinLock_); // give lock to...
-      [self defaultStyleElement];
-      OSSpinLockLock(&elementsSpinLock_); // reaquire lock
-    }
-  }
-  
   KStyleElement *elem = elements_.get(key);
   if (!elem) {
-    lwc_string *elementName = [key LWCString];
-    CSSStyle *style = nil;
-    @try {
-      style = [CSSStyle selectStyleForObject:elementName
-                                   inContext:cssContext_
-                               pseudoElement:0
-                                       media:CSS_MEDIA_SCREEN
-                                 inlineStyle:nil
-                                usingHandler:&gCSSHandler];
-      if (key == gDefaultElementSymbol) {
-        // save CSSStyle for default element ("body")
-        defaultStyle_ = [style retain];
-      } else {
-        // inherit style from default element ("body")
-        kassert(defaultStyle_);
-        style = [defaultStyle_ mergeWith:style];
-      }
-    } @catch (NSException *e) {
-      WLOG("CSSStyle select failed %@ -- %@", e, [e callStackSymbols]);
-      DLOG("cssContext_ => %@", cssContext_);
-      DLOG("elementName => %@", key);
-    }
-    if (elementName)
-      lwc_string_unref(elementName);
-    elem = new KStyleElement(key, style);
+    CSSStyle *style = [self styleForElementName:key];
+    kassert(style != nil);
+    elem = new KStyleElement(key, style, self);
     elements_.put(key, elem);
   }
   OSSpinLockUnlock(&elementsSpinLock_);
-
   return elem;
 }
 

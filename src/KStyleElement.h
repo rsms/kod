@@ -3,7 +3,7 @@
 #import <srchilite/formatter.h>
 #import <srchilite/formatterfactory.h>
 
-@class CSSStyle;
+@class CSSStyle, KStyle;
 
 extern NSString * const KStyleElementAttributeName;
 
@@ -24,13 +24,11 @@ class KStyleElement {
   NSMutableDictionary *textAttributes_;
 
  public:
-  static NSFontDescriptor *fontDescriptor();
-  
   static void clearAttributes(NSMutableAttributedString *astr,
                               NSRange range,
                               bool removeSpecials=false);
   
-  KStyleElement(NSString *name=@"body", CSSStyle *style=nil);
+  KStyleElement(NSString *name=@"body", CSSStyle *style=nil, KStyle *parent=nil);
   virtual ~KStyleElement();
 
   /// the language element represented by this formatter
@@ -38,7 +36,7 @@ class KStyleElement {
     return [textAttributes_ objectForKey:KStyleElementAttributeName];
   }
   
-  void setStyle(CSSStyle *style);
+  void setStyle(CSSStyle *style, KStyle *parent=nil);
   inline NSDictionary *textAttributes() { return textAttributes_; }
   
   inline void setAttribute(NSString *key, id value) {

@@ -103,6 +103,8 @@
 		3AE5E9A3129180CB00B17C4F /* CSS.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 3AE5E8B312915ABA00B17C4F /* CSS.framework */; };
 		3AE5EA571292B2D000B17C4F /* KConfig.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3AE5EA561292B2D000B17C4F /* KConfig.mm */; };
 		3AE5ECB61292F7B800B17C4F /* KThread.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3AE5ECB51292F7B800B17C4F /* KThread.mm */; };
+		3AEC6C8F12BC12FB00F769DB /* KLineNumberMarker.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AEC6C8C12BC12FB00F769DB /* KLineNumberMarker.m */; };
+		3AEC6C9012BC12FB00F769DB /* KMetaRulerView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3AEC6C8E12BC12FB00F769DB /* KMetaRulerView.mm */; };
 		3AF14C42128D792F00623011 /* KLangRegexRuleFactory.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3AF14C41128D792F00623011 /* KLangRegexRuleFactory.mm */; };
 		3AF14D20128D928A00623011 /* KLangSymbol.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3AF14D1F128D928A00623011 /* KLangSymbol.mm */; };
 /* End PBXBuildFile section */
@@ -369,6 +371,12 @@
 		3AE5EB871292DB5C00B17C4F /* CSS.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CSS.framework; path = "deps/libcss/cocoa-framework/build/Release/CSS.framework"; sourceTree = "<group>"; };
 		3AE5ECB41292F7B800B17C4F /* KThread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KThread.h; sourceTree = "<group>"; };
 		3AE5ECB51292F7B800B17C4F /* KThread.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KThread.mm; sourceTree = "<group>"; };
+		3AEC6C8B12BC12FB00F769DB /* KLineNumberMarker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KLineNumberMarker.h; sourceTree = "<group>"; };
+		3AEC6C8C12BC12FB00F769DB /* KLineNumberMarker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KLineNumberMarker.m; sourceTree = "<group>"; };
+		3AEC6C8D12BC12FB00F769DB /* KMetaRulerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KMetaRulerView.h; sourceTree = "<group>"; };
+		3AEC6C8E12BC12FB00F769DB /* KMetaRulerView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KMetaRulerView.mm; sourceTree = "<group>"; };
+		3AEC6C9112BC14EE00F769DB /* KMetaRulerView2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KMetaRulerView2.h; sourceTree = "<group>"; };
+		3AEC6C9212BC14EE00F769DB /* KMetaRulerView2.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KMetaRulerView2.mm; sourceTree = "<group>"; };
 		3AF14C40128D792F00623011 /* KLangRegexRuleFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KLangRegexRuleFactory.h; sourceTree = "<group>"; };
 		3AF14C41128D792F00623011 /* KLangRegexRuleFactory.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KLangRegexRuleFactory.mm; sourceTree = "<group>"; };
 		3AF14D1E128D928A00623011 /* KLangSymbol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KLangSymbol.h; sourceTree = "<group>"; };
@@ -656,14 +664,9 @@
 			children = (
 				3AB97BD312B2834D00F4ADB2 /* Status bar */,
 				3AE5E8D012916F2500B17C4F /* Scrollbar */,
+				3AEC6C8712BC12D700F769DB /* Editor */,
 				3ABF539412A5D52F0020233C /* KSplitView.h */,
 				3ABF539512A5D52F0020233C /* KSplitView.m */,
-				3A7E751D1287403100D85E4C /* KScrollView.h */,
-				3A7E751E1287403100D85E4C /* KScrollView.m */,
-				3ABF541D12A5DC6F0020233C /* KClipView.h */,
-				3ABF541E12A5DC6F0020233C /* KClipView.m */,
-				3ABF540E12A5DB1D0020233C /* KTextView.h */,
-				3ABF540F12A5DB1D0020233C /* KTextView.m */,
 			);
 			name = "Main views";
 			sourceTree = "<group>";
@@ -760,6 +763,25 @@
 				3ABF4C6C12A48E7D0020233C /* NSData-kod.mm */,
 			);
 			name = "NS categories";
+			sourceTree = "<group>";
+		};
+		3AEC6C8712BC12D700F769DB /* Editor */ = {
+			isa = PBXGroup;
+			children = (
+				3A7E751D1287403100D85E4C /* KScrollView.h */,
+				3A7E751E1287403100D85E4C /* KScrollView.m */,
+				3ABF541D12A5DC6F0020233C /* KClipView.h */,
+				3ABF541E12A5DC6F0020233C /* KClipView.m */,
+				3ABF540E12A5DB1D0020233C /* KTextView.h */,
+				3ABF540F12A5DB1D0020233C /* KTextView.m */,
+				3AEC6C8B12BC12FB00F769DB /* KLineNumberMarker.h */,
+				3AEC6C8C12BC12FB00F769DB /* KLineNumberMarker.m */,
+				3AEC6C8D12BC12FB00F769DB /* KMetaRulerView.h */,
+				3AEC6C8E12BC12FB00F769DB /* KMetaRulerView.mm */,
+				3AEC6C9112BC14EE00F769DB /* KMetaRulerView2.h */,
+				3AEC6C9212BC14EE00F769DB /* KMetaRulerView2.mm */,
+			);
+			name = Editor;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -953,6 +975,8 @@
 				3AB97DA612B2A00F00F4ADB2 /* BWCustomView.m in Sources */,
 				3AB97DAC12B2A02300F4ADB2 /* NSApplication+BWAdditions.m in Sources */,
 				3AB97DAD12B2A02300F4ADB2 /* NSWindow+BWAdditions.m in Sources */,
+				3AEC6C8F12BC12FB00F769DB /* KLineNumberMarker.m in Sources */,
+				3AEC6C9012BC12FB00F769DB /* KMetaRulerView.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

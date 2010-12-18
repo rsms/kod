@@ -13,6 +13,7 @@
 #import "KLangMap.h"
 #import "KTextView.h"
 #import "KStatusBarView.h"
+#import "KMetaRulerView.h"
 
 
 // used in stateFlags_
@@ -56,13 +57,11 @@ static NSString *_NSStringFromRangeArray(std::vector<NSRange> &lineToRangeVec,
 
 static NSImage* _kDefaultIcon = nil;
 static NSString* _kDefaultTitle = @"Untitled";
-static dispatch_queue_t gHighlightDispatchQueue = NULL;
 
 + (void)load {
   NSAutoreleasePool* pool = [NSAutoreleasePool new];
   _kDefaultIcon =
       [[[NSWorkspace sharedWorkspace] iconForFile:@"/dev/null"] retain];
-  gHighlightDispatchQueue = dispatch_queue_create("kod.highlight", NULL);
   [pool drain];
 }
 
@@ -170,6 +169,9 @@ static int debugSimulateTextAppendingIteration = 0;
 
   // Set the NSScrollView as our view
   view_ = sv;
+  
+  // Configure meta ruler (line numbers)
+  self.hasMetaRuler = KConfig.getBool(@"KTabContents/hasMetaRuler", YES);
   
   // Start with the empty style and load the default style
   KStyle *style = [KStyle sharedStyle];
@@ -396,6 +398,41 @@ static int debugSimulateTextAppendingIteration = 0;
 }
 
 
+- (KScrollView*)scrollView {
+  return (KScrollView*)view_;
+}
+
+
+- (BOOL)hasMetaRuler {
+  return [self.scrollView hasVerticalRuler];
+}
+
+
+- (void)setHasMetaRuler:(BOOL)displayRuler {
+  BOOL hasRuler = self.hasMetaRuler;
+  if (hasRuler == displayRuler) return; // noop
+  KScrollView *scrollView = self.scrollView;
+  if (displayRuler) {
+    NSRulerView *prevRulerView = [scrollView verticalRulerView];
+    if (!prevRulerView ||
+        ![prevRulerView isKindOfClass:[KMetaRulerView class]]) {
+      metaRulerView_ = [[KMetaRulerView alloc] initWithScrollView:scrollView
+                                                      tabContents:self];
+      [scrollView setVerticalRulerView:metaRulerView_];
+      [metaRulerView_ release];
+    } else {
+      metaRulerView_ = (KMetaRulerView*)prevRulerView;
+    }
+    [scrollView setHasVerticalRuler:YES];
+    [scrollView setRulersVisible:YES];
+  } else {
+    [scrollView setHasVerticalRuler:NO];
+    [scrollView setRulersVisible:NO];
+    metaRulerView_ = nil;
+  }
+}
+
+
 #pragma mark -
 #pragma mark Notifications
 
@@ -489,6 +526,9 @@ static int debugSimulateTextAppendingIteration = 0;
 - (void)linesDidChangeWithLineCountDelta:(NSInteger)lineCountDelta {
   //DLOG("linesDidChangeWithLineCountDelta:%ld %@", lineCountDelta,
   //     _NSStringFromRangeArray(lineToRangeVec_, textView_.textStorage.string));
+  if (metaRulerView_) {
+    [metaRulerView_ linesDidChangeWithLineCountDelta:lineCountDelta];
+  }
 }
 
 
@@ -1492,6 +1532,7 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
                                                  encoding:NSUTF8StringEncoding
                                              freeWhenDone:NO];
       selectedRange = NSRangeFromString(s);
+      DLOG("loaded selection from xattr: %@", s);
     }
     
     delete buf; buf = NULL;
@@ -1508,13 +1549,14 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
   self.fileModificationDate = mtime;
   
   // read data
-  if (![self readFromData:data ofType:typeName error:outError]) {
+  if (![self readFromData:data ofType:typeName error:outError callback:^{
+    // restore (or set) selection
+    if (selectedRange.location < textView_.textStorage.length) {
+      DLOG("restoring selection to: %@", NSStringFromRange(selectedRange));
+      [textView_ setSelectedRange:selectedRange];
+    }
+  }]) {
     return NO;
-  }
-  
-  // restore (or set) selection
-  if (selectedRange.location < textView_.textStorage.length) {
-    [textView_ setSelectedRange:selectedRange];
   }
   
   return YES;
@@ -1591,19 +1633,15 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
                   (CFStringRef)textEncodingNameFromResponse));
         }
         // parse data
-        [self readFromData:data ofType:self.fileType error:&err];
-      }
-      
-      // make sure isLoading is false
-      self.isLoading = NO;
-      
-      // if an error occured, handle it
-      if (err) {
+        [self readFromData:data ofType:self.fileType error:&err callback:^{
+          // we are done -- allow editing
+          [textView_ setEditable:YES];
+        }];
+      } else {
+        // handle error
+        self.isLoading = NO;
         self.isCrashed = YES; // FIXME
         [NSApp presentError:err];
-      } else {
-        // we are done -- allow editing
-        [textView_ setEditable:YES];
       }
     }
     startImmediately:NO];
@@ -1639,7 +1677,8 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
 // Generate text from data
 - (BOOL)readFromData:(NSData *)data
               ofType:(NSString *)typeName
-               error:(NSError **)outError {
+               error:(NSError **)outError
+               callback:(void(^)(void))callback {
   DLOG("readFromData:%p ofType:%@", data, typeName);
   
   NSString *text = nil;
@@ -1693,12 +1732,25 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
         if (isVisible_)
           [self setNeedsHighlightingOfCompleteDocument];
       }
-      
+
+      if (callback)
+        callback();
+
       [text release];
       [data release];
     );
   }
   return YES;
+}
+
+
+- (BOOL)readFromData:(NSData *)data
+              ofType:(NSString *)typeName
+               error:(NSError **)outError {
+  return [self readFromData:data
+                     ofType:typeName
+                      error:outError
+                   callback:nil]; 
 }
 
 
@@ -1754,6 +1806,9 @@ originalContentsURL:(NSURL *)absoluteOriginalContentsURL
                          error:outError]) {
     return NO;
   }
+
+  // this is needed for the internal resource tracking logic of NSDocument
+  [self setFileURL:absoluteURL];
   
   // write xattrs
   NSString *path = [absoluteURL path];
@@ -1783,7 +1838,7 @@ originalContentsURL:(NSURL *)absoluteOriginalContentsURL
     
     close(fd);
   }
-  
+
   return YES;
 }
 
