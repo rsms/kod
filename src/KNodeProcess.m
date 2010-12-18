@@ -40,7 +40,7 @@ static NSString *_dataToWeakString(const void *bytes, size_t length) {
 }
 
 
-+ (id)sharedProcess {
++ (KNodeProcess*)sharedProcess {
   if (!gSharedProcess) {
     KNodeProcess *sharedProcess = [[self alloc] init];
     if (h_casid(&gSharedProcess, sharedProcess)) {
@@ -255,6 +255,13 @@ static NSString *_dataToWeakString(const void *bytes, size_t length) {
     WLOG("[node ipc]: received invalid message (not a dict)");
   }
 }
+
+
+- (void)terminate {
+  [process_ terminate];
+}
+
+//H_FORWARD_INVOCATION_TO_MEMBER_IMPL(process_)
 
 
 @end

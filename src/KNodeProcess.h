@@ -13,8 +13,9 @@ extern NSString *const KNodeIPCTypeResponse;
   OSSpinLock responseWaitQueueLock_;
 }
 
-+ (id)sharedProcess;
++ (KNodeProcess*)sharedProcess;
 - (void)start;
+- (void)terminate;
 
 // Send a object
 - (void)sendObject:(id)object;
