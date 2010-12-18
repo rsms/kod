@@ -2,7 +2,7 @@
 
 #import "common.h"
 
-#import "KConfig.h"
+#import "kconf.h"
 #import "KTabContents.h"
 #import "KBrowser.h"
 #import "KBrowserWindowController.h"
@@ -171,7 +171,7 @@ static int debugSimulateTextAppendingIteration = 0;
   view_ = sv;
   
   // Configure meta ruler (line numbers)
-  self.hasMetaRuler = KConfig.getBool(@"KTabContents/hasMetaRuler", YES);
+  self.hasMetaRuler = kconf_bool(@"KTabContents/hasMetaRuler", YES);
   
   // Start with the empty style and load the default style
   KStyle *style = [KStyle sharedStyle];
@@ -185,7 +185,7 @@ static int debugSimulateTextAppendingIteration = 0;
   /*[self retain];
   h_dispatch_delayed_main(10000, ^{
     DLOG("loading new style after 10s");
-    NSURL* url = KConfig.resourceURL(@"style/bright.css");
+    NSURL* url = kconf_res_url(@"style/bright.css");
     [KStyle styleAtURL:url withCallback:^(NSError *err, KStyle *style) {
       if (err) [NSApp presentError:err];
       else self.style = style;

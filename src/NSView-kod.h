@@ -2,4 +2,6 @@
 
 - (NSView*)findFirstParentViewOfKind:(Class)kind;
 
+- (NSView*)findFirstSubviewOfKind:(Class)kind;
+
 @end

@@ -1,6 +1,6 @@
 #import "KBrowser.h"
 #import "KTabContents.h"
-#import "KConfig.h"
+#import "kconf.h"
 #import "KBrowserWindowController.h"
 #import "KToolbarController.h"
 #import <ChromiumTabs/common.h>
@@ -29,7 +29,7 @@
 - (CTToolbarController*)createToolbarController {
   // subclasses could override this -- returning nil means no toolbar
   return [[[KToolbarController alloc] initWithNibName:@"Toolbar"
-                                               bundle:KConfig.bundle
+                                               bundle:kconf_bundle()
                                               browser:self] autorelease];
 }
 

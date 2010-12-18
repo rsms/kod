@@ -6,7 +6,7 @@
 #import "KStyle.h"
 #import "KSourceHighlightState.h"
 #import "KRUsage.hh"
-#import "KConfig.h"
+#import "kconf.h"
 #import "common.h"
 
 #import <iterator>

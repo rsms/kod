@@ -4,8 +4,6 @@
        KStatusBarController, KSplitView;
 
 @interface KBrowserWindowController : CTBrowserWindowController {
-  IBOutlet NSSplitView *verticalSplitView_;
-  IBOutlet NSView *leftmostSubviewOfVerticalSplitView_;
   IBOutlet KFileOutlineView *fileOutlineView_;
   IBOutlet KStatusBarController *statusBarController_;
   IBOutlet KSplitView *splitView_;
@@ -13,7 +11,6 @@
 }
 
 @property(readonly) NSSplitView *verticalSplitView;
-@property(readonly) NSView *leftmostSubviewOfVerticalSplitView;
 @property(readonly) CGFloat statusBarHeight;
 
 // TODO: fullscreen

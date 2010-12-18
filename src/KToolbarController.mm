@@ -5,6 +5,7 @@
 #import "KLocationBarController.h"
 #import "KDocumentController.h"
 #import "KBrowserWindowController.h"
+#import "KSplitView.h"
 
 #import "common.h"
 
@@ -18,6 +19,7 @@
   assert(locationBarController_ == nil);
   locationBarController_ = [[KLocationBarController alloc]
       initWithAutocompleteTextField:locationBarTextField_];
+
   // Needed so that editing doesn't lose the styling.
   [locationBarTextField_ setAllowsEditingTextAttributes:YES];
 }
@@ -27,6 +29,63 @@
   [autocompleteTextFieldEditor_ release];
   [locationBarController_ release];
   [super dealloc];
+}
+
+
+#pragma mark -
+#pragma mark Split view
+
+
+static const CGFloat kLeftMarginWhenNoSidebar = 4.0;
+
+
+- (KSplitView*)splitView {
+  return splitView_;
+}
+
+
+- (void)setSplitView:(KSplitView*)splitView {
+  NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
+  if (splitView_) {
+    [nc removeObserver:self name:nil object:splitView_];
+  }
+  splitView_ = splitView;
+  if (splitView_) {
+    [nc addObserver:self
+           selector:@selector(splitViewDidResize:)
+               name:NSSplitViewDidResizeSubviewsNotification
+             object:splitView];
+  }
+  [self updateLayoutForSplitView];
+}
+
+
+- (void)updateLayoutForSplitView {
+  CGFloat splitViewPosition = splitView_ ? splitView_.position : 0.0;
+  NSRect fullBounds = self.view.bounds;
+  if (splitViewPosition < 10.0) { // threshold value instead of 0.0
+    [leftViewGroup_ setHidden:YES];
+    fullBounds.origin.x = kLeftMarginWhenNoSidebar;
+    fullBounds.size.width -= kLeftMarginWhenNoSidebar;
+    [rightViewGroup_ setFrame:fullBounds];
+  } else {
+    // adjust left view group's frame
+    NSRect frame = leftViewGroup_.frame;
+    frame.size.width = splitViewPosition;
+    leftViewGroup_.frame = frame;
+    [leftViewGroup_ setHidden:NO];
+
+    // adjust right view group's frame
+    frame = rightViewGroup_.frame;
+    frame.size.width = fullBounds.size.width - splitViewPosition;
+    frame.origin.x = splitViewPosition;
+    rightViewGroup_.frame = frame;
+  }
+}
+
+
+- (void)splitViewDidResize:(NSNotification*)notification {
+  [self updateLayoutForSplitView];
 }
 
 
@@ -98,6 +157,7 @@
                          change:change
                         context:context];*/
 }
+
 
 
 #pragma mark -

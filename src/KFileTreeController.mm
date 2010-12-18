@@ -3,7 +3,7 @@
 #import "KFileTextFieldCell.h"
 #import "KFileOutlineView.h"
 #import "common.h"
-#import "KConfig.h"
+#import "kconf.h"
 
 static NSString *kNameColumnId = @"name";
 
@@ -19,7 +19,7 @@ static NSString *kNameColumnId = @"name";
   // DEV XXX temporary
   NSError *error = nil;
   rootTreeNode_ =
-      [self treeNodeFromDirectoryAtPath:[KConfig.resourcePath() stringByDeletingLastPathComponent] // FIXME
+      [self treeNodeFromDirectoryAtPath:[[kconf_res_url(nil) path] stringByDeletingLastPathComponent] // FIXME
                                   error:&error];
   if (!rootTreeNode_) {
     [NSApp presentError:error];

@@ -11,13 +11,12 @@
 #import "KSplitView.h"
 #import "KToolbarController.h"
 #import "KStatusBarController.h"
+#import "kconf.h"
 
 
 @implementation KBrowserWindowController
 
-@synthesize
-    verticalSplitView = verticalSplitView_,
-    leftmostSubviewOfVerticalSplitView = leftmostSubviewOfVerticalSplitView_;
+@synthesize verticalSplitView = splitView_;
 
 #pragma mark -
 #pragma mark Initialization
@@ -36,10 +35,23 @@
   fileTreeController_ =
       [[KFileTreeController alloc] initWithOutlineView:fileOutlineView_];
 
-  
   // We don't use the "New tab" button
   kassert(tabStripController_);
   self.showsNewTabButton = NO;
+
+  // setup split view
+  kassert(splitView_ != nil); // should get a ref from unarchived NIB
+  splitView_.position = kconf_double(@"editor/splitView/position", 180.0);
+  // register for split view resize notification so we can store conf value
+  NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
+  [nc addObserver:self
+         selector:@selector(splitViewDidResize:)
+             name:NSSplitViewDidResizeSubviewsNotification
+           object:splitView_];
+  // set splitView of toolbarController_
+  if (toolbarController_) {
+    ((KToolbarController*)toolbarController_).splitView = splitView_;
+  }
 
   return self;
 }
@@ -122,6 +134,17 @@
   return y;
 }
 
+
+#pragma mark -
+#pragma mark Notifications
+
+
+- (void)splitViewDidResize:(NSNotification*)notification {
+  kconf_set_double(@"editor/splitView/position", splitView_.position);
+}
+
+
+#pragma mark -
 #pragma mark NSSplitView Delegate Methods
 
 // Add the resize handle rect to the split view hot zone
@@ -185,13 +208,13 @@ willPositionSheet:(NSWindow *)sheet
 
 - (void)layoutTabContentArea:(NSRect)newFrame {
   // Adjust height after the tabstrip have been introduced to the window top
-  NSRect splitViewFrame = verticalSplitView_.frame;
+  NSRect splitViewFrame = splitView_.frame;
   newFrame.size.height -= [self statusBarHeight];
   newFrame.origin.y = [self statusBarHeight];
   splitViewFrame.size = newFrame.size;
   splitViewFrame.origin.x = 0.0;
   splitViewFrame.origin.y = newFrame.origin.y;
-  [verticalSplitView_ setFrame:splitViewFrame];
+  [splitView_ setFrame:splitViewFrame];
   
   [super layoutTabContentArea:newFrame];
 }

@@ -1,7 +1,7 @@
 #import "common.h"
 
 #import "KLangMap.h"
-#import "KConfig.h"
+#import "kconf.h"
 #import "ICUPattern.h"
 #import "ICUMatcher.h"
 #import <libkern/OSAtomic.h>
@@ -212,7 +212,7 @@ static ICUPattern *gSheBangEnvRegExp;
   
   // users' paths take precedence
   static NSString *const configKey = @"langSearchPaths";
-  NSArray *userDirnames = KConfig.getArray(configKey);
+  NSArray *userDirnames = kconf_array(configKey, nil);
   if (userDirnames) {
     searchPaths_ = [[NSMutableArray alloc] initWithCapacity:userDirnames.count];
     Class NSURLClass = [NSURL class];
@@ -231,7 +231,7 @@ static ICUPattern *gSheBangEnvRegExp;
   }
   
   // Append the built-in lang dir
-  [searchPaths_ addObject:KConfig.resourcePath(@"lang")];
+  [searchPaths_ addObject:[kconf_res_url(@"lang") path]];
   
   return searchPaths_;
 }

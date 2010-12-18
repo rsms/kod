@@ -1,6 +1,6 @@
 #import "KStyle.h"
 #import "KThread.h"
-#import "KConfig.h"
+#import "kconf.h"
 
 NSString const *KStyleWillChangeNotification = @"KStyleWillChangeNotification";
 NSString const *KStyleDidChangeNotification = @"KStyleDidChangeNotification";
@@ -143,13 +143,6 @@ static NSString const *gDefaultElementSymbol;
   }
   return gBaseStylesheet_;
 }
-
-
-/*+ (void)defaultStyleWithCallback:(void(^)(NSError*,KStyle*))callback {
-  NSURL* url = KConfig.getURL(@"defaultStyleURL",
-                              KConfig.resourceURL(@"style/default.css"));
-  [self styleAtURL:url withCallback:callback];
-}*/
 
 
 #pragma mark -

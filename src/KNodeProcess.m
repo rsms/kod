@@ -1,5 +1,5 @@
 #import "KNodeProcess.h"
-#import "KConfig.h"
+#import "kconf.h"
 #import "JSON.h"
 #import <dispatch/dispatch.h>
 #import "common.h"
@@ -87,7 +87,7 @@ static NSString *_dataToWeakString(const void *bytes, size_t length) {
   kassert(process_);
   
   // start node with main.js
-  NSString *mainScriptPath = KConfig.resourcePath(@"main.js");
+  NSString *mainScriptPath = [kconf_res_url(@"main.js") path];
   [process_ startWithArguments:mainScriptPath, nil];
   
   // open the IPC channel

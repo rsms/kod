@@ -2,7 +2,8 @@
 
 @class KAutocompleteTextField,
        KAutocompleteTextFieldEditor,
-       KLocationBarController;
+       KLocationBarController,
+       KSplitView;
 
 // A controller for the toolbar in the browser window.
 //
@@ -20,11 +21,17 @@
 //
 @interface KToolbarController : CTToolbarController {
   IBOutlet KAutocompleteTextField* locationBarTextField_;
+  IBOutlet NSView *leftViewGroup_;
+  IBOutlet NSView *rightViewGroup_;
+  KSplitView *splitView_;
   KAutocompleteTextFieldEditor *autocompleteTextFieldEditor_;
   KLocationBarController *locationBarController_;
   __weak CTTabContents *currentContents_;
 }
 
-@property(nonatomic, readonly) KAutocompleteTextField* locationBarTextField;
+@property(readonly, nonatomic) KAutocompleteTextField* locationBarTextField;
+@property(assign, nonatomic) __weak KSplitView *splitView;
+
+- (void)updateLayoutForSplitView;
 
 @end

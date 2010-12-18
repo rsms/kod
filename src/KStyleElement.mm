@@ -2,7 +2,7 @@
 #import "NSColor-web.h"
 #import "NSString-intern.h"
 #import "KLangSymbol.h"
-#import "KConfig.h"
+#import "kconf.h"
 #import "KStyle.h"
 #import <srchilite/formatterparams.h>
 #import <ChromiumTabs/common.h>
@@ -50,7 +50,7 @@ void KStyleElement::setStyle(CSSStyle *style, KStyle *parent) {
   // foreground color
   NSColor *color = style.color;
   if (!color || [color alphaComponent] == 0.0)
-    color = KConfig.getColor(@"defaultTextColor", [NSColor whiteColor]);
+    color = kconf_color(@"defaultTextColor", [NSColor whiteColor]);
   setForegroundColor(color);
   
   // background color

@@ -3,7 +3,7 @@
 #import "KBrowserWindowController.h"
 #import "KTabContents.h"
 #import "KDocumentController.h"
-#import "KConfig.h"
+#import "kconf.h"
 #import "KStyle.h"
 #import "KNodeProcess.h"
 #import "common.h"
@@ -39,15 +39,15 @@
   [NSApp setServicesProvider:self];
   
   // Start loading default style
-  NSURL *builtinURL = KConfig.resourceURL(@"style/default.css");
-  NSURL *url = KConfig.getURL(@"styleURL", builtinURL);
+  NSURL *builtinURL = kconf_res_url(@"style/default.css");
+  NSURL *url = kconf_url(@"styleURL", builtinURL);
   [[KStyle sharedStyle] loadFromURL:url withCallback:^(NSError *error) {
     if (error) [NSApp presentError:error];
   }];
   
   // XXX load another style after 5 seconds
   /*h_dispatch_delayed_main(5000, ^{
-    NSURL *url2 = KConfig.resourceURL(@"style/bright.css");
+    NSURL *url2 = kconf_res_url(@"style/bright.css");
     [[KStyle sharedStyle] loadFromURL:url2 withCallback:^(NSError *error) {
       if (error) [NSApp presentError:error];
     }];

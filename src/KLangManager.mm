@@ -1,6 +1,6 @@
 #import "KLangManager.h"
 #import "KLangRegexRuleFactory.h"
-#import "KConfig.h"
+#import "kconf.h"
 
 #import <srchilite/fileutil.h>
 #import <srchilite/langdefparserfun.h>
@@ -45,42 +45,5 @@ LangElems *KLangManager::readLangElems(const char *dirname,
     }
   }
 }
-
-
-//static KLangMap g_lang_map;
-
-
-/*NSDictionary *KLangManager::langMap() {
-  NSDictionary *langMap = KConfig.getDict(@"languages");
-  NSDictionary *extMap, *nameMap, *firstlineMap;
-  if (!langMap) {
-    // create langMap
-    extMap = [NSMutableDictionary dictionary];
-    nameMap = [NSMutableDictionary dictionary];
-    firstlineMap = [NSMutableDictionary dictionary];
-    
-    langMap = [NSDictionary dictionaryWithObjectsAndKeys:nil];
-    
-    
-    KConfig.set(@"languages", langMap);
-  }
-  return langMap;
-}
-
-
-NSString *KLangManager::langIdentifierForFilename(NSString *filename) {
-  assert([[filename pathComponents] count] == 1);
-  NSDictionary *langMap = langMap();
-  
-  //# @matchext html, htm, shtml, xhtml, phtml, php, inc, tmpl, tpl, ctp
-  //# #@matchname moc, cpp, C, cc, h, hh, H, hpp
-  //# @matchfirstline <!DOCTYPE|<(?i:html)|<\?(?i:php)
-  
-  //firstLineMatch = '<!DOCTYPE|<(?i:html)|<\?(?i:php)';
-	//fileTypes = ( 'html', 'htm', 'shtml', 'xhtml', 'phtml', 'php', 'inc', 'tmpl', 'tpl', 'ctp' );
-  
-}*/
-
-
 
 

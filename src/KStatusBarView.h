@@ -3,7 +3,6 @@
 @interface KStatusBarView : NSView {
   KSplitView *splitView_;
   NSRect splitViewMarkerFrame_;
-  CGFloat splitViewPosition_;
   CGFloat splitViewPositionForLayout_;
   NSTrackingArea *splitViewMarkerTrackingArea_;
   IBOutlet NSView *rightViewGroup_;
