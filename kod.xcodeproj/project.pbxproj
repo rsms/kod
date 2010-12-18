@@ -78,6 +78,8 @@
 		3A929887122AC39100DA7E43 /* ChromiumTabs.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 3A9297E4122AB49D00DA7E43 /* ChromiumTabs.framework */; };
 		3A93A8401299E14300185857 /* NSURL-blocks.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A93A83F1299E14300185857 /* NSURL-blocks.m */; };
 		3AAC02B812BD1110001BDC39 /* kconf.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AAC02B712BD1110001BDC39 /* kconf.m */; };
+		3AAC03F012BD2FC2001BDC39 /* sidebar-closed.png in Resources */ = {isa = PBXBuildFile; fileRef = 3AAC03EE12BD2FC2001BDC39 /* sidebar-closed.png */; };
+		3AAC03F112BD2FC2001BDC39 /* sidebar-open.png in Resources */ = {isa = PBXBuildFile; fileRef = 3AAC03EF12BD2FC2001BDC39 /* sidebar-open.png */; };
 		3AB97BD612B2836800F4ADB2 /* KStatusBarView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AB97BD512B2836800F4ADB2 /* KStatusBarView.m */; };
 		3AB97C3612B2893C00F4ADB2 /* KStatusBarController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3AB97C3512B2893C00F4ADB2 /* KStatusBarController.mm */; };
 		3AB97D4512B2990500F4ADB2 /* BWSplitView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AB97D4412B2990500F4ADB2 /* BWSplitView.m */; };
@@ -320,6 +322,8 @@
 		3A93AB82129ADA5500185857 /* hatomic_flags.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = hatomic_flags.h; sourceTree = "<group>"; };
 		3A93B4E5129B67CB00185857 /* KRUsage.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = KRUsage.hh; sourceTree = "<group>"; };
 		3AAC02B712BD1110001BDC39 /* kconf.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = kconf.m; sourceTree = "<group>"; };
+		3AAC03EE12BD2FC2001BDC39 /* sidebar-closed.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "sidebar-closed.png"; sourceTree = "<group>"; };
+		3AAC03EF12BD2FC2001BDC39 /* sidebar-open.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "sidebar-open.png"; sourceTree = "<group>"; };
 		3AB97BD412B2836800F4ADB2 /* KStatusBarView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KStatusBarView.h; sourceTree = "<group>"; };
 		3AB97BD512B2836800F4ADB2 /* KStatusBarView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KStatusBarView.m; sourceTree = "<group>"; };
 		3AB97C3412B2893C00F4ADB2 /* KStatusBarController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KStatusBarController.h; sourceTree = "<group>"; };
@@ -558,6 +562,8 @@
 			isa = PBXGroup;
 			children = (
 				3AE5E5161290955000B17C4F /* kod.icns */,
+				3AAC03EE12BD2FC2001BDC39 /* sidebar-closed.png */,
+				3AAC03EF12BD2FC2001BDC39 /* sidebar-open.png */,
 				3A158DF1128A282F00339E6E /* style */,
 				3A158DF5128A296000339E6E /* lang */,
 				3A928C1A122714EE00DA7E43 /* Info.plist */,
@@ -882,6 +888,8 @@
 				3A158E4C128A296100339E6E /* lang in Resources */,
 				3AE5E5171290955000B17C4F /* kod.icns in Resources */,
 				3A40F92F12AFF21A007B5879 /* main.js in Resources */,
+				3AAC03F012BD2FC2001BDC39 /* sidebar-closed.png in Resources */,
+				3AAC03F112BD2FC2001BDC39 /* sidebar-open.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -1135,6 +1135,15 @@
 									<reference key="NSOnImage" ref="35465992"/>
 									<reference key="NSMixedImage" ref="502551668"/>
 								</object>
+								<object class="NSMenuItem" id="5278274">
+									<reference key="NSMenu" ref="466310130"/>
+									<string key="NSTitle">Show meta ruler</string>
+									<string key="NSKeyEquiv"/>
+									<int key="NSMnemonicLoc">2147483647</int>
+									<int key="NSState">1</int>
+									<reference key="NSOnImage" ref="35465992"/>
+									<reference key="NSMixedImage" ref="502551668"/>
+								</object>
 								<object class="NSMenuItem" id="237841660">
 									<reference key="NSMenu" ref="466310130"/>
 									<string key="NSTitle">Customize Toolbar…</string>
@@ -1911,6 +1920,14 @@
 					</object>
 					<int key="connectionID">580</int>
 				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBActionConnection" key="connection">
+						<string key="label">toggleMetaRuler:</string>
+						<reference key="source" ref="1014"/>
+						<reference key="destination" ref="5278274"/>
+					</object>
+					<int key="connectionID">583</int>
+				</object>
 			</object>
 			<object class="IBMutableOrderedSet" key="objectRecords">
 				<object class="NSArray" key="orderedObjects">
@@ -2380,6 +2397,7 @@
 							<reference ref="102151532"/>
 							<reference ref="237841660"/>
 							<reference ref="813940980"/>
+							<reference ref="5278274"/>
 						</object>
 						<reference key="parent" ref="586577488"/>
 					</object>
@@ -2892,6 +2910,11 @@
 						<reference key="object" ref="813940980"/>
 						<reference key="parent" ref="466310130"/>
 					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">581</int>
+						<reference key="object" ref="5278274"/>
+						<reference key="parent" ref="466310130"/>
+					</object>
 				</object>
 			</object>
 			<object class="NSMutableDictionary" key="flattenedProperties">
@@ -3119,6 +3142,7 @@
 					<string>578.IBPluginDependency</string>
 					<string>58.IBPluginDependency</string>
 					<string>58.ImportedFromIB2</string>
+					<string>581.IBPluginDependency</string>
 					<string>72.IBPluginDependency</string>
 					<string>72.ImportedFromIB2</string>
 					<string>73.IBPluginDependency</string>
@@ -3259,7 +3283,7 @@
 					<string>{74, 862}</string>
 					<string>{{6, 978}, {478, 20}}</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
-					<string>{{534, 773}, {244, 63}}</string>
+					<string>{{534, 753}, {244, 83}}</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>{{475, 832}, {234, 43}}</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
@@ -3370,6 +3394,7 @@
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<integer value="1"/>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
+					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<integer value="1"/>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<integer value="1"/>
@@ -3413,7 +3438,7 @@
 				</object>
 			</object>
 			<nil key="sourceID"/>
-			<int key="maxID">580</int>
+			<int key="maxID">583</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<object class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -3554,18 +3579,14 @@
 						<object class="NSArray" key="dict.sortedKeys">
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<string>fileOutlineView_</string>
-							<string>leftmostSubviewOfVerticalSplitView_</string>
 							<string>splitView_</string>
 							<string>statusBarController_</string>
-							<string>verticalSplitView_</string>
 						</object>
 						<object class="NSMutableArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<string>KFileOutlineView</string>
-							<string>NSView</string>
 							<string>KSplitView</string>
 							<string>KStatusBarController</string>
-							<string>NSSplitView</string>
 						</object>
 					</object>
 					<object class="NSMutableDictionary" key="toOneOutletInfosByName">
@@ -3573,10 +3594,8 @@
 						<object class="NSArray" key="dict.sortedKeys">
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<string>fileOutlineView_</string>
-							<string>leftmostSubviewOfVerticalSplitView_</string>
 							<string>splitView_</string>
 							<string>statusBarController_</string>
-							<string>verticalSplitView_</string>
 						</object>
 						<object class="NSMutableArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
@@ -3585,20 +3604,12 @@
 								<string key="candidateClassName">KFileOutlineView</string>
 							</object>
 							<object class="IBToOneOutletInfo">
-								<string key="name">leftmostSubviewOfVerticalSplitView_</string>
-								<string key="candidateClassName">NSView</string>
-							</object>
-							<object class="IBToOneOutletInfo">
 								<string key="name">splitView_</string>
 								<string key="candidateClassName">KSplitView</string>
 							</object>
 							<object class="IBToOneOutletInfo">
 								<string key="name">statusBarController_</string>
 								<string key="candidateClassName">KStatusBarController</string>
-							</object>
-							<object class="IBToOneOutletInfo">
-								<string key="name">verticalSplitView_</string>
-								<string key="candidateClassName">NSSplitView</string>
 							</object>
 						</object>
 					</object>
@@ -3705,9 +3716,11 @@
 							<string>debugDumpAttributesAtCursor:</string>
 							<string>selectNextElement:</string>
 							<string>selectPreviousElement:</string>
+							<string>toggleMetaRuler:</string>
 						</object>
 						<object class="NSMutableArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>id</string>
 							<string>id</string>
 							<string>id</string>
 							<string>id</string>
@@ -3720,6 +3733,7 @@
 							<string>debugDumpAttributesAtCursor:</string>
 							<string>selectNextElement:</string>
 							<string>selectPreviousElement:</string>
+							<string>toggleMetaRuler:</string>
 						</object>
 						<object class="NSMutableArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
@@ -3733,6 +3747,10 @@
 							</object>
 							<object class="IBActionInfo">
 								<string key="name">selectPreviousElement:</string>
+								<string key="candidateClassName">id</string>
+							</object>
+							<object class="IBActionInfo">
+								<string key="name">toggleMetaRuler:</string>
 								<string key="candidateClassName">id</string>
 							</object>
 						</object>

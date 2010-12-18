@@ -67,6 +67,7 @@ typedef std::deque<KHighlightQueueEntry> KHighlightQueue;
 - (IBAction)debugDumpAttributesAtCursor:(id)sender;
 - (IBAction)selectNextElement:(id)sender;
 - (IBAction)selectPreviousElement:(id)sender;
+- (IBAction)toggleMetaRuler:(id)sender;
 
 - (BOOL)setNeedsHighlightingOfCompleteDocument;
 - (BOOL)highlightCompleteDocumentInBackgroundIfQueued;

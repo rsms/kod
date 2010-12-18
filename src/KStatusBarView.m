@@ -89,8 +89,10 @@ static CGFloat kSplitViewMarkerWidth = 3.0;
 
 - (void)_recalculateSplitViewPosition {
   // minimum position for layout
+  CGFloat actualSplitViewPosition =
+      (splitView_ && !splitView_.isCollapsed) ? splitView_.position : 0.0;
   splitViewPositionForLayout_ = MAX([toggleSplitViewButton_ bounds].size.width,
-                                    splitView_ ? splitView_.position : 0.0);
+                                    actualSplitViewPosition);
 }
 
 

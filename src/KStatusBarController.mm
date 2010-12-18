@@ -1,7 +1,11 @@
 #import "KStatusBarController.h"
 #import "KSplitView.h"
 #import "KTabContents.h"
+#import "HEventEmitter.h"
 #import "common.h"
+
+NSString * const KStatusBarDidChangeHiddenStateNotification =
+               @"KStatusBarDidChangeHiddenStateNotification";
 
 @implementation KStatusBarController
 
@@ -63,28 +67,26 @@
 - (void)updateWithContents:(KTabContents*)contents {
   NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
   if (currentContents_) {
-    [nc removeObserver:self
-                  name:NSTextViewDidChangeSelectionNotification
-                object:currentContents_.textView];
+    [self stopObservingObject:currentContents_.textView];
   }
   currentContents_ = contents;
   if (currentContents_) {
-    [nc addObserver:self
-           selector:@selector(contentsTextViewDidChangeSelection:)
-               name:NSTextViewDidChangeSelectionNotification
-             object:currentContents_.textView];
+    [self observe:NSTextViewDidChangeSelectionNotification
+           source:currentContents_.textView
+          handler:@selector(contentsTextViewDidChangeSelection:)];
   }
   [self _updateCursorPosition];
 }
 
 
 - (void)contentsTextViewDidChangeSelection:(NSNotification*)notification {
-  [self _updateCursorPosition];
+  if (!self.isHidden)
+    [self _updateCursorPosition];
 }
 
 
 - (void)_updateToggleSplitViewButton {
-  //toggleSplitViewButton_
+  [toggleSplitViewButton_ setState:splitView_.isCollapsed];
 }
 
 
@@ -105,8 +107,10 @@
 
 
 - (void)splitViewDidResize:(NSNotification*)notification {
-  [self.statusBarView splitViewDidResize];
-  [self _updateToggleSplitViewButton];
+  if (!self.isHidden) {
+    [self.statusBarView splitViewDidResize];
+    [self _updateToggleSplitViewButton];
+  }
 }
 
 
@@ -115,11 +119,27 @@
 }
 
 
+- (BOOL)isHidden {
+  return self.statusBarView.isHidden;
+}
+
+- (void)setIsHidden:(BOOL)hidden {
+  if (self.isHidden != hidden) {
+    [self.statusBarView setHidden:hidden];
+    [self post:KStatusBarDidChangeHiddenStateNotification];
+    
+    // trigger an update since updates are suspended while hidden
+    if (!hidden) {
+      [self _updateCursorPosition];
+      [self _updateToggleSplitViewButton];
+    }
+    [self.statusBarView splitViewDidResize];
+  }
+}
+
+
 - (IBAction)toggleStatusBarVisibility:(id)sender {
-  [self.statusBarView setHidden:![self.statusBarView isHidden]];
-  /*NSRect frame = self.statusBarView.frame;
-  frame.size.height = 0.0;
-  self.statusBarView.frame = frame;*/
+  self.isHidden = !self.isHidden;
 }
 
 

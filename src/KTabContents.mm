@@ -430,6 +430,9 @@ static int debugSimulateTextAppendingIteration = 0;
     [scrollView setRulersVisible:NO];
     metaRulerView_ = nil;
   }
+  
+  // Update config
+  kconf_set_bool(@"KTabContents/hasMetaRuler", displayRuler);
 }
 
 
@@ -442,10 +445,15 @@ static int debugSimulateTextAppendingIteration = 0;
 }
 
 
-- (BOOL)validateUserInterfaceItem:(id < NSValidatedUserInterfaceItem >)item {
-  BOOL y;
-  if ([item action] == @selector(saveDocument:)) {
+- (BOOL)validateUserInterfaceItem:(id<NSValidatedUserInterfaceItem>)item {
+  BOOL y = NO;
+  SEL action = [item action];
+  if (action == @selector(saveDocument:)) {
     y = [self isDocumentEdited] || ![self fileURL];
+  } else if (action == @selector(toggleMetaRuler:)) {
+    NSMenuItem *menuItem = (NSMenuItem*)item;
+    [menuItem setState:self.hasMetaRuler];
+    y = YES;
   } else {
     y = [super validateUserInterfaceItem:item];
   }
@@ -787,6 +795,12 @@ longestEffectiveRange:&range
     return;
   }
 }
+
+
+- (IBAction)toggleMetaRuler:(id)sender {
+  self.hasMetaRuler = !self.hasMetaRuler;
+}
+
 
 #pragma mark -
 #pragma mark Highlighting

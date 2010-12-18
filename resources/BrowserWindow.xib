@@ -11,8 +11,8 @@
 			<string key="com.brandonwalkin.BWToolkit">1.2.5</string>
 		</dictionary>
 		<array class="NSMutableArray" key="IBDocument.EditedObjectIDs">
-			<integer value="121"/>
 			<integer value="56"/>
+			<integer value="121"/>
 		</array>
 		<array key="IBDocument.PluginDependencies">
 			<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
@@ -90,7 +90,7 @@
 								<object class="NSButton" id="762666860">
 									<reference key="NSNextResponder" ref="844259437"/>
 									<int key="NSvFlags">292</int>
-									<string key="NSFrameSize">{17, 17}</string>
+									<string key="NSFrameSize">{16, 17}</string>
 									<reference key="NSSuperview" ref="844259437"/>
 									<bool key="NSEnabled">YES</bool>
 									<object class="NSButtonCell" key="NSCell" id="922333067">
@@ -103,15 +103,15 @@
 											<int key="NSfFlags">1044</int>
 										</object>
 										<reference key="NSControlView" ref="762666860"/>
-										<int key="NSButtonFlags">138690815</int>
+										<int key="NSButtonFlags">-935051009</int>
 										<int key="NSButtonFlags2">134</int>
 										<object class="NSCustomResource" key="NSNormalImage">
 											<string key="NSClassName">NSImage</string>
-											<string key="NSResourceName">NSGoLeftTemplate</string>
+											<string key="NSResourceName">sidebar-open</string>
 										</object>
 										<object class="NSCustomResource" key="NSAlternateImage">
 											<string key="NSClassName">NSImage</string>
-											<string key="NSResourceName">NSStopProgressTemplate</string>
+											<string key="NSResourceName">sidebar-closed</string>
 										</object>
 										<string key="NSAlternateContents"/>
 										<string key="NSKeyEquivalent"/>
@@ -733,6 +733,14 @@
 				</object>
 				<string key="126.IBPluginDependency">com.brandonwalkin.BWToolkit</string>
 				<string key="127.IBPluginDependency">com.brandonwalkin.BWToolkit</string>
+				<object class="NSMutableDictionary" key="131.IBAttributePlaceholdersKey">
+					<string key="NS.key.0">ToolTip</string>
+					<object class="IBToolTipAttribute" key="NS.object.0">
+						<string key="name">ToolTip</string>
+						<reference key="object" ref="762666860"/>
+						<string key="toolTip">Toggle sidebar</string>
+					</object>
+				</object>
 				<string key="131.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<object class="NSAffineTransform" key="131.IBViewBoundsToFrameTransform">
 					<bytes key="NSTransformStruct">P4AAAL+AAABDIgAAwcgAAA</bytes>
@@ -746,7 +754,7 @@
 				<reference key="2.IBViewIntegration.shadowColor" ref="798947484"/>
 				<real value="0.0" key="2.IBViewIntegration.shadowOffsetHeight"/>
 				<real value="0.0" key="2.IBViewIntegration.shadowOffsetWidth"/>
-				<string key="56.IBEditorWindowLastContentRect">{{134, 117}, {483, 36}}</string>
+				<string key="56.IBEditorWindowLastContentRect">{{208, 86}, {483, 36}}</string>
 				<string key="56.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="66.CustomClassName">NewTabButton</string>
 				<string key="66.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
@@ -1148,8 +1156,8 @@
 		<string key="IBDocument.LastKnownRelativeProjectPath">../kod.xcodeproj</string>
 		<int key="IBDocument.defaultPropertyAccessControl">3</int>
 		<dictionary class="NSMutableDictionary" key="IBDocument.LastKnownImageSizes">
-			<string key="NSGoLeftTemplate">{9, 9}</string>
-			<string key="NSStopProgressTemplate">{11, 11}</string>
+			<string key="sidebar-closed">{14, 14}</string>
+			<string key="sidebar-open">{14, 14}</string>
 		</dictionary>
 	</data>
 </archive>

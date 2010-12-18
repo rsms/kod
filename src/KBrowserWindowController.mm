@@ -1,6 +1,7 @@
 #import <ChromiumTabs/common.h>
 #import <ChromiumTabs/fast_resize_view.h>
 
+#import "HEventEmitter.h"
 #import "KBrowserWindowController.h"
 #import "KAppDelegate.h"
 #import "KBrowser.h"
@@ -42,15 +43,27 @@
   // setup split view
   kassert(splitView_ != nil); // should get a ref from unarchived NIB
   splitView_.position = kconf_double(@"editor/splitView/position", 180.0);
+  splitView_.isCollapsed = kconf_bool(@"editor/splitView/collapsed", NO);
   // register for split view resize notification so we can store conf value
-  NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
-  [nc addObserver:self
-         selector:@selector(splitViewDidResize:)
-             name:NSSplitViewDidResizeSubviewsNotification
-           object:splitView_];
+  
+  [self observe:NSSplitViewDidResizeSubviewsNotification
+         source:splitView_
+        handler:@selector(splitViewDidResize:)];
+  [self observe:KSplitViewDidChangeCollapseStateNotification
+         source:splitView_
+        handler:@selector(splitViewDidChangeCollapseState:)];
+  
   // set splitView of toolbarController_
   if (toolbarController_) {
     ((KToolbarController*)toolbarController_).splitView = splitView_;
+  }
+
+  // setup status bar
+  if (statusBarController_) {
+    [self observe:KStatusBarDidChangeHiddenStateNotification
+           source:statusBarController_
+          handler:@selector(statusBarDidChangeHiddenState:)];
+    statusBarController_.isHidden = kconf_bool(@"editor/statusBar/hidden", NO);
   }
 
   return self;
@@ -61,6 +74,13 @@
   // subclasses could override this to provide a custom |CTBrowser|
   return [self initWithBrowser:[KBrowser browser]];
 }
+
+
+- (void)dealloc {
+  [self stopObserving];
+  [super dealloc];
+}
+
 
 
 #pragma mark -
@@ -95,11 +115,8 @@
 
 
 - (IBAction)toggleStatusBarVisibility:(id)sender {
-  if (statusBarController_) {
+  if (statusBarController_)
     [statusBarController_ toggleStatusBarVisibility:sender];
-    [self layoutSubviews];
-    [self.window display];
-  }
 }
 
 
@@ -124,6 +141,18 @@
       [item setTitle:NSLocalizedString(@"Revert to saved",0)];
       return selectedTab && selectedTab.fileURL && selectedTab.isDocumentEdited;
     }
+  } else if (item.action == @selector(toggleSplitView:)) {
+    [item setState:!splitView_.isCollapsed];
+    return YES;
+  } else if (item.action == @selector(toggleStatusBarVisibility:)) {
+    // Note: There's a bug in the sidebar where its contents are not properly
+    // realigned and resized in respect to the status bar.
+    if (!statusBarController_) {
+      return NO;
+    } else {
+      [item setState:!statusBarController_.isHidden];
+      return YES;
+    }
   } else {
     y = [super validateMenuItem:item];
     #if 0
@@ -140,7 +169,20 @@
 
 
 - (void)splitViewDidResize:(NSNotification*)notification {
-  kconf_set_double(@"editor/splitView/position", splitView_.position);
+  if (!splitView_.isCollapsed)
+    kconf_set_double(@"editor/splitView/position", splitView_.position);
+}
+
+
+- (void)splitViewDidChangeCollapseState:(NSNotification*)notification {
+  kconf_set_bool(@"editor/splitView/collapsed", splitView_.isCollapsed);
+}
+
+
+- (void)statusBarDidChangeHiddenState:(NSNotification*)notification {
+  kconf_set_bool(@"editor/statusBar/hidden", statusBarController_.isHidden);
+  [self layoutSubviews];
+  [self.window display];
 }
 
 

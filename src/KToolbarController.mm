@@ -6,6 +6,7 @@
 #import "KDocumentController.h"
 #import "KBrowserWindowController.h"
 #import "KSplitView.h"
+#import "HEventEmitter.h"
 
 #import "common.h"
 
@@ -51,19 +52,22 @@ static const CGFloat kLeftMarginWhenNoSidebar = 4.0;
   }
   splitView_ = splitView;
   if (splitView_) {
-    [nc addObserver:self
-           selector:@selector(splitViewDidResize:)
-               name:NSSplitViewDidResizeSubviewsNotification
-             object:splitView];
+    [self observe:NSSplitViewDidResizeSubviewsNotification
+           source:splitView
+          handler:@selector(splitViewDidResize:)];
+    [self observe:KSplitViewDidChangeCollapseStateNotification
+           source:splitView
+          handler:@selector(splitViewDidResize:)];
   }
   [self updateLayoutForSplitView];
 }
 
 
 - (void)updateLayoutForSplitView {
-  CGFloat splitViewPosition = splitView_ ? splitView_.position : 0.0;
+  CGFloat actualSplitViewPosition =
+      (splitView_ && !splitView_.isCollapsed) ? splitView_.position : 0.0;
   NSRect fullBounds = self.view.bounds;
-  if (splitViewPosition < 10.0) { // threshold value instead of 0.0
+  if (actualSplitViewPosition == 0.0) {
     [leftViewGroup_ setHidden:YES];
     fullBounds.origin.x = kLeftMarginWhenNoSidebar;
     fullBounds.size.width -= kLeftMarginWhenNoSidebar;
@@ -71,14 +75,14 @@ static const CGFloat kLeftMarginWhenNoSidebar = 4.0;
   } else {
     // adjust left view group's frame
     NSRect frame = leftViewGroup_.frame;
-    frame.size.width = splitViewPosition;
+    frame.size.width = actualSplitViewPosition;
     leftViewGroup_.frame = frame;
     [leftViewGroup_ setHidden:NO];
 
     // adjust right view group's frame
     frame = rightViewGroup_.frame;
-    frame.size.width = fullBounds.size.width - splitViewPosition;
-    frame.origin.x = splitViewPosition;
+    frame.size.width = fullBounds.size.width - actualSplitViewPosition;
+    frame.origin.x = actualSplitViewPosition;
     rightViewGroup_.frame = frame;
   }
 }
