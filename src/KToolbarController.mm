@@ -48,7 +48,7 @@ static const CGFloat kLeftMarginWhenNoSidebar = 4.0;
 - (void)setSplitView:(KSplitView*)splitView {
   NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
   if (splitView_) {
-    [nc removeObserver:self name:nil object:splitView_];
+    [self stopObservingObject:splitView_];
   }
   splitView_ = splitView;
   if (splitView_) {
