@@ -8,7 +8,7 @@
 
 #define DEFAULT_THICKNESS	22.0
 #define RULER_MARGIN_LEFT 10.0
-#define RULER_MARGIN_RIGHT 6.0
+#define RULER_MARGIN_RIGHT 4.0
 
 @implementation KMetaRulerView
 
@@ -20,8 +20,9 @@
   
   if (fabs(oldThickness - newThickness) > 1) {
     //[self setRuleThickness:newThickness];
-    // Not a good idea to resize the view during calculations (which can happen during
-    // display). Do a delayed perform (using NSInvocation since arg is a float).
+    // Not a good idea to resize the view during calculations (which can happen
+    // during display). Do a delayed perform (using NSInvocation since arg is a
+    // float).
     NSInvocation *invocation =
         [NSInvocation invocationWithMethodSignature:
           [self methodSignatureForSelector:@selector(setRuleThickness:)]];
@@ -84,7 +85,8 @@
 	// Round up the value. There is a bug on 10.4 where the display gets all wonky when scrolling if you don't
 	// return an integral value here.
   return ceil(MAX(DEFAULT_THICKNESS,
-                  stringSize.width + RULER_MARGIN_LEFT + RULER_MARGIN_RIGHT));
+                  stringSize.width + RULER_MARGIN_LEFT + RULER_MARGIN_RIGHT +
+                  dividerWidth_));
 }
 
 
@@ -177,9 +179,11 @@
     NSString *label = [NSString stringWithFormat:@"%lu", lineNumber];
     NSSize labelSize = [label sizeWithAttributes:textAttributes_];
     NSRect labelRect =
-        NSMakeRect(width - labelSize.width - RULER_MARGIN_RIGHT,
+        NSMakeRect(width - labelSize.width - RULER_MARGIN_RIGHT - dividerWidth_,
                    ypos + (NSHeight(rects[0]) - labelSize.height) / 2.0,
-                   width - (RULER_MARGIN_LEFT + RULER_MARGIN_RIGHT), NSHeight(rects[0]));
+                   width -
+                      (RULER_MARGIN_LEFT + RULER_MARGIN_RIGHT + dividerWidth_),
+                   NSHeight(rects[0]));
     [label drawInRect:labelRect withAttributes:textAttributes_];
   }
 }
