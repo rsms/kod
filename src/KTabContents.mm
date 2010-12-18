@@ -14,6 +14,7 @@
 #import "KTextView.h"
 #import "KStatusBarView.h"
 #import "KMetaRulerView.h"
+#import "HEventEmitter.h"
 
 
 // used in stateFlags_
@@ -171,15 +172,14 @@ static int debugSimulateTextAppendingIteration = 0;
   view_ = sv;
   
   // Configure meta ruler (line numbers)
-  self.hasMetaRuler = kconf_bool(@"KTabContents/hasMetaRuler", YES);
+  self.hasMetaRuler = !kconf_bool(@"editor/metaRuler/hidden", NO);
   
   // Start with the empty style and load the default style
-  KStyle *style = [KStyle sharedStyle];
-  kassert(style);
-  [[NSNotificationCenter defaultCenter] addObserver:self
-                                           selector:@selector(styleDidChange:)
-                                               name:KStyleDidChangeNotification
-                                             object:style];
+  kassert([KStyle sharedStyle] != nil);
+  [self observe:KStyleDidChangeNotification
+         source:[KStyle sharedStyle]
+        handler:@selector(styleDidChange:)];
+  [self styleDidChange:nil]; // trigger initial
   
   // debug xxx
   /*[self retain];
@@ -432,7 +432,7 @@ static int debugSimulateTextAppendingIteration = 0;
   }
   
   // Update config
-  kconf_set_bool(@"KTabContents/hasMetaRuler", displayRuler);
+  kconf_set_bool(@"editor/metaRuler/hidden", !displayRuler);
 }
 
 
@@ -1344,12 +1344,12 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
 
 - (void)textStorageDidProcessEditing:(NSNotification *)notification {
   NSTextStorage	*textStorage = [notification object];
-  kassert([NSThread isMainThread]);
   
   // no-op unless characters where edited
   if (!(textStorage.editedMask & NSTextStorageEditedCharacters)) {
     return;
   }
+  kassert([NSThread isMainThread]);
   
   // range that was affected by the edit
 	NSRange	editedRange = [textStorage editedRange];
@@ -1792,6 +1792,49 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
         [NSString localizedNameOfStringEncoding:textEncoding_]];
   }
   return data;
+}
+
+
+- (BOOL)saveToURL:(NSURL*)absoluteURL
+           ofType:(NSString*)typeName
+ forSaveOperation:(NSSaveOperationType)saveOperation
+            error:(NSError**)outError {
+  BOOL ok;
+  NSURL *originalURL = self.fileURL;
+  if (kconf_bool(@"saving/atomic", NO)) {
+    ok = [self writeSafelyToURL:absoluteURL
+                         ofType:typeName
+               forSaveOperation:saveOperation
+                          error:outError];
+  } else {
+    ok = [self writeToURL:absoluteURL
+                   ofType:typeName
+         forSaveOperation:saveOperation
+      originalContentsURL:self.fileURL
+                    error:outError];
+  }
+  
+  if (ok) {
+    // update modification date -- needed for NSDocument's interal "did someone
+    // else change our document?" logic.
+    NSDate *mtime = nil;
+    if (![absoluteURL getResourceValue:&mtime
+                                forKey:NSURLContentModificationDateKey
+                                 error:outError]) {
+      return NO;
+    }
+    self.fileModificationDate = mtime;
+    
+    // Clear change count
+    [self updateChangeCount:NSChangeCleared];
+
+    // If we wrote the stylesheet, trigger a reload or load
+    if (originalURL && [originalURL isEqual:[KStyle sharedStyle].url]) {
+      [[KStyle sharedStyle] loadFromURL:absoluteURL withCallback:nil];
+    }
+  }
+  
+  return ok;
 }
 
 

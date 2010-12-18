@@ -19,5 +19,6 @@
 - (IBAction)focusLocationBar:(id)sender;
 - (IBAction)toggleStatusBarVisibility:(id)sender;
 - (IBAction)toggleSplitView:(id)sender;
+- (IBAction)reloadStyle:(id)sender;
 
 @end

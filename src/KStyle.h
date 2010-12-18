@@ -6,7 +6,6 @@
 
 @class KStyle;
 
-extern NSString const *KStyleWillChangeNotification;
 extern NSString const *KStyleDidChangeNotification;
 
 /**
@@ -53,6 +52,9 @@ extern NSString const *KStyleDidChangeNotification;
 
 /// Reload from underlying source with optional |callback|
 - (void)reloadWithCallback:(void(^)(NSError *err))callback;
+
+/// Shorthand for reloadWithCallback:nil
+- (void)reload;
 
 #pragma mark -
 #pragma mark Getting style elements

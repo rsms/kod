@@ -79,6 +79,7 @@ typedef std::deque<KHighlightQueueEntry> KHighlightQueue;
 - (void)clearHighlighting;
 - (void)refreshStyle;
 
+- (void)styleDidChange:(NSNotification*)notification;
 - (void)textStorageDidProcessEditing:(NSNotification*)notification;
 - (void)documentDidChangeDirtyState; // when isDirty_ changed
 

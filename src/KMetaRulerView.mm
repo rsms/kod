@@ -48,6 +48,7 @@
   dividerWidth_ = style.borderRightWidth;
 
   [self _checkAndUpdateThickness];
+  [self setNeedsDisplay:YES];
 }
 
 

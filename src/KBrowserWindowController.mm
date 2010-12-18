@@ -12,6 +12,7 @@
 #import "KSplitView.h"
 #import "KToolbarController.h"
 #import "KStatusBarController.h"
+#import "KStyle.h"
 #import "kconf.h"
 
 
@@ -125,8 +126,12 @@
 }
 
 
+- (IBAction)reloadStyle:(id)sender {
+  [[KStyle sharedStyle] reload];
+}
+
+
 - (BOOL)validateMenuItem:(NSMenuItem *)item {
-  // TODO: validateMenuItem
   BOOL y = NO;
   KTabContents *selectedTab = (KTabContents*)[self selectedTabContents];
   if (item.action == @selector(saveAllDocuments:)) {

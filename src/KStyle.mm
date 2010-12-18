@@ -2,7 +2,6 @@
 #import "KThread.h"
 #import "kconf.h"
 
-NSString const *KStyleWillChangeNotification = @"KStyleWillChangeNotification";
 NSString const *KStyleDidChangeNotification = @"KStyleDidChangeNotification";
 
 static lwc_string *kBodyLWCString;
@@ -233,10 +232,6 @@ static NSString const *gDefaultElementSymbol;
       return;
     }
     
-    // Get a ref to the lengthy named nc and post a "will" notification
-    NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
-    [nc postNotificationName:KStyleWillChangeNotification object:self];
-    
     // Setup a new CSS context
     // Is the baseStylesheet really needed?
     CSSContext* cssContext =
@@ -245,8 +240,9 @@ static NSString const *gDefaultElementSymbol;
     kassert(cssContext);
     [stylesheet release]; // our local reference
     
-    // Replace or set out cssContext_
-    [h_objc_swap(&cssContext_, cssContext) release];
+    // Replace or set our cssContext_
+    h_casid(&cssContext_, cssContext);
+    [cssContext release]; // our local reference
     
     // Clear any catchAllElement_
     KStyleElement *catchAll =
@@ -256,20 +252,25 @@ static NSString const *gDefaultElementSymbol;
 
     // Empty cached elements
     OSSpinLockLock(&elementsSpinLock_);
+    h_casptr(&defaultStyle_, defaultStyle_, nil);
     elements_.clear();
     OSSpinLockUnlock(&elementsSpinLock_);
 
-    // post KStyleDidChangeNotification before calling callback. This way code
-    // inside the callback can register for the notification without receiving
-    // a notification directly afterwards, which obvisouly indicate the same load
-    // as the actual invocation of the callback.
-    [nc postNotificationName:KStyleDidChangeNotification object:self];
+    // deliver notification and call callback on main thread
+    K_DISPATCH_MAIN_ASYNC({
+      // post KStyleDidChangeNotification before calling callback. This way code
+      // inside the callback can register for the notification without receiving
+      // a notification directly afterwards, which obvisouly indicate the same
+      // load as the actual invocation of the callback.
+      NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
+      [nc postNotificationName:KStyleDidChangeNotification object:self];
 
-    // invoke callback
-    if (callback) {
-      callback(err);
-      [callback release];
-    }
+      // invoke callback
+      if (callback) {
+        callback(err);
+        [callback release];
+      }
+    });
   }];
   
   // URL connection failed to start?
@@ -302,7 +303,7 @@ static NSString const *gDefaultElementSymbol;
     // shortcut to have the underlying NSURLConnection scheduled in the
     // backgroundThread (i.e. the callback will be invoked in that thread
     // -- the actual I/O is handled by a global Foundation-controlled thread).
-    [self _loadStylesheet:url callback:callback];
+    [self _loadStylesheet:[url absoluteURL] callback:callback];
     [url release];
   }];
 }
@@ -316,6 +317,13 @@ static NSString const *gDefaultElementSymbol;
     callback([NSError kodErrorWithFormat:
         @"No URL to reload -- style is not backed by an external source"]);
   }
+}
+
+
+- (void)reload {
+  NSURL *url = self.url;
+  if (url)
+    [self loadFromURL:url withCallback:nil];
 }
 
 
