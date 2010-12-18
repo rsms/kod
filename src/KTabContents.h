@@ -5,7 +5,7 @@
 #import "HSemaphore.h"
 
 @class KBrowser, KStyle, KBrowserWindowController, KScrollView, KMetaRulerView;
-@class KTextView;
+@class KTextView, KClipView;
 
 typedef std::pair<std::pair<NSRange,NSRange>, HObjCPtr> KHighlightQueueEntry;
 typedef std::deque<KHighlightQueueEntry> KHighlightQueue;
@@ -53,6 +53,7 @@ typedef std::deque<KHighlightQueueEntry> KHighlightQueue;
 @property(retain, nonatomic) NSString *langId;
 @property(readonly, nonatomic) KTextView* textView;
 @property(readonly, nonatomic) KScrollView* scrollView;
+@property(readonly, nonatomic) KClipView* clipView;
 
 @property(readonly, nonatomic) NSUInteger lineCount;
 @property(readonly, nonatomic) NSUInteger charCountOfLastLine;

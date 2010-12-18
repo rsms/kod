@@ -10,6 +10,7 @@
 #import "KStyle.h"
 #import "KScroller.h"
 #import "KScrollView.h"
+#import "KClipView.h"
 #import "KLangMap.h"
 #import "KTextView.h"
 #import "KStatusBarView.h"
@@ -155,9 +156,7 @@ static int debugSimulateTextAppendingIteration = 0;
   NSMutableParagraphStyle *paragraphStyle = [NSMutableParagraphStyle new];
   [paragraphStyle setParagraphStyle:[NSParagraphStyle defaultParagraphStyle]];
   [paragraphStyle setLineBreakMode:NSLineBreakByCharWrapping];
-  [paragraphStyle setDefaultTabInterval:2];
   [textView_ setDefaultParagraphStyle:paragraphStyle];
-  //NSParagraphStyleAttributeName
   
   // TODO: this defines the attributes to apply to "marked" text, input which is
   // pending, like "¨" waiting for "u" to build the character "ü". Should match
@@ -180,18 +179,6 @@ static int debugSimulateTextAppendingIteration = 0;
          source:[KStyle sharedStyle]
         handler:@selector(styleDidChange:)];
   [self styleDidChange:nil]; // trigger initial
-  
-  // debug xxx
-  /*[self retain];
-  h_dispatch_delayed_main(10000, ^{
-    DLOG("loading new style after 10s");
-    NSURL* url = kconf_res_url(@"style/bright.css");
-    [KStyle styleAtURL:url withCallback:^(NSError *err, KStyle *style) {
-      if (err) [NSApp presentError:err];
-      else self.style = style;
-    }];
-    [self release];
-  });*/
 
   // Let the global document controller know we came to life
   [[NSDocumentController sharedDocumentController] addDocument:self];
@@ -403,6 +390,11 @@ static int debugSimulateTextAppendingIteration = 0;
 }
 
 
+- (KClipView*)clipView {
+  return (KClipView*)[self.scrollView contentView];
+}
+
+
 - (BOOL)hasMetaRuler {
   return [self.scrollView hasVerticalRuler];
 }
@@ -487,11 +479,18 @@ static int debugSimulateTextAppendingIteration = 0;
       [self setWindow:[wc window]];
     }
   }
+  K_DISPATCH_MAIN_ASYNC({
+    self.clipView.allowsScrolling = YES;
+  });
 }
 
 
 - (void)tabDidResignSelected {
   [super tabDidResignSelected];
+
+  // disable scrolling while not selected (workaround for an AppKit bug)
+  self.clipView.allowsScrolling = NO;
+
   if (browser_) {
     NSWindowController *wc = browser_.windowController;
     if (wc) {
@@ -725,6 +724,7 @@ longestEffectiveRange:&range
       }
     }
     [textView_ setSelectedRange:range];
+    //[textView_ showFindIndicatorForRange:range];
     return;
   }
 }
@@ -792,6 +792,7 @@ longestEffectiveRange:&range
     }
 
     [textView_ setSelectedRange:range];
+    //[textView_ showFindIndicatorForRange:range];
     return;
   }
 }
