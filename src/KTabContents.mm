@@ -128,7 +128,6 @@ static int debugSimulateTextAppendingIteration = 0;
   // Note: This might be called from a background thread and must thus be
   // thread-safe.
   if (!(self = [super init])) return nil;
-  NSZone *zone = [self zone];
 
   // Default title and icon
   self.title = _kDefaultTitle;
@@ -145,7 +144,7 @@ static int debugSimulateTextAppendingIteration = 0;
   undoManager_ = [self undoManager]; assert(undoManager_);
 
   // Create a KTextView
-  textView_ = [[KTextView allocWithZone:zone] initWithFrame:NSZeroRect];
+  textView_ = [[KTextView alloc] initWithFrame:NSZeroRect];
   [textView_ setDelegate:self];
   [textView_ setFont:[isa defaultFont]];
   
