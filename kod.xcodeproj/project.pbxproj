@@ -109,6 +109,7 @@
 		3AEC6C9012BC12FB00F769DB /* KMetaRulerView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3AEC6C8E12BC12FB00F769DB /* KMetaRulerView.mm */; };
 		3AF14C42128D792F00623011 /* KLangRegexRuleFactory.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3AF14C41128D792F00623011 /* KLangRegexRuleFactory.mm */; };
 		3AF14D20128D928A00623011 /* KLangSymbol.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3AF14D1F128D928A00623011 /* KLangSymbol.mm */; };
+		3AF39D1C12BE8C2400FC534A /* shared-dispatch-queues.c in Sources */ = {isa = PBXBuildFile; fileRef = 3AF39D1B12BE8C2400FC534A /* shared-dispatch-queues.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -383,6 +384,8 @@
 		3AF14C41128D792F00623011 /* KLangRegexRuleFactory.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KLangRegexRuleFactory.mm; sourceTree = "<group>"; };
 		3AF14D1E128D928A00623011 /* KLangSymbol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KLangSymbol.h; sourceTree = "<group>"; };
 		3AF14D1F128D928A00623011 /* KLangSymbol.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KLangSymbol.mm; sourceTree = "<group>"; };
+		3AF39D1A12BE8C2400FC534A /* shared-dispatch-queues.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "shared-dispatch-queues.h"; sourceTree = "<group>"; };
+		3AF39D1B12BE8C2400FC534A /* shared-dispatch-queues.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "shared-dispatch-queues.c"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -536,6 +539,8 @@
 				3A811A5812AE7DC400BC08AE /* hunch-cocoa */,
 				3AB97D3F12B298FB00F4ADB2 /* BWToolkit */,
 				3A928C16122714E800DA7E43 /* main.m */,
+				3AF39D1A12BE8C2400FC534A /* shared-dispatch-queues.h */,
+				3AF39D1B12BE8C2400FC534A /* shared-dispatch-queues.c */,
 				3A928C14122714E800DA7E43 /* KAppDelegate.h */,
 				3A928C15122714E800DA7E43 /* KAppDelegate.mm */,
 				3A928C17122714E800DA7E43 /* KBrowser.h */,
@@ -981,6 +986,7 @@
 				3AEC6C8F12BC12FB00F769DB /* KLineNumberMarker.m in Sources */,
 				3AEC6C9012BC12FB00F769DB /* KMetaRulerView.mm in Sources */,
 				3AAC02B812BD1110001BDC39 /* kconf.m in Sources */,
+				3AF39D1C12BE8C2400FC534A /* shared-dispatch-queues.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

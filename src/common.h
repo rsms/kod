@@ -75,6 +75,7 @@ static inline const char *debug_bits32(int32_t a) {
 #import "hobjc.h"
 #import "hdispatch.h"
 #import "hcommon.h"
+#import "shared-dispatch-queues.h"
 
 #ifdef __cplusplus
 #import "basictypes.h"
