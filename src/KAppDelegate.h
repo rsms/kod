@@ -1,6 +1,9 @@
 #import <Cocoa/Cocoa.h>
 
+@class SUUpdater;
+
 @interface KAppDelegate : NSObject <NSApplicationDelegate> {
+  IBOutlet SUUpdater *sparkleUpdater_;
 }
 
 - (IBAction)newWindow:(id)sender;

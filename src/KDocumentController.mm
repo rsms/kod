@@ -383,7 +383,7 @@ static double kSiblingAutoGroupEditDistanceThreshold = 0.4;
 
 
 - (NSString*)defaultType {
-  return @"public.text";  // FIXME
+  return @"public.text";  // FIXME but how? UX
 }
 
 /*- (NSArray*)documentClassNames {

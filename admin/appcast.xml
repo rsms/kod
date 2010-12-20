@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0" xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle">
+  <channel>
+    <title>Kod releases</title>
+    <link>http://kodapp.com/</link>
+    <description>Appcast for Kod</description>
+    <language>en</language>
+  </channel>
+</rss>
