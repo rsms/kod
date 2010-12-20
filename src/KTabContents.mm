@@ -1572,7 +1572,7 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
   if (![self readFromData:data ofType:typeName error:outError callback:^{
     // restore (or set) selection
     if (selectedRange.location < textView_.textStorage.length) {
-      DLOG("restoring selection to: %@", NSStringFromRange(selectedRange));
+      //DLOG("restoring selection to: %@", NSStringFromRange(selectedRange));
       [textView_ setSelectedRange:selectedRange];
     }
   }]) {
