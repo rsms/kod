@@ -175,7 +175,8 @@
   if (goToLinePopUp_) [goToLinePopUp_ close];
   
   goToLineLastValue_ = [textField.cell integerValue];
-  if (goToLineLastValue_ < 1) return; // lineno is 0 if the text field was empty
+  if (goToLineLastValue_ < 1)
+    return; // 0 if the text field was empty or non-number
   KTabContents *tab = (KTabContents*)[self selectedTabContents];
   if (!tab) return;
   NSRange lineRange = [tab rangeOfLineAtLineNumber:goToLineLastValue_];

@@ -14,7 +14,7 @@ typedef std::deque<KHighlightQueueEntry> KHighlightQueue;
 // simple scrollable text area.
 @interface KTabContents : CTTabContents <NSTextViewDelegate,
                                          NSTextStorageDelegate> {
-  __weak KTextView* textView_; // Owned by NSScrollView which is our view_
+  KTextView* textView_; // Owned by NSScrollView which is our view_
   __weak NSUndoManager *undoManager_; // Owned by textView_
   BOOL isDirty_;
   NSStringEncoding textEncoding_;

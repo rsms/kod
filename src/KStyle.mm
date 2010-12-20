@@ -252,7 +252,7 @@ static NSString const *gDefaultElementSymbol;
 
     // Empty cached elements
     OSSpinLockLock(&elementsSpinLock_);
-    h_casptr(&defaultStyle_, defaultStyle_, nil);
+    h_casid(&defaultStyle_, nil);
     elements_.clear();
     OSSpinLockUnlock(&elementsSpinLock_);
 
@@ -354,7 +354,7 @@ static NSString const *gDefaultElementSymbol;
         [style retain];
     } else {
       // inherit style from default element ("body")
-      kassert(defaultStyle_);
+      kassert(defaultStyle_ != nil);
       style = [defaultStyle_ mergeWith:style];
     }
   } @catch (NSException *e) {
