@@ -1,0 +1,120 @@
+<!DOCTYPE HTML>
+<!--
+
+    Soon my friend.
+
+-->
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+    <title>Kod</title>
+    <style>
+      @import url(https://fonts.googleapis.com/css?family=Droid+Sans:regular,bold&subset=latin);
+
+      html {
+        background: #444 url(line-numbers.png) repeat-y scroll 0 0;
+        width:100%; height:100%;
+        color:#ddd; font:13px 'Droid Sans',helvetica,sans-serif;
+        text-shadow: #404040 0 -1px 1px;
+      }
+      img.icon {
+        display:block;
+        position:absolute;
+        left:60px; top:50px;
+      }
+      div.signup {
+        position:absolute;
+        left:85px; top:340px;
+        width:200px;
+      }
+      h2 { color:#eee; font-size:14px; }
+      input[type=text] { display:block; width:190px; }
+      input[type=submit] { float:right; }
+      form p.error { color:#FFB8A7; }
+      div.info {
+        position:absolute;
+        left:350px; top:40px;
+        width: 400px;
+      }
+      ul { padding-left:0; }
+      li { margin-bottom:0.618em; }
+      small {
+        color:#999; display:block; font-size:11px;
+        margin-top:0.618em; line-height:1.3;
+      }
+      a { color:#86C3FF; text-decoration:none; }
+      
+      footer {
+        display:block;
+        margin-bottom:2em;
+      }
+    </style>
+  </head>
+  <body>
+    <img src="icon-256.png" width="256" height="256" class="icon">
+    <div class="signup">
+      <form action="signup-for-beta.php" method="POST">
+        <h2>Sign me up for the beta</h2>
+        <p id="signup-for-beta-email-input"><label>E-mail: <input type="text" name="email"></label></p>
+        <script>
+          var s = document.location.search;
+          if (s.indexOf('?register-for-beta-error=') === 0) {
+            var msg = decodeURIComponent(
+                s.substr(('?register-for-beta-error=').length))
+                    .replace(/\+/g, ' ');
+            document.write('<p class="error">'+msg+'</p>');
+          } else if (s.indexOf('?register-for-beta-ok') === 0) {
+            document.write("<p>Thanks! We'll get in touch.</p>");
+            document.getElementById('signup-for-beta-email-input')
+                .style.display = 'none';
+          }
+        </script>
+        <p><input type="submit" value="Sign up"></p>
+        <p><small>
+          Your email address will not be shared with anyone and be used
+          solely for information regarding Kod.
+        </small></p>
+      </form>
+    </div>
+    <div class="info">
+      <p>
+        Kod is a programmers' editor for OS X.<br>
+        <small>
+          Currently under development, but will soon be available for
+          dare-devil beta testing. "Kod" means "Code" in Swedish.
+        </small>
+      </p>
+      <ul>
+        <li>
+          Fully concurrent — loading files, syntax highlighting, etc is distributed across available CPU cores. Minimal waiting time.</li>
+        <li>
+          Integrated scripting environment based on <a href="http://nodejs.org/">Node.js</a>.
+        </li>
+        <li>
+          Written from scratch with modern OS X 10.6 APIs providing maximum OS integration while avoiding reinvention of the wheel.
+        </li>
+        <li>
+          Sports a Chromium-like user interface where tabs can be torn off and moved between windows.
+        </li>
+        <li>
+          Allows editing (although not saving, currently) remote files accessible over HTTP or HTTPS.
+        </li>
+        <li>
+          Styling of the editor (not only the syntax highlighting) through regular CSS 3.
+        </li>
+        <li>
+          Comes with support for over 65 different languages/syntaxes which can easily be edited or extended (Kod uses the same format as GNU Syntax Highlight).
+        </li>
+        <li>
+          <em>And more awesome features...</em>
+        </li>
+      </ul>
+      <p><small>Here's a (probably outdated) screenshot:</small></p>
+      <a href="screenshot.png"><img src="screenshot.png" width="450" 
+        style="margin-left:-20px;"></a>
+      <footer><small>
+        Updates on <a href="http://twitter.com/#!/kod_app">Twitter @kod_app</a> &mdash; Made with love by <a href="http://hunch.se/">Rasmus Andersson</a>
+      </small></footer>
+    </div>
+  </body>
+</html>
