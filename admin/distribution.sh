@@ -21,9 +21,7 @@ PUBDATE=$(LC_TIME=c date +"%a, %d %b %G %T %z")
 
 # For OS X >=10.6:
 SIGNATURE=$(
-  openssl dgst -sha1 -binary < "$ARCHIVE_FILENAME" \
-  | openssl dgst -dss1 -sign <(security find-generic-password -g -s "$KEYCHAIN_PRIVKEY_NAME" 2>&1 1>/dev/null | /usr/bin/perl -pe '($_) = /"(.+)"/; s/\\012/\n/g' | /usr/bin/perl -MXML::LibXML -e 'print XML::LibXML->new()->parse_file("-")->findvalue(q(//string[preceding-sibling::key[1] = "NOTE"]))') \
-  | openssl enc -base64
+  openssl dgst -sha1 -binary < "$ARCHIVE_FILENAME" | openssl dgst -dss1 -sign <(security find-generic-password -g -s "$KEYCHAIN_PRIVKEY_NAME" 2>&1 1>/dev/null | /usr/bin/perl -pe '($_) = /"(.+)"/; s/\\012/\n/g' | /usr/bin/perl -MXML::LibXML -e 'print XML::LibXML->new()->parse_file("-")->findvalue(q(//string[preceding-sibling::key[1] = "NOTE"]))') | openssl enc -base64
 )
 # For OS X <=10.5:
 #SIGNATURE=$(
@@ -32,7 +30,10 @@ SIGNATURE=$(
 #  | openssl enc -base64
 #)
 
-[ $SIGNATURE ] || { echo Unable to load signing private key with name "'$KEYCHAIN_PRIVKEY_NAME'" from keychain; false; }
+if [ "$SIGNATURE" = "" ]; then
+  echo Signing with key "'$KEYCHAIN_PRIVKEY_NAME'" failed;
+  false;
+fi
 
 
 python - <<EOF
@@ -111,9 +112,9 @@ mate '$WD/admin/release-notes.html'
 
 2. Publish the archive, release notes and appcast -- in that order:
 
-scp '$BUILT_PRODUCTS_DIR/$ARCHIVE_FILENAME' hunch.se:/var/www/hunch.se/www/public/scrup/dist/
-scp '$WD/admin/release-notes.html' hunch.se:/var/www/hunch.se/www/public/scrup/release-notes.html
-scp '$WD/admin/appcast.xml' hunch.se:/var/www/hunch.se/www/public/scrup/appcast.xml
+scp '$BUILT_PRODUCTS_DIR/$ARCHIVE_FILENAME' hunch.se:/var/www/kodapp.com/www/public/dist/
+scp '$WD/admin/release-notes.html' hunch.se:/var/www/kodapp.com/www/public/release-notes.html
+scp '$WD/admin/appcast.xml' hunch.se:/var/www/kodapp.com/www/public/appcast.xml
 
 3. Commit, tag and push the source
 
