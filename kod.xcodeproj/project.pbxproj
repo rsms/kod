@@ -59,7 +59,6 @@
 		3A811A7212AE7DE600BC08AE /* HRefcountLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A811A6B12AE7DE600BC08AE /* HRefcountLogger.m */; };
 		3A811A7312AE7DE600BC08AE /* NSThread-condensedStackTrace.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A811A6D12AE7DE600BC08AE /* NSThread-condensedStackTrace.m */; };
 		3A811A7D12AE813800BC08AE /* KModeTextFieldDecoration.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A811A7C12AE813800BC08AE /* KModeTextFieldDecoration.mm */; };
-		3A811B4812AE8F1500BC08AE /* YAML.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A811B4712AE8F1500BC08AE /* YAML.framework */; };
 		3A811B8F12AE90AB00BC08AE /* YAML.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 3A811B4712AE8F1500BC08AE /* YAML.framework */; };
 		3A841180129D5CAE00F4A36D /* KTextField.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A84117F129D5CAE00F4A36D /* KTextField.mm */; };
 		3A841183129D5D5C00F4A36D /* KTextFieldCell.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A841182129D5D5C00F4A36D /* KTextFieldCell.mm */; };
@@ -332,8 +331,8 @@
 		3AB97BD512B2836800F4ADB2 /* KStatusBarView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KStatusBarView.m; sourceTree = "<group>"; };
 		3AB97C3412B2893C00F4ADB2 /* KStatusBarController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KStatusBarController.h; sourceTree = "<group>"; };
 		3AB97C3512B2893C00F4ADB2 /* KStatusBarController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KStatusBarController.mm; sourceTree = "<group>"; };
-		3AB97D4312B2990500F4ADB2 /* BWSplitView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BWSplitView.h; path = deps/bwtoolkit/BWSplitView.h; sourceTree = SOURCE_ROOT; };
-		3AB97D4412B2990500F4ADB2 /* BWSplitView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = BWSplitView.m; path = deps/bwtoolkit/BWSplitView.m; sourceTree = SOURCE_ROOT; };
+		3AB97D4312B2990500F4ADB2 /* BWSplitView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BWSplitView.h; sourceTree = "<group>"; };
+		3AB97D4412B2990500F4ADB2 /* BWSplitView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BWSplitView.m; sourceTree = "<group>"; };
 		3AB97D4A12B2993200F4ADB2 /* NSColor+BWAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSColor+BWAdditions.h"; path = "deps/bwtoolkit/NSColor+BWAdditions.h"; sourceTree = SOURCE_ROOT; };
 		3AB97D4B12B2993200F4ADB2 /* NSColor+BWAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSColor+BWAdditions.m"; path = "deps/bwtoolkit/NSColor+BWAdditions.m"; sourceTree = SOURCE_ROOT; };
 		3AB97D4D12B2993C00F4ADB2 /* NSEvent+BWAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSEvent+BWAdditions.h"; path = "deps/bwtoolkit/NSEvent+BWAdditions.h"; sourceTree = SOURCE_ROOT; };
@@ -404,7 +403,6 @@
 			files = (
 				3A929886122AC38F00DA7E43 /* ChromiumTabs.framework in Frameworks */,
 				3AC2D74012998D590066B586 /* CSS.framework in Frameworks */,
-				3A811B4812AE8F1500BC08AE /* YAML.framework in Frameworks */,
 				3A25E47B1281A6A200B6A33E /* libboost_regex-mt.dylib in Frameworks */,
 				3A25E47D1281A6A700B6A33E /* libsource-highlight.dylib in Frameworks */,
 				3A158AFF128A0A3700339E6E /* libicucore.dylib in Frameworks */,
