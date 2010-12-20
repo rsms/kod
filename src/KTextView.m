@@ -1,4 +1,5 @@
 #import "KTextView.h"
+#import "common.h"
 
 @implementation KTextView
 
@@ -49,6 +50,12 @@ static CGFloat kTextContainerYOffset = 0.0;
   origin.y += kTextContainerYOffset;
   return origin;
 }
+
+
+// catch and filter key events here
+/*- (void)keyDown:(NSEvent*)event {
+  DLOG("keyDown %@ %ld", event, [[event characters] characterAtIndex:0]);
+}*/
 
 
 @end

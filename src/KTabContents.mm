@@ -558,8 +558,8 @@ static int debugSimulateTextAppendingIteration = 0;
 
 
 - (NSRange)rangeOfLineTerminatorAtLineNumber:(NSUInteger)lineNumber {
-  kassert(lineNumber > 0); // 1-based
-  --lineNumber;
+  if (lineNumber > 0) // 1-based
+    --lineNumber;
   if (lineNumber < lineToRangeVec_.size()) {
     return lineToRangeVec_[lineNumber];
   } else if (!lineToRangeVec_.empty()) {
@@ -575,14 +575,20 @@ static int debugSimulateTextAppendingIteration = 0;
       return NSMakeRange(NSNotFound, 0);
     }
   } else {
-    // there are no line breaks (just the "last line")
-    return NSMakeRange(0, textView_.textStorage.length);
+    if (lineNumber < 2) {
+      // there are no line breaks (just the "last line")
+      return NSMakeRange(0, textView_.textStorage.length);
+    } else {
+      return NSMakeRange(NSNotFound, 0);
+    }
   }
 }
 
 
 - (NSRange)rangeOfLineAtLineNumber:(NSUInteger)lineNumber {
   NSRange lineRange = [self rangeOfLineTerminatorAtLineNumber:lineNumber];
+  if (lineRange.location == NSNotFound)
+    return lineRange;
   
   // find previous line end
   NSUInteger startLocation = 0;

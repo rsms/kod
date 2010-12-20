@@ -61,7 +61,7 @@ static NSString *_dataToWeakString(const void *bytes, size_t length) {
   responseWaitQueue_ = [NSMutableDictionary new];
 
   // create process
-  process_ = [HDProcess processWithProgram:@"node"];
+  process_ = [[HDProcess processWithProgram:@"node"] retain];
   
   // exit handler
   [process_ on:@"exit" call:^(HDProcess *proc) {
@@ -80,6 +80,12 @@ static NSString *_dataToWeakString(const void *bytes, size_t length) {
   };
   
   return self;
+}
+
+
+- (void)dealloc {
+  [process_ release];
+  [super dealloc];
 }
 
 

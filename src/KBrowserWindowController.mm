@@ -13,6 +13,7 @@
 #import "KToolbarController.h"
 #import "KStatusBarController.h"
 #import "KStyle.h"
+#import "KPopUp.h"
 #import "kconf.h"
 
 
@@ -128,6 +129,65 @@
 
 - (IBAction)reloadStyle:(id)sender {
   [[KStyle sharedStyle] reload];
+}
+
+
+- (IBAction)goToLine:(id)sender {
+  if (goToLinePopUp_) return;
+  goToLinePopUp_ = [KPopUp popupWithSize:NSMakeSize(120.0, 55.0)
+                        centeredInWindow:self.window];
+  goToLinePopUp_.onClose = ^(KPopUp *popup){ goToLinePopUp_ = nil; };
+  
+  // Add label "Go to line:"
+  NSTextField *label = [[[NSTextField alloc] initWithFrame:
+      NSMakeRect(10.0, 30.0, 100.0, 20.0)] autorelease];
+  [label setEditable:NO];
+  [label setSelectable:NO];
+  [label setDrawsBackground:NO];
+  [label setBordered:NO];
+  [label setStringValue:NSLocalizedString(@"Go to line", nil)];
+  NSTextFieldCell *tfcell = [label cell];
+  [tfcell setAlignment:NSCenterTextAlignment];
+  [goToLinePopUp_.contentView addSubview:label];
+  
+  // Add a text field for inputing line number
+  NSTextField *textField = [[[NSTextField alloc] initWithFrame:
+      NSMakeRect(10.0, 10.0, 100.0, 20.0)] autorelease];
+  [textField setEditable:YES];
+  [textField setSelectable:YES];
+  [textField setEnabled:YES];
+  [textField setFocusRingType:NSFocusRingTypeNone];
+  [textField setTarget:self];
+  [textField setAction:@selector(goToLineAction:)];
+  if (goToLineLastValue_ > 0)
+    [textField setIntegerValue:goToLineLastValue_];
+  [goToLinePopUp_.contentView addSubview:textField];
+  
+  [goToLinePopUp_ makeKeyWindow];
+  [textField becomeFirstResponder];
+}
+
+
+- (IBAction)goToLineAction:(id)sender {
+  if (![sender isKindOfClass:[NSTextField class]])
+    return;
+  NSTextField *textField = (NSTextField*)sender;
+  if (goToLinePopUp_) [goToLinePopUp_ close];
+  
+  goToLineLastValue_ = [textField.cell integerValue];
+  if (goToLineLastValue_ < 1) return; // lineno is 0 if the text field was empty
+  KTabContents *tab = (KTabContents*)[self selectedTabContents];
+  if (!tab) return;
+  NSRange lineRange = [tab rangeOfLineAtLineNumber:goToLineLastValue_];
+  if (lineRange.location == NSNotFound) {
+    DLOG("out-of-range line jump requested but ignored");
+  } else {
+    //DLOG("selecting line %ld %@", goToLineLastValue_,
+    //     NSStringFromRange(lineRange));
+    [tab.textView setSelectedRange:lineRange];
+    [tab.textView scrollRangeToVisible:lineRange];
+    [tab.textView showFindIndicatorForRange:lineRange];
+  }
 }
 
 

@@ -110,6 +110,9 @@
 		3AF14C42128D792F00623011 /* KLangRegexRuleFactory.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3AF14C41128D792F00623011 /* KLangRegexRuleFactory.mm */; };
 		3AF14D20128D928A00623011 /* KLangSymbol.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3AF14D1F128D928A00623011 /* KLangSymbol.mm */; };
 		3AF39D1C12BE8C2400FC534A /* shared-dispatch-queues.c in Sources */ = {isa = PBXBuildFile; fileRef = 3AF39D1B12BE8C2400FC534A /* shared-dispatch-queues.c */; };
+		3AF39DB212BE9C8A00FC534A /* KPopUp.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AF39DB112BE9C8A00FC534A /* KPopUp.m */; };
+		3AF39DE212BEC15E00FC534A /* KPopUpContentView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AF39DE112BEC15E00FC534A /* KPopUpContentView.m */; };
+		3AF3A0A512BF7F6400FC534A /* KAnimation.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AF3A0A412BF7F6400FC534A /* KAnimation.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -386,6 +389,12 @@
 		3AF14D1F128D928A00623011 /* KLangSymbol.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KLangSymbol.mm; sourceTree = "<group>"; };
 		3AF39D1A12BE8C2400FC534A /* shared-dispatch-queues.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "shared-dispatch-queues.h"; sourceTree = "<group>"; };
 		3AF39D1B12BE8C2400FC534A /* shared-dispatch-queues.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "shared-dispatch-queues.c"; sourceTree = "<group>"; };
+		3AF39DB012BE9C8A00FC534A /* KPopUp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KPopUp.h; sourceTree = "<group>"; };
+		3AF39DB112BE9C8A00FC534A /* KPopUp.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KPopUp.m; sourceTree = "<group>"; };
+		3AF39DE012BEC15E00FC534A /* KPopUpContentView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KPopUpContentView.h; sourceTree = "<group>"; };
+		3AF39DE112BEC15E00FC534A /* KPopUpContentView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KPopUpContentView.m; sourceTree = "<group>"; };
+		3AF3A0A312BF7F6400FC534A /* KAnimation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KAnimation.h; sourceTree = "<group>"; };
+		3AF3A0A412BF7F6400FC534A /* KAnimation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KAnimation.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -676,6 +685,7 @@
 				3AB97BD312B2834D00F4ADB2 /* Status bar */,
 				3AE5E8D012916F2500B17C4F /* Scrollbar */,
 				3AEC6C8712BC12D700F769DB /* Editor */,
+				3AF39DAF12BE9C7300FC534A /* Pop-ups */,
 			);
 			name = "Main views";
 			sourceTree = "<group>";
@@ -789,6 +799,19 @@
 				3AEC6C9212BC14EE00F769DB /* KMetaRulerView2.mm */,
 			);
 			name = Editor;
+			sourceTree = "<group>";
+		};
+		3AF39DAF12BE9C7300FC534A /* Pop-ups */ = {
+			isa = PBXGroup;
+			children = (
+				3AF39DB012BE9C8A00FC534A /* KPopUp.h */,
+				3AF39DB112BE9C8A00FC534A /* KPopUp.m */,
+				3AF39DE012BEC15E00FC534A /* KPopUpContentView.h */,
+				3AF39DE112BEC15E00FC534A /* KPopUpContentView.m */,
+				3AF3A0A312BF7F6400FC534A /* KAnimation.h */,
+				3AF3A0A412BF7F6400FC534A /* KAnimation.m */,
+			);
+			name = "Pop-ups";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -987,6 +1010,9 @@
 				3AEC6C9012BC12FB00F769DB /* KMetaRulerView.mm in Sources */,
 				3AAC02B812BD1110001BDC39 /* kconf.m in Sources */,
 				3AF39D1C12BE8C2400FC534A /* shared-dispatch-queues.c in Sources */,
+				3AF39DB212BE9C8A00FC534A /* KPopUp.m in Sources */,
+				3AF39DE212BEC15E00FC534A /* KPopUpContentView.m in Sources */,
+				3AF3A0A512BF7F6400FC534A /* KAnimation.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

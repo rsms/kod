@@ -1,13 +1,16 @@
 #import <ChromiumTabs/ChromiumTabs.h>
 
 @class KFileOutlineView, KFileTreeController, KStatusBarView,
-       KStatusBarController, KSplitView;
+       KStatusBarController, KSplitView, KPopUp;
 
 @interface KBrowserWindowController : CTBrowserWindowController {
   IBOutlet KFileOutlineView *fileOutlineView_;
   IBOutlet KStatusBarController *statusBarController_;
   IBOutlet KSplitView *splitView_;
   KFileTreeController *fileTreeController_;
+  
+  NSInteger goToLineLastValue_;
+  KPopUp *goToLinePopUp_; // non-nil while active
 }
 
 @property(readonly) NSSplitView *verticalSplitView;
@@ -20,5 +23,6 @@
 - (IBAction)toggleStatusBarVisibility:(id)sender;
 - (IBAction)toggleSplitView:(id)sender;
 - (IBAction)reloadStyle:(id)sender;
+- (IBAction)goToLine:(id)sender;
 
 @end

@@ -1,0 +1,5 @@
+@interface KPopUpContentView : NSView {
+
+}
+
+@end
