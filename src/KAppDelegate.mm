@@ -82,11 +82,7 @@
 
 - (void)applicationDidFinishLaunching:(NSNotification *)notification {
   // NOTE: KDocumentController will create a new window & tab upon start
-  
-  // Kick off a check for a new version
   [sparkleUpdater_ setAutomaticallyDownloadsUpdates:YES];
-  [sparkleUpdater_ checkForUpdatesInBackground];
-  [sparkleUpdater_ resetUpdateCycle];
 }
 
 - (void)applicationWillTerminate:(NSNotification *)aNotification {

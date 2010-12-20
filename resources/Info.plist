@@ -1,7 +1,7 @@
 {
   CFBundleExecutable = "${EXECUTABLE_NAME}";
-  CFBundleShortVersionString = "0.0.2";
-  CFBundleVersion = "0.0.2";
+  CFBundleShortVersionString = "0.0.1";
+  CFBundleVersion = "0.0.1";
   CFBundleIconFile = "kod.icns";
   CFBundleIdentifier = "se.hunch.${PRODUCT_NAME:rfc1034identifier}";
   CFBundleInfoDictionaryVersion = "6.0";
