@@ -237,6 +237,7 @@ void KSourceHighlighter::clearBufferedAttributes() {
 
 
 void KSourceHighlighter::format(const std::string &elem) {
+  if (isCancelled()) return;
   NSString const *typeSymbol = KLangSymbol::symbolForString(elem);
   NSRange range = matchUnicodeRange();
   uint32_t stateHash = currentStateHash();

@@ -741,6 +741,8 @@
 				3A74A4D2129FF6E000BB5503 /* HUTF8MappedUTF16String.mm */,
 				3AE5EA551292B2D000B17C4F /* kconf.h */,
 				3AAC02B712BD1110001BDC39 /* kconf.m */,
+				3AF3A0A312BF7F6400FC534A /* KAnimation.h */,
+				3AF3A0A412BF7F6400FC534A /* KAnimation.m */,
 				3AE5ECB41292F7B800B17C4F /* KThread.h */,
 				3AE5ECB51292F7B800B17C4F /* KThread.mm */,
 			);
@@ -806,8 +808,6 @@
 				3AF39DB112BE9C8A00FC534A /* KPopUp.m */,
 				3AF39DE012BEC15E00FC534A /* KPopUpContentView.h */,
 				3AF39DE112BEC15E00FC534A /* KPopUpContentView.m */,
-				3AF3A0A312BF7F6400FC534A /* KAnimation.h */,
-				3AF3A0A412BF7F6400FC534A /* KAnimation.m */,
 			);
 			name = "Pop-ups";
 			sourceTree = "<group>";

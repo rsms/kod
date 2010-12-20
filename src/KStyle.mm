@@ -80,7 +80,6 @@ static css_error ua_default_for_property(void *pw, uint32_t property,
 static css_select_handler gCSSHandler;
 
 static CSSStylesheet* gBaseStylesheet_ = nil;
-static HSemaphore gBaseStylesheetSemaphore_(1);
 
 static KStyle *gSharedStyle_ = nil;
 static NSString const *gDefaultElementSymbol;
@@ -99,13 +98,15 @@ static NSString const *gDefaultElementSymbol;
   gCSSHandler.node_has_class = &css_node_has_class;
   gCSSHandler.parent_node = &css_parent_node;
   gCSSHandler.ua_default_for_property = &ua_default_for_property;
-  
+
   // Base element symbol
   gDefaultElementSymbol = [[@"body" internedString] retain];
 
+  // Trigger creation of base stylesheet
+  [KStyle baseStylesheet];
+
   // The shared style is empty by default
-  gSharedStyle_ = [[KStyle alloc] initWithCatchAllElement:
-    new KStyleElement(gDefaultElementSymbol)];
+  gSharedStyle_ = [[KStyle alloc] init];
   
   // Note: Loading of the default stylesheet is done by KAppDelegate in main()
   //       branch.
@@ -124,7 +125,6 @@ static NSString const *gDefaultElementSymbol;
 
 
 + (CSSStylesheet*)baseStylesheet {
-  HSemaphore::Scope dss(gBaseStylesheetSemaphore_);
   if (!gBaseStylesheet_) {
     NSData *data = [@"body { color:white; background-color:black; }"
                     dataUsingEncoding:NSUTF8StringEncoding];
@@ -151,27 +151,23 @@ static NSString const *gDefaultElementSymbol;
 - (id)init {
   self = [super init];
   elementsSpinLock_ = OS_SPINLOCK_INIT;
+  styleSpinLock_ = OS_SPINLOCK_INIT;
+  cssContext_ = [[CSSContext alloc] initWithStylesheet:[isa baseStylesheet]];
   return self;
 }
 
 
 - (id)initWithCSSContext:(CSSContext*)cssContext {
   self = [self init];
+  elementsSpinLock_ = OS_SPINLOCK_INIT;
+  styleSpinLock_ = OS_SPINLOCK_INIT;
   cssContext_ = [cssContext retain];
-  return self;
-}
-
-
-- (id)initWithCatchAllElement:(KStyleElement*)element {
-  self = [self init];
-  catchAllElement_ = element;
   return self;
 }
 
 
 - (void)dealloc {
   [cssContext_ release];
-  if (catchAllElement_) delete catchAllElement_;
   [defaultStyle_ release];
   [super dealloc];
 }
@@ -243,12 +239,6 @@ static NSString const *gDefaultElementSymbol;
     // Replace or set our cssContext_
     h_casid(&cssContext_, cssContext);
     [cssContext release]; // our local reference
-    
-    // Clear any catchAllElement_
-    KStyleElement *catchAll =
-        (KStyleElement*)k_swapptr((void*volatile*)&catchAllElement_, NULL);
-    if (catchAll)
-      delete catchAll;
 
     // Empty cached elements
     OSSpinLockLock(&elementsSpinLock_);
@@ -333,9 +323,16 @@ static NSString const *gDefaultElementSymbol;
 
 /// Return the style element for symbolic key
 - (CSSStyle*)styleForElementName:(NSString*)elementNameStr {
+  // this might happen when empty
+  if (!cssContext_) return nil;
+  
+  OSSpinLockLock(&styleSpinLock_);
+
   // assure the default element is loaded before continuing
   if (elementNameStr != gDefaultElementSymbol && !defaultStyle_) {
+    OSSpinLockUnlock(&styleSpinLock_);
     [self defaultStyleElement];
+    OSSpinLockLock(&styleSpinLock_);
   }
 
   lwc_string *elementName = [elementNameStr LWCString];
@@ -362,6 +359,9 @@ static NSString const *gDefaultElementSymbol;
     DLOG("cssContext_ => %@", cssContext_);
     DLOG("elementName => %@", elementNameStr);
   }
+  
+  OSSpinLockUnlock(&styleSpinLock_);
+  
   if (elementName)
     lwc_string_unref(elementName);
 
@@ -371,7 +371,6 @@ static NSString const *gDefaultElementSymbol;
 
 /// Return the style element for symbolic key
 - (KStyleElement*)styleElementForSymbol:(NSString const*)key {
-  if (catchAllElement_) return catchAllElement_;
   OSSpinLockLock(&elementsSpinLock_);
   KStyleElement *elem = elements_.get(key);
   if (!elem) {

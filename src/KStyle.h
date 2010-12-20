@@ -13,10 +13,10 @@ extern NSString const *KStyleDidChangeNotification;
  */
 @interface KStyle : NSObject {
   CSSContext* cssContext_;
-  KStyleElement *catchAllElement_;
   
   // Style for default element ("body") used to create other elements
   CSSStyle *defaultStyle_;
+  OSSpinLock styleSpinLock_;
 
   /// Contains KStyleElement mapped by their string symbols.
   HUnorderedMapSharedPtr<NSString const*, KStyleElement> elements_;
@@ -36,13 +36,12 @@ extern NSString const *KStyleDidChangeNotification;
 
 /// The shared style
 + (KStyle*)sharedStyle;
++ (CSSStylesheet*)baseStylesheet;
 
 #pragma mark -
 #pragma mark Initialization and deallocation
 
 - (id)initWithCSSContext:(CSSContext*)cssContext;
-
-- (id)initWithCatchAllElement:(KStyleElement*)element;
 
 #pragma mark -
 #pragma mark Loading
