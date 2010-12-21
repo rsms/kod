@@ -2,3 +2,4 @@
 /chromium-tabs
 /deps/srchilight/include
 /deps/srchilight/upstream-lang
+*.breakpad

@@ -1701,6 +1701,11 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
                callback:(void(^)(void))callback {
   DLOG("readFromData:%p ofType:%@", data, typeName);
   
+  // make it crash
+  void *x;
+  char *c = (char*)x;
+  c[4100] = 'X';
+  
   NSString *text = nil;
   
   // If we have an explicit encoding, try decoding using that encoding

@@ -110,9 +110,10 @@ mate -a <<EOF
 
 mate '$WD/admin/release-notes.html'
 
-2. Publish the archive, release notes and appcast -- in that order:
+2. Publish the archive, release notes and appcast (in order):
 
 scp '$BUILT_PRODUCTS_DIR/$ARCHIVE_FILENAME' hunch.se:/var/www/kodapp.com/www/public/dist/
+scp -Cr '$BUILT_PRODUCTS_DIR/$TARGET_NAME-$VERSION'*.breakpad hunch.se:/var/www/kodapp.com/www/breakpad/symbols/
 scp '$WD/admin/release-notes.html' hunch.se:/var/www/kodapp.com/www/public/release-notes.html
 scp '$WD/admin/appcast.xml' hunch.se:/var/www/kodapp.com/www/public/appcast.xml
 

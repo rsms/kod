@@ -1,6 +1,10 @@
 #import <Cocoa/Cocoa.h>
+#import <Breakpad/Breakpad.h>
 
 @class SUUpdater;
+
+extern BreakpadRef gBreakpad;
+void k_breakpad_init();
 
 @interface KAppDelegate : NSObject <NSApplicationDelegate> {
   IBOutlet SUUpdater *sparkleUpdater_;

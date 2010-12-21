@@ -6,6 +6,7 @@
 #import "kconf.h"
 #import "KStyle.h"
 #import "KNodeProcess.h"
+#import "KCrashReportCollector.h"
 #import "common.h"
 
 #import <Sparkle/SUUpdater.h>
@@ -14,7 +15,37 @@
 #import <FScript/FScript.h>
 #endif
 
+
+BreakpadRef gBreakpad = NULL;
+
+
+void k_breakpad_init() {
+  NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+  gBreakpad = NULL;
+  NSDictionary *plist = [[NSBundle mainBundle] infoDictionary];
+  if (plist) {
+    // Note: version 1.0.0.4 of the framework changed the type of the argument 
+    // from CFDictionaryRef to NSDictionary * on the next line:
+    gBreakpad = BreakpadCreate(plist);
+  }
+  [pool release];
+}
+
+
 @implementation KAppDelegate
+
+
+- (void)awakeFromNib {
+  k_breakpad_init();
+  
+  // Sparkle configuration
+  [sparkleUpdater_ setAutomaticallyChecksForUpdates:YES];
+  [sparkleUpdater_ setUpdateCheckInterval:3600.0];
+  [sparkleUpdater_ setFeedURL:[NSURL URLWithString:
+      @"http://kodapp.com/appcast.xml"]];
+  [sparkleUpdater_ setAutomaticallyDownloadsUpdates:YES];
+}
+
 
 - (IBAction)newWindow:(id)sender {
   KBrowserWindowController* windowController = (KBrowserWindowController*)
@@ -86,6 +117,7 @@
 }
 
 - (void)applicationWillTerminate:(NSNotification *)aNotification {
+  BreakpadRelease(gBreakpad);
   [[KNodeProcess sharedProcess] terminate];
 }
 
