@@ -6,7 +6,6 @@
 #import "kconf.h"
 #import "KStyle.h"
 #import "KNodeProcess.h"
-#import "KCrashReportCollector.h"
 #import "common.h"
 
 #import <Sparkle/SUUpdater.h>

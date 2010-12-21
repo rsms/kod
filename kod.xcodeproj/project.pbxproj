@@ -987,7 +987,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 1;
 			shellPath = /bin/sh;
-			shellScript = "#!/bin/sh\nPROD=\"$BUILT_PRODUCTS_DIR/$EXECUTABLE_PATH\"\nif (nm \"$PROD\" | grep --silent KAppDelegate) ;then\n  VERSION=$(defaults read \"$BUILT_PRODUCTS_DIR/$TARGET_NAME.app/Contents/Info\" CFBundleVersion)\n  BREAKPAD_PREFIX=\"$BUILT_PRODUCTS_DIR/$TARGET_NAME-$VERSION\"\n  \"admin/dump_syms\" -a x86_64 \"$PROD\" > \"$BREAKPAD_PREFIX-x86_64.breakpad\" || exit $?\n  \"admin/dump_syms\" -a i386 \"$PROD\" > \"$BREAKPAD_PREFIX-i386.breakpad\" || exit $?\nelse\n  echo 'Breakpad: product already stripped (can not extract symbols)'\nfi\nexit 0";
+			shellScript = "#!/bin/sh\nPROD=\"$BUILT_PRODUCTS_DIR/$EXECUTABLE_PATH\"\nif (nm \"$PROD\" | grep --silent KAppDelegate) ;then\n  rm -rf \"$BUILT_PRODUCTS_DIR/symbols/$TARGET_NAME\"\n  # -s \"$PROJECT_DIR\"\n  python admin/symbolstore.py --archs \"$VALID_ARCHS\" \\\n    admin/dump_syms \\\n    \"$BUILT_PRODUCTS_DIR/symbols\" \"$PROD\"\nelse\n  echo 'Breakpad: product already stripped (can not extract symbols)'\nfi\nexit 0";
 			showEnvVarsInLog = 0;
 		};
 		3AAAA17612C012CD0079F079 /* Run Script: Strip */ = {

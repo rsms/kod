@@ -28,9 +28,8 @@
   BreakpadReportInterval = 60;
   BreakpadRequestEmail = YES;
   BreakpadRequestComments = YES;
-  /*BreakpadURL = "http://kodapp.com/breakpad/receive-report/";*/
-  BreakpadURL = "http://rmbp2.local/breakpad/recv.php";
-  
+  BreakpadURL = "http://kodapp.com/breakpad/recv.php";
+
   NSServices = (
     {
       NSMenuItem = { default = "Kod/Open link in Kod"; };
