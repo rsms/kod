@@ -3,6 +3,7 @@
 
 @implementation NSOutlineView (KFileOutlineView)
 
+
 - (NSArray *)selectedItems {
   NSMutableArray *items = [NSMutableArray array];
   NSIndexSet *selectedRows = [self selectedRowIndexes];
@@ -15,6 +16,7 @@
   }
   return items;
 }
+
 
 - (void)setSelectedItems:(NSArray *)items {
   // If we are extending the selection, we start with the existing selection;

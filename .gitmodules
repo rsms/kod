@@ -10,3 +10,6 @@
 [submodule "deps/hunch-cocoa"]
 	path = deps/hunch-cocoa
 	url = git@github.com:rsms/hunch-cocoa.git
+[submodule "deps/node"]
+	path = deps/node
+	url = https://github.com/ry/node.git

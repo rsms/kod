@@ -13,8 +13,6 @@ void k_breakpad_init();
 - (IBAction)newWindow:(id)sender;
 - (IBAction)newDocument:(id)sender;  // "New tab"
 
-- (void)openURL:(NSURL*)url;
-
 /*-(void)openDocumentInWindow:(KBrowserWindowController*)windowController
                      sender:(id)sender;*/
 

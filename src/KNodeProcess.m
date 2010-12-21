@@ -32,10 +32,12 @@ static NSString *_dataToWeakString(const void *bytes, size_t length) {
 
 + (void)initialize {
   NSAutoreleasePool * pool = [NSAutoreleasePool new];
-  // Not everyone has /usr/local/bin in their path, which is the default
-  // location of node
-  setenv("PATH", [[[NSString stringWithUTF8String:getenv("PATH")]
-                   stringByAppendingString:@":/usr/local/bin"] UTF8String], 1);
+  // Add our internal executables path
+  NSString *execDir =
+    [[[NSBundle mainBundle] executablePath] stringByDeletingLastPathComponent];
+  NSString *PATH = [NSString stringWithUTF8String:getenv("PATH")];
+  PATH = [execDir stringByAppendingFormat:@":%@", PATH];
+  setenv("PATH", [PATH UTF8String], 1);
   [pool drain];
 }
 

@@ -15,4 +15,7 @@
 - (NSTreeNode*)treeNodeFromDirectoryAtPath:(NSString*)path
                                      error:(NSError**)error;
 
+- (BOOL)setRootTreeNodeFromDirectoryAtPath:(NSString*)path
+                                     error:(NSError**)error;
+
 @end

@@ -1487,8 +1487,8 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
       BOOL exists = [fm fileExistsAtPath:path isDirectory:&isDir];
       assert(exists == true); // since checkResourceIsReachableAndReturnError
       if (isDir) {
-        *outError = [NSError kodErrorWithFormat:
-            @"Opening a directory is not yet supported"];
+        return [self.windowController openFileDirectoryAtURL:absoluteURL
+                                                       error:outError];
       } else {
         *outError = [NSError kodErrorWithFormat:@"Unknown I/O read error"];
       }

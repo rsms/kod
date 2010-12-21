@@ -586,6 +586,10 @@
       CFBundleTypeRole = Editor;
       NSDocumentClass = KTabContents;
     },
+    { CFBundleTypeName = Folder;
+      CFBundleTypeRole = Editor;
+      LSItemContentTypes = ( public.directory );
+    },
     { CFBundleTypeName = "Document";
       CFBundleTypeIconFile = document-generic; 
       CFBundleTypeOSTypes = ("****"); 

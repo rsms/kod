@@ -63,6 +63,7 @@
                    withWindowController:(KBrowserWindowController*)windowController
                                priority:(long)priority
                                callback:(dispatch_block_t)callback {
+  DLOG("openDocumentsWithContentsOfURLs:%@", urls);
   // countdown
   NSUInteger i = urls ? urls.count : 0;
   
@@ -338,13 +339,13 @@ static double kSiblingAutoGroupEditDistanceThreshold = 0.4;
 }
 
 
-- (id)openDocumentWithContentsOfURL:(NSURL *)url
+- (id)openDocumentWithContentsOfURL:(NSURL *)absoluteURL
                withWindowController:(KBrowserWindowController*)windowController
                   groupWithSiblings:(BOOL)groupWithSiblings
                             display:(BOOL)display
                               error:(NSError **)error {
   // check if |url| is already open
-  KTabContents *tab = (KTabContents *)[self documentForURL:url];
+  KTabContents *tab = (KTabContents *)[self documentForURL:absoluteURL];
   if (tab) {
     // make sure the tab is presented to the user (need to run on main)
     if (![NSThread isMainThread]) {
@@ -355,9 +356,11 @@ static double kSiblingAutoGroupEditDistanceThreshold = 0.4;
     return tab;
   }
   
-  // make a document from |url|
-  NSString *typeName = [self typeForContentsOfURL:url error:nil];
-  tab = [self makeDocumentWithContentsOfURL:url ofType:typeName error:error];
+  // make a document from |absoluteURL|
+  NSString *typeName = [self typeForContentsOfURL:absoluteURL error:nil];
+  tab = [self makeDocumentWithContentsOfURL:absoluteURL
+                                     ofType:typeName
+                                      error:error];
   if (tab) {
     // add the tab to |browser|
     if (![NSThread isMainThread]) {

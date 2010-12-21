@@ -2,7 +2,7 @@
 
 @interface KFileTreeNodeData : NSObject {
 @private
-  NSString *path_;
+  NSURL *url_;
   NSString *name_;
   NSImage *image_;
   BOOL expandable_;
@@ -10,7 +10,7 @@
   BOOL container_;
 }
 
-@property(readwrite, retain) NSString *path;
+@property(readwrite, retain) NSURL *url;
 @property(readwrite, retain) NSString *name;
 @property(readwrite, retain) NSImage *image;
 @property(readwrite, getter=isExpandable) BOOL expandable;

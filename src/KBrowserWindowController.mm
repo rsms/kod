@@ -31,7 +31,7 @@
 
   // Setup file tree view
   [fileOutlineView_ registerForDraggedTypes:
-      [NSArray arrayWithObject:NSFilenamesPboardType]];
+      [NSArray arrayWithObjects:NSFilenamesPboardType, NSURLPboardType, nil]];
   [fileOutlineView_ setBackgroundColor:KFileOutlineViewBackgroundColor];
 
   // Setup file tree controller
@@ -45,7 +45,7 @@
   // setup split view
   kassert(splitView_ != nil); // should get a ref from unarchived NIB
   splitView_.position = kconf_double(@"editor/splitView/position", 180.0);
-  splitView_.isCollapsed = kconf_bool(@"editor/splitView/collapsed", NO);
+  splitView_.isCollapsed = YES; //kconf_bool(@"editor/splitView/collapsed", YES);
   // register for split view resize notification so we can store conf value
   
   [self observe:NSSplitViewDidResizeSubviewsNotification
@@ -370,6 +370,29 @@ willPositionSheet:(NSWindow *)sheet
     [invocation invokeWithTarget:tab];
   else
     [self doesNotRecognizeSelector:selector];
+}
+
+
+#pragma mark -
+#pragma mark Opening a directory
+
+
+- (BOOL)openFileDirectoryAtURL:(NSURL *)absoluteURL error:(NSError **)outError {
+  NSString *path = [absoluteURL path];
+  if (!fileTreeController_) {
+    *outError = [NSError kodErrorWithFormat:
+        @"Internal error (fileTreeController_ is nil)"];
+    return NO;
+  } else {
+    BOOL success =
+        [fileTreeController_ setRootTreeNodeFromDirectoryAtPath:path
+                                                          error:outError];
+    if (success) {
+      // make sure the sidebar is visible
+      splitView_.isCollapsed = NO;
+    }
+    return success;
+  }
 }
 
 

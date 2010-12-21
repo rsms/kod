@@ -53,27 +53,15 @@
   <body>
     <img src="icon-256.png" width="256" height="256" class="icon">
     <div class="signup">
-      <form action="signup-for-beta.php" method="POST">
-        <h2>Sign me up for the beta</h2>
-        <p id="signup-for-beta-email-input"><label>E-mail: <input type="text" name="email"></label></p>
-        <script>
-          var s = document.location.search;
-          if (s.indexOf('?register-for-beta-error=') === 0) {
-            var msg = decodeURIComponent(
-                s.substr(('?register-for-beta-error=').length))
-                    .replace(/\+/g, ' ');
-            document.write('<p class="error">'+msg+'</p>');
-          } else if (s.indexOf('?register-for-beta-ok') === 0) {
-            document.write("<p>Thanks! We'll get in touch.</p>");
-            document.getElementById('signup-for-beta-email-input')
-                .style.display = 'none';
-          }
-        </script>
-        <p><input type="submit" value="Sign up"></p>
-        <p><small>
-          Your email address will not be shared with anyone and be used
-          solely for information regarding Kod.
-        </small></p>
+      <h2>Discussion &amp; announcements</h2>
+      <p>
+        Instead of running a regular email list, discussion and announcements are managed through a public <a href="http://groups.google.com/group/kod-app">Google Group</a>.
+      </p>
+      <form action="http://groups.google.com/group/kod-app/boxsubscribe">
+        <p>
+          Email: <input type=text name=email>
+          <input type=submit name="sub" value="Subscribe">
+        </p>
       </form>
     </div>
     <div class="info">

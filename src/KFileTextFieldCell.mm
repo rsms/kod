@@ -142,15 +142,14 @@ static NSColor *kTextColorFocused;
 }
 
 
-- (NSColor *)highlightColorWithFrame:(NSRect)cellFrame inView:(NSView
-*)controlView
-{
+- (NSColor *)highlightColorWithFrame:(NSRect)cellFrame
+                              inView:(NSView*)controlView {
   return nil;
 }
 
-- (void)highlight:(BOOL)flag withFrame:(NSRect)cellFrame inView:
-(NSView *)controlView
-{
+- (void)highlight:(BOOL)flag
+        withFrame:(NSRect)cellFrame
+           inView:(NSView *)controlView {
   // make sure the cell doesn't draw any highlighting at all
   [super highlight:NO withFrame:cellFrame inView:controlView];
 }

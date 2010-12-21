@@ -2,6 +2,7 @@
 #import "KFileTreeNodeData.h"
 #import "KFileTextFieldCell.h"
 #import "KFileOutlineView.h"
+#import "KDocumentController.h"
 #import "common.h"
 #import "kconf.h"
 
@@ -15,17 +16,10 @@ static NSString *kNameColumnId = @"name";
   useGroupRowLook_ = NO;
   allowOnDropOnContainer_ = YES;
   allowBetweenDrop_ = YES;
-  
-  // DEV XXX temporary
-  NSError *error = nil;
-  rootTreeNode_ =
-      [self treeNodeFromDirectoryAtPath:[[kconf_res_url(nil) path] stringByDeletingLastPathComponent] // FIXME
-                                  error:&error];
-  if (!rootTreeNode_) {
-    [NSApp presentError:error];
-  } else {
-    [rootTreeNode_ retain];
-  }
+
+  KFileTreeNodeData *nodeData = [[KFileTreeNodeData new] autorelease];
+  nodeData.container = YES;
+  rootTreeNode_ = [[NSTreeNode treeNodeWithRepresentedObject:nodeData] retain];
 
   return self;
 }
@@ -53,9 +47,23 @@ static NSString *kNameColumnId = @"name";
   if (rootTreeNode_) {
     KFileTreeNodeData *nodeData = rootTreeNode_.representedObject;
     if (nodeData)
-      autosaveName = [autosaveName stringByAppendingString:nodeData.path];
+      autosaveName =
+        [autosaveName stringByAppendingString:[nodeData.url absoluteString]];
   }
   [outlineView_ setAutosaveName:autosaveName];
+}
+
+
+- (BOOL)setRootTreeNodeFromDirectoryAtPath:(NSString*)path
+                                     error:(NSError**)error {
+  NSTreeNode *n = [self treeNodeFromDirectoryAtPath:path error:error];
+  if (n) {
+    [[rootTreeNode_ retain] autorelease];
+    h_casid(&rootTreeNode_, n);
+    [outlineView_ reloadData];
+    return YES;
+  }
+  return NO; // error set
 }
 
 
@@ -179,7 +187,10 @@ objectValueForTableColumn:(NSTableColumn *)tableColumn
 }
 
 // Optional method: needed to allow editing.
-- (void)outlineView:(NSOutlineView *)outlineView setObjectValue:(id)object forTableColumn:(NSTableColumn *)tableColumn byItem:(id)item  {
+- (void)outlineView:(NSOutlineView *)outlineView
+     setObjectValue:(id)object
+     forTableColumn:(NSTableColumn *)tableColumn
+             byItem:(id)item  {
   KFileTreeNodeData *nodeData = [item representedObject];
   nodeData.name = object;
 }
@@ -233,8 +244,36 @@ objectValueForTableColumn:(NSTableColumn *)tableColumn
 - (BOOL)outlineView:(NSOutlineView *)outlineView shouldSelectItem:(id)item {
   // Control selection of a particular item. 
   KFileTreeNodeData *nodeData = [item representedObject];
-  return nodeData.selectable;
+  return nodeData && nodeData.selectable;
 }
+
+
+- (BOOL)_openFileAtRow:(NSInteger)row {
+  // open file if it has a URL and isn't a directory
+  if (row == NSNotFound) return NO;
+  NSTreeNode *treeNode = [outlineView_ itemAtRow:row];
+  if (!treeNode) return NO;
+  KFileTreeNodeData *nodeData = [treeNode representedObject];
+  if (!nodeData) return NO;
+  if (nodeData.url && !nodeData.container) {
+    KDocumentController *documentController =
+      (KDocumentController*)[NSDocumentController sharedDocumentController];
+    NSArray *fileURLs = [NSArray arrayWithObject:nodeData.url];
+    [documentController openDocumentsWithContentsOfURLs:fileURLs
+                                               callback:nil];
+    return YES;
+  }
+  return NO;
+}
+
+
+- (void)outlineViewSelectionDidChange:(NSNotification *)notification {
+  NSIndexSet *selectedRows = [outlineView_ selectedRowIndexes];
+  if (selectedRows && selectedRows.count == 1) {
+    [self _openFileAtRow:[selectedRows firstIndex]];
+  }
+}
+
 
 - (BOOL)outlineView:(NSOutlineView *)outlineView
     shouldTrackCell:(NSCell *)cell

@@ -25,4 +25,6 @@
 - (IBAction)reloadStyle:(id)sender;
 - (IBAction)goToLine:(id)sender;
 
+- (BOOL)openFileDirectoryAtURL:(NSURL *)absoluteURL error:(NSError **)outError;
+
 @end

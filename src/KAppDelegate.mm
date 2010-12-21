@@ -101,24 +101,72 @@ void k_breakpad_init() {
   [KNodeProcess sharedProcess];
 }
 
+
 - (void)openUrl:(NSAppleEventDescriptor*)event
  withReplyEvent:(NSAppleEventDescriptor*)replyEvent {
 	NSString *urlstr = [[event paramDescriptorForKeyword:keyDirectObject] stringValue];
 	NSURL* url = [NSURL URLWithString:urlstr];
   if (url) {
-    [self openURL:url];
+    NSArray *urls = [NSArray arrayWithObject:url];
+    KDocumentController *documentController =
+      (KDocumentController*)[NSDocumentController sharedDocumentController];
+    [documentController openDocumentsWithContentsOfURLs:urls callback:nil];
   }
 }
+
 
 - (void)applicationDidFinishLaunching:(NSNotification *)notification {
   // NOTE: KDocumentController will create a new window & tab upon start
   [sparkleUpdater_ setAutomaticallyDownloadsUpdates:YES];
 }
 
+
 - (void)applicationWillTerminate:(NSNotification *)aNotification {
   BreakpadRelease(gBreakpad);
   [[KNodeProcess sharedProcess] terminate];
 }
+
+
+- (void)application:(NSApplication *)sender openFiles:(NSArray *)filenames {
+  //DLOG("application:openFiles:%@", filenames);
+  NSMutableArray *fileURLs = [NSMutableArray array];
+  NSMutableArray *dirPaths = [NSMutableArray array];
+  NSFileManager *fm = [NSFileManager defaultManager];
+  
+  // check URL refers to a local directory
+  for (NSString *path in filenames) {
+    BOOL isDir;
+    BOOL exists = [fm fileExistsAtPath:path isDirectory:&isDir];
+    if (exists) {
+      if (isDir) {
+        [dirPaths addObject:path];
+      } else {
+        [fileURLs addObject:[NSURL fileURLWithPath:path]];
+      }
+    }
+  }
+  
+  // open first directory
+  if (dirPaths.count != 0) {
+    KBrowserWindowController *windowController = (KBrowserWindowController *)
+        [KBrowserWindowController mainBrowserWindowController];
+    NSURL *dirURL = [NSURL fileURLWithPath:[dirPaths objectAtIndex:0]
+                               isDirectory:YES];
+    NSError *error = nil;
+    if (![windowController openFileDirectoryAtURL:dirURL error:&error]) {
+      WLOG("failed to read directory %@ -- %@", dirURL, error);
+    }
+  }
+  
+  // dispatch opening of files
+  if (fileURLs.count != 0) {
+    KDocumentController *documentController =
+      (KDocumentController*)[NSDocumentController sharedDocumentController];
+    [documentController openDocumentsWithContentsOfURLs:fileURLs
+                                               callback:nil];
+  }
+}
+
 
 /*- (NSApplicationTerminateReply)applicationShouldTerminate:
     (NSApplication*)sender {
@@ -181,32 +229,33 @@ void k_breakpad_init() {
     }
   }
   
-  // open all urls in the normal priority background dispatch queue
   //DLOG("urls => %@", urls);
-  if (urls.count) {
-    for (NSURL *url in urls) {
-      [self openURL:url];
+  if (urls.count == 0) return;
+  
+  // separate files from remote's since we apply special handling of files
+  // in application:openFiles: to deal with directories.
+  NSMutableArray *filenames = [NSMutableArray array];
+  NSMutableArray *urls2 = [NSMutableArray array];
+  for (NSURL *url in urls) {
+    if ([url isFileURL]) {
+      [filenames addObject:[url path]];
+    } else {
+      [urls2 addObject:url];
     }
+  }
+  
+  if (filenames.count != 0)
+    [self application:NSApp openFiles:filenames];
+  
+  if (urls2.count != 0) {
+    KDocumentController *documentController =
+      (KDocumentController*)[NSDocumentController sharedDocumentController];
+    [documentController openDocumentsWithContentsOfURLs:urls2
+                                               callback:nil];
   }
   
   //[pboard clearContents];
 }
 
-
-- (void)openURL:(NSURL*)url {
-  KDocumentController *docCtrl =
-      (KDocumentController*)[NSDocumentController sharedDocumentController];
-  if ([url isFileURL]) {
-    // file URLs use blocking I/O
-    K_DISPATCH_BG_ASYNC({
-      [docCtrl openDocumentWithContentsOfURL:url display:YES error:nil];
-    });
-  } else {
-    // non-file URLs use async I/O and should be run on the main thread
-    // (the underlying mechansim will take care of scheduling on the main
-    // thread, so we don't need to check for it here).
-    [docCtrl openDocumentWithContentsOfURL:url display:YES error:nil];
-  }
-}
 
 @end

@@ -32,7 +32,7 @@ Channel.prototype.onOpen = function () {
   setInterval(function(){
     self.send({type:'event', name:'beacon', data:(new Date).getTime()/1000.0});
   }, 1000);*/
-  console.log('onOpen');
+  console.log('node '+process.version+' opened IPC channel');
 }
 
 Buffer.prototype.indexOf = function(byteValue, offset) {

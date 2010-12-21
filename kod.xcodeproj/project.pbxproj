@@ -95,6 +95,7 @@
 		3AAA9F7712BFC0440079F079 /* Sparkle.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 3AAA9F4112BFB7B50079F079 /* Sparkle.framework */; };
 		3AAAA13412C00E6D0079F079 /* Breakpad.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3AAAA13312C00E6D0079F079 /* Breakpad.framework */; };
 		3AAAA13912C00E750079F079 /* Breakpad.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 3AAAA13312C00E6D0079F079 /* Breakpad.framework */; };
+		3AAAA2FD12C106410079F079 /* node in Copy Executable Files */ = {isa = PBXBuildFile; fileRef = 3AAAA2FB12C1060C0079F079 /* node */; };
 		3AAC02B812BD1110001BDC39 /* kconf.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AAC02B712BD1110001BDC39 /* kconf.m */; };
 		3AAC03F012BD2FC2001BDC39 /* sidebar-closed.png in Resources */ = {isa = PBXBuildFile; fileRef = 3AAC03EE12BD2FC2001BDC39 /* sidebar-closed.png */; };
 		3AAC03F112BD2FC2001BDC39 /* sidebar-open.png in Resources */ = {isa = PBXBuildFile; fileRef = 3AAC03EF12BD2FC2001BDC39 /* sidebar-open.png */; };
@@ -159,7 +160,7 @@
 			isa = PBXContainerItemProxy;
 			containerPortal = 3A928BEF1227143800DA7E43 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 3A928C1F1227151800DA7E43 /* Kod */;
+			remoteGlobalIDString = 3A928C1F1227151800DA7E43;
 			remoteInfo = Kod;
 		};
 		3AE5E8B212915ABA00B17C4F /* PBXContainerItemProxy */ = {
@@ -210,6 +211,17 @@
 				3A25E4971281A9D300B6A33E /* libsource-highlight.dylib in Copy Frameworks */,
 			);
 			name = "Copy Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		3AAAA2FE12C1065F0079F079 /* Copy Executable Files */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 6;
+			files = (
+				3AAAA2FD12C106410079F079 /* node in Copy Executable Files */,
+			);
+			name = "Copy Executable Files";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
@@ -354,6 +366,7 @@
 		3AAA9F4112BFB7B50079F079 /* Sparkle.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Sparkle.framework; path = deps/Sparkle.framework; sourceTree = "<group>"; };
 		3AAA9F6512BFBB010079F079 /* dsa_pub.pem */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = dsa_pub.pem; sourceTree = "<group>"; };
 		3AAAA13312C00E6D0079F079 /* Breakpad.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Breakpad.framework; path = deps/Breakpad.framework; sourceTree = "<group>"; };
+		3AAAA2FB12C1060C0079F079 /* node */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = node; path = deps/node/build/default/node; sourceTree = SOURCE_ROOT; };
 		3AAC02B712BD1110001BDC39 /* kconf.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = kconf.m; sourceTree = "<group>"; };
 		3AAC03EE12BD2FC2001BDC39 /* sidebar-closed.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "sidebar-closed.png"; sourceTree = "<group>"; };
 		3AAC03EF12BD2FC2001BDC39 /* sidebar-open.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "sidebar-open.png"; sourceTree = "<group>"; };
@@ -461,6 +474,7 @@
 		3A40F8C312AFE5D7007B5879 /* Node */ = {
 			isa = PBXGroup;
 			children = (
+				3AAAA2FB12C1060C0079F079 /* node */,
 				3A40F8C412AFE5F7007B5879 /* KNodeProcess.h */,
 				3A40F8C512AFE5F7007B5879 /* KNodeProcess.m */,
 			);
@@ -487,7 +501,7 @@
 			path = "deps/json-framework/Classes";
 			sourceTree = SOURCE_ROOT;
 		};
-		3A7E717C1286F40600D85E4C /* file-tree */ = {
+		3A7E717C1286F40600D85E4C /* Sidebar */ = {
 			isa = PBXGroup;
 			children = (
 				3A7E717E1286F44D00D85E4C /* KFileOutlineView.h */,
@@ -499,7 +513,7 @@
 				3A7E72391287024100D85E4C /* KFileTreeController.h */,
 				3A7E723A1287024100D85E4C /* KFileTreeController.mm */,
 			);
-			name = "file-tree";
+			name = Sidebar;
 			sourceTree = "<group>";
 		};
 		3A7E717D1286F41C00D85E4C /* Syntax highlighting */ = {
@@ -597,7 +611,6 @@
 				3A158AD3128A09D300339E6E /* ICU */,
 				3ABF56AE12A69F9D0020233C /* Style */,
 				3A7E717D1286F41C00D85E4C /* Syntax highlighting */,
-				3A7E717C1286F40600D85E4C /* file-tree */,
 			);
 			path = src;
 			sourceTree = "<group>";
@@ -714,6 +727,7 @@
 			children = (
 				3ABF539412A5D52F0020233C /* KSplitView.h */,
 				3ABF539512A5D52F0020233C /* KSplitView.m */,
+				3A7E717C1286F40600D85E4C /* Sidebar */,
 				3A84117D129D5C8800F4A36D /* Toolbar */,
 				3AB97BD312B2834D00F4ADB2 /* Status bar */,
 				3AE5E8D012916F2500B17C4F /* Scrollbar */,
@@ -859,6 +873,7 @@
 				3A928C1E1227151800DA7E43 /* Frameworks */,
 				3A9291381229BBB600DA7E43 /* Copy Frameworks */,
 				3A40F8DA12AFEB89007B5879 /* Copy Support Files */,
+				3AAAA2FE12C1065F0079F079 /* Copy Executable Files */,
 				3AAAA16012C00F160079F079 /* Run Script: Breakpad */,
 				3AAAA17612C012CD0079F079 /* Run Script: Strip */,
 				3AAAA19712C0179E0079F079 /* Run Script: Clean */,
@@ -1253,7 +1268,6 @@
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = src/prefix.pch;
-				GCC_PREPROCESSOR_DEFINITIONS = "NDEBUG=1";
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				HEADER_SEARCH_PATHS = (
 					src/ICU/include,

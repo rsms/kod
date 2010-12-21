@@ -2,7 +2,7 @@
 
 @implementation KFileTreeNodeData
 
-@synthesize path = path_,
+@synthesize url = url_,
             name = name_,
             image = image_,
             expandable = expandable_,
@@ -20,13 +20,13 @@
 
 - (id)initWithPath:(NSString *)path {
   self = [self init];
-  self.path = path;
+  self.url = [NSURL fileURLWithPath:path];
   self.name = [path lastPathComponent];
   return self;
 }
 
 - (void)dealloc {
-  [path_ release];
+  [url_ release];
   [name_ release];
   [image_ release];
   [super dealloc];
