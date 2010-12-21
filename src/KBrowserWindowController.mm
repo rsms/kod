@@ -1,4 +1,4 @@
-#import <ChromiumTabs/common.h>
+#import "common.h"
 #import <ChromiumTabs/fast_resize_view.h>
 
 #import "HEventEmitter.h"

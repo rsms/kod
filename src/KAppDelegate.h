@@ -3,7 +3,6 @@
 
 @class SUUpdater;
 
-extern BreakpadRef gBreakpad;
 void k_breakpad_init();
 
 @interface KAppDelegate : NSObject <NSApplicationDelegate> {

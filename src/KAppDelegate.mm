@@ -6,6 +6,7 @@
 #import "kconf.h"
 #import "KStyle.h"
 #import "KNodeProcess.h"
+#import "KMachService.h"
 #import "common.h"
 
 #import <Sparkle/SUUpdater.h>
@@ -15,8 +16,8 @@
 #endif
 
 
+#if KOD_WITH_BREAKPAD
 BreakpadRef gBreakpad = NULL;
-
 
 void k_breakpad_init() {
   NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
@@ -29,6 +30,9 @@ void k_breakpad_init() {
   }
   [pool release];
 }
+#else
+void k_breakpad_init() {}
+#endif
 
 
 @implementation KAppDelegate
@@ -99,6 +103,9 @@ void k_breakpad_init() {
   
   // Start node.js
   [KNodeProcess sharedProcess];
+  
+  // Start Mach service
+  [KMachService sharedService];
 }
 
 
@@ -122,7 +129,9 @@ void k_breakpad_init() {
 
 
 - (void)applicationWillTerminate:(NSNotification *)aNotification {
+  #if KOD_WITH_BREAKPAD
   BreakpadRelease(gBreakpad);
+  #endif
   [[KNodeProcess sharedProcess] terminate];
 }
 
@@ -132,7 +141,7 @@ void k_breakpad_init() {
   NSMutableArray *fileURLs = [NSMutableArray array];
   NSMutableArray *dirPaths = [NSMutableArray array];
   NSFileManager *fm = [NSFileManager defaultManager];
-  
+
   // check URL refers to a local directory
   for (NSString *path in filenames) {
     BOOL isDir;
@@ -145,7 +154,7 @@ void k_breakpad_init() {
       }
     }
   }
-  
+
   // open first directory
   if (dirPaths.count != 0) {
     KBrowserWindowController *windowController = (KBrowserWindowController *)
@@ -157,7 +166,7 @@ void k_breakpad_init() {
       WLOG("failed to read directory %@ -- %@", dirURL, error);
     }
   }
-  
+
   // dispatch opening of files
   if (fileURLs.count != 0) {
     KDocumentController *documentController =

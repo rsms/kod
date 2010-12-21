@@ -1,9 +1,9 @@
+#import "common.h"
 #import "KDocumentController.h"
 #import "KTabContents.h"
 #import "KBrowserWindowController.h"
 #import "KBrowser.h"
 
-#import <ChromiumTabs/common.h>
 #import <objc/objc-runtime.h>
 
 
@@ -59,6 +59,22 @@
 #pragma mark Creating and opening documents
 
 
+- (KTabContents*)_documentForURL:(NSURL*)absoluteURL
+                  makeKeyIfFound:(BOOL)makeKeyIfFound {
+  // check if |url| is already open
+  KTabContents *tab = (KTabContents *)[self documentForURL:absoluteURL];
+  if (makeKeyIfFound) {
+    // make sure the tab is presented to the user (need to run on main)
+    if (![NSThread isMainThread]) {
+      K_DISPATCH_MAIN_ASYNC([tab makeKeyAndOrderFront:self];);
+    } else {
+      [tab makeKeyAndOrderFront:self];
+    }
+  }
+  return tab;
+}
+
+
 - (void)openDocumentsWithContentsOfURLs:(NSArray*)urls
                    withWindowController:(KBrowserWindowController*)windowController
                                priority:(long)priority
@@ -85,28 +101,39 @@
   // Dispatch opening of each document
   for (NSURL *url in urls) {
     int index = --i; // so it gets properly copied into the dispatched block
-    dispatch_async(dispatchQueue, ^{
-      NSAutoreleasePool *pool = [NSAutoreleasePool new];
-      NSError *error = nil;
-      KTabContents *tab = [self openDocumentWithContentsOfURL:url
-                                         withWindowController:windowController
-                                            groupWithSiblings:YES
-                                                // display last document opened:
-                                                      display:index==0
-                                                        error:&error];
-      // fail?
-      if (!tab) {
-        [windowController presentError:error];
-      }
-      
+    
+    KTabContents *alreadyOpenTab = [self _documentForURL:url
+                                          makeKeyIfFound:index==0];
+    if (alreadyOpenTab) {
       // done?
       if (callback && OSAtomicDecrement32(&callbackCountdown) == 0) {
         callback();
         [callback release];
       }
-      
-      [pool drain];
-    });
+    } else {
+      dispatch_async(dispatchQueue, ^{
+        NSAutoreleasePool *pool = [NSAutoreleasePool new];
+        NSError *error = nil;
+        KTabContents *tab = [self openDocumentWithContentsOfURL:url
+                                           withWindowController:windowController
+                                              groupWithSiblings:YES
+                                                  // display last document opened:
+                                                        display:index==0
+                                                          error:&error];
+        // fail?
+        if (!tab) {
+          [windowController presentError:error];
+        }
+        
+        // done?
+        if (callback && OSAtomicDecrement32(&callbackCountdown) == 0) {
+          callback();
+          [callback release];
+        }
+        
+        [pool drain];
+      });
+    }
   }
 }
 
@@ -344,17 +371,11 @@ static double kSiblingAutoGroupEditDistanceThreshold = 0.4;
                   groupWithSiblings:(BOOL)groupWithSiblings
                             display:(BOOL)display
                               error:(NSError **)error {
-  // check if |url| is already open
-  KTabContents *tab = (KTabContents *)[self documentForURL:absoluteURL];
-  if (tab) {
-    // make sure the tab is presented to the user (need to run on main)
-    if (![NSThread isMainThread]) {
-      K_DISPATCH_MAIN_ASYNC([tab makeKeyAndOrderFront:self];);
-    } else {
-      [tab makeKeyAndOrderFront:self];
-    }
-    return tab;
-  }
+  // check if |url| is already open. Although we check this earlier, we need
+  // to check again since we are running on a background thread and things might
+  // have changed.
+  KTabContents *tab = [self _documentForURL:absoluteURL makeKeyIfFound:display];
+  if (tab) return tab;
   
   // make a document from |absoluteURL|
   NSString *typeName = [self typeForContentsOfURL:absoluteURL error:nil];

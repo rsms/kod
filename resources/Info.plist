@@ -3,7 +3,7 @@
   CFBundleShortVersionString = "0.0.1";
   CFBundleVersion = "0.0.1";
   CFBundleIconFile = "kod.icns";
-  CFBundleIdentifier = "se.hunch.${PRODUCT_NAME:rfc1034identifier}";
+  CFBundleIdentifier = "se.hunch.kod";
   CFBundleInfoDictionaryVersion = "6.0";
   CFBundleName = "${PRODUCT_NAME}";
   CFBundlePackageType = APPL;

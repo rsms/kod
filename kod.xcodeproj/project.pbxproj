@@ -48,6 +48,10 @@
 		3A4CB3E112B1872300B45858 /* NSString-data.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A4CB3E012B1872300B45858 /* NSString-data.m */; };
 		3A4CB3FD12B1897B00B45858 /* SBJsonStreamWriter.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A4CB3FB12B1897B00B45858 /* SBJsonStreamWriter.m */; };
 		3A4D50ED1282E40300B06EEB /* NSString-utf8-range-conv.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A4D50EC1282E40300B06EEB /* NSString-utf8-range-conv.m */; };
+		3A5107CB12C1233900AAC1D5 /* KMachService.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A5107CA12C1233900AAC1D5 /* KMachService.m */; };
+		3A51081712C139B800AAC1D5 /* kod_helper.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A5107EB12C1351500AAC1D5 /* kod_helper.m */; };
+		3A51083612C13AF900AAC1D5 /* common.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A51083412C13AF900AAC1D5 /* common.m */; };
+		3A51084D12C13C9E00AAC1D5 /* common.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A51083412C13AF900AAC1D5 /* common.m */; };
 		3A62B9E6129D652700822274 /* KTextFieldDecoration.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A62B9E5129D652700822274 /* KTextFieldDecoration.mm */; };
 		3A62BA01129D686F00822274 /* KAutocompleteTextField.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A62BA00129D686F00822274 /* KAutocompleteTextField.mm */; };
 		3A62BA49129D756100822274 /* KAutocompleteTextFieldEditor.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A62BA48129D756100822274 /* KAutocompleteTextFieldEditor.mm */; };
@@ -135,6 +139,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		3A510A5012C15B7600AAC1D5 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 3A928BEF1227143800DA7E43 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 3A928C1F1227151800DA7E43 /* Kod */;
+			remoteInfo = Kod;
+		};
 		3A9297E3122AB49D00DA7E43 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 3A92916A1229BDAA00DA7E43 /* chromium-tabs.xcodeproj */;
@@ -274,6 +285,12 @@
 		3A4CB3FC12B1897B00B45858 /* SBProxyForJson.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SBProxyForJson.h; sourceTree = "<group>"; };
 		3A4D50EB1282E40300B06EEB /* NSString-utf8-range-conv.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString-utf8-range-conv.h"; sourceTree = "<group>"; };
 		3A4D50EC1282E40300B06EEB /* NSString-utf8-range-conv.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString-utf8-range-conv.m"; sourceTree = "<group>"; };
+		3A5107C912C1233900AAC1D5 /* KMachService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KMachService.h; sourceTree = "<group>"; };
+		3A5107CA12C1233900AAC1D5 /* KMachService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KMachService.m; sourceTree = "<group>"; };
+		3A5107D312C1245400AAC1D5 /* KMachServiceProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KMachServiceProtocol.h; sourceTree = "<group>"; };
+		3A5107EB12C1351500AAC1D5 /* kod_helper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = kod_helper.m; sourceTree = "<group>"; };
+		3A5107F812C135A200AAC1D5 /* kod */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = kod; sourceTree = BUILT_PRODUCTS_DIR; };
+		3A51083412C13AF900AAC1D5 /* common.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = common.m; sourceTree = "<group>"; };
 		3A62B9D1129D63AA00822274 /* basictypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = basictypes.h; sourceTree = "<group>"; };
 		3A62B9DF129D63F000822274 /* scoped_nsobject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = scoped_nsobject.h; sourceTree = "<group>"; };
 		3A62B9E4129D652700822274 /* KTextFieldDecoration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KTextFieldDecoration.h; sourceTree = "<group>"; };
@@ -440,6 +457,13 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		3A5107F612C135A200AAC1D5 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		3A928C1E1227151800DA7E43 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -500,6 +524,17 @@
 			name = JSON;
 			path = "deps/json-framework/Classes";
 			sourceTree = SOURCE_ROOT;
+		};
+		3A5107C812C1231700AAC1D5 /* kod helper */ = {
+			isa = PBXGroup;
+			children = (
+				3A5107D312C1245400AAC1D5 /* KMachServiceProtocol.h */,
+				3A5107C912C1233900AAC1D5 /* KMachService.h */,
+				3A5107CA12C1233900AAC1D5 /* KMachService.m */,
+				3A5107EB12C1351500AAC1D5 /* kod_helper.m */,
+			);
+			name = "kod helper";
+			sourceTree = "<group>";
 		};
 		3A7E717C1286F40600D85E4C /* Sidebar */ = {
 			isa = PBXGroup;
@@ -606,6 +641,7 @@
 				3A92911A1229B96A00DA7E43 /* KTabContents.mm */,
 				3AC2D4A51298D8050066B586 /* KTextStorage.h */,
 				3AC2D4A61298D8050066B586 /* KTextStorage.mm */,
+				3A5107C812C1231700AAC1D5 /* kod helper */,
 				3A40F8C312AFE5D7007B5879 /* Node */,
 				3ABF539712A5D5360020233C /* Main views */,
 				3A158AD3128A09D300339E6E /* ICU */,
@@ -637,6 +673,7 @@
 			isa = PBXGroup;
 			children = (
 				3A928C201227151800DA7E43 /* Kod.app */,
+				3A5107F812C135A200AAC1D5 /* kod */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -771,6 +808,7 @@
 			children = (
 				3A92912B1229BB5100DA7E43 /* prefix.pch */,
 				3A159448128B7B9500339E6E /* common.h */,
+				3A51083412C13AF900AAC1D5 /* common.m */,
 				3A62B9D1129D63AA00822274 /* basictypes.h */,
 				3A62BE75129E0C3100822274 /* virtual_key_codes.h */,
 				3A62B9DF129D63F000822274 /* scoped_nsobject.h */,
@@ -864,6 +902,24 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		3A5107F712C135A200AAC1D5 /* kod_helper */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 3A51080212C135C800AAC1D5 /* Build configuration list for PBXNativeTarget "kod_helper" */;
+			buildPhases = (
+				3A5108BF12C1437B00AAC1D5 /* ShellScript */,
+				3A5107F512C135A200AAC1D5 /* Sources */,
+				3A5107F612C135A200AAC1D5 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				3A510A5112C15B7600AAC1D5 /* PBXTargetDependency */,
+			);
+			name = kod_helper;
+			productName = kod_helper;
+			productReference = 3A5107F812C135A200AAC1D5 /* kod */;
+			productType = "com.apple.product-type.tool";
+		};
 		3A928C1F1227151800DA7E43 /* Kod */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 3A928C261227151900DA7E43 /* Build configuration list for PBXNativeTarget "Kod" */;
@@ -921,6 +977,7 @@
 			targets = (
 				3A928C1F1227151800DA7E43 /* Kod */,
 				3AAA9FB312BFC8890079F079 /* Distribute */,
+				3A5107F712C135A200AAC1D5 /* kod_helper */,
 			);
 		};
 /* End PBXProject section */
@@ -977,6 +1034,21 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		3A5108BF12C1437B00AAC1D5 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"$(PROJECT_DIR)/resources/Info.plist",
+			);
+			outputPaths = (
+				"$(SRCROOT)/src/kod_version.h",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "VERSION=$(defaults read \"$PROJECT_DIR/resources/Info\" CFBundleVersion)\necho \"#define K_VERSION_STR \"'\"'$VERSION'\"' > src/kod_version.h";
+		};
 		3AAA9FB212BFC8890079F079 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -1038,6 +1110,15 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		3A5107F512C135A200AAC1D5 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3A51084D12C13C9E00AAC1D5 /* common.m in Sources */,
+				3A51081712C139B800AAC1D5 /* kod_helper.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		3A928C1D1227151800DA7E43 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -1127,12 +1208,19 @@
 				3AF39DB212BE9C8A00FC534A /* KPopUp.m in Sources */,
 				3AF39DE212BEC15E00FC534A /* KPopUpContentView.m in Sources */,
 				3AF3A0A512BF7F6400FC534A /* KAnimation.m in Sources */,
+				3A5107CB12C1233900AAC1D5 /* KMachService.m in Sources */,
+				3A51083612C13AF900AAC1D5 /* common.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		3A510A5112C15B7600AAC1D5 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 3A928C1F1227151800DA7E43 /* Kod */;
+			targetProxy = 3A510A5012C15B7600AAC1D5 /* PBXContainerItemProxy */;
+		};
 		3A929AEC122B1A0400DA7E43 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = ChromiumTabs;
@@ -1151,6 +1239,61 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		3A5107FA12C135A200AAC1D5 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/AppKit.framework/Headers/AppKit.h";
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				INSTALL_PATH = /usr/local/bin;
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				ONLY_ACTIVE_ARCH = YES;
+				OTHER_LDFLAGS = (
+					"-framework",
+					Foundation,
+					"-framework",
+					AppKit,
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = kod;
+				VALID_ARCHS = "i386 x86_64";
+			};
+			name = Debug;
+		};
+		3A5107FB12C135A200AAC1D5 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_MODEL_TUNING = G5;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/AppKit.framework/Headers/AppKit.h";
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				INSTALL_PATH = /usr/local/bin;
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				OTHER_LDFLAGS = (
+					"-framework",
+					Foundation,
+					"-framework",
+					AppKit,
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = kod;
+				VALID_ARCHS = "i386 x86_64";
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
 		3A928BF01227143800DA7E43 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -1268,6 +1411,7 @@
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = src/prefix.pch;
+				GCC_PREPROCESSOR_DEFINITIONS = "KOD_WITH_BREAKPAD=1";
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				HEADER_SEARCH_PATHS = (
 					src/ICU/include,
@@ -1328,6 +1472,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		3A51080212C135C800AAC1D5 /* Build configuration list for PBXNativeTarget "kod_helper" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3A5107FA12C135A200AAC1D5 /* Debug */,
+				3A5107FB12C135A200AAC1D5 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		3A928BF21227143800DA7E43 /* Build configuration list for PBXProject "kod" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

@@ -3,7 +3,7 @@
 #import "kconf.h"
 #import "KBrowserWindowController.h"
 #import "KToolbarController.h"
-#import <ChromiumTabs/common.h>
+#import "common.h"
 
 @implementation KBrowser
 
