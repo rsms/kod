@@ -113,7 +113,7 @@ mate '$WD/admin/release-notes.html'
 2. Publish the archive, release notes and appcast (in order):
 
 scp '$BUILT_PRODUCTS_DIR/$ARCHIVE_FILENAME' hunch.se:/var/www/kodapp.com/www/public/dist/
-scp -Cr '$BUILT_PRODUCTS_DIR/symbols/$TARGET_NAME/'* hunch.se:/var/www/kodapp.com/www/breakpad/symbols/$TARGET_NAME/
+scp -Cr '$BUILT_PRODUCTS_DIR/symbols/$PROJECT_NAME/'* hunch.se:/var/www/kodapp.com/www/breakpad/symbols/$PROJECT_NAME/
 scp '$WD/admin/release-notes.html' hunch.se:/var/www/kodapp.com/www/public/release-notes.html
 scp '$WD/admin/appcast.xml' hunch.se:/var/www/kodapp.com/www/public/appcast.xml
 

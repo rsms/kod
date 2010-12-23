@@ -5,5 +5,17 @@
     <link>http://kodapp.com/</link>
     <description>Appcast for Kod</description>
     <language>en</language>
+    <item>
+      <title>Version 0.0.1</title>
+      <sparkle:releaseNotesLink>http://kodapp.com/release-notes.html#version-0.0.1</sparkle:releaseNotesLink>
+      <pubDate>Thu, 23 Dec 2010 23:19:16 +0100</pubDate>
+      <enclosure
+        url="http://kodapp.com/dist/kod-0.0.1.zip"
+        sparkle:version="0.0.1"
+        type="application/octet-stream"
+        length="7430096"
+        sparkle:dsaSignature="MCwCFG1zm6k/6tJ3ZKFPlaKdU7QiN5sIAhR5vUG36j0jFC8yKxhaMx9Y2uZrMA=="
+      />
+    </item>
   </channel>
 </rss>
