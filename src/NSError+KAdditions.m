@@ -43,4 +43,11 @@ static NSString *KErrorDomain = nil; // TODO: centralize this
                          userInfo:nil];
 }
 
++ (NSError*)kodErrorWithHTTPStatusCode:(int)status {
+  NSString *msg = [NSHTTPURLResponse localizedStringForStatusCode:status];
+  NSDictionary *info =
+      [NSDictionary dictionaryWithObject:msg forKey:NSLocalizedDescriptionKey];
+  return [NSError errorWithDomain:NSURLErrorDomain code:status userInfo:info];
+}
+
 @end

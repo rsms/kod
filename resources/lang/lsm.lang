@@ -6,4 +6,4 @@ keyword = 'Begin[[:digit:]]*|End'
 
 type = '^[[:word:]-]+:'
 
-include "url.lang"
+include "_url.lang"

@@ -7,6 +7,8 @@
 #import "KBrowser.h"
 #import "KBrowserWindowController.h"
 #import "KSourceHighlighter.h"
+#import "KDocumentController.h"
+#import "KURLHandler.h"
 #import "KStyle.h"
 #import "KScroller.h"
 #import "KScrollView.h"
@@ -191,6 +193,9 @@ static int debugSimulateTextAppendingIteration = 0;
 
   // register as text storage delegate
   textView_.textStorage.delegate = self;
+  
+  // set to zero
+  lastEditedHighlightStateRange_ = NSMakeRange(NSNotFound,0);
 
   return self;
 }
@@ -223,8 +228,8 @@ static int debugSimulateTextAppendingIteration = 0;
   [nc removeObserver:self
                 name:KStyleDidChangeNotification
               object:style];
-  //delete highlightSem_; highlightSem_ = NULL;
-  //delete highlightQueueSem_; highlightQueueSem_ = NULL;
+  if (sourceHighlighter_.get())
+    sourceHighlighter_->cancel();
   [super dealloc];
 }
 
@@ -923,8 +928,10 @@ longestEffectiveRange:&range
     DLOG_HL("highlight --CANCEL & WAIT--");
     
     // Combine range of previous hl with current edit
-    NSRange prevHighlightRange = sourceHighlighter_->currentRange();
-    editedRange = NSUnionRange(prevHighlightRange, editedRange);
+    if (editedRange.location != NSNotFound) {
+      NSRange prevHighlightRange = sourceHighlighter_->currentRange();
+      editedRange = NSUnionRange(prevHighlightRange, editedRange);
+    }
     
     // We can no longer rely on state
     //state = nil;
@@ -1450,232 +1457,82 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
   // set url
   self.fileURL = absoluteURL;
   
-  // different branches depending on local file or remote
-  if ([absoluteURL isFileURL]) {
-    if ([NSThread isMainThread]) {
-      // this happens when "reverting to saved"
-      K_DISPATCH_BG_ASYNC({
-        NSError *error = nil;
-        if (![self readFromFileURL:absoluteURL ofType:typeName error:&error])
-          [self presentError:error];
-      });
-      return YES;
-    } else {
-      // already called in the background
-      return [self readFromFileURL:absoluteURL ofType:typeName error:outError];
+  // locate handler
+  KURLHandler *urlHandler =
+      [[KDocumentController kodController] urlHandlerForURL:absoluteURL];
+  if (!urlHandler) {
+    if (outError) {
+      *outError = [NSError kodErrorWithFormat:@"Unsupported URI scheme '%@'",
+                   absoluteURL.scheme];
     }
-  } else {
+    return NO;
+  }
+  
+  // check if the handler can read URLs
+  if (![urlHandler canReadURL:absoluteURL]) {
+    if (outError) {
+      *outError = [NSError kodErrorWithFormat:@"Unknown URI '%@'", absoluteURL];
+    }
+    return NO;
+  }
+  
+  // trigger reading
+  [urlHandler readURL:absoluteURL ofType:typeName inTab:self];
+  return YES;
+  
+  // different branches depending on local file or remote
+  /*if (![absoluteURL isFileURL]) {
     [self startReadingFromRemoteURL:absoluteURL ofType:typeName];
     return YES;
-  }
+  }*/
 }
 
 
-- (BOOL)readFromFileURL:(NSURL *)absoluteURL
-                 ofType:(NSString *)typeName
-                  error:(NSError **)outError {
-  // utilize mmap to load a file
-  NSString *path = [absoluteURL path];
-  NSData *data = [NSData dataWithContentsOfMappedFile:path];
-  
-  // if we failed to read the file, set outError with info
+- (void)urlHandler:(KURLHandler*)urlHandler
+finishedReadingURL:(NSURL*)url
+              data:(NSData*)data
+            ofType:(NSString*)typeName
+             error:(NSError*)error
+          callback:(void(^)(NSError*))callback {
+  // check data
   if (!data) {
-    if ([absoluteURL checkResourceIsReachableAndReturnError:outError]) {
-      // reachable, but might be something else than a regular file
-      NSFileManager *fm = [NSFileManager defaultManager];
-      BOOL isDir;
-      BOOL exists = [fm fileExistsAtPath:path isDirectory:&isDir];
-      assert(exists == true); // since checkResourceIsReachableAndReturnError
-      if (isDir) {
-        return [self.windowController openFileDirectoryAtURL:absoluteURL
-                                                       error:outError];
-      } else {
-        *outError = [NSError kodErrorWithFormat:@"Unknown I/O read error"];
-      }
-    }
-    return NO;
+    error = [NSError kodErrorWithFormat:@"%@ failed to read '%@': %@",
+             urlHandler, url, [error localizedDescription]];
   }
   
-  // read xattrs
-  NSRange selectedRange = {0};
-  int fd = open([path UTF8String], O_RDONLY);
-  if (fd < 0) {
-    WLOG("failed to open(\"%@\", O_RDONLY)", path);
-  } else {
-    const char *key;
-    ssize_t readsz;
-    static size_t bufsize = 512;
-    char *buf = new char[bufsize];
-    
-    key = "com.apple.TextEncoding";
-    // The value is a string "utf-8;134217984" where the last part (if
-    // present) is a CFStringEncoding encoded in base-10.
-    if ((readsz = fgetxattr(fd, key, (void*)buf, bufsize, 0, 0)) < 0) {
-      DLOG("failed to read xattr '%s' from '%@'", key, path);
-    } else if (readsz > 2) { // <2 chars doesnt make sense
-      NSString *s = [[NSString alloc] initWithBytesNoCopy:(void*)buf
-                                                   length:readsz
-                                                 encoding:NSUTF8StringEncoding
-                                             freeWhenDone:NO];
-      NSRange r = [s rangeOfString:@";"];
-      CFStringEncoding enc1 = 0;
-      if (r.location != NSNotFound) {
-        // try parsing a suffix integer value
-        enc1 = [[s substringFromIndex:r.location+1] integerValue];
-        NSStringEncoding enc2 =
-            CFStringConvertEncodingToNSStringEncoding(enc1);
-        if (enc2 < NSASCIIStringEncoding || enc2 > NSUTF32LittleEndianStringEncoding) {
-          // that didn't work, lets set s to the first part and continue
-          enc1 = -1;
-          s = [s substringToIndex:r.location];
-        }
-      }
-      if (enc1 == 0) {
-        // try to parse s as an IANA charset (e.g. "utf-8")
-        enc1 = CFStringConvertIANACharSetNameToEncoding((CFStringRef)s);
-      }
-      if (enc1 > 0) {
-        textEncoding_ = CFStringConvertEncodingToNSStringEncoding(enc1);
-      }
-      //DLOG("xattr read encoding '%@' %d -> %@ ([%d] %@)", s, (int)enc1,
-      //     CFStringConvertEncodingToIANACharSetName(enc1),
-      //     (int)textEncoding_,
-      //     [NSString localizedNameOfStringEncoding:textEncoding_]);
-    }
-    
-    key = "se.hunch.kod.selection";
-    if ((readsz = fgetxattr(fd, key, (void*)buf, bufsize, 0, 0)) < 0) {
-      DLOG("failed to read xattr '%s' from '%@'", key, path);
-    } else if (readsz > 2) { // <2 chars doesnt make sense
-      NSString *s = [[NSString alloc] initWithBytesNoCopy:(void*)buf
-                                                   length:readsz
-                                                 encoding:NSUTF8StringEncoding
-                                             freeWhenDone:NO];
-      selectedRange = NSRangeFromString(s);
-      DLOG("loaded selection from xattr: %@", s);
-    }
-    
-    delete buf; buf = NULL;
-    close(fd);
+  // handle error
+  if (error) {
+    [self presentError:error];
+    return;
   }
   
-  // read mtime
-  NSDate *mtime = nil;
-  if (![absoluteURL getResourceValue:&mtime
-                              forKey:NSURLContentModificationDateKey
-                               error:outError]) {
-    return NO;
+  // intermediate success callback
+  dispatch_block_t successCallback = nil;
+  if (callback) {
+    successCallback = ^{
+      callback(nil);
+    };
   }
-  self.fileModificationDate = mtime;
   
-  // read data
-  if (![self readFromData:data ofType:typeName error:outError callback:^{
-    // restore (or set) selection
-    if (selectedRange.location < textView_.textStorage.length) {
-      //DLOG("restoring selection to: %@", NSStringFromRange(selectedRange));
-      [textView_ setSelectedRange:selectedRange];
+  // invoke internal data loader
+  NSError *outError = nil;
+  if (![self readFromData:data
+                   ofType:typeName
+                    error:&outError
+                 callback:successCallback]) {
+    if (!outError) {
+      outError = [NSError kodErrorWithFormat:
+                  @"Unknown error while loading data provided by %@",
+                  urlHandler];
     }
-  }]) {
-    return NO;
+    [self presentError:outError];
+    if (callback)
+      callback(outError);
   }
-  
-  return YES;
 }
 
 
-- (void)startReadingFromRemoteURL:(NSURL*)absoluteURL
-                           ofType:(NSString *)typeName {
-  // set state to "waiting"
-  self.isLoading = YES;
-  self.isWaitingForResponse = YES;
-  
-  // set text view to be read-only
-  [textView_ setEditable:NO];
-  
-  // set type (might change when we receive a response)
-  self.fileType = typeName;
-  
-  __block NSString *textEncodingNameFromResponse = nil;
-  
-  HURLConnection *conn = [absoluteURL
-    fetchWithOnResponseBlock:^(NSURLResponse *response) {
-      NSError *error = nil;
-      NSDate *fileModificationDate = nil;
-      
-      // change state from waiting to loading
-      self.isWaitingForResponse = NO;
-      
-      // handle HTTP response
-      if ([response isKindOfClass:[NSHTTPURLResponse class]]) {
-        // check status
-        NSInteger status = [(NSHTTPURLResponse*)response statusCode];
-        if (status < 200 || status > 299) {
-          error = [NSError HTTPErrorWithStatusCode:status];
-        }
-        // TODO: get fileModificationDate from response headers
-      }
-      
-      // try to derive UTI and read filename, unless error
-      if (!error) {
-        // get UTI based on MIME type
-        CFStringRef mimeType = (CFStringRef)[response MIMEType];
-        if (mimeType) {
-          NSString *uti = (NSString*)
-              UTTypeCreatePreferredIdentifierForTag(kUTTagClassMIMEType,
-                                                    mimeType, NULL);
-          if (uti)
-            self.fileType = uti;
-        }
-        
-        // get text encoding
-        textEncodingNameFromResponse = [response textEncodingName];
-      }
-      
-      // update URL, if needed (might have been redirected)
-      self.fileURL = response.URL;
-      
-      // set suggested title
-      self.title = response.suggestedFilename;
-      
-      // set modification date
-      self.fileModificationDate = fileModificationDate ? fileModificationDate
-                                                       : [NSDate date];
-      
-      return error;
-    }
-    onCompleteBlock:^(NSError *err, NSData *data) {
-      // Read data unless an error occured while reading URL
-      if (!err) {
-        // if we got a charset, try to convert it into a NSStringEncoding symbol
-        if (textEncodingNameFromResponse) {
-          textEncoding_ = CFStringConvertEncodingToNSStringEncoding(
-              CFStringConvertIANACharSetNameToEncoding(
-                  (CFStringRef)textEncodingNameFromResponse));
-        }
-        // parse data
-        [self readFromData:data ofType:self.fileType error:&err callback:^{
-          // we are done -- allow editing
-          [textView_ setEditable:YES];
-        }];
-      } else {
-        // handle error
-        self.isLoading = NO;
-        self.isCrashed = YES; // FIXME
-        [NSApp presentError:err];
-      }
-    }
-    startImmediately:NO];
-  
-  kassert(conn);
-  
-  // we want the blocks to be invoked on the main thread, thank you
-  [conn scheduleInRunLoop:[NSRunLoop mainRunLoop]
-                  forMode:NSDefaultRunLoopMode];
-  [conn start];
-  
-  // TODO: keep a reference to the connection so we can cancel it if the tab is
-  // prematurely closed.
-}
+
 
 
 // Sets the contents of this document by reading from a file wrapper of a
@@ -1683,13 +1540,16 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
 - (BOOL)readFromFileWrapper:(NSFileWrapper *)fileWrapper
                      ofType:(NSString *)typeName
                       error:(NSError **)outError {
-  if (![fileWrapper isDirectory]) {
+  /*if (![fileWrapper isDirectory]) {
     return [super readFromFileWrapper:fileWrapper
                                ofType:typeName
                                 error:outError];
   }
-  DLOG("TODO: readFromFileWrapper:%@ ofType:%@ error:*", fileWrapper, typeName);
-  *outError = [NSError kodErrorWithDescription:@"Unable to read directories"];
+  DLOG("TODO: readFromFileWrapper:%@ ofType:%@ error:*", fileWrapper, typeName);*/
+  if (outError) {
+    *outError = [NSError kodErrorWithDescription:
+                 @"Unable to handle reading of NSFIleWrapper"];
+  }
   return NO;
 }
 
@@ -1698,7 +1558,7 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
 - (BOOL)readFromData:(NSData *)data
               ofType:(NSString *)typeName
                error:(NSError **)outError
-               callback:(void(^)(void))callback {
+            callback:(void(^)(void))callback {
   DLOG("readFromData:%p ofType:%@", data, typeName);
   
   NSString *text = nil;
@@ -1715,7 +1575,8 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
     // We're out of hope
     textEncoding_ = 0;
     WLOG("Failed to parse data. text => nil (data length: %u)", [data length]);
-    *outError = [NSError kodErrorWithDescription:@"Failed to parse file"];
+    if (outError)
+      *outError = [NSError kodErrorWithDescription:@"Failed to parse file"];
     return NO;
   } else {
     // Yay, we decoded the damn text
@@ -1753,8 +1614,7 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
           [self setNeedsHighlightingOfCompleteDocument];
       }
 
-      if (callback)
-        callback();
+      if (callback) callback();
 
       [text release];
       [data release];

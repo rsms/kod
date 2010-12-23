@@ -6,7 +6,7 @@ include "_script_comment.lang"
 
 keyword = '^[[:word:]-]+:'
 
-include "url.lang"
+include "_url.lang"
 include "_number.lang"
 
 variable = '\$[[:word:]]+'

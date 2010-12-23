@@ -3,6 +3,9 @@
 #import "KTabContents.h"
 #import "KBrowserWindowController.h"
 #import "KBrowser.h"
+#import "KFileURLHandler.h"
+#import "KHTTPURLHandler.h"
+#import "KKodURLHandler.h"
 
 #import <objc/objc-runtime.h>
 
@@ -31,9 +34,20 @@
 @implementation KDocumentController
 
 
++ (KDocumentController*)kodController {
+  return (KDocumentController*)[NSDocumentController sharedDocumentController];
+}
+
+
 - (id)init {
   if ((self = [super init])) {
     untitledNumberCounter_ = -1; // so we start at 0
+    urlHandlers_ = [NSMutableDictionary new];
+
+    // register built-in URL handlers
+    [urlHandlers_ setObject:[KFileURLHandler handler] forKey:@"file"];
+    [urlHandlers_ setObject:[KHTTPURLHandler handler] forKey:@"http"];
+    [urlHandlers_ setObject:[KKodURLHandler handler] forKey:@"kod"];
   }
   return self;
 }
@@ -52,6 +66,12 @@
       [windows addObject:[tab.browser.windowController window]];
   }
   return windows;
+}
+
+
+- (KURLHandler*)urlHandlerForURL:(NSURL*)url {
+  NSString *urlScheme = [url.scheme lowercaseString];
+  return [urlHandlers_ objectForKey:urlScheme];
 }
 
 
@@ -147,6 +167,13 @@
   [self openDocumentsWithContentsOfURLs:urls
                    withWindowController:windowController
                                priority:DISPATCH_QUEUE_PRIORITY_HIGH
+                               callback:callback];
+}
+
+
+- (void)openDocumentsWithContentsOfURL:(NSURL*)url
+                              callback:(dispatch_block_t)callback {
+  [self openDocumentsWithContentsOfURLs:[NSArray arrayWithObject:url]
                                callback:callback];
 }
 
@@ -353,7 +380,9 @@ static double kSiblingAutoGroupEditDistanceThreshold = 0.4;
 - (id)makeDocumentWithContentsOfURL:(NSURL *)url
                              ofType:(NSString *)typeName
                               error:(NSError **)error {
-  // This may be called by a background thread
+  // Note: This may be called by a background thread
+
+  // Dive down into the opening mechanism...
   KTabContents* tab = [[KTabContents alloc] initWithContentsOfURL:url
                                                            ofType:typeName
                                                             error:error];

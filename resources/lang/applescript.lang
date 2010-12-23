@@ -5,7 +5,7 @@
 comment start "--"
 
 environment comment delim "(*" "*)" multiline begin
-  include "url.lang"
+  include "_url.lang"
   include "todo.lang"
 end
 

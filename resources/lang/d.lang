@@ -14,7 +14,7 @@ comment start '^#!'
 
 # nested comments
 environment comment delim "/+" "+/" multiline nested begin
-  include "url.lang"
+  include "_url.lang"
   include "todo.lang"
 end
 

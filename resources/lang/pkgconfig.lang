@@ -8,6 +8,6 @@ include "properties.lang"
 variable = '\$\{([^[:blank:]]+)\}'
 
 include "_number.lang"
-include "url.lang"
+include "_url.lang"
 
 (string,symbol) = `(^[^:]+)(:)`

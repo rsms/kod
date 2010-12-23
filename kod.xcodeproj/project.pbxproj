@@ -101,6 +101,11 @@
 		3A929887122AC39100DA7E43 /* ChromiumTabs.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 3A9297E4122AB49D00DA7E43 /* ChromiumTabs.framework */; };
 		3A93A8401299E14300185857 /* NSURL-blocks.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A93A83F1299E14300185857 /* NSURL-blocks.m */; };
 		3AA8124512C2BDFC0085F086 /* SecurityFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3AA8124412C2BDFC0085F086 /* SecurityFoundation.framework */; };
+		3AA8135512C36EE70085F086 /* KURLHandler.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3AA8135412C36EE70085F086 /* KURLHandler.mm */; };
+		3AA8135812C37DC90085F086 /* KFileURLHandler.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3AA8135712C37DC90085F086 /* KFileURLHandler.mm */; };
+		3AA8138F12C387A20085F086 /* KHTTPURLHandler.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3AA8138E12C387A20085F086 /* KHTTPURLHandler.mm */; };
+		3AA813DE12C38BB70085F086 /* KKodURLHandler.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3AA813DD12C38BB70085F086 /* KKodURLHandler.mm */; };
+		3AA8142712C390CE0085F086 /* about.md in Resources */ = {isa = PBXBuildFile; fileRef = 3AA8142612C390CE0085F086 /* about.md */; };
 		3AAA9F4212BFB7B50079F079 /* Sparkle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3AAA9F4112BFB7B50079F079 /* Sparkle.framework */; };
 		3AAA9F6612BFBB010079F079 /* dsa_pub.pem in Resources */ = {isa = PBXBuildFile; fileRef = 3AAA9F6512BFBB010079F079 /* dsa_pub.pem */; };
 		3AAA9F7712BFC0440079F079 /* Sparkle.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 3AAA9F4112BFB7B50079F079 /* Sparkle.framework */; };
@@ -397,6 +402,15 @@
 		3A93AB82129ADA5500185857 /* hatomic_flags.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = hatomic_flags.h; sourceTree = "<group>"; };
 		3A93B4E5129B67CB00185857 /* KRUsage.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = KRUsage.hh; sourceTree = "<group>"; };
 		3AA8124412C2BDFC0085F086 /* SecurityFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SecurityFoundation.framework; path = System/Library/Frameworks/SecurityFoundation.framework; sourceTree = SDKROOT; };
+		3AA8135312C36EE70085F086 /* KURLHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KURLHandler.h; sourceTree = "<group>"; };
+		3AA8135412C36EE70085F086 /* KURLHandler.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KURLHandler.mm; sourceTree = "<group>"; };
+		3AA8135612C37DC90085F086 /* KFileURLHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KFileURLHandler.h; sourceTree = "<group>"; };
+		3AA8135712C37DC90085F086 /* KFileURLHandler.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KFileURLHandler.mm; sourceTree = "<group>"; };
+		3AA8138D12C387A20085F086 /* KHTTPURLHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KHTTPURLHandler.h; sourceTree = "<group>"; };
+		3AA8138E12C387A20085F086 /* KHTTPURLHandler.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KHTTPURLHandler.mm; sourceTree = "<group>"; };
+		3AA813DC12C38BB70085F086 /* KKodURLHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KKodURLHandler.h; sourceTree = "<group>"; };
+		3AA813DD12C38BB70085F086 /* KKodURLHandler.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KKodURLHandler.mm; sourceTree = "<group>"; };
+		3AA8142612C390CE0085F086 /* about.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = about.md; sourceTree = "<group>"; };
 		3AAA9F4112BFB7B50079F079 /* Sparkle.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Sparkle.framework; path = deps/Sparkle.framework; sourceTree = "<group>"; };
 		3AAA9F6512BFBB010079F079 /* dsa_pub.pem */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = dsa_pub.pem; sourceTree = "<group>"; };
 		3AAAA13312C00E6D0079F079 /* Breakpad.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Breakpad.framework; path = deps/Breakpad.framework; sourceTree = "<group>"; };
@@ -547,8 +561,6 @@
 		3A5107C812C1231700AAC1D5 /* kod helper */ = {
 			isa = PBXGroup;
 			children = (
-				3A510BE412C2926000AAC1D5 /* KSudo.h */,
-				3A510BE512C2926000AAC1D5 /* KSudo.m */,
 				3A5107D312C1245400AAC1D5 /* KMachServiceProtocol.h */,
 				3A5107C912C1233900AAC1D5 /* KMachService.h */,
 				3A5107CA12C1233900AAC1D5 /* KMachService.m */,
@@ -664,6 +676,7 @@
 				3A92911A1229B96A00DA7E43 /* KTabContents.mm */,
 				3AC2D4A51298D8050066B586 /* KTextStorage.h */,
 				3AC2D4A61298D8050066B586 /* KTextStorage.mm */,
+				3AA8133812C36B390085F086 /* URL handlers */,
 				3A5107C812C1231700AAC1D5 /* kod helper */,
 				3A40F8C312AFE5D7007B5879 /* Node */,
 				3ABF539712A5D5360020233C /* Main views */,
@@ -679,6 +692,7 @@
 			children = (
 				3AE5E5161290955000B17C4F /* kod.icns */,
 				3AAA9F6512BFBB010079F079 /* dsa_pub.pem */,
+				3AA8142612C390CE0085F086 /* about.md */,
 				3AAC03EE12BD2FC2001BDC39 /* sidebar-closed.png */,
 				3AAC03EF12BD2FC2001BDC39 /* sidebar-open.png */,
 				3A158DF1128A282F00339E6E /* style */,
@@ -726,6 +740,21 @@
 				3A9297E6122AB49D00DA7E43 /* Chromium Tabs.app */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		3AA8133812C36B390085F086 /* URL handlers */ = {
+			isa = PBXGroup;
+			children = (
+				3AA8135312C36EE70085F086 /* KURLHandler.h */,
+				3AA8135412C36EE70085F086 /* KURLHandler.mm */,
+				3AA8135612C37DC90085F086 /* KFileURLHandler.h */,
+				3AA8135712C37DC90085F086 /* KFileURLHandler.mm */,
+				3AA8138D12C387A20085F086 /* KHTTPURLHandler.h */,
+				3AA8138E12C387A20085F086 /* KHTTPURLHandler.mm */,
+				3AA813DC12C38BB70085F086 /* KKodURLHandler.h */,
+				3AA813DD12C38BB70085F086 /* KKodURLHandler.mm */,
+			);
+			name = "URL handlers";
 			sourceTree = "<group>";
 		};
 		3AB97BD312B2834D00F4ADB2 /* Status bar */ = {
@@ -860,6 +889,8 @@
 				3AF3A0A412BF7F6400FC534A /* KAnimation.m */,
 				3AE5ECB41292F7B800B17C4F /* KThread.h */,
 				3AE5ECB51292F7B800B17C4F /* KThread.mm */,
+				3A510BE412C2926000AAC1D5 /* KSudo.h */,
+				3A510BE512C2926000AAC1D5 /* KSudo.m */,
 			);
 			name = Base;
 			sourceTree = "<group>";
@@ -1057,6 +1088,7 @@
 				3AAC03F112BD2FC2001BDC39 /* sidebar-open.png in Resources */,
 				3AAA9F6612BFBB010079F079 /* dsa_pub.pem in Resources */,
 				3A510B3C12C26EFE00AAC1D5 /* terminal-usage.xib in Resources */,
+				3AA8142712C390CE0085F086 /* about.md in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1242,6 +1274,10 @@
 				3A510B3F12C26F1200AAC1D5 /* KTerminalUsageWindowController.m in Sources */,
 				3A510BE612C2926000AAC1D5 /* KSudo.m in Sources */,
 				3A510C4B12C2ADCB00AAC1D5 /* kfs.c in Sources */,
+				3AA8135512C36EE70085F086 /* KURLHandler.mm in Sources */,
+				3AA8135812C37DC90085F086 /* KFileURLHandler.mm in Sources */,
+				3AA8138F12C387A20085F086 /* KHTTPURLHandler.mm in Sources */,
+				3AA813DE12C38BB70085F086 /* KKodURLHandler.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

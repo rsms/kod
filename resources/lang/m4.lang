@@ -6,7 +6,7 @@
 state keyword start "dnl" begin
   # avoid spaces in front of urls or @[[:alpha:]]+ be caputured as prefixes
   comment = '[[:blank:]]+'
-  include "url.lang"
+  include "_url.lang"
   include "_html_basic.lang"
   type = '@[[:alpha:]]+'
   # everything else is a comment

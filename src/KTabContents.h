@@ -5,7 +5,7 @@
 #import "HSemaphore.h"
 
 @class KBrowser, KStyle, KBrowserWindowController, KScrollView, KMetaRulerView;
-@class KTextView, KClipView;
+@class KTextView, KClipView, KURLHandler;
 
 typedef std::pair<std::pair<NSRange,NSRange>, HObjCPtr> KHighlightQueueEntry;
 typedef std::deque<KHighlightQueueEntry> KHighlightQueue;
@@ -94,18 +94,19 @@ typedef std::deque<KHighlightQueueEntry> KHighlightQueue;
 - (NSRange)rangeOfLineAtLineNumber:(NSUInteger)lineNumber;
 
 
-// These two are called by readFromURL:ofType:error:
+// These are called by readFromURL:ofType:error:
 
-- (BOOL)readFromFileURL:(NSURL *)absoluteURL
-                 ofType:(NSString *)typeName
-                  error:(NSError **)outError;
-
-- (void)startReadingFromRemoteURL:(NSURL*)absoluteURL
-                           ofType:(NSString *)typeName;
+// KURLHandlers need to invoke this lengthy method after they have read a url
+- (void)urlHandler:(KURLHandler*)urlHandler
+finishedReadingURL:(NSURL*)url
+              data:(NSData*)data
+            ofType:(NSString*)typeName
+             error:(NSError*)error
+          callback:(void(^)(NSError*))callback;
 
 - (BOOL)readFromData:(NSData *)data
               ofType:(NSString *)typeName
                error:(NSError **)outError
-               callback:(void(^)(void))callback;
+            callback:(void(^)(void))callback;
 
 @end

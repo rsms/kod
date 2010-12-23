@@ -26,9 +26,13 @@ void k_breakpad_init() {
   gBreakpad = NULL;
   NSDictionary *plist = [[NSBundle mainBundle] infoDictionary];
   if (plist) {
+    NSMutableDictionary *info =
+        [NSMutableDictionary dictionaryWithDictionary:plist];
+    [info setObject:@"http://kodapp.com/breakpad/recv.php"
+             forKey:@"BreakpadURL"];
     // Note: version 1.0.0.4 of the framework changed the type of the argument 
     // from CFDictionaryRef to NSDictionary * on the next line:
-    gBreakpad = BreakpadCreate(plist);
+    gBreakpad = BreakpadCreate(info);
   }
   [pool release];
 }
@@ -79,6 +83,13 @@ void k_breakpad_init() {}
         @"terminal-usage"];
   }
   [terminalUsageWindowController_ showWindow:sender];
+}
+
+
+- (IBAction)displayAbout:(id)sender {
+  NSURL *url = [NSURL URLWithString:@"kod:about"];
+  [[KDocumentController kodController] openDocumentsWithContentsOfURL:url
+                                                             callback:nil];
 }
 
 
@@ -134,10 +145,8 @@ void k_breakpad_init() {}
 	NSString *urlstr = [[event paramDescriptorForKeyword:keyDirectObject] stringValue];
 	NSURL* url = [NSURL URLWithString:urlstr];
   if (url) {
-    NSArray *urls = [NSArray arrayWithObject:url];
-    KDocumentController *documentController =
-      (KDocumentController*)[NSDocumentController sharedDocumentController];
-    [documentController openDocumentsWithContentsOfURLs:urls callback:nil];
+    [[KDocumentController kodController] openDocumentsWithContentsOfURL:url
+                                                               callback:nil];
   }
 }
 

@@ -1,17 +1,19 @@
 #import <Cocoa/Cocoa.h>
 
-@class KTabContents;
-@class KCloseCycleContext;
-@class KBrowserWindowController;
+@class KTabContents, KCloseCycleContext, KBrowserWindowController, KURLHandler;
 
 @interface KDocumentController : NSDocumentController {
   KCloseCycleContext *closeCycleContext_;
+  NSMutableDictionary *urlHandlers_;
 
   // atomically monotonically incrementing counter
   int32_t untitledNumberCounter_;
 }
 
 @property(readonly) int32_t nextUntitledNumber;
+
+// Typed sharedDocumentController
++ (KDocumentController*)kodController;
 
 // Returns a set (unique) of all windows used by |documents|
 - (NSSet*)windows;
@@ -20,6 +22,8 @@
   withWindowController:(KBrowserWindowController*)windowController
           inForeground:(BOOL)foreground
      groupWithSiblings:(BOOL)groupWithSiblings;
+
+- (KURLHandler*)urlHandlerForURL:(NSURL*)url;
 
 // --------------------------------------------------------------------
 // high-level operners which will dispatch opening to the background
@@ -35,6 +39,10 @@
 // Open |urls| in frontmost window with high priority
 - (void)openDocumentsWithContentsOfURLs:(NSArray*)urls
                                callback:(dispatch_block_t)callback;
+
+// Open |url| in frontmost window with high priority
+- (void)openDocumentsWithContentsOfURL:(NSURL*)url
+                              callback:(dispatch_block_t)callback;
 
 // --------------------------------------------------------------------
 // lower level openers which run in the current thread

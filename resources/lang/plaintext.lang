@@ -2,4 +2,4 @@
 # @matchuti public.plain-text
 # @matchext txt, text, utf8
 
-include "url.lang"
+include "_url.lang"

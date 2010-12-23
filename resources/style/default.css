@@ -42,12 +42,13 @@ variable { color: #cda869; }
 italics { color: #3C7E5B; font-style: italic; }
 bold { color: #3C7E5B; font-weight: bold; }
 
-/* for LaTeX */
+/* for LaTeX, markdown, etc */
 underline { color: #3C7E5B; text-decoration: underline; }
 fixed { color: #73C976; }
 argument, optionalargument { color: #9194BB; }
 math { color: orange; }
 bibtex { color: #8D86EE; }
+h1,h2,h3,h4,h5,h6 { color: lightsalmon; }
 
 /* for diffs */
 oldfile { color: #f7bfb6; background-color:#42201C; }
