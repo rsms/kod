@@ -3,6 +3,8 @@
 
 #import <dispatch/dispatch.h>
 
+#ifdef __OBJC__
+
 #define K_DISPATCH_MAIN_ASYNC(inlineblock)\
   dispatch_async(dispatch_get_main_queue(),^{ \
     NSAutoreleasePool *__arpool = [NSAutoreleasePool new]; \
@@ -104,5 +106,8 @@ dispatch_source_t hd_timer_start(float interval, dispatch_queue_t queue,
 static inline void hd_timer_stop(dispatch_source_t timer) {
   dispatch_source_cancel(timer);
 }
+
+
+#endif  // __OBJC__
 
 #endif  // H_DISPATCH_H_

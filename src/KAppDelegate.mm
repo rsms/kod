@@ -1,13 +1,15 @@
+#import "common.h"
 #import "KAppDelegate.h"
 #import "KBrowser.h"
 #import "KBrowserWindowController.h"
+#import "KTerminalUsageWindowController.h"
 #import "KTabContents.h"
 #import "KDocumentController.h"
 #import "kconf.h"
 #import "KStyle.h"
 #import "KNodeProcess.h"
 #import "KMachService.h"
-#import "common.h"
+#import "KSudo.h"
 
 #import <Sparkle/SUUpdater.h>
 
@@ -50,6 +52,9 @@ void k_breakpad_init() {}
 }
 
 
+#pragma mark -
+#pragma mark Actions
+
 - (IBAction)newWindow:(id)sender {
   KBrowserWindowController* windowController = (KBrowserWindowController*)
       [[KBrowserWindowController browserWindowController] retain];
@@ -65,6 +70,21 @@ void k_breakpad_init() {}
   // When we receive "new tab" it means "gimme a new tab in a new window"
   [self newDocument:sender];
 }
+
+
+- (IBAction)displayTerminalUsage:(id)sender {
+  if (!terminalUsageWindowController_) {
+    terminalUsageWindowController_ =
+        [[KTerminalUsageWindowController alloc] initWithWindowNibName:
+        @"terminal-usage"];
+  }
+  [terminalUsageWindowController_ showWindow:sender];
+}
+
+
+#pragma mark -
+#pragma mark Notifications
+
 
 - (void)applicationWillFinishLaunching:(NSNotification *)notification {
   // Create our document controller. We need to be the first who creates a
@@ -125,6 +145,13 @@ void k_breakpad_init() {}
 - (void)applicationDidFinishLaunching:(NSNotification *)notification {
   // NOTE: KDocumentController will create a new window & tab upon start
   [sparkleUpdater_ setAutomaticallyDownloadsUpdates:YES];
+  
+  // Stuff we do upon first launch (keep this to a minimum)
+  if (!kconf_bool(@"firstLaunchMarker", NO)) {
+    kconf_set_bool(@"firstLaunchMarker", YES);
+    // Offer to enable the kod helper
+    [self displayTerminalUsage:self];
+  }
 }
 
 

@@ -52,6 +52,12 @@
 		3A51081712C139B800AAC1D5 /* kod_helper.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A5107EB12C1351500AAC1D5 /* kod_helper.m */; };
 		3A51083612C13AF900AAC1D5 /* common.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A51083412C13AF900AAC1D5 /* common.m */; };
 		3A51084D12C13C9E00AAC1D5 /* common.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A51083412C13AF900AAC1D5 /* common.m */; };
+		3A510B3312C26C7700AAC1D5 /* kod in Copy Support Files */ = {isa = PBXBuildFile; fileRef = 3A5107F812C135A200AAC1D5 /* kod */; };
+		3A510B3C12C26EFE00AAC1D5 /* terminal-usage.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3A510B3B12C26EFE00AAC1D5 /* terminal-usage.xib */; };
+		3A510B3F12C26F1200AAC1D5 /* KTerminalUsageWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A510B3E12C26F1200AAC1D5 /* KTerminalUsageWindowController.m */; };
+		3A510BE612C2926000AAC1D5 /* KSudo.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A510BE512C2926000AAC1D5 /* KSudo.m */; };
+		3A510BEA12C2927A00AAC1D5 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A510BE912C2927A00AAC1D5 /* Security.framework */; };
+		3A510C4B12C2ADCB00AAC1D5 /* kfs.c in Sources */ = {isa = PBXBuildFile; fileRef = 3A510C4A12C2ADCB00AAC1D5 /* kfs.c */; };
 		3A62B9E6129D652700822274 /* KTextFieldDecoration.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A62B9E5129D652700822274 /* KTextFieldDecoration.mm */; };
 		3A62BA01129D686F00822274 /* KAutocompleteTextField.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A62BA00129D686F00822274 /* KAutocompleteTextField.mm */; };
 		3A62BA49129D756100822274 /* KAutocompleteTextFieldEditor.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A62BA48129D756100822274 /* KAutocompleteTextFieldEditor.mm */; };
@@ -94,6 +100,7 @@
 		3A929886122AC38F00DA7E43 /* ChromiumTabs.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A9297E4122AB49D00DA7E43 /* ChromiumTabs.framework */; };
 		3A929887122AC39100DA7E43 /* ChromiumTabs.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 3A9297E4122AB49D00DA7E43 /* ChromiumTabs.framework */; };
 		3A93A8401299E14300185857 /* NSURL-blocks.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A93A83F1299E14300185857 /* NSURL-blocks.m */; };
+		3AA8124512C2BDFC0085F086 /* SecurityFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3AA8124412C2BDFC0085F086 /* SecurityFoundation.framework */; };
 		3AAA9F4212BFB7B50079F079 /* Sparkle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3AAA9F4112BFB7B50079F079 /* Sparkle.framework */; };
 		3AAA9F6612BFBB010079F079 /* dsa_pub.pem in Resources */ = {isa = PBXBuildFile; fileRef = 3AAA9F6512BFBB010079F079 /* dsa_pub.pem */; };
 		3AAA9F7712BFC0440079F079 /* Sparkle.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 3AAA9F4112BFB7B50079F079 /* Sparkle.framework */; };
@@ -139,12 +146,12 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		3A510A5012C15B7600AAC1D5 /* PBXContainerItemProxy */ = {
+		3A510B3112C26C3E00AAC1D5 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 3A928BEF1227143800DA7E43 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 3A928C1F1227151800DA7E43 /* Kod */;
-			remoteInfo = Kod;
+			remoteGlobalIDString = 3A5107F712C135A200AAC1D5;
+			remoteInfo = kod_helper;
 		};
 		3A9297E3122AB49D00DA7E43 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -204,6 +211,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 12;
 			files = (
+				3A510B3312C26C7700AAC1D5 /* kod in Copy Support Files */,
 			);
 			name = "Copy Support Files";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -291,6 +299,14 @@
 		3A5107EB12C1351500AAC1D5 /* kod_helper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = kod_helper.m; sourceTree = "<group>"; };
 		3A5107F812C135A200AAC1D5 /* kod */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = kod; sourceTree = BUILT_PRODUCTS_DIR; };
 		3A51083412C13AF900AAC1D5 /* common.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = common.m; sourceTree = "<group>"; };
+		3A510B3B12C26EFE00AAC1D5 /* terminal-usage.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = "terminal-usage.xib"; sourceTree = "<group>"; };
+		3A510B3D12C26F1200AAC1D5 /* KTerminalUsageWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KTerminalUsageWindowController.h; sourceTree = "<group>"; };
+		3A510B3E12C26F1200AAC1D5 /* KTerminalUsageWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KTerminalUsageWindowController.m; sourceTree = "<group>"; };
+		3A510BE412C2926000AAC1D5 /* KSudo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSudo.h; sourceTree = "<group>"; };
+		3A510BE512C2926000AAC1D5 /* KSudo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KSudo.m; sourceTree = "<group>"; };
+		3A510BE912C2927A00AAC1D5 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
+		3A510C4912C2ADCB00AAC1D5 /* kfs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = kfs.h; sourceTree = "<group>"; };
+		3A510C4A12C2ADCB00AAC1D5 /* kfs.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = kfs.c; sourceTree = "<group>"; };
 		3A62B9D1129D63AA00822274 /* basictypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = basictypes.h; sourceTree = "<group>"; };
 		3A62B9DF129D63F000822274 /* scoped_nsobject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = scoped_nsobject.h; sourceTree = "<group>"; };
 		3A62B9E4129D652700822274 /* KTextFieldDecoration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KTextFieldDecoration.h; sourceTree = "<group>"; };
@@ -380,6 +396,7 @@
 		3A93A83F1299E14300185857 /* NSURL-blocks.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSURL-blocks.m"; sourceTree = "<group>"; };
 		3A93AB82129ADA5500185857 /* hatomic_flags.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = hatomic_flags.h; sourceTree = "<group>"; };
 		3A93B4E5129B67CB00185857 /* KRUsage.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = KRUsage.hh; sourceTree = "<group>"; };
+		3AA8124412C2BDFC0085F086 /* SecurityFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SecurityFoundation.framework; path = System/Library/Frameworks/SecurityFoundation.framework; sourceTree = SDKROOT; };
 		3AAA9F4112BFB7B50079F079 /* Sparkle.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Sparkle.framework; path = deps/Sparkle.framework; sourceTree = "<group>"; };
 		3AAA9F6512BFBB010079F079 /* dsa_pub.pem */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = dsa_pub.pem; sourceTree = "<group>"; };
 		3AAAA13312C00E6D0079F079 /* Breakpad.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Breakpad.framework; path = deps/Breakpad.framework; sourceTree = "<group>"; };
@@ -476,6 +493,8 @@
 				3ABF537A12A5D0D80020233C /* FScript.framework in Frameworks */,
 				3AAA9F4212BFB7B50079F079 /* Sparkle.framework in Frameworks */,
 				3AAAA13412C00E6D0079F079 /* Breakpad.framework in Frameworks */,
+				3A510BEA12C2927A00AAC1D5 /* Security.framework in Frameworks */,
+				3AA8124512C2BDFC0085F086 /* SecurityFoundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -528,10 +547,14 @@
 		3A5107C812C1231700AAC1D5 /* kod helper */ = {
 			isa = PBXGroup;
 			children = (
+				3A510BE412C2926000AAC1D5 /* KSudo.h */,
+				3A510BE512C2926000AAC1D5 /* KSudo.m */,
 				3A5107D312C1245400AAC1D5 /* KMachServiceProtocol.h */,
 				3A5107C912C1233900AAC1D5 /* KMachService.h */,
 				3A5107CA12C1233900AAC1D5 /* KMachService.m */,
 				3A5107EB12C1351500AAC1D5 /* kod_helper.m */,
+				3A510B3D12C26F1200AAC1D5 /* KTerminalUsageWindowController.h */,
+				3A510B3E12C26F1200AAC1D5 /* KTerminalUsageWindowController.m */,
 			);
 			name = "kod helper";
 			sourceTree = "<group>";
@@ -665,6 +688,7 @@
 				3A7E71121286EAE800D85E4C /* BrowserWindow.xib */,
 				3A928C1B122714EE00DA7E43 /* MainMenu.xib */,
 				3A9291171229B93C00DA7E43 /* Toolbar.xib */,
+				3A510B3B12C26EFE00AAC1D5 /* terminal-usage.xib */,
 			);
 			path = resources;
 			sourceTree = "<group>";
@@ -689,6 +713,8 @@
 				3A811B4712AE8F1500BC08AE /* YAML.framework */,
 				3AE5EB871292DB5C00B17C4F /* CSS.framework */,
 				3ABF537912A5D0D80020233C /* FScript.framework */,
+				3A510BE912C2927A00AAC1D5 /* Security.framework */,
+				3AA8124412C2BDFC0085F086 /* SecurityFoundation.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -828,6 +854,8 @@
 				3A74A4D2129FF6E000BB5503 /* HUTF8MappedUTF16String.mm */,
 				3AE5EA551292B2D000B17C4F /* kconf.h */,
 				3AAC02B712BD1110001BDC39 /* kconf.m */,
+				3A510C4912C2ADCB00AAC1D5 /* kfs.h */,
+				3A510C4A12C2ADCB00AAC1D5 /* kfs.c */,
 				3AF3A0A312BF7F6400FC534A /* KAnimation.h */,
 				3AF3A0A412BF7F6400FC534A /* KAnimation.m */,
 				3AE5ECB41292F7B800B17C4F /* KThread.h */,
@@ -913,7 +941,6 @@
 			buildRules = (
 			);
 			dependencies = (
-				3A510A5112C15B7600AAC1D5 /* PBXTargetDependency */,
 			);
 			name = kod_helper;
 			productName = kod_helper;
@@ -939,6 +966,7 @@
 			dependencies = (
 				3A929AEC122B1A0400DA7E43 /* PBXTargetDependency */,
 				3AE5E8B712915AC600B17C4F /* PBXTargetDependency */,
+				3A510B3212C26C3E00AAC1D5 /* PBXTargetDependency */,
 			);
 			name = Kod;
 			productName = Kod;
@@ -1028,6 +1056,7 @@
 				3AAC03F012BD2FC2001BDC39 /* sidebar-closed.png in Resources */,
 				3AAC03F112BD2FC2001BDC39 /* sidebar-open.png in Resources */,
 				3AAA9F6612BFBB010079F079 /* dsa_pub.pem in Resources */,
+				3A510B3C12C26EFE00AAC1D5 /* terminal-usage.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1210,16 +1239,19 @@
 				3AF3A0A512BF7F6400FC534A /* KAnimation.m in Sources */,
 				3A5107CB12C1233900AAC1D5 /* KMachService.m in Sources */,
 				3A51083612C13AF900AAC1D5 /* common.m in Sources */,
+				3A510B3F12C26F1200AAC1D5 /* KTerminalUsageWindowController.m in Sources */,
+				3A510BE612C2926000AAC1D5 /* KSudo.m in Sources */,
+				3A510C4B12C2ADCB00AAC1D5 /* kfs.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		3A510A5112C15B7600AAC1D5 /* PBXTargetDependency */ = {
+		3A510B3212C26C3E00AAC1D5 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 3A928C1F1227151800DA7E43 /* Kod */;
-			targetProxy = 3A510A5012C15B7600AAC1D5 /* PBXContainerItemProxy */;
+			target = 3A5107F712C135A200AAC1D5 /* kod_helper */;
+			targetProxy = 3A510B3112C26C3E00AAC1D5 /* PBXContainerItemProxy */;
 		};
 		3A929AEC122B1A0400DA7E43 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;

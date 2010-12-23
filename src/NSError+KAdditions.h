@@ -5,4 +5,5 @@
 + (NSError *)kodErrorWithDescription:(NSString *)msg;
 + (NSError *)kodErrorWithCode:(NSInteger)code format:(NSString *)format, ...;
 + (NSError *)kodErrorWithFormat:(NSString *)format, ...;
++ (NSError*)kodErrorWithOSStatus:(OSStatus)status;
 @end

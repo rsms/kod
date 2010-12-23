@@ -37,4 +37,10 @@ static NSString *KErrorDomain = nil; // TODO: centralize this
 	return [NSError kodErrorWithDescription:msg code:0];
 }
 
++ (NSError*)kodErrorWithOSStatus:(OSStatus)status {
+  return [NSError errorWithDomain:NSOSStatusErrorDomain
+                             code:status
+                         userInfo:nil];
+}
+
 @end

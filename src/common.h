@@ -7,6 +7,10 @@
 #import <assert.h>
 #import <libkern/OSAtomic.h>
 #import <err.h>
+#import <unistd.h>
+#import <stdlib.h>
+#import <stdio.h>
+#import <string.h>
 
 // Foundation is nice to have
 #ifdef __OBJC__
@@ -164,18 +168,21 @@ static inline const char *debug_bits32(int32_t a) {
 }
 #endif
 
-#import "kexceptions.h"
 #import "hatomic_flags.h"
-#import "hobjc.h"
 #import "hdispatch.h"
 #import "hcommon.h"
 #import "shared-dispatch-queues.h"
+#import "kfs.h"
 
 #ifdef __cplusplus
 #import "basictypes.h"
 #import "scoped_nsobject.h"
 #import "HSemaphore.h"
 #endif
+
+#ifdef __OBJC__
+#import "hobjc.h"
+#import "kexceptions.h"
 
 // NS categories
 #import "NSString-utf8-range-conv.h"
@@ -191,5 +198,6 @@ static inline const char *debug_bits32(int32_t a) {
 #import "NSMutableArray-kod.h"
 #import "NSView-kod.h"
 #import "NSData-kod.h"
+#endif  // __OBJC__
 
 #endif  // K_COMMON_H_
