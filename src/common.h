@@ -198,6 +198,7 @@ static inline const char *debug_bits32(int32_t a) {
 #import "NSMutableArray-kod.h"
 #import "NSView-kod.h"
 #import "NSData-kod.h"
+#import "NSThread-condensedStackTrace.h"
 #endif  // __OBJC__
 
 #endif  // K_COMMON_H_

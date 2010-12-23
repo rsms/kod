@@ -1,5 +1,6 @@
 #import "common.h"
 #import <ChromiumTabs/fast_resize_view.h>
+#import <ChromiumTabs/CTBrowserWindow.h>
 
 #import "HEventEmitter.h"
 #import "KBrowserWindowController.h"
@@ -78,10 +79,25 @@
 }
 
 
-- (void)dealloc {
-  [self stopObserving];
-  [super dealloc];
+/*- (id)retain {
+  fprintf(stderr, ">>>>> %s retain %lu\n", [[self description] UTF8String], [self retainCount]);
+  return [super retain];
 }
+- (void)release {
+  //DLOG("%@ release %@", self, [NSThread callStackSymbols]);
+  fprintf(stderr, ">>>>> %s release %lu\n", [[self description] UTF8String], [self retainCount]);
+  [super release];
+}
+- (void)dealloc {
+  DLOG("%@ dealloc %@", self, [NSThread callStackSymbols]);
+  [self stopObserving];
+  [[self window] setDelegate:nil];
+  [super dealloc];
+}*/
+/*- (id)autorelease {
+  DLOG("%@ autorelease %@", self, [NSThread callStackSymbols]);
+  return [super autorelease];
+}*/
 
 
 

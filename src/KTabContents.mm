@@ -1380,7 +1380,9 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
   
   BOOL wasInUndoRedo = [[self undoManager] isUndoing] ||
                        [[self undoManager] isRedoing];
+  #if K_DEBUG_BUILD
   DLOG_RANGE(editedRange, textStorage.string);
+  #endif
   DLOG("editedRange: %@, changeInLength: %d, wasInUndoRedo: %@, editedMask: %d",
        NSStringFromRange(editedRange), changeInLength,
        wasInUndoRedo ? @"YES":@"NO", textStorage.editedMask);

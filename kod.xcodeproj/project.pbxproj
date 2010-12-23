@@ -129,7 +129,6 @@
 		3ABF49C012A450660020233C /* NSView-kod.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3ABF49BF12A450660020233C /* NSView-kod.mm */; };
 		3ABF4C6D12A48E7D0020233C /* NSData-kod.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3ABF4C6C12A48E7D0020233C /* NSData-kod.mm */; };
 		3ABF4F3E12A55AFC0020233C /* NSString-editdistance.m in Sources */ = {isa = PBXBuildFile; fileRef = 3ABF4F3D12A55AFC0020233C /* NSString-editdistance.m */; };
-		3ABF537A12A5D0D80020233C /* FScript.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3ABF537912A5D0D80020233C /* FScript.framework */; };
 		3ABF539612A5D52F0020233C /* KSplitView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3ABF539512A5D52F0020233C /* KSplitView.m */; };
 		3ABF541012A5DB1D0020233C /* KTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3ABF540F12A5DB1D0020233C /* KTextView.m */; };
 		3ABF541F12A5DC6F0020233C /* KClipView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3ABF541E12A5DC6F0020233C /* KClipView.m */; };
@@ -504,7 +503,6 @@
 				3A25E47B1281A6A200B6A33E /* libboost_regex-mt.dylib in Frameworks */,
 				3A25E47D1281A6A700B6A33E /* libsource-highlight.dylib in Frameworks */,
 				3A158AFF128A0A3700339E6E /* libicucore.dylib in Frameworks */,
-				3ABF537A12A5D0D80020233C /* FScript.framework in Frameworks */,
 				3AAA9F4212BFB7B50079F079 /* Sparkle.framework in Frameworks */,
 				3AAAA13412C00E6D0079F079 /* Breakpad.framework in Frameworks */,
 				3A510BEA12C2927A00AAC1D5 /* Security.framework in Frameworks */,
@@ -1408,7 +1406,10 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = src/prefix.pch;
-				GCC_PREPROCESSOR_DEFINITIONS = "K_WITH_F_SCRIPT=1";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"K_WITH_F_SCRIPT=1",
+					"K_DEBUG_BUILD=1",
+				);
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				HEADER_SEARCH_PATHS = (
 					src/ICU/include,
@@ -1434,6 +1435,8 @@
 					Foundation,
 					"-framework",
 					AppKit,
+					"-framework",
+					FScript,
 				);
 				PREBINDING = NO;
 				PRODUCT_NAME = Kod;

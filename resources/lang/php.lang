@@ -2,7 +2,7 @@
 # @matchuti public.php-script
 # @matchext php, php3, phtml
 # @matchprogram php
-state symbol delim "<?php" "?>" multiline begin
+state symbol delim "<?" "?>" multiline begin
 
   preproc = "include|include_once|require|require_once"
 
