@@ -67,7 +67,7 @@
   }
 
   // copy auth rights
-	AuthorizationItem right = { "se.hunch.kod", 0, NULL, 0 };
+  AuthorizationItem right = {kAuthorizationRightExecute, 0, NULL, 0};
 	AuthorizationRights rightSet = { 1, &right };
   status = AuthorizationCopyRights(authRef, &rightSet, &authEnv,
                                    kAuthorizationFlagDefaults
