@@ -1,3 +1,4 @@
 vardef URLPART = '[[:word:]\./\-_~]+'
 url = '(<?)' + $URLPART + '@' + $URLPART + "." + '[[:word:]]+' + '(>?)'
 url = '(<?)' + '[[:word:]]+://' + $URLPART + '(>?)'
+url = '(<?)kod:' + $URLPART + '(>?)'

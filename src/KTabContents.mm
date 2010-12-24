@@ -294,8 +294,15 @@ static int debugSimulateTextAppendingIteration = 0;
     langId_ = [langId retain];
     DLOG("%@ changed langId to '%@'", self, langId_);
     // TODO: langId should be a UTI in the future
-    self.fileType = langId;
-    sourceHighlighter_->setLanguage(langId_);
+    try {
+      self.fileType = langId;
+      sourceHighlighter_->setLanguage(langId_);
+    } catch (std::exception &e) {
+      self.fileType = @"public.text";
+      sourceHighlighter_->setLanguage(@"public.text");
+      [self presentError:[NSError kodErrorWithFormat:
+          @"Failed to parse language definition file for type '%@'", langId_]];
+    }
     [self setNeedsHighlightingOfCompleteDocument];
   }
 }
@@ -1391,7 +1398,6 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
   if (changeInLength == 0 && !lastEditedHighlightState_) {
     DLOG("textStorageDidProcessEditing: bailing because "
          "(changeInLength == 0 && !lastEditedHighlightState_)");
-    assert(!(changeInLength == 0 && !lastEditedHighlightState_));
     return;
   }
   
@@ -1648,13 +1654,14 @@ finishedReadingURL:(NSURL*)url
 // document to it's current URL
 - (BOOL)canSaveDocument {
   NSURL *url = self.fileURL;
-  return !url || [url isFileURL];
+  KURLHandler *urlHandler =
+      [[KDocumentController kodController] urlHandlerForURL:url];
+  return ( urlHandler && [urlHandler canWriteURL:url] );
 }
 
 
 // Generate data from text
 - (NSData*)dataOfType:(NSString*)typeName error:(NSError **)outError {
-  DLOG_EXPR(typeName);
   [textView_ breakUndoCoalescing]; // preserves undo state
   NSData *data = [[textView_ string] dataUsingEncoding:textEncoding_
                                   allowLossyConversion:NO];
@@ -1671,102 +1678,79 @@ finishedReadingURL:(NSURL*)url
            ofType:(NSString*)typeName
  forSaveOperation:(NSSaveOperationType)saveOperation
             error:(NSError**)outError {
-  BOOL ok;
-  NSURL *originalURL = self.fileURL;
-  if (kconf_bool(@"saving/atomic", NO)) {
-    ok = [self writeSafelyToURL:absoluteURL
-                         ofType:typeName
-               forSaveOperation:saveOperation
-                          error:outError];
-  } else {
-    ok = [self writeToURL:absoluteURL
-                   ofType:typeName
-         forSaveOperation:saveOperation
-      originalContentsURL:self.fileURL
-                    error:outError];
-  }
-  
-  if (ok) {
-    // update modification date -- needed for NSDocument's interal "did someone
-    // else change our document?" logic.
-    NSDate *mtime = nil;
-    if (![absoluteURL getResourceValue:&mtime
-                                forKey:NSURLContentModificationDateKey
-                                 error:outError]) {
-      return NO;
-    }
-    self.fileModificationDate = mtime;
-    
-    // Clear change count
-    [self updateChangeCount:NSChangeCleared];
 
-    // If we wrote the stylesheet, trigger a reload or load
-    if (originalURL && [originalURL isEqual:[KStyle sharedStyle].url]) {
-      [[KStyle sharedStyle] loadFromURL:absoluteURL withCallback:nil];
-    }
-  }
-  
-  return ok;
-}
-
-
-- (BOOL)writeToURL:(NSURL *)absoluteURL
-            ofType:(NSString *)typeName
-  forSaveOperation:(NSSaveOperationType)saveOperation
-originalContentsURL:(NSURL *)absoluteOriginalContentsURL
-             error:(NSError **)outError {
-  // currently only supports writing to files
-  if (![absoluteURL isFileURL]) {
+  // Find a handler
+  // Note: When this method gets called, canSaveDocument should have been called
+  // already, thus we should always find a usable url handler.
+  KURLHandler *urlHandler =
+      [[KDocumentController kodController] urlHandlerForURL:absoluteURL];
+  if (!urlHandler || ![urlHandler canWriteURL:absoluteURL]) {
     if (outError) {
       *outError = [NSError kodErrorWithFormat:
-          @"Kod can't save data to remotely located URL '%@'", absoluteURL];
+                   @"Unable to save file to '%@' (%@ does not support writing)",
+                   absoluteURL, urlHandler];
     }
     return NO;
   }
   
-  // make a file wrapper (calls dataOfType:error:)
-  NSFileWrapper *fileWrapper = [self fileWrapperOfType:typeName error:outError];
-  if (!fileWrapper) return NO;
-  
-  // write it
-  if (![fileWrapper writeToURL:absoluteURL
-                       options:0
-           originalContentsURL:absoluteOriginalContentsURL
-                         error:outError]) {
+  // make data
+  NSData *data = [self dataOfType:typeName
+                            error:outError];
+  if (!data)
     return NO;
-  }
+  
+  // freeze tab during writing
+  BOOL tabWasEditable = [self.textView isEditable];
+  if (tabWasEditable)
+    [self.textView setEditable:NO];
+  self.isLoading = YES;
+  
+  // delegate writing to the handler
+  NSURL *originalURL = self.fileURL;
+  [urlHandler writeData:data
+                 ofType:typeName
+                  toURL:absoluteURL
+                  inTab:self
+       forSaveOperation:saveOperation
+            originalURL:originalURL
+               callback:^(NSError *err, NSDate *mtime){
+    // Error?
+    if (err) {
+      [self presentError:err];
+    } else if (saveOperation != NSSaveToOperation) {
+      // "Save to" means "saving a copy to another location without changing the
+      // location of the current document", so we do not update our properties in
+      // that case.
 
-  // this is needed for the internal resource tracking logic of NSDocument
-  [self setFileURL:absoluteURL];
-  
-  // write xattrs
-  NSString *path = [absoluteURL path];
-  int fd = open([path UTF8String], O_RDONLY);
-  if (fd < 0) {
-    WLOG("failed to open(\"%@\", O_RDONLY)", path);
-  } else {
-    const char *key, *utf8pch;
-    
-    key = "com.apple.TextEncoding";
-    // The value is a string "utf-8;134217984" where the last part (if
-    // present) is a CFStringEncoding encoded in base-10.
-    CFStringEncoding enc1 =
-        CFStringConvertNSStringEncodingToEncoding(textEncoding_);
-    NSString *s = [NSString stringWithFormat:@"%@;%d",
-                   CFStringConvertEncodingToIANACharSetName(enc1), (int)enc1];
-    utf8pch = [s UTF8String];
-    if (fsetxattr(fd, key, (void*)utf8pch, strlen(utf8pch), 0, 0) != 0) {
-      WLOG("failed to write xattr '%s' to '%@'", key, path);
+      // set fileURL (needed for the internal resource tracking logic of
+      // NSDocument)
+      [self setFileURL:absoluteURL];
+      
+      // Clear change count
+      [self updateChangeCount:NSChangeCleared];
+      
+      // update modification date -- needed for NSDocument's interal "did someone
+      // else change our document?" logic.
+      self.fileModificationDate = mtime ? mtime : [NSDate date];
+      
+      // If we wrote the stylesheet, trigger a reload or load
+      if (originalURL && [originalURL isEqual:[KStyle sharedStyle].url]) {
+        [[KStyle sharedStyle] loadFromURL:absoluteURL withCallback:nil];
+      }
     }
     
-    key = "se.hunch.kod.selection";
-    utf8pch = [NSStringFromRange([textView_ selectedRange]) UTF8String];
-    if (fsetxattr(fd, key, (void*)utf8pch, strlen(utf8pch), 0, 0) != 0) {
-      WLOG("failed to write xattr '%s' to '%@'", key, path);
-    }
+    // unfreeze tab
+    if (tabWasEditable)
+      [self.textView setEditable:YES];
+    self.isLoading = NO;
     
-    close(fd);
-  }
+    K_DISPATCH_MAIN_ASYNC({
+      // restart cursor blink timer. This fails to restart when writing a file
+      // asynchronously (my guess is the setEditable call fail to trigger the
+      // animation restart)
+      [self.textView updateInsertionPointStateAndRestartTimer:YES];
+    });
+  }];
 
   return YES;
 }

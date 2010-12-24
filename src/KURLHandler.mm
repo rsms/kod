@@ -9,16 +9,23 @@
 }
 
 
-- (BOOL)canReadURL:(NSURL*)url {
-  return NO;
-}
+- (BOOL)canReadURL:(NSURL*)url { return NO; }
+- (BOOL)canWriteURL:(NSURL*)url { return NO; }
 
 
 - (void)readURL:(NSURL*)url ofType:(NSString*)typeName inTab:(KTabContents*)tab{
-  [tab urlHandler:self finishedReadingURL:url data:nil ofType:typeName
-            error:[NSError kodErrorWithFormat:
-            @"%@ %@ not implemented", self, NSStringFromSelector(_cmd)]
-         callback:nil];
+  NOTIMPLEMENTED();
+}
+
+
+- (void)writeData:(NSData*)data
+           ofType:(NSString*)typeName
+            toURL:(NSURL*)url
+            inTab:(KTabContents*)tab
+ forSaveOperation:(NSSaveOperationType)saveOperation
+      originalURL:(NSURL*)absoluteOriginalContentsURL
+         callback:(void(^)(NSError *err, NSDate *mtime))callback {
+  NOTIMPLEMENTED();
 }
 
 

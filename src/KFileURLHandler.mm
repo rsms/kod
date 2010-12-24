@@ -1,11 +1,16 @@
 #import "common.h"
+#import "kconf.h"
 #import "KTextView.h"
 #import "KFileURLHandler.h"
 
-#include <sys/xattr.h>
+#import <dispatch/dispatch.h>
+#import <sys/xattr.h>
 
 @implementation KFileURLHandler
 
+
+#pragma mark -
+#pragma mark Reading
 
 - (BOOL)canReadURL:(NSURL*)url {
   return [url isFileURL];
@@ -189,6 +194,104 @@ successCallback:(void(^)(void))successCallback {
           inTab:tab
 successCallback:nil];
 }
+
+
+#pragma mark -
+#pragma mark Writing
+
+
+- (BOOL)canWriteURL:(NSURL*)url {
+  return [url isFileURL];
+}
+
+
+- (void)_writeXAttrsToPath:(NSString*)path forTab:(KTabContents*)tab {
+  // write xattrs
+  KTextView *textView = tab.textView;
+  int fd = open([path UTF8String], O_RDONLY);
+  if (fd < 0) {
+    WLOG("failed to open(\"%@\", O_RDONLY)", path);
+  } else {
+    const char *key, *utf8pch;
+    
+    key = "com.apple.TextEncoding";
+    // The value is a string "utf-8;134217984" where the last part (if
+    // present) is a CFStringEncoding encoded in base-10.
+    CFStringEncoding enc1 =
+        CFStringConvertNSStringEncodingToEncoding(tab.textEncoding);
+    NSString *s = [NSString stringWithFormat:@"%@;%d",
+                   CFStringConvertEncodingToIANACharSetName(enc1), (int)enc1];
+    utf8pch = [s UTF8String];
+    if (fsetxattr(fd, key, (void*)utf8pch, strlen(utf8pch), 0, 0) != 0) {
+      WLOG("failed to write xattr '%s' to '%@'", key, path);
+    }
+    
+    key = "se.hunch.kod.selection";
+    utf8pch = [NSStringFromRange([textView selectedRange]) UTF8String];
+    if (fsetxattr(fd, key, (void*)utf8pch, strlen(utf8pch), 0, 0) != 0) {
+      WLOG("failed to write xattr '%s' to '%@'", key, path);
+    }
+    
+    close(fd);
+  }
+}
+
+
+- (void)writeData:(NSData*)data
+           ofType:(NSString*)typeName
+            toURL:(NSURL*)absoluteURL
+            inTab:(KTabContents*)tab
+ forSaveOperation:(NSSaveOperationType)saveOperation
+      originalURL:(NSURL*)absoluteOriginalContentsURL
+         callback:(void(^)(NSError *err, NSDate *mtime))callback {
+  // Note: This is normally called on the main thread
+  
+  // this method should never be called unless canWriteURL: was called and
+  // returned YES
+  kassert([absoluteURL isFileURL]);
+  
+  // we use an absolute path
+  NSString *path = [absoluteURL path];
+  
+  // writer
+  void(^performWrite)(void) = ^{
+    NSAutoreleasePool *pool = [NSAutoreleasePool new];
+
+    // write data
+    NSDataWritingOptions writeOptions = 0;
+    if (kconf_bool(@"KFileURLHandler/write/atomic", NO))
+      writeOptions |= NSDataWritingAtomic;
+    NSError *error = nil;
+    if (![data writeToFile:path options:writeOptions error:&error]) {
+      if (callback)
+        callback(error, nil);
+      return;
+    }
+    
+    // write xattrs
+    [self _writeXAttrsToPath:path forTab:tab];
+    
+    // retrieve mtime
+    NSDate *mtime = nil;
+    [absoluteURL getResourceValue:&mtime
+                           forKey:NSURLContentModificationDateKey
+                            error:nil];
+    
+    // callback
+    if (callback)
+      callback(nil, mtime);
+    
+    [pool drain];
+  };
+  
+  // write asynchronously or not
+  if (kconf_bool(@"KFileURLHandler/write/async", YES)) {
+    dispatch_async(dispatch_get_global_queue(0,0), performWrite);
+  } else {
+    performWrite();
+  }
+}
+
 
 
 @end

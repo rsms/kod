@@ -107,6 +107,7 @@
 		3AA813DE12C38BB70085F086 /* KKodURLHandler.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3AA813DD12C38BB70085F086 /* KKodURLHandler.mm */; };
 		3AA8142712C390CE0085F086 /* about.md in Resources */ = {isa = PBXBuildFile; fileRef = 3AA8142612C390CE0085F086 /* about.md */; };
 		3AA817FF12C4A6CC0085F086 /* fonts in Resources */ = {isa = PBXBuildFile; fileRef = 3AA817F812C4A6CC0085F086 /* fonts */; };
+		3AA818D412C4DD330085F086 /* changelog in Resources */ = {isa = PBXBuildFile; fileRef = 3AA818D312C4DD330085F086 /* changelog */; };
 		3AAA9F4212BFB7B50079F079 /* Sparkle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3AAA9F4112BFB7B50079F079 /* Sparkle.framework */; };
 		3AAA9F6612BFBB010079F079 /* dsa_pub.pem in Resources */ = {isa = PBXBuildFile; fileRef = 3AAA9F6512BFBB010079F079 /* dsa_pub.pem */; };
 		3AAA9F7712BFC0440079F079 /* Sparkle.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 3AAA9F4112BFB7B50079F079 /* Sparkle.framework */; };
@@ -412,6 +413,7 @@
 		3AA813DD12C38BB70085F086 /* KKodURLHandler.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KKodURLHandler.mm; sourceTree = "<group>"; };
 		3AA8142612C390CE0085F086 /* about.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = about.md; sourceTree = "<group>"; };
 		3AA817F812C4A6CC0085F086 /* fonts */ = {isa = PBXFileReference; lastKnownFileType = folder; path = fonts; sourceTree = "<group>"; };
+		3AA818D312C4DD330085F086 /* changelog */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = changelog; sourceTree = "<group>"; };
 		3AAA9F4112BFB7B50079F079 /* Sparkle.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Sparkle.framework; path = deps/Sparkle.framework; sourceTree = "<group>"; };
 		3AAA9F6512BFBB010079F079 /* dsa_pub.pem */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = dsa_pub.pem; sourceTree = "<group>"; };
 		3AAAA13312C00E6D0079F079 /* Breakpad.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Breakpad.framework; path = deps/Breakpad.framework; sourceTree = "<group>"; };
@@ -693,6 +695,7 @@
 				3AE5E5161290955000B17C4F /* kod.icns */,
 				3AAA9F6512BFBB010079F079 /* dsa_pub.pem */,
 				3AA8142612C390CE0085F086 /* about.md */,
+				3AA818D312C4DD330085F086 /* changelog */,
 				3AA817F812C4A6CC0085F086 /* fonts */,
 				3AAC03EE12BD2FC2001BDC39 /* sidebar-closed.png */,
 				3AAC03EF12BD2FC2001BDC39 /* sidebar-open.png */,
@@ -1091,6 +1094,7 @@
 				3A510B3C12C26EFE00AAC1D5 /* terminal-usage.xib in Resources */,
 				3AA8142712C390CE0085F086 /* about.md in Resources */,
 				3AA817FF12C4A6CC0085F086 /* fonts in Resources */,
+				3AA818D412C4DD330085F086 /* changelog in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

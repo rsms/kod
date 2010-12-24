@@ -1,7 +1,7 @@
 # Kod $VERSION beta
 
 I'm a programmers' editor for OS X.
-See <http://kodapp.com/> for more information.
+See <http://kodapp.com/> and <kod:changelog> for more information.
 
 
 ## Third party content

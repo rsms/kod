@@ -1,6 +1,7 @@
 #import "common.h"
 #import "KKodURLHandler.h"
 #import "KFileURLHandler.h"
+#import "KLangMap.h"
 #import "kconf.h"
 #import "kod_version.h"
 #import "KDocumentController.h"
@@ -22,30 +23,48 @@
 @implementation KKodURLHandler
 
 
+- (id)init {
+  if (!(self = [super init])) return nil;
+  
+  commandToFileResource_ = [[NSDictionary alloc] initWithObjectsAndKeys:
+      @"about.md", @"about",
+      @"changelog", @"changelog",
+      nil];
+  
+  return self;
+}
+
+
 - (BOOL)canReadURL:(NSURL*)url {
   if ([[url scheme] caseInsensitiveCompare:@"kod"] == NSOrderedSame) {
     // supported commands
-    NSString *cmd = [url kodURICommand];
-    if ([cmd isEqualToString:@"about"]) {
-      return YES;
-    }
+    NSString *cmd = [[url kodURICommand] lowercaseString];
+    return [commandToFileResource_ objectForKey:cmd] != nil;
   }
   return NO;
 }
 
 
 - (void)readURL:(NSURL*)url ofType:(NSString*)typeName inTab:(KTabContents*)tab{
-  NSString *cmd = [url kodURICommand];
-  kassert([cmd isEqualToString:@"about"]); // only supported command atm
+  NSString *cmd = [[url kodURICommand] lowercaseString];
+  NSString *fileResourceRelPath = [commandToFileResource_ objectForKey:cmd];
+  kassert(fileResourceRelPath != nil);
 
-  NSURL *fileURL = kconf_res_url(@"about.md");
+  NSURL *fileURL = kconf_res_url(fileResourceRelPath);
   KDocumentController *documentController = [KDocumentController kodController];
   KFileURLHandler *fileURLHandler =
       (KFileURLHandler*)[documentController urlHandlerForURL:fileURL];
   kassert(fileURLHandler != nil);
   [tab.textView setEditable:NO];
+  
+  // guess langId
+  tab.langId = [[KLangMap sharedLangMap] langIdForSourceURL:fileURL
+                                                    withUTI:nil
+                                       consideringFirstLine:nil];
+  
+  // delegate reading to the file url handler
   [fileURLHandler readURL:fileURL
-                   ofType:@"net.daringfireball.markdown"
+                   ofType:nil
                     inTab:tab
           successCallback:^{
     // substitute placeholders
@@ -54,8 +73,14 @@
                                          withString:@K_VERSION_STR];
     [tab.textView setString:str];
     
+    // set cursor to 0,0 (has the side-effect of hiding it)
+    [tab.textView setSelectedRange:NSMakeRange(0, 0)];
+
     // Clear change count
     [tab updateChangeCount:NSChangeCleared];
+    
+    // set the icon to the app icon
+    tab.icon = [NSImage imageNamed:@"kod.icns"];
   }];
 }
 
