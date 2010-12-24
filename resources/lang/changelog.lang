@@ -8,6 +8,9 @@ state date start '[[:digit:]]{2,4}-?[[:digit:]]{2}-?[[:digit:]]{2}' begin
   name = '([[:word:]]|[[:punct:]])+'
 end
   
-(normal,symbol,normal,file)= `(^[[:blank:]]+)(\*)([[:blank:]]+)((?:[^:]+\:)?)` 
-(normal,file)= `(^[[:blank:]]+)((?:[^:]+\:)?)` 
-
+(normal,symbol,normal,file) = `(^[[:blank:]]+)(\*)([[:blank:]]+)((?:[^:\s]+\:)?)`
+(normal,file) = `(^[[:blank:]]+)((?:[^:]+\:)?)`
+newfile = '\[NEW\]'
+oldfile = '\[(?:REMOVED|DISABLED)\]'
+value = '\[(?:CHANGED|MOVED|FIXED)\]'
+keyword = '[Tt]icket [[:digit:]]+'

@@ -350,6 +350,22 @@ static int debugSimulateTextAppendingIteration = 0;
 }
 
 
+/*- (NSDate*)fileModificationDate {
+  NSDate *mtime = [super fileModificationDate];
+  
+  NSDate *mtime2 = [[[NSFileManager defaultManager] attributesOfItemAtPath:[self.fileURL path] error:nil] objectForKey:NSFileModificationDate];
+  
+  DLOG("%@ fileModificationDate -> %@ (actual: %@)", self, mtime, mtime2);
+  return mtime;
+}
+
+
+- (void)setFileModificationDate:(NSDate*)mtime {
+  DLOG("%@ setFileModificationDate:%@", self, mtime);
+  [super setFileModificationDate:mtime];
+}*/
+
+
 - (NSString*)displayName {
   return self.title;
 }

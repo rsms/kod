@@ -1,5 +1,14 @@
+0000-00-00  0.0.2  (Rasmus Andersson  <rasmus@notion.se>)
+
+ * [NEW] Writing to files now support asynchronous or synchronous (blocking the
+   UI) operation. To use synchronous saving of local files, set the defaults key
+   "KFileURLHandler/write/async" to "NO". Writing is now based on URL handlers.
+
+ * [FIXED] Writing files no longer reset file mode. Ticket 16
+
+ * [NEW] Changelog accessible through <kod:changelog>
 
 
 2010-12-23  0.0.1  (Rasmus Andersson  <rasmus@notion.se>)
 
- * First public release
+ * [NEW] First release

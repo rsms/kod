@@ -272,10 +272,8 @@ successCallback:nil];
     [self _writeXAttrsToPath:path forTab:tab];
     
     // retrieve mtime
-    NSDate *mtime = nil;
-    [absoluteURL getResourceValue:&mtime
-                           forKey:NSURLContentModificationDateKey
-                            error:nil];
+    NSDate *mtime = [[[NSFileManager defaultManager] attributesOfItemAtPath:
+        path error:nil] objectForKey:NSFileModificationDate];
     
     // callback
     if (callback)
