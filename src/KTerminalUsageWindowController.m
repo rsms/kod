@@ -106,8 +106,15 @@
       [cancelButton_ setEnabled:YES];
       [commitButton_ setEnabled:YES];
       if (err) {
-        DLOG("failed to execute ln as root: %@", err);
-        [NSApp presentError:err];
+        //if ([err ] != -60006)
+        NSInteger authCancelledOSError = -60006; // subject to endian bug?!
+        if (![[err domain] isEqualToString:NSOSStatusErrorDomain] ||
+            [err code] != authCancelledOSError) {
+          DLOG("failed to execute ln as root: %@", err);
+          [NSApp presentError:err];
+        } else {
+          DLOG("authorization request aborted by user");
+        }
         return;
       }
       DLOG("sudo ln appear to have succeeded (we currently are unable to test "

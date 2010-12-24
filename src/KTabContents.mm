@@ -1753,6 +1753,13 @@ finishedReadingURL:(NSURL*)url
       if (originalURL && [originalURL isEqual:[KStyle sharedStyle].url]) {
         [[KStyle sharedStyle] loadFromURL:absoluteURL withCallback:nil];
       }
+      
+      // Guess syntax
+      if (highlightingEnabled_) {
+        // TODO: typeName might have changed during reading
+        [self guessLanguageBasedOnUTI:typeName
+                          textContent:self.textView.string];
+      }
     }
     
     // unfreeze tab

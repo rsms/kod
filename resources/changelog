@@ -8,6 +8,12 @@
 
  * [NEW] Changelog accessible through <kod:changelog>
 
+ * [FIXED] Saving a file with a different type causes syntax type to be
+   reconsidered. Ticket 21
+
+ * [FIXED] Aborting super user authorization during creation of "kod helper"
+   symlink no longer yields an error dialog. Ticket 33
+
 
 2010-12-23  0.0.1  (Rasmus Andersson  <rasmus@notion.se>)
 
