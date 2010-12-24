@@ -1564,7 +1564,7 @@ finishedReadingURL:(NSURL*)url
   DLOG("readFromData:%p ofType:%@", data, typeName);
   
   NSString *text = nil;
-  
+
   // If we have an explicit encoding, try decoding using that encoding
   if (textEncoding_ != 0)
     text = [data weakStringWithEncoding:textEncoding_];
@@ -1591,6 +1591,10 @@ finishedReadingURL:(NSURL*)url
     //  locked nor unlocked.  The memory has been smashed."
     //
     // That's scary.
+    
+    // log encoding used
+    DLOG("Decoded text data using %@",
+         [NSString localizedNameOfStringEncoding:textEncoding_]);
     
     // we need to retain |data| and |text| since |text| contains a weak
     // reference to bytes in |data|.

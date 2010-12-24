@@ -108,10 +108,10 @@
 	
   // TODO: make static global:
   ICUPattern *gEncodingGuessRegExp = [[ICUPattern alloc] initWithString:
-      // HTML, XML, Python, etc
+      // HTML, XML, Python, Vim, Emacs, etc
       @"content=\".*charset=([^\"]+)\""
-       "|(?:charset|encoding)\\s*[=:]\\s*(?:\"([^\"]+)\"|'([^']+)'|(\\w+))"
-       "|coding:\\s*(\\w+)"
+       "|(?:charset|encoding)\\s*[=:]\\s*(?:\"([^\"]+)\"|'([^']+)'|([\\w-]+))"
+       "|coding:\\s*([\\w-]+)"
        //content="text/html;charset=text/html;charset=x-sjis"
       flags:ICUCaseInsensitiveMatching];
 	
