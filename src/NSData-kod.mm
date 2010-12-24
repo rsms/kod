@@ -30,7 +30,7 @@
 
   // Guess encoding if no explicit encoding, or explicit decode failed
   NSUInteger bomOffset = 0;
-  encoding = [self guessEncodingWithPeekByteLimit:1024 headOffset:&bomOffset];
+  encoding = [self guessEncodingWithPeekByteLimit:512 headOffset:&bomOffset];
   //DLOG("Guessed encoding: %@", textEncoding_==0 ? @"(none)" :
   //     [NSString localizedNameOfStringEncoding:textEncoding_]);
   // try decoding unless we failed to guess
