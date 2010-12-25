@@ -1,4 +1,4 @@
-0000-00-00  0.0.2  (Rasmus Andersson <rasmus@notion.se>)
+0010-12-24  0.0.2  (Rasmus Andersson <rasmus@notion.se>)
 
  * [NEW] Writing to files now support asynchronous or synchronous (blocking the
    UI) operation. To use synchronous saving of local files, set the defaults key
