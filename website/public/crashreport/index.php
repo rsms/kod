@@ -1,0 +1,1 @@
+<? header('Location: http://kodapp.com/'); ?>

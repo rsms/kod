@@ -1,0 +1,4 @@
+<?
+hgmail::$accountAddress = 'foo@bar.com';
+hgmail::$accountPassword = 'xxx';
+?>

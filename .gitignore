@@ -4,3 +4,4 @@
 /deps/srchilight/upstream-lang
 *.breakpad
 /src/kod_version.h
+/website/public/config.php

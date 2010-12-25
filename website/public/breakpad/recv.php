@@ -1,8 +1,7 @@
 <?
-require 'h.php';
+require '../lib/h.php';
+require '../config.php';
 
-hgmail::$accountAddress = 'noreply@notion.se';
-hgmail::$accountPassword = 'MonsterM4chine';
 $base_dir = '/var/www/kodapp.com/www/breakpad';
 #$base_dir = '.'; # XXX DEV
 $dump_dir = $base_dir.'/dumps';

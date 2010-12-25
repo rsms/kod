@@ -5,6 +5,7 @@
 #import "KTerminalUsageWindowController.h"
 #import "KTabContents.h"
 #import "KDocumentController.h"
+#import "KCrashReportCollector.h"
 #import "kconf.h"
 #import "KStyle.h"
 #import "KNodeProcess.h"
@@ -161,6 +162,16 @@ void k_breakpad_init() {}
     // Offer to enable the kod helper
     [self displayTerminalUsage:self];
   }
+  
+  #if !K_DEBUG_BUILD
+  // Find & process any crash reports and offer the user to submit any newfound
+  // reports. Note: This will block (switch runloop mode into modal) if there
+  // was a new crash reports since a modal dialog is used to ask the user to
+  // send the report. However, submission is done in the backround which means
+  // this method returns before any report has been submitted.
+  [[KCrashReportCollector crashReportCollector]
+      askUserToSubmitAnyUnprocessedCrashReport];
+  #endif
 }
 
 
