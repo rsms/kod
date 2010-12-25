@@ -85,7 +85,7 @@ scp '$WD/admin/appcast.xml' hunch.se:/var/www/kodapp.com/www/public/appcast.xml
 
 git ci 'Release $VERSION' -a
 git tag -m 'Release $VERSION' 'v$VERSION'
-git pu
+git pu --tags
 
 EOF
 open -a Kod "$TEMPFILE"
