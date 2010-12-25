@@ -10,19 +10,14 @@
 #import "KTextStorage.h"
 #import "HUTF8MappedUTF16String.h"
 
-#include <srchilite/eventgenerator.h>
 #include <srchilite/highlightstate.h>
 
 class KSourceHighlighter;
 @class KSourceHighlightState, KStyle;
 
 namespace srchilite {
-class FormatterManager;
-class LangDefManager;
 struct HighlightToken;
 struct FormatterParams;
-class HighlightEventListener;
-struct HighlightEvent;
 }
 
 typedef std::deque<srchilite::HighlightStatePtr> KHighlightStateStack;

@@ -11,11 +11,9 @@
 
 #import <iterator>
 
-#include <srchilite/langdefmanager.h>
 #include <srchilite/highlighttoken.h>
 #include <srchilite/matchingparameters.h>
 #include <srchilite/highlightrule.h>
-#include <srchilite/formattermanager.h>
 #include <srchilite/formatterparams.h>
 
 // toggle debug logging of highlighting
