@@ -249,6 +249,11 @@
 #pragma mark -
 #pragma mark Notifications
 
+/*- (void)setDocumentEdited:(BOOL)documentEdited {
+  DLOG("setDocumentEdited %@", [NSThread callStackSymbols]);
+  [super setDocumentEdited:documentEdited];
+}*/
+
 
 - (void)splitViewDidResize:(NSNotification*)notification {
   if (!splitView_.isCollapsed)

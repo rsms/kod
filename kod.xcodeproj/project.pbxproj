@@ -109,6 +109,9 @@
 		3AA818D412C4DD330085F086 /* changelog in Resources */ = {isa = PBXBuildFile; fileRef = 3AA818D312C4DD330085F086 /* changelog */; };
 		3AA819B312C549B60085F086 /* KCrashReportCollector.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AA819B212C549B60085F086 /* KCrashReportCollector.m */; };
 		3AA81A4212C60EEB0085F086 /* HURLConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AA81A4112C60EEB0085F086 /* HURLConnection.m */; };
+		3AA81B2412C62D270085F086 /* CIImage-kod.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AA81B2312C62D270085F086 /* CIImage-kod.m */; };
+		3AA81B2712C62D6A0085F086 /* NSImage-kod.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AA81B2612C62D6A0085F086 /* NSImage-kod.m */; };
+		3AA81B2F12C62E160085F086 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3AA81B2E12C62E160085F086 /* QuartzCore.framework */; };
 		3AAA9F4212BFB7B50079F079 /* Sparkle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3AAA9F4112BFB7B50079F079 /* Sparkle.framework */; };
 		3AAA9F6612BFBB010079F079 /* dsa_pub.pem in Resources */ = {isa = PBXBuildFile; fileRef = 3AAA9F6512BFBB010079F079 /* dsa_pub.pem */; };
 		3AAA9F7712BFC0440079F079 /* Sparkle.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 3AAA9F4112BFB7B50079F079 /* Sparkle.framework */; };
@@ -417,6 +420,11 @@
 		3AA819B212C549B60085F086 /* KCrashReportCollector.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCrashReportCollector.m; sourceTree = "<group>"; };
 		3AA81A4012C60EEB0085F086 /* HURLConnection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HURLConnection.h; path = "deps/hunch-cocoa/HURLConnection.h"; sourceTree = SOURCE_ROOT; };
 		3AA81A4112C60EEB0085F086 /* HURLConnection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = HURLConnection.m; path = "deps/hunch-cocoa/HURLConnection.m"; sourceTree = SOURCE_ROOT; };
+		3AA81B2212C62D270085F086 /* CIImage-kod.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "CIImage-kod.h"; sourceTree = "<group>"; };
+		3AA81B2312C62D270085F086 /* CIImage-kod.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "CIImage-kod.m"; sourceTree = "<group>"; };
+		3AA81B2512C62D6A0085F086 /* NSImage-kod.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSImage-kod.h"; sourceTree = "<group>"; };
+		3AA81B2612C62D6A0085F086 /* NSImage-kod.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSImage-kod.m"; sourceTree = "<group>"; };
+		3AA81B2E12C62E160085F086 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		3AAA9F4112BFB7B50079F079 /* Sparkle.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Sparkle.framework; path = deps/Sparkle.framework; sourceTree = "<group>"; };
 		3AAA9F6512BFBB010079F079 /* dsa_pub.pem */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = dsa_pub.pem; sourceTree = "<group>"; };
 		3AAAA13312C00E6D0079F079 /* Breakpad.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Breakpad.framework; path = deps/Breakpad.framework; sourceTree = "<group>"; };
@@ -514,6 +522,7 @@
 				3AAAA13412C00E6D0079F079 /* Breakpad.framework in Frameworks */,
 				3A510BEA12C2927A00AAC1D5 /* Security.framework in Frameworks */,
 				3AA8124512C2BDFC0085F086 /* SecurityFoundation.framework in Frameworks */,
+				3AA81B2F12C62E160085F086 /* QuartzCore.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -739,6 +748,7 @@
 				3ABF537912A5D0D80020233C /* FScript.framework */,
 				3A510BE912C2927A00AAC1D5 /* Security.framework */,
 				3AA8124412C2BDFC0085F086 /* SecurityFoundation.framework */,
+				3AA81B2E12C62E160085F086 /* QuartzCore.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -941,6 +951,10 @@
 				3ABF49BF12A450660020233C /* NSView-kod.mm */,
 				3ABF4C6B12A48E7D0020233C /* NSData-kod.h */,
 				3ABF4C6C12A48E7D0020233C /* NSData-kod.mm */,
+				3AA81B2212C62D270085F086 /* CIImage-kod.h */,
+				3AA81B2312C62D270085F086 /* CIImage-kod.m */,
+				3AA81B2512C62D6A0085F086 /* NSImage-kod.h */,
+				3AA81B2612C62D6A0085F086 /* NSImage-kod.m */,
 			);
 			name = "NS categories";
 			sourceTree = "<group>";
@@ -1266,6 +1280,8 @@
 				3AA813DE12C38BB70085F086 /* KKodURLHandler.mm in Sources */,
 				3AA819B312C549B60085F086 /* KCrashReportCollector.m in Sources */,
 				3AA81A4212C60EEB0085F086 /* HURLConnection.m in Sources */,
+				3AA81B2412C62D270085F086 /* CIImage-kod.m in Sources */,
+				3AA81B2712C62D6A0085F086 /* NSImage-kod.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

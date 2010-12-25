@@ -82,7 +82,6 @@ typedef std::deque<KHighlightQueueEntry> KHighlightQueue;
 
 - (void)styleDidChange:(NSNotification*)notification;
 - (void)textStorageDidProcessEditing:(NSNotification*)notification;
-- (void)documentDidChangeDirtyState; // when isDirty_ changed
 
 // Retrieve line number (first line is 1) for character |location|
 - (NSUInteger)lineNumberForLocation:(NSUInteger)location;

@@ -14,6 +14,18 @@
  * [FIXED] Aborting super user authorization during creation of "kod helper"
    symlink no longer yields an error dialog. Ticket 33
 
+ * [CHANGED] No longer using Google Breakpad for crash reporting, but instead
+   collecting system crash reports at program re-launch. This also means we no
+   longer strip the product.
+
+ * [NEW] Kod is now open source and licensed under a permissive MIT style
+   license with minor modifications by Jonathan Rhyne.
+   See <http://blog.robrhyne.com/post/1043407467/selling-open-source>
+
+ * [NEW] Document "edited" (or "dirty") state is now shown both using the OS X
+   standard "dot in the window close button" as well as making the tab icon
+   darker when there are unsaved changes. Ticket 18
+
 
 2010-12-23  0.0.1  (Rasmus Andersson  <rasmus@notion.se>)
 

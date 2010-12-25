@@ -9,7 +9,7 @@ state date start '[[:digit:]]{2,4}-?[[:digit:]]{2}-?[[:digit:]]{2}' begin
 end
   
 (normal,symbol,normal,file) = `(^[[:blank:]]+)(\*)([[:blank:]]+)((?:[^:\s]+\:)?)`
-(normal,file) = `(^[[:blank:]]+)((?:[^:]+\:)?)`
+(normal,file) = `(^[[:blank:]]+)((?:[^:\s]+\:)?)`
 newfile = '\[NEW\]'
 oldfile = '\[(?:REMOVED|DISABLED)\]'
 value = '\[(?:CHANGED|MOVED|FIXED)\]'

@@ -19,6 +19,13 @@
 #import "KMetaRulerView.h"
 #import "HEventEmitter.h"
 
+#import "NSImage-kod.h"
+#import "CIImage-kod.h"
+
+@interface NSDocument (Private)
+- (void)_updateForDocumentEdited:(BOOL)arg1;
+@end
+
 
 // used in stateFlags_
 enum {
@@ -55,8 +62,7 @@ static NSString *_NSStringFromRangeArray(std::vector<NSRange> &lineToRangeVec,
 
 @implementation KTabContents
 
-@synthesize isDirty = isDirty_,
-            textEncoding = textEncoding_,
+@synthesize textEncoding = textEncoding_,
             textView = textView_;
 
 static NSImage* _kDefaultIcon = nil;
@@ -185,11 +191,11 @@ static int debugSimulateTextAppendingIteration = 0;
   [[NSDocumentController sharedDocumentController] addDocument:self];
   
   // Observe when the document is modified so we can update the UI accordingly
-  NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
+  /*NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
 	[nc addObserver:self
          selector:@selector(undoManagerCheckpoint:)
              name:NSUndoManagerCheckpointNotification
-					 object:undoManager_];
+					 object:undoManager_];*/
 
   // register as text storage delegate
   textView_.textStorage.delegate = self;
@@ -455,6 +461,29 @@ static int debugSimulateTextAppendingIteration = 0;
 }
 
 
+- (BOOL)isDirty { return isDirty_; }
+- (void)setIsDirty:(BOOL)isDirty {
+  if (!isDirty == !isDirty_) return; //noop
+  isDirty_ = isDirty;
+  if (browser_) [browser_ updateTabStateForContent:self];
+}
+
+
+- (NSImage*)icon {
+  NSImage *icon = [super icon];
+  if (isDirty_) {
+    NSDictionary *filterParameters =
+      [NSDictionary dictionaryWithObject:[NSNumber numberWithDouble:-1.5]
+                                  forKey:@"inputEV"];
+    icon = [icon imageByApplyingCIFilterNamed:@"CIExposureAdjust"
+                             filterParameters:filterParameters];
+    //icon = [icon imageByApplyingCIFilterNamed:@"CIColorInvert"];
+  }
+  return icon;
+}
+
+
+
 #pragma mark -
 #pragma mark Notifications
 
@@ -538,21 +567,14 @@ static int debugSimulateTextAppendingIteration = 0;
 //- (void)undoManagerChangeUndone:(NSNotification *)notification;
 
 
-- (void)undoManagerCheckpoint:(NSNotification*)notification {
+/*- (void)undoManagerCheckpoint:(NSNotification*)notification {
   //DLOG_EXPR([self isDocumentEdited]);
   BOOL isDirty = [self isDocumentEdited];
   if (isDirty_ != isDirty) {
     isDirty_ = isDirty;
     [self documentDidChangeDirtyState];
   }
-}
-
-
-- (void)documentDidChangeDirtyState {
-  DLOG("documentDidChangeDirtyState");
-  // windowController - (void)setDocumentEdited:(BOOL)dirtyFlag;
-  //self.title = @"*";
-}
+}*/
 
 
 // Invoked when ranges of lines changed. |lineCountDelta| denotes how many lines
@@ -671,15 +693,6 @@ static int debugSimulateTextAppendingIteration = 0;
 }
 
 
-#if _DEBUG
-/*- (void)canCloseDocumentWithDelegate:(id)delegate shouldCloseSelector:(SEL)shouldCloseSelector contextInfo:(void *)contextInfo {
-  DLOG_TRACE();
-  Debugger();
-  [super canCloseDocumentWithDelegate:delegate shouldCloseSelector:shouldCloseSelector contextInfo:contextInfo];
-}*/
-#endif // _DEBUG
-
-
 // close (without asking the user)
 - (void)close {
   if (browser_) {
@@ -688,6 +701,31 @@ static int debugSimulateTextAppendingIteration = 0;
     if (index != -1)
       [browser_ closeTabAtIndex:index makeHistory:YES];
   }
+}
+
+
+- (NSString*)_changeTypeToString:(NSDocumentChangeType)changeType {
+  switch (changeType) {
+    case NSChangeDone: return @"NSChangeDone";
+    case NSChangeUndone: return @"NSChangeUndone";
+    case NSChangeCleared: return @"NSChangeCleared";
+    case NSChangeRedone: return @"NSChangeRedone";
+    case NSChangeReadOtherContents: return @"NSChangeReadOtherContents";
+    case NSChangeAutosaved: return @"NSChangeAutosaved";
+  }
+  return @"?";
+}
+
+
+/*- (void)updateChangeCount:(NSDocumentChangeType)changeType {
+  DLOG("%@ updateChangeCount:%@", self, [self _changeTypeToString:changeType]);
+  [super updateChangeCount:changeType];
+}*/
+
+// private method of NSDocument which is triggered when "dirty state" changes
+- (void)_updateForDocumentEdited:(BOOL)documentEdited {
+  self.isDirty = documentEdited;
+  [super _updateForDocumentEdited:documentEdited];
 }
 
 
@@ -1419,9 +1457,9 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
   
 
   // mark as dirty if not already dirty
-  if (!isDirty_) {
-    [self updateChangeCount:NSChangeReadOtherContents];
-  }
+  //if (!isDirty_) {
+  //  [self updateChangeCount:NSChangeReadOtherContents];
+  //}
   
   // Syntax highlight
   if (highlightingEnabled_) {
