@@ -113,10 +113,14 @@ void KStyleElement::setStyle(CSSStyle *style, KStyle *parent) {
     [textAttributes_ setObject:font forKey:NSFontAttributeName];
   }
   
+  // cursor
+  NSCursor *cursor = style.cursor;
+  
   // set or clear attributes
   setAttribute(NSObliquenessAttributeName, obliqueness);
   setAttribute(NSUnderlineStyleAttributeName, underlined);
   setAttribute(NSStrikethroughStyleAttributeName, strikethrough);
+  setAttribute(NSCursorAttributeName, cursor);
 }
 
 

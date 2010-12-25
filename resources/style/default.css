@@ -30,7 +30,10 @@ cbracket { color: #ddd; }
 todo { color: #946B57; font-weight: bold; }
 
 /* Internet related */
-url { color: #77B5FF; text-decoration: underline; }
+url {
+  color: #77B5FF; text-decoration: underline;
+  cursor: pointer;
+}
 
 /* other elements for ChangeLog and Log files */
 date { color: #F09C9F; font-weight: bold; }

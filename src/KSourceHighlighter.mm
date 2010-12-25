@@ -420,7 +420,10 @@ NSRange KSourceHighlighter::highlight(NSTextStorage *textStorage,
     DLOG_HL("textStorage.length == 0 -- returning directly");
     return fullRange_;
   }
-  kassert(textStorage_ == nil);
+  
+  //kassert(textStorage_ == nil);
+  if (textStorage_) [textStorage_ autorelease];
+  if (text_) [text_ autorelease];
   textStorage_ = [textStorage retain];
   text_ = [[textStorage_ string] retain];
   changeInLength_ = changeInLength;

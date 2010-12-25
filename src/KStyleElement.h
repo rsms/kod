@@ -1,11 +1,14 @@
 #import "common.h"
+
+extern NSString * const KStyleElementAttributeName;
+
+#ifdef __cplusplus
+
 #import <boost/shared_ptr.hpp>
 #import <srchilite/formatter.h>
 #import <srchilite/formatterfactory.h>
 
 @class CSSStyle, KStyle;
-
-extern NSString * const KStyleElementAttributeName;
 
 /**
  * Constitutes the text attributes for a specific language element.
@@ -77,3 +80,5 @@ class KStyleElement {
 
 /// shared pointer for KStyleElement
 typedef boost::shared_ptr<KStyleElement> KStyleElementPtr;
+
+#endif  // __cplusplus

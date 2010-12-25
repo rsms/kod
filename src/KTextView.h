@@ -1,5 +1,4 @@
 @interface KTextView : NSTextView {
-
 }
 
 @end

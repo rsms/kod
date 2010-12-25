@@ -1,4 +1,5 @@
 #import "KTextView.h"
+#import "KStyleElement.h"
 #import "common.h"
 
 @implementation KTextView
@@ -49,6 +50,36 @@ static CGFloat kTextContainerYOffset = 0.0;
   origin.x += kTextContainerXOffset;
   origin.y += kTextContainerYOffset;
   return origin;
+}
+
+
+- (void)mouseDown:(NSEvent*)event {
+  NSPoint point = [self convertPoint:[event locationInWindow] fromView:nil];
+  NSInteger charIndex = [self characterIndexForInsertionAtPoint:point];
+  NSRange effectiveRange;
+  NSDictionary *attributes =
+      [[self attributedString] attributesAtIndex:charIndex
+                                  effectiveRange:&effectiveRange];
+  NSString *styleElementKey =
+      [attributes objectForKey:KStyleElementAttributeName];
+
+  if (styleElementKey) {
+    DLOG("clicked on element of type '%@'", styleElementKey);
+    if ([styleElementKey isEqualToString:@"url"]) {
+      NSString *effectiveString =
+          [[[self textStorage] string] substringWithRange:effectiveRange];
+      effectiveString = [effectiveString stringByTrimmingCharactersInSet:
+          [NSCharacterSet characterSetWithCharactersInString:@"<>"]];
+      NSURL *url = [NSURL URLWithString:effectiveString];
+      NSWorkspace *workspace = [NSWorkspace sharedWorkspace];
+      if ([workspace openURL:url]) {
+        // avoid cursor movement
+        return;
+      }
+    }
+  }
+
+  [super mouseDown:event];
 }
 
 
