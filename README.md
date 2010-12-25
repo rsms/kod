@@ -26,11 +26,19 @@ manually.
     deps/libcss/checkout-deps.sh
     deps/libcss/build.sh
 
-### 4. Check out chromium-tabs
+### 4. Configure Source Highlight
+
+This currently requires MacPorts. Sorry.
+
+    port install source-highlight +universal
+    deps/srchilight/import-from-macports.sh
+    deps/srchilight/import-lang-files.sh
+
+### 5. Check out chromium-tabs
 
     git clone git://github.com/rsms/chromium-tabs.git
 
-### 5. Start hacking
+### 6. Start hacking
 
     open kod.xcodeproj
 
