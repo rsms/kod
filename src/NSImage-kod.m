@@ -5,8 +5,8 @@
 
 + (NSImage*)imageWithCIImage:(CIImage*)ciImage {
   CGRect ciImageExtent = [ciImage extent];
-  NSImage *image =
-      [[[NSImage alloc] initWithSize:ciImageExtent.size] autorelease];
+  NSImage *image = [[[NSImage alloc] initWithSize:
+      NSSizeFromCGSize(ciImageExtent.size)] autorelease];
   [image lockFocus];
   CIContext *ciContext = [[NSGraphicsContext currentContext] CIContext];
   [ciContext drawImage:ciImage
