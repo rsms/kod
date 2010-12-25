@@ -49,8 +49,8 @@ if ($size === 0) {
 header('HTTP/1.1 201 Created');
 header('Connection: close');
 header('Content-type: text/plain; charset=utf8');
-header('Content-length: '.strlen($entry_name));
-echo $entry_name;
+header('Content-length: '.strlen($entry_id));
+echo $entry_id;
 
 # send mail
 ignore_user_abort(true);
@@ -64,7 +64,7 @@ $email_body = $crash_report;
 $mail = hgmail::newtext($email_recipient,
                         $email_replyto_addr,
                         $email_replyto_name,
-                        'Kod '.$version.' crash report #'.$entry_id,
+                        'Kod '.$version.' crash report '.$entry_id,
                         $email_body);
 $mail->Send();
 

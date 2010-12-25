@@ -99,7 +99,6 @@
 		3A9293CC1229ED4C00DA7E43 /* KDocumentController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A9293CB1229ED4C00DA7E43 /* KDocumentController.mm */; };
 		3A929886122AC38F00DA7E43 /* ChromiumTabs.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A9297E4122AB49D00DA7E43 /* ChromiumTabs.framework */; };
 		3A929887122AC39100DA7E43 /* ChromiumTabs.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 3A9297E4122AB49D00DA7E43 /* ChromiumTabs.framework */; };
-		3A93A8401299E14300185857 /* NSURL-blocks.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A93A83F1299E14300185857 /* NSURL-blocks.m */; };
 		3AA8124512C2BDFC0085F086 /* SecurityFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3AA8124412C2BDFC0085F086 /* SecurityFoundation.framework */; };
 		3AA8135512C36EE70085F086 /* KURLHandler.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3AA8135412C36EE70085F086 /* KURLHandler.mm */; };
 		3AA8135812C37DC90085F086 /* KFileURLHandler.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3AA8135712C37DC90085F086 /* KFileURLHandler.mm */; };
@@ -108,7 +107,8 @@
 		3AA8142712C390CE0085F086 /* about.md in Resources */ = {isa = PBXBuildFile; fileRef = 3AA8142612C390CE0085F086 /* about.md */; };
 		3AA817FF12C4A6CC0085F086 /* fonts in Resources */ = {isa = PBXBuildFile; fileRef = 3AA817F812C4A6CC0085F086 /* fonts */; };
 		3AA818D412C4DD330085F086 /* changelog in Resources */ = {isa = PBXBuildFile; fileRef = 3AA818D312C4DD330085F086 /* changelog */; };
-		3AA819B312C549B60085F086 /* KCrashReportCollector.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3AA819B212C549B60085F086 /* KCrashReportCollector.mm */; };
+		3AA819B312C549B60085F086 /* KCrashReportCollector.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AA819B212C549B60085F086 /* KCrashReportCollector.m */; };
+		3AA81A4212C60EEB0085F086 /* HURLConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AA81A4112C60EEB0085F086 /* HURLConnection.m */; };
 		3AAA9F4212BFB7B50079F079 /* Sparkle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3AAA9F4112BFB7B50079F079 /* Sparkle.framework */; };
 		3AAA9F6612BFBB010079F079 /* dsa_pub.pem in Resources */ = {isa = PBXBuildFile; fileRef = 3AAA9F6512BFBB010079F079 /* dsa_pub.pem */; };
 		3AAA9F7712BFC0440079F079 /* Sparkle.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 3AAA9F4112BFB7B50079F079 /* Sparkle.framework */; };
@@ -399,8 +399,6 @@
 		3A9293661229E49A00DA7E43 /* NSError+KAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSError+KAdditions.m"; sourceTree = "<group>"; };
 		3A9293CA1229ED4C00DA7E43 /* KDocumentController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KDocumentController.h; sourceTree = "<group>"; };
 		3A9293CB1229ED4C00DA7E43 /* KDocumentController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KDocumentController.mm; sourceTree = "<group>"; };
-		3A93A83E1299E14300185857 /* NSURL-blocks.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSURL-blocks.h"; sourceTree = "<group>"; };
-		3A93A83F1299E14300185857 /* NSURL-blocks.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSURL-blocks.m"; sourceTree = "<group>"; };
 		3A93AB82129ADA5500185857 /* hatomic_flags.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = hatomic_flags.h; sourceTree = "<group>"; };
 		3A93B4E5129B67CB00185857 /* KRUsage.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = KRUsage.hh; sourceTree = "<group>"; };
 		3AA8124412C2BDFC0085F086 /* SecurityFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SecurityFoundation.framework; path = System/Library/Frameworks/SecurityFoundation.framework; sourceTree = SDKROOT; };
@@ -416,7 +414,9 @@
 		3AA817F812C4A6CC0085F086 /* fonts */ = {isa = PBXFileReference; lastKnownFileType = folder; path = fonts; sourceTree = "<group>"; };
 		3AA818D312C4DD330085F086 /* changelog */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = changelog; sourceTree = "<group>"; };
 		3AA819B112C549B60085F086 /* KCrashReportCollector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCrashReportCollector.h; sourceTree = "<group>"; };
-		3AA819B212C549B60085F086 /* KCrashReportCollector.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KCrashReportCollector.mm; sourceTree = "<group>"; };
+		3AA819B212C549B60085F086 /* KCrashReportCollector.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCrashReportCollector.m; sourceTree = "<group>"; };
+		3AA81A4012C60EEB0085F086 /* HURLConnection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HURLConnection.h; path = "deps/hunch-cocoa/HURLConnection.h"; sourceTree = SOURCE_ROOT; };
+		3AA81A4112C60EEB0085F086 /* HURLConnection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = HURLConnection.m; path = "deps/hunch-cocoa/HURLConnection.m"; sourceTree = SOURCE_ROOT; };
 		3AAA9F4112BFB7B50079F079 /* Sparkle.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Sparkle.framework; path = deps/Sparkle.framework; sourceTree = "<group>"; };
 		3AAA9F6512BFBB010079F079 /* dsa_pub.pem */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = dsa_pub.pem; sourceTree = "<group>"; };
 		3AAAA13312C00E6D0079F079 /* Breakpad.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Breakpad.framework; path = deps/Breakpad.framework; sourceTree = "<group>"; };
@@ -628,6 +628,8 @@
 				3A811A6712AE7DE600BC08AE /* HDStream.m */,
 				3A811A6212AE7DE600BC08AE /* HDProcess.h */,
 				3A811A6312AE7DE600BC08AE /* HDProcess.m */,
+				3AA81A4012C60EEB0085F086 /* HURLConnection.h */,
+				3AA81A4112C60EEB0085F086 /* HURLConnection.m */,
 			);
 			name = "hunch-cocoa";
 			sourceTree = "<group>";
@@ -769,7 +771,7 @@
 			isa = PBXGroup;
 			children = (
 				3AA819B112C549B60085F086 /* KCrashReportCollector.h */,
-				3AA819B212C549B60085F086 /* KCrashReportCollector.mm */,
+				3AA819B212C549B60085F086 /* KCrashReportCollector.m */,
 			);
 			name = "Crash reporting";
 			sourceTree = "<group>";
@@ -915,8 +917,6 @@
 		3AE5E8D212916F4100B17C4F /* NS categories */ = {
 			isa = PBXGroup;
 			children = (
-				3A93A83E1299E14300185857 /* NSURL-blocks.h */,
-				3A93A83F1299E14300185857 /* NSURL-blocks.m */,
 				3A9293651229E49A00DA7E43 /* NSError+KAdditions.h */,
 				3A9293661229E49A00DA7E43 /* NSError+KAdditions.m */,
 				3A25E60E1281CFEF00B6A33E /* NSColor-web.h */,
@@ -1005,8 +1005,6 @@
 				3A9291381229BBB600DA7E43 /* Copy Frameworks */,
 				3A40F8DA12AFEB89007B5879 /* Copy Support Files */,
 				3AAAA2FE12C1065F0079F079 /* Copy Executable Files */,
-				3AAAA16012C00F160079F079 /* Run Script: Breakpad */,
-				3AAAA17612C012CD0079F079 /* Run Script: Strip */,
 				3AAAA19712C0179E0079F079 /* Run Script: Clean */,
 			);
 			buildRules = (
@@ -1142,36 +1140,6 @@
 			shellPath = /bin/sh;
 			shellScript = "/bin/bash admin/distribution.sh\nexit $?";
 		};
-		3AAAA16012C00F160079F079 /* Run Script: Breakpad */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 8;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "Run Script: Breakpad";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 1;
-			shellPath = /bin/sh;
-			shellScript = "#!/bin/sh\nPROD=\"$BUILT_PRODUCTS_DIR/$EXECUTABLE_PATH\"\nif (nm \"$PROD\" | grep --silent KAppDelegate) ;then\n  rm -rf \"$BUILT_PRODUCTS_DIR/symbols/$TARGET_NAME\"\n  # -s \"$PROJECT_DIR\"\n  python admin/symbolstore.py --archs \"$VALID_ARCHS\" \\\n    admin/dump_syms \\\n    \"$BUILT_PRODUCTS_DIR/symbols\" \"$PROD\"\nelse\n  echo 'Breakpad: product already stripped (can not extract symbols)'\nfi\nexit 0";
-			showEnvVarsInLog = 0;
-		};
-		3AAAA17612C012CD0079F079 /* Run Script: Strip */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 8;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "Run Script: Strip";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 1;
-			shellPath = /bin/sh;
-			shellScript = "#!/bin/sh\n/usr/bin/strip -S -r -x \"$BUILT_PRODUCTS_DIR/$EXECUTABLE_PATH\"\n";
-			showEnvVarsInLog = 0;
-		};
 		3AAAA19712C0179E0079F079 /* Run Script: Clean */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 8;
@@ -1240,7 +1208,6 @@
 				3AC4FADC1296D049004CDCFD /* KLangMapLinePattern.mm in Sources */,
 				3AC2D3FD1298C40A0066B586 /* KSourceHighlightState.mm in Sources */,
 				3AC2D4A71298D8050066B586 /* KTextStorage.mm in Sources */,
-				3A93A8401299E14300185857 /* NSURL-blocks.m in Sources */,
 				3A841180129D5CAE00F4A36D /* KTextField.mm in Sources */,
 				3A841183129D5D5C00F4A36D /* KTextFieldCell.mm in Sources */,
 				3A8411C2129D615800F4A36D /* KAutocompleteTextFieldCell.mm in Sources */,
@@ -1297,7 +1264,8 @@
 				3AA8135812C37DC90085F086 /* KFileURLHandler.mm in Sources */,
 				3AA8138F12C387A20085F086 /* KHTTPURLHandler.mm in Sources */,
 				3AA813DE12C38BB70085F086 /* KKodURLHandler.mm in Sources */,
-				3AA819B312C549B60085F086 /* KCrashReportCollector.mm in Sources */,
+				3AA819B312C549B60085F086 /* KCrashReportCollector.m in Sources */,
+				3AA81A4212C60EEB0085F086 /* HURLConnection.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1473,7 +1441,7 @@
 				COPY_PHASE_STRIP = NO;
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEPLOYMENT_POSTPROCESSING = YES;
+				DEPLOYMENT_POSTPROCESSING = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
@@ -1504,7 +1472,7 @@
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = src/prefix.pch;
-				GCC_PREPROCESSOR_DEFINITIONS = "KOD_WITH_BREAKPAD=1";
+				GCC_PREPROCESSOR_DEFINITIONS = "K_WITH_CRASH_REPORT_COLLECTOR=1";
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				HEADER_SEARCH_PATHS = (
 					src/ICU/include,
@@ -1534,7 +1502,7 @@
 				PRESERVE_DEAD_CODE_INITS_AND_TERMS = YES;
 				PRODUCT_NAME = Kod;
 				SDKROOT = macosx10.6;
-				SEPARATE_STRIP = YES;
+				SEPARATE_STRIP = NO;
 				STRIP_INSTALLED_PRODUCT = NO;
 				VALID_ARCHS = "i386 x86_64";
 				ZERO_LINK = NO;

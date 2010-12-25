@@ -1,11 +1,3 @@
-//
-//  ICUMatcher.m
-//  CocoaICU
-//
-//  Created by Aaron Evans on 11/29/06.
-//  Copyright 2006 Aaron Evans. All rights reserved.
-//
-
 #import "ICUMatcher.h"
 #import "NSStringICUAdditions.h"
 #import "ICUPattern.h"

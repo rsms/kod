@@ -52,10 +52,11 @@
                        forKey:NSURLContentModificationDateKey
                         error:nil]) {
       // move file
+      NSString *path = [url path];
       NSString *pathExt = [url pathExtension];
-      NSURL *dstURL = [[url URLByDeletingPathExtension]
-        URLByAppendingPathExtension:[NSString stringWithFormat:@"%@.%@",
-        processedFileSuffix_, pathExt]];
+      path = [NSString stringWithFormat:@"%@%@.%@",
+          [path stringByDeletingPathExtension], processedFileSuffix_, pathExt];
+      NSURL *dstURL = [NSURL fileURLWithPath:path isDirectory:NO];
       DLOG("[crash reporter] marking %@ as processed", url);
       if ([fm moveItemAtURL:url toURL:dstURL error:&error] && mtime &&
           [mtime laterDate:latestDate]) {
@@ -90,11 +91,19 @@
                     forKey:@"Content-Type"]];
   [req setHTTPBody:data];
   [self retain]; // during submission
-  __block HURLConnection *conn = nil;// block type to avoid cyclic references
-  conn = [[HURLConnection alloc] initWithRequest:req
-                                 onResponseBlock:nil
-                                     onDataBlock:nil
-                                 onCompleteBlock:
+  [HURLConnection connectionWithRequest:req
+                               onResponseBlock:^(NSURLResponse *response) {
+    // check response status
+    NSError *error = nil;
+    if ([response isKindOfClass:[NSHTTPURLResponse class]]) {
+      NSInteger status = [(NSHTTPURLResponse*)response statusCode];
+      if (status < 200 || status > 299) {
+        error = [NSError kodErrorWithHTTPStatusCode:status];
+      }
+    }
+    return error;
+  }
+  onDataBlock:nil onCompleteBlock:
   ^(NSError *err, NSData *rspData){
     if (!err) {
       DLOG("submitted crash report OK. Response: '%@'",
@@ -102,8 +111,9 @@
     }
     if (callback)
       callback(err);
-    [conn release];
     [self release];
+    // Note: the connection object releases itself after the onComplete handler
+    // returns.
   } startImmediately:YES];
 }
 

@@ -19,35 +19,10 @@
 #endif
 
 
-#if KOD_WITH_BREAKPAD
-BreakpadRef gBreakpad = NULL;
-
-void k_breakpad_init() {
-  NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-  gBreakpad = NULL;
-  NSDictionary *plist = [[NSBundle mainBundle] infoDictionary];
-  if (plist) {
-    NSMutableDictionary *info =
-        [NSMutableDictionary dictionaryWithDictionary:plist];
-    [info setObject:@"http://kodapp.com/breakpad/recv.php"
-             forKey:@"BreakpadURL"];
-    // Note: version 1.0.0.4 of the framework changed the type of the argument 
-    // from CFDictionaryRef to NSDictionary * on the next line:
-    gBreakpad = BreakpadCreate(info);
-  }
-  [pool release];
-}
-#else
-void k_breakpad_init() {}
-#endif
-
-
 @implementation KAppDelegate
 
 
 - (void)awakeFromNib {
-  k_breakpad_init();
-  
   // Sparkle configuration
   [sparkleUpdater_ setAutomaticallyChecksForUpdates:YES];
   [sparkleUpdater_ setUpdateCheckInterval:3600.0];
@@ -108,18 +83,10 @@ void k_breakpad_init() {}
   
   // Start loading default style
   NSURL *builtinURL = kconf_res_url(@"style/default.css");
-  NSURL *url = kconf_url(@"styleURL", builtinURL);
+  NSURL *url = kconf_url(@"style/current/url", builtinURL);
   [[KStyle sharedStyle] loadFromURL:url withCallback:^(NSError *error) {
     if (error) [NSApp presentError:error];
   }];
-  
-  // XXX load another style after 5 seconds
-  /*h_dispatch_delayed_main(5000, ^{
-    NSURL *url2 = kconf_res_url(@"style/bright.css");
-    [[KStyle sharedStyle] loadFromURL:url2 withCallback:^(NSError *error) {
-      if (error) [NSApp presentError:error];
-    }];
-  });*/
   
   // Register URL handler
   NSAppleEventManager *aem = [NSAppleEventManager sharedAppleEventManager];
@@ -163,7 +130,7 @@ void k_breakpad_init() {}
     [self displayTerminalUsage:self];
   }
   
-  #if !K_DEBUG_BUILD
+  #if K_WITH_CRASH_REPORT_COLLECTOR
   // Find & process any crash reports and offer the user to submit any newfound
   // reports. Note: This will block (switch runloop mode into modal) if there
   // was a new crash reports since a modal dialog is used to ask the user to
@@ -176,9 +143,6 @@ void k_breakpad_init() {}
 
 
 - (void)applicationWillTerminate:(NSNotification *)aNotification {
-  #if KOD_WITH_BREAKPAD
-  BreakpadRelease(gBreakpad);
-  #endif
   [[KNodeProcess sharedProcess] terminate];
 }
 

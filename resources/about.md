@@ -9,35 +9,102 @@ See <http://kodapp.com/> and <kod:changelog> for more information.
 Kod utilizes the following third party or external content.
 
 
-### Google Breakpad
+### Node.js
 
-Copyright (c) 2006, Google Inc.
-All rights reserved.
+> Note: Kod does not incorporate any source from the Node.js project, but ships
+  with a built version of Node.js. We include this license mostly for good
+  measure.
+
+This license applies to all parts of Node that are not externally
+maintained libraries. The externally maintained libraries used by Node
+are:
+
+- v8, located under deps/v8, which is copyrighted by the Google, Inc.
+  v8 has a BSD license.
+
+- libev, located under deps/libev, and libeio, located at deps/libeio. 
+  This code is copyrighted by Marc Alexander Lehmann. Both are dually
+  licensed under MIT and GPL2.
+
+- WAF build system, located at tools/waf. Copyrighted Thomas Nagy.
+  Released under an MIT license.
+
+- The SCONS build system, located at tools/scons. Copyrighted by the SCONS
+  Foundation.  Released under an MIT license.
+
+- C-Ares, an asynchronous DNS client, located at deps/c-ares. Copyright by
+  the Massachusetts Institute of Technology; authored by Greg Hudson,
+  Daniel Stenberg and others. Released under an MIT license.
+
+- Node, optionally, dynmaically links to OpenSSL, cryptographic software
+  written by Eric Young (eay@cryptsoft.com) to provide SSL/TLS encryption.
+  OpenSSL is copyrighted by The OpenSSL Project.  OpenSSL has a simple
+  Apache-style license. OpenSSL is not included in the Node distribution.
+  See http://openssl.org/ for more information.
+
+- tools/doctool/markdown.js is Released under MIT license and
+  Copyright 2009-2010 Dominic Baggott and Ash Berli
+
+- HTTP Parser, located at deps/http_parser, is a small C library
+  copyrighted by Ryan Lienhart Dahl and has a MIT license.
+
+- src/platform_darwin_proctitle.cc, has code taken from the Chromium
+  project copyright Google Inc. and released with the BSD license.
+
+- tools/closure_linter is copyrighted by The Closure Linter Authors and
+  Google Inc and is released under the Apache license.
+
+- tools/cpplint.py is copyrighted by Google Inc and is released under the
+  BSD license.
+
+
+Node's license follows:
+
+Copyright 2009, 2010 Ryan Lienhart Dahl. All rights reserved.
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to
+deal in the Software without restriction, including without limitation the
+rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+sell copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+IN THE SOFTWARE.
+
+
+### json-framework
+
+Copyright (C) 2007-2010 Stig Brautaset. All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are
-met:
+modification, are permitted provided that the following conditions are met:
 
-- Redistributions of source code must retain the above copyright
-notice, this list of conditions and the following disclaimer.
-- Redistributions in binary form must reproduce the above
-copyright notice, this list of conditions and the following disclaimer
-in the documentation and/or other materials provided with the
-distribution.
-- Neither the name of Google Inc. nor the names of its
-contributors may be used to endorse or promote products derived from
-this software without specific prior written permission.
+* Redistributions of source code must retain the above copyright notice, this
+  list of conditions and the following disclaimer.
+* Redistributions in binary form must reproduce the above copyright notice,
+  this list of conditions and the following disclaimer in the documentation
+  and/or other materials provided with the distribution.
+* Neither the name of the author nor the names of its contributors may be used
+  to endorse or promote products derived from this software without specific
+  prior written permission.
 
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
@@ -422,7 +489,9 @@ DEALINGS IN THE SOFTWARE.
 ### GNU Source Highlight
 
 Kod contains a dynamic libsource-highlight and some language definition files
-from Source Highlight. Please note that no computer source code has been modified or even used in Kod. The modifications made to the language definition files are open and distributed with Kod (see Contents/Resources/lang).
+from Source Highlight. Please note that no computer source code has been
+modified or even used in Kod. The modifications made to the language definition
+files are open and distributed with Kod (see Contents/Resources/lang).
 
 Source-highlight is licensed under GPL as follows:
 
@@ -1101,3 +1170,32 @@ the library.  If this is what you want to do, use the GNU Lesser General
 Public License instead of this License.  But first, please read
 <http://www.gnu.org/philosophy/why-not-lgpl.html>.
 
+
+### BWToolkit
+
+Copyright (c) 2010, Brandon Walkin All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification,
+are permitted provided that the following conditions are met:
+
+- Redistributions of source code must retain the above copyright notice, this
+  list of conditions and the following disclaimer.
+
+- Redistributions in binary form must reproduce the above copyright notice, this
+  list of conditions and the following disclaimer in the documentation and/or
+  other materials provided with the distribution.
+
+- Neither the name of the Brandon Walkin nor the names of its contributors may
+  be used to endorse or promote products derived from this software without
+  specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.

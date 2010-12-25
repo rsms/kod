@@ -194,7 +194,7 @@ static inline const char *debug_bits32(int32_t a) {
 #import "NSError+KAdditions.h"
 #import "NSColor-web.h"
 #import "NSCharacterSet-kod.h"
-#import "NSURL-blocks.h"
+#import "HURLConnection.h"  // provides NSURL category
 #import "NSMutableArray-kod.h"
 #import "NSView-kod.h"
 #import "NSData-kod.h"

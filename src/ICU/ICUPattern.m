@@ -1,14 +1,4 @@
-//
-//  ICUPattern.m
-//  CocoaICU
-//
-//  Created by Aaron Evans on 11/19/06.
-//  Copyright 2006 Aaron Evans. All rights reserved.
-//
-// more info: http://icu.sourceforge.net/apiref/icu4c/uregex_8h.html
-//
-// inspiration: http://java.sun.com/j2se/1.5.0/docs/api/index.html?java/util/regex/Pattern.html
-//
+// http://icu.sourceforge.net/apiref/icu4c/uregex_8h.html
 
 #import "ICUPattern.h"
 #import "ICUMatcher.h"
