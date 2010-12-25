@@ -88,4 +88,4 @@ git tag -m 'Release $VERSION' 'v$VERSION'
 git pu
 
 EOF
-open -a ./Kod.app "$TEMPFILE"
+open -a Kod "$TEMPFILE"
