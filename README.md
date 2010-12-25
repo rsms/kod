@@ -14,7 +14,7 @@ If you want to use Kod, simply download the latest "stable" version from [http:/
 
 ### 1. Get the source
 
-It's recommended you clone the repository `git://github.com/rsms/rsms.git`. If you have an older version of git, you will need to check out the submodules
+It's recommended you clone the repository `git://github.com/rsms/kod.git`. If you have an older version of git, you will need to check out the submodules
 manually.
 
 ### 2. Build node
