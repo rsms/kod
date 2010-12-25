@@ -63,9 +63,9 @@
 								<int key="NSCellFlags2">272760832</int>
 								<string type="base64-UTF8" key="NSContents">VGhlIEtvZCBhcHBsaWNhdGlvbiBidW5kbGUgY29udGFpbnMgYSBjb21tYW5kIGxpbmUgdG9vbCBjYWxs
 ZWQgImtvZCIgd2hpY2ggY2FuIGJlIHVzZWQgdG8gbGF1bmNoIEtvZC5hcHAgYW5kIG9wZW4gZmlsZXMg
-ZnJvbSB0aGUgdGVybWluYWwuCgpJdCdzIHJlY29tbWVuZGVkIHRoYXQgYSBzeW1ib2xpYyBsaW5rIGlz
-IGNyZWF0ZWQgZnJvbSB5b3VyIGJpbiBkaXJlY3RvcnksIHNvIHRoYXQgdXBkYXRpbmcgdGhlIGFwcGxp
-Y2F0aW9uIGluIHRoZSBmdXR1cmUsIHdpbGwgYWxzbyB1cGRhdGUgdGhlIGNvbW1hbmQgaW4gdXNlLg</string>
+ZnJvbSB0aGUgdGVybWluYWwuCgpJdCdzIHJlY29tbWVuZGVkIHRoYXQgYSBzeW1ib2xpYyBsaW5rIGJl
+IGNyZWF0ZWQgaW4geW91ciBzeXN0ZW0ncyBiaW4gZGlyZWN0b3J5LCBzbyB0aGF0IGFueSBmdXR1cmUg
+YXBwbGljYXRpb24gdXBkYXRlcyB3aWxsIGFsc28gdXBkYXRlIHRoZSBjb21tYW5kIGxpbmUgdG9vbC4</string>
 								<object class="NSFont" key="NSSupport">
 									<string key="NSName">LucidaGrande</string>
 									<double key="NSSize">11</double>
@@ -583,6 +583,27 @@ Y2F0aW9uIGluIHRoZSBmdXR1cmUsIHdpbGwgYWxzbyB1cGRhdGUgdGhlIGNvbW1hbmQgaW4gdXNlLg</
 					<object class="IBClassDescriptionSource" key="sourceIdentifier">
 						<string key="majorKey">IBFrameworkSource</string>
 						<string key="minorKey">FScript.framework/Headers/FSNSObject.h</string>
+					</object>
+				</object>
+				<object class="IBPartialClassDescription">
+					<string key="className">NSObject</string>
+					<object class="IBClassDescriptionSource" key="sourceIdentifier">
+						<string key="majorKey">IBFrameworkSource</string>
+						<string key="minorKey">QuartzCore.framework/Headers/CAAnimation.h</string>
+					</object>
+				</object>
+				<object class="IBPartialClassDescription">
+					<string key="className">NSObject</string>
+					<object class="IBClassDescriptionSource" key="sourceIdentifier">
+						<string key="majorKey">IBFrameworkSource</string>
+						<string key="minorKey">QuartzCore.framework/Headers/CALayer.h</string>
+					</object>
+				</object>
+				<object class="IBPartialClassDescription">
+					<string key="className">NSObject</string>
+					<object class="IBClassDescriptionSource" key="sourceIdentifier">
+						<string key="majorKey">IBFrameworkSource</string>
+						<string key="minorKey">QuartzCore.framework/Headers/CIImageProvider.h</string>
 					</object>
 				</object>
 				<object class="IBPartialClassDescription">
