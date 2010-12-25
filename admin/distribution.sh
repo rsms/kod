@@ -5,7 +5,6 @@ set -o errexit
 
 VERSION=$(defaults read "$BUILT_PRODUCTS_DIR/$PROJECT_NAME.app/Contents/Info" CFBundleVersion)
 DOWNLOAD_BASE_URL="http://kodapp.com/dist"
-RELEASENOTES_URL="http://kodapp.com/release-notes.html#version-$VERSION"
 
 ARCHIVE_FILENAME="$PROJECT_NAME-$VERSION.zip"
 DOWNLOAD_URL="$DOWNLOAD_BASE_URL/$ARCHIVE_FILENAME"
@@ -42,7 +41,6 @@ import sys, re
 ITEM = '''
     <item>
       <title>Version $VERSION</title>
-      <sparkle:releaseNotesLink>$RELEASENOTES_URL</sparkle:releaseNotesLink>
       <pubDate>$PUBDATE</pubDate>
       <enclosure
         url="$DOWNLOAD_URL"
@@ -73,54 +71,21 @@ APPCAST = re.compile(r'(\n[ \r\n\t]*</channel>)', re.M).sub(ITEM.rstrip()+r'\1',
 open('$WD/admin/appcast.xml','w').write(APPCAST)
 EOF
 
-python - <<EOF
-# encoding: utf-8
-import sys, re
-ITEM = '''
-    <section id="version-$VERSION">
-      <h2>Version $VERSION</h2>
-      <ul>
-        <li>DESCRIPTION</li>
-      </ul>
-    </section>
-'''
-VERSIONRE = r'<section id="version-([^"]+)">'
-newver = re.findall(VERSIONRE, ITEM)[0]
-
-f = open('$WD/admin/release-notes.html','r')
-HTML = f.read()
-f.close()
-
-if newver in re.findall(VERSIONRE, HTML):
-  print >> sys.stderr, ('Version %s is already in the release-notes.html -- you need to manually '\
-  'remove it from release-notes.html if this is not an error.') % newver
-  sys.exit(1)
-
-HTML = re.compile(r'(\n[ \r\n\t]*</body>)', re.M).sub(ITEM.rstrip()+r'\1', HTML)
-open('$WD/admin/release-notes.html','w').write(HTML)
-EOF
-
-PATH=~/bin:$PATH # if mate is in home/bin
-mate -a "$WD/admin/appcast.xml" "$WD/admin/release-notes.html"
-mate -a <<EOF
+TEMPFILE=$(mktemp -t kod)
+cat > "$TEMPFILE" <<EOF
 
                   ------------- INSTRUCTIONS -------------
 
-1. Complete the new entry created in release-notes.html
-
-mate '$WD/admin/release-notes.html'
-
-2. Publish the archive, release notes and appcast (in order):
+1. Publish the archive and then the appcast:
 
 scp '$BUILT_PRODUCTS_DIR/$ARCHIVE_FILENAME' hunch.se:/var/www/kodapp.com/www/public/dist/
-scp -Cr '$BUILT_PRODUCTS_DIR/symbols/$PROJECT_NAME/'* hunch.se:/var/www/kodapp.com/www/breakpad/symbols/$PROJECT_NAME/
-scp '$WD/admin/release-notes.html' hunch.se:/var/www/kodapp.com/www/public/release-notes.html
 scp '$WD/admin/appcast.xml' hunch.se:/var/www/kodapp.com/www/public/appcast.xml
 
-3. Commit, tag and push the source
+2. Commit, tag and push the source
 
 git ci 'Release $VERSION' -a
-git tag -sm 'Release $VERSION' 'v$VERSION'
+git tag -m 'Release $VERSION' 'v$VERSION'
 git pu
 
 EOF
+open -a ./Kod.app "$TEMPFILE"

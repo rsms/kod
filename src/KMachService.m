@@ -52,10 +52,10 @@ shouldMakeNewConnection:(NSConnection *)newConnnection {
     }
   }
   DLOG("%@ openURLs:%@", self, absoluteURLs);
-  KDocumentController *documentController =
-    (KDocumentController*)[NSDocumentController sharedDocumentController];
+  KDocumentController *documentController = [KDocumentController kodController];
   kassert(documentController != nil);
   [documentController openDocumentsWithContentsOfURLs:absoluteURLs
+                       nonExistingFilesAsNewDocuments:YES
                                              callback:nil];
 }
 

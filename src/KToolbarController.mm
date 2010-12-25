@@ -138,8 +138,8 @@ static const CGFloat kLeftMarginWhenNoSidebar = 4.0;
 // Call is delegated from KBrowserWindowController
 - (void)updateToolbarWithContents:(CTTabContents*)contents
                shouldRestoreState:(BOOL)shouldRestore {
-  DLOG("updateToolbarWithContents:%@ shouldRestoreState:%@", contents,
-       shouldRestore?@"YES":@"NO");
+  //DLOG("updateToolbarWithContents:%@ shouldRestoreState:%@", contents,
+  //     shouldRestore?@"YES":@"NO");
   [self setCurrentContents:contents];
 }
 
@@ -222,6 +222,7 @@ static const CGFloat kLeftMarginWhenNoSidebar = 4.0;
   [documentController openDocumentsWithContentsOfURLs:absoluteURLs
                                  withWindowController:windowController
                                          priority:DISPATCH_QUEUE_PRIORITY_HIGH
+                       nonExistingFilesAsNewDocuments:NO
                                              callback:nil];
 }
 

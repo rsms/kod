@@ -34,6 +34,12 @@
 - (void)openDocumentsWithContentsOfURLs:(NSArray*)urls
                    withWindowController:(KBrowserWindowController*)windowController
                                priority:(long)priority
+         nonExistingFilesAsNewDocuments:(BOOL)newDocForNewURLs
+                               callback:(dispatch_block_t)callback;
+
+// Open |urls| in frontmost window with high priority
+- (void)openDocumentsWithContentsOfURLs:(NSArray*)urls
+         nonExistingFilesAsNewDocuments:(BOOL)newDocForNewURLs
                                callback:(dispatch_block_t)callback;
 
 // Open |urls| in frontmost window with high priority

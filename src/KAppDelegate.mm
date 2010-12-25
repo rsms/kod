@@ -25,10 +25,10 @@
 - (void)awakeFromNib {
   // Sparkle configuration
   [sparkleUpdater_ setAutomaticallyChecksForUpdates:YES];
+  [sparkleUpdater_ setAutomaticallyDownloadsUpdates:YES];
   [sparkleUpdater_ setUpdateCheckInterval:3600.0];
   [sparkleUpdater_ setFeedURL:[NSURL URLWithString:
       @"http://kodapp.com/appcast.xml"]];
-  [sparkleUpdater_ setAutomaticallyDownloadsUpdates:YES];
 }
 
 
@@ -121,13 +121,31 @@
 
 - (void)applicationDidFinishLaunching:(NSNotification *)notification {
   // NOTE: KDocumentController will create a new window & tab upon start
-  [sparkleUpdater_ setAutomaticallyDownloadsUpdates:YES];
-  
+
   // Stuff we do upon first launch (keep this to a minimum)
-  if (!kconf_bool(@"firstLaunchMarker", NO)) {
+  BOOL launchedBefore = kconf_bool(@"firstLaunchMarker", NO);
+  if (!launchedBefore) {
     kconf_set_bool(@"firstLaunchMarker", YES);
     // Offer to enable the kod helper
     [self displayTerminalUsage:self];
+  }
+  
+  // Did we just launch a new version? (happens after upgrade)
+  NSString *lastLaunchedVersion = kconf_string(@"lastLaunchedVersion", nil);
+  NSString *currentVersion =
+      [[kconf_bundle() infoDictionary] objectForKey:@"CFBundleVersion"];
+  if (!lastLaunchedVersion ||
+      ![currentVersion isEqualToString:lastLaunchedVersion]) {
+    // write current version
+    kconf_set_object(@"lastLaunchedVersion", currentVersion);
+    if (![currentVersion isEqualToString:lastLaunchedVersion] ||
+        // happens when upgrading from 0.0.1:
+        (launchedBefore && !lastLaunchedVersion)) {
+      // we did upgrade -- display the changelog
+      NSURL *changelogURL = [NSURL URLWithString:@"kod:changelog"];
+      [[KDocumentController kodController]
+       openDocumentsWithContentsOfURL:changelogURL callback:nil];
+    }
   }
   
   #if K_WITH_CRASH_REPORT_COLLECTOR
@@ -180,10 +198,8 @@
 
   // dispatch opening of files
   if (fileURLs.count != 0) {
-    KDocumentController *documentController =
-      (KDocumentController*)[NSDocumentController sharedDocumentController];
-    [documentController openDocumentsWithContentsOfURLs:fileURLs
-                                               callback:nil];
+    [[KDocumentController kodController]
+     openDocumentsWithContentsOfURLs:fileURLs callback:nil];
   }
 }
 

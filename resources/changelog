@@ -28,6 +28,9 @@
 
  * [NEW] Clicking a link (elements of type "url") opens the clicked link.
 
+ * [FIXED] Opening a non-existing using the "kod" helper creates a new document
+   for the named URL instead of issuing an error. Ticket 17
+
 
 2010-12-23  0.0.1  (Rasmus Andersson <rasmus@notion.se>)
 

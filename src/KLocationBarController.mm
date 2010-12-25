@@ -123,6 +123,7 @@
     [documentController openDocumentsWithContentsOfURLs:urls
                                    withWindowController:windowController
                                            priority:DISPATCH_QUEUE_PRIORITY_HIGH
+                         nonExistingFilesAsNewDocuments:YES
                                                callback:nil];
   }
 }

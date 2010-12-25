@@ -98,6 +98,7 @@
 - (void)openDocumentsWithContentsOfURLs:(NSArray*)urls
                    withWindowController:(KBrowserWindowController*)windowController
                                priority:(long)priority
+         nonExistingFilesAsNewDocuments:(BOOL)newDocForNewURLs
                                callback:(dispatch_block_t)callback {
   DLOG("openDocumentsWithContentsOfURLs:%@", urls);
   // countdown
@@ -111,6 +112,7 @@
   
   // dispatch queue to open the documents in
   dispatch_queue_t dispatchQueue = dispatch_get_global_queue(priority, 0);
+  NSFileManager *fm = [NSFileManager defaultManager];
   
   // callback countdown
   kassert(i < INT32_MAX);
@@ -129,6 +131,22 @@
       if (callback && OSAtomicDecrement32(&callbackCountdown) == 0) {
         callback();
         [callback release];
+      }
+    } else if (newDocForNewURLs && [url isFileURL] &&
+               ![fm fileExistsAtPath:[url path]]) {
+      // create new document
+      KTabContents *tab =
+          [self openUntitledDocumentWithWindowController:windowController
+                                                 display:index==0
+                                                   error:nil];
+      // TODO: handle error
+      if (tab) {
+        tab.fileURL = url;
+        // done?
+        if (callback && OSAtomicDecrement32(&callbackCountdown) == 0) {
+          callback();
+          [callback release];
+        }
       }
     } else {
       dispatch_async(dispatchQueue, ^{
@@ -159,14 +177,23 @@
 
 
 - (void)openDocumentsWithContentsOfURLs:(NSArray*)urls
+         nonExistingFilesAsNewDocuments:(BOOL)newDocForNewURLs
                                callback:(dispatch_block_t)callback {
   // open the documents in the frontmost window controller
   KBrowserWindowController *windowController = (KBrowserWindowController *)
     [KBrowserWindowController mainBrowserWindowController];
-  
   [self openDocumentsWithContentsOfURLs:urls
                    withWindowController:windowController
                                priority:DISPATCH_QUEUE_PRIORITY_HIGH
+         nonExistingFilesAsNewDocuments:(BOOL)newDocForNewURLs
+                               callback:callback];
+}
+
+
+- (void)openDocumentsWithContentsOfURLs:(NSArray*)urls
+                               callback:(dispatch_block_t)callback {
+  [self openDocumentsWithContentsOfURLs:urls
+         nonExistingFilesAsNewDocuments:NO
                                callback:callback];
 }
 
