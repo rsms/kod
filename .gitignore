@@ -5,3 +5,8 @@
 *.breakpad
 /src/kod_version.h
 /website/public/config.php
+/include
+/resources/lang
+/libboost*
+/libsource*
+/kod.xcodeproj/*.pbxuser
