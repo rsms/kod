@@ -47,11 +47,7 @@ Finally:
 
     deps/srchilight/import-lang-files.sh
 
-### 5. Check out chromium-tabs
-
-    git clone git://github.com/rsms/chromium-tabs.git
-
-### 6. Start hacking
+### 5. Start hacking
 
     open kod.xcodeproj
 

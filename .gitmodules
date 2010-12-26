@@ -13,3 +13,6 @@
 [submodule "deps/node"]
 	path = deps/node
 	url = https://github.com/ry/node.git
+[submodule "chromium-tabs"]
+	path = chromium-tabs
+	url = git://github.com/rsms/chromium-tabs.git
