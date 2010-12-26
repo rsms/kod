@@ -31,10 +31,20 @@ manually:
 
 ### 4. Configure Source Highlight
 
-This currently requires MacPorts. Sorry.
+This currently requires MacPorts or Homebrew.
+
+Via Homebrew:
+
+    brew install source-highlight
+    deps/srchilight/import-from-homebrew.sh
+
+Via MacPorts:
 
     port install source-highlight +universal
     deps/srchilight/import-from-macports.sh
+
+Finally:
+
     deps/srchilight/import-lang-files.sh
 
 ### 5. Check out chromium-tabs
