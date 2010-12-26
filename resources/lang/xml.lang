@@ -1,7 +1,7 @@
 # @title Generic XML
 # @matchuti public.xml
 # @matchext xml, docbook, kidl, xsl, xslt, tld, pt, cpt, dtml, rss, opml
-# @matchfirstline <\?xml
+# @matchfirstline ^<\?xml
 
 state preproc delim "<?xml" "?>" multiline begin
 	include "_key_string.lang"
