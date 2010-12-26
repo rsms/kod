@@ -7,6 +7,9 @@
    script syntax parser no longer incorrectly marks those characters as symbols.
    Such a line is now properly treated as a line comment. Ticket 49
 
+ * [FIXED] XML content (e.g. XML property lists) detected by scanning first line
+   for "<?xml". Ticket 54
+
 
 2010-12-24  0.0.2  (Rasmus Andersson <rasmus@notion.se>)
 
