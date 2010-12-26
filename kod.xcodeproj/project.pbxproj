@@ -115,8 +115,6 @@
 		3AAA9F4212BFB7B50079F079 /* Sparkle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3AAA9F4112BFB7B50079F079 /* Sparkle.framework */; };
 		3AAA9F6612BFBB010079F079 /* dsa_pub.pem in Resources */ = {isa = PBXBuildFile; fileRef = 3AAA9F6512BFBB010079F079 /* dsa_pub.pem */; };
 		3AAA9F7712BFC0440079F079 /* Sparkle.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 3AAA9F4112BFB7B50079F079 /* Sparkle.framework */; };
-		3AAAA13412C00E6D0079F079 /* Breakpad.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3AAAA13312C00E6D0079F079 /* Breakpad.framework */; };
-		3AAAA13912C00E750079F079 /* Breakpad.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 3AAAA13312C00E6D0079F079 /* Breakpad.framework */; };
 		3AAAA2FD12C106410079F079 /* node in Copy Executable Files */ = {isa = PBXBuildFile; fileRef = 3AAAA2FB12C1060C0079F079 /* node */; };
 		3AAC02B812BD1110001BDC39 /* kconf.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AAC02B712BD1110001BDC39 /* kconf.m */; };
 		3AAC03F012BD2FC2001BDC39 /* sidebar-closed.png in Resources */ = {isa = PBXBuildFile; fileRef = 3AAC03EE12BD2FC2001BDC39 /* sidebar-closed.png */; };
@@ -232,7 +230,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				3AAAA13912C00E750079F079 /* Breakpad.framework in Copy Frameworks */,
 				3AAA9F7712BFC0440079F079 /* Sparkle.framework in Copy Frameworks */,
 				3A929887122AC39100DA7E43 /* ChromiumTabs.framework in Copy Frameworks */,
 				3AE5E9A3129180CB00B17C4F /* CSS.framework in Copy Frameworks */,
@@ -374,7 +371,6 @@
 		3A811A6D12AE7DE600BC08AE /* NSThread-condensedStackTrace.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSThread-condensedStackTrace.m"; path = "deps/hunch-cocoa/NSThread-condensedStackTrace.m"; sourceTree = SOURCE_ROOT; };
 		3A811A7B12AE813800BC08AE /* KModeTextFieldDecoration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KModeTextFieldDecoration.h; sourceTree = "<group>"; };
 		3A811A7C12AE813800BC08AE /* KModeTextFieldDecoration.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KModeTextFieldDecoration.mm; sourceTree = "<group>"; };
-		3A811B4712AE8F1500BC08AE /* YAML.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = YAML.framework; path = deps/syck/ext/cocoa/build/Deployment/YAML.framework; sourceTree = "<group>"; };
 		3A84117E129D5CAE00F4A36D /* KTextField.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KTextField.h; sourceTree = "<group>"; };
 		3A84117F129D5CAE00F4A36D /* KTextField.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KTextField.mm; sourceTree = "<group>"; };
 		3A841181129D5D5C00F4A36D /* KTextFieldCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KTextFieldCell.h; sourceTree = "<group>"; };
@@ -427,7 +423,6 @@
 		3AA81B2E12C62E160085F086 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		3AAA9F4112BFB7B50079F079 /* Sparkle.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Sparkle.framework; path = deps/Sparkle.framework; sourceTree = "<group>"; };
 		3AAA9F6512BFBB010079F079 /* dsa_pub.pem */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = dsa_pub.pem; sourceTree = "<group>"; };
-		3AAAA13312C00E6D0079F079 /* Breakpad.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Breakpad.framework; path = deps/Breakpad.framework; sourceTree = "<group>"; };
 		3AAAA2FB12C1060C0079F079 /* node */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = node; path = deps/node/build/default/node; sourceTree = SOURCE_ROOT; };
 		3AAC02B712BD1110001BDC39 /* kconf.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = kconf.m; sourceTree = "<group>"; };
 		3AAC03EE12BD2FC2001BDC39 /* sidebar-closed.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "sidebar-closed.png"; sourceTree = "<group>"; };
@@ -519,7 +514,6 @@
 				3A25E47D1281A6A700B6A33E /* libsource-highlight.dylib in Frameworks */,
 				3A158AFF128A0A3700339E6E /* libicucore.dylib in Frameworks */,
 				3AAA9F4212BFB7B50079F079 /* Sparkle.framework in Frameworks */,
-				3AAAA13412C00E6D0079F079 /* Breakpad.framework in Frameworks */,
 				3A510BEA12C2927A00AAC1D5 /* Security.framework in Frameworks */,
 				3AA8124512C2BDFC0085F086 /* SecurityFoundation.framework in Frameworks */,
 				3AA81B2F12C62E160085F086 /* QuartzCore.framework in Frameworks */,
@@ -738,12 +732,10 @@
 		3A92914F1229BD5E00DA7E43 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				3AAAA13312C00E6D0079F079 /* Breakpad.framework */,
 				3AAA9F4112BFB7B50079F079 /* Sparkle.framework */,
 				3A25E47A1281A6A200B6A33E /* libboost_regex-mt.dylib */,
 				3A25E47C1281A6A700B6A33E /* libsource-highlight.dylib */,
 				3A158AFE128A0A3700339E6E /* libicucore.dylib */,
-				3A811B4712AE8F1500BC08AE /* YAML.framework */,
 				3AE5EB871292DB5C00B17C4F /* CSS.framework */,
 				3ABF537912A5D0D80020233C /* FScript.framework */,
 				3A510BE912C2927A00AAC1D5 /* Security.framework */,
