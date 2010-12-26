@@ -34,10 +34,10 @@ variable = '\$\(([^[:blank:]]+)\)'
 variable = '\$([[:alpha:]]|_)[[:word:]]*'
 variable = '\$([^[:blank:]]{1})'
 
+include "_script_comment.lang"
+
 # notice that - is not a symbol since it can be used in command line parameters
 symbol = "~","!","%","^","*","(",")","+","=","[",
         "]","\\",":",";",",",".","/","?","&","<",">","\|","%%"
 symbol = '(##){2}(?!#)'
-
-include "_script_comment.lang"
 

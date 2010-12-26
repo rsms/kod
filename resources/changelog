@@ -3,6 +3,10 @@
  * [FIXED] Crash when "Go to line" in a tab which was moved in from another
    window. Ticket 23
 
+ * [FIXED] Multiple more than three "#" at the beginning of a line in the shell
+   script syntax parser no longer incorrectly marks those characters as symbols.
+   Such a line is now properly treated as a line comment. Ticket 49
+
 
 2010-12-24  0.0.2  (Rasmus Andersson <rasmus@notion.se>)
 
