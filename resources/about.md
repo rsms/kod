@@ -114,6 +114,16 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 IN THE SOFTWARE.
 
 
+### M+ fonts
+
+These fonts are free softwares.
+Unlimited permission is granted to use, copy, and distribute it, with
+or without modification, either commercially and noncommercially.
+THESE FONTS ARE PROVIDED "AS IS" WITHOUT WARRANTY.
+
+http://mplus-fonts.sourceforge.jp/mplus-outline-fonts/
+
+
 ### json-framework
 
 Copyright (C) 2007-2010 Stig Brautaset. All rights reserved.
