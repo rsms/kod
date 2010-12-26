@@ -1,7 +1,7 @@
 #!/bin/bash
 cd "$(dirname "$0")"
 cd src-highlite || exit $?
-git pull origin || exit $?
+git pull origin master || exit $?
 cd ../../.. || exit $?
 
 for file in deps/srchilight/src-highlite/src/*.lang; do
