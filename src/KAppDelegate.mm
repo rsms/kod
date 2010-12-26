@@ -84,9 +84,11 @@
   // Start loading default style
   NSURL *builtinURL = kconf_res_url(@"style/default.css");
   NSURL *url = kconf_url(@"style/current/url", builtinURL);
-  [[KStyle sharedStyle] loadFromURL:url withCallback:^(NSError *error) {
-    if (error) [NSApp presentError:error];
-  }];
+  if (url) {
+    [[KStyle sharedStyle] loadFromURL:url withCallback:^(NSError *error) {
+      if (error) [NSApp presentError:error];
+    }];
+  }
   
   // Register URL handler
   NSAppleEventManager *aem = [NSAppleEventManager sharedAppleEventManager];
