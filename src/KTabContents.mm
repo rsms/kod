@@ -1479,17 +1479,16 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
   
   // find first line
   if (text) {
-    NSRange firstNewlineRange =
-        [text rangeOfCharacterFromSet:[NSCharacterSet newlineCharacterSet]];
-    // limit to 1k (the file might lack newlines) since we make a copy and
-    // because the underlying mechanism uses somewhat slow regexp.
+    NSUInteger stopIndex = MIN(512, text.length);
+    firstLine = [text substringToIndex:stopIndex];
+    firstLine = [firstLine stringByTrimmingCharactersInSet:
+        [NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    NSRange firstNewlineRange = [firstLine rangeOfCharacterFromSet:
+        [NSCharacterSet newlineCharacterSet]];
     if (firstNewlineRange.location != NSNotFound) {
-      NSUInteger stopIndex = MIN(1024, firstNewlineRange.location);
-      firstLine = [text substringToIndex:stopIndex];
-    } else if (text.length <= 1024) {
-      firstLine = text;
+      firstLine = [text substringToIndex:firstNewlineRange.location];
     } else {
-      firstLine = [text substringToIndex:1024];
+      firstLine = text;
     }
   }
   
