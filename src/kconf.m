@@ -16,6 +16,20 @@ NSURL* kconf_support_url(NSString* relpath) {
 }
 
 
+NSURL* kconf_url(NSString* key, NSURL* def) {
+  NSString *v = [kconf_defaults() stringForKey:key];
+  if (!v) {
+    return def;
+  } else if ([v rangeOfString:@":"].location == NSNotFound) {
+    if (![v hasPrefix:@"/"])
+      v = [v stringByStandardizingPath];
+    return [NSURL fileURLWithPath:v];
+  } else {
+    return [NSURL URLWithString:v];
+  }
+}
+
+
 NSColor* kconf_color(NSString* key, NSColor* def) {
   id v = [kconf_defaults() stringForKey:key];
   if (v) v = [NSColor colorWithSRGBHexString:v];

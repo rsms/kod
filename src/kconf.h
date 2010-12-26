@@ -31,7 +31,7 @@ SI NSArray*      kconf_strings(NSString* key, NSArray* def)   _OIMPL(stringArray
 SI NSData*       kconf_data(NSString* key, NSData* def)       _OIMPL(data)
 SI NSDictionary* kconf_dict(NSString* key, NSDictionary* def) _OIMPL(dictionary)
 SI NSString*     kconf_string(NSString* key, NSString* def)   _OIMPL(string)
-SI NSURL*        kconf_url(NSString* key, NSURL* def)         _OIMPL(URL)
+   NSURL*        kconf_url(NSString* key, NSURL* def);
    NSColor*      kconf_color(NSString* key, NSColor* def);
 
 SI BOOL          kconf_bool(NSString* key, BOOL def)          _NIMPL(boolValue)
