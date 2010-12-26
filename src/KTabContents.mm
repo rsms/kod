@@ -1273,6 +1273,7 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
   // update linebreaks mapping
   NSString *string = textStorage.string;
 
+  NSCharacterSet *newlines = [NSCharacterSet newlineCharacterSet];
   BOOL editSpansToEndOfDocument =
       (editedRange.location + editedRange.length == string.length);
   size_t lbStartIndex = 0, lbEndIndex = 0, offsetRangesStart = 0;
@@ -1295,7 +1296,7 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
   
   if (changeInLength == 1 && editedRange.length == 1) {
     unichar ch = [string characterAtIndex:editedRange.location];
-    if (ch == '\n' || ch == '\r') {
+    if ([newlines characterIsMember:ch]) {
       //DLOG("linebreak: inserted one explicitly");
       NSUInteger lineStart, lineEnd, contentsEnd;
       [string getLineStart:&lineStart
