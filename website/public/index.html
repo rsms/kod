@@ -27,7 +27,8 @@
         left:85px; top:340px;
         width:200px;
       }
-      h2 { color:#eee; font-size:14px; }
+      h1 { font-size:18px; }
+      h2 { color:#eee; font-size:14px; margin-top:1.3em; }
       input[type=text] { display:block; width:190px; }
       input[type=submit] { float:right; }
       form p.error { color:#FFB8A7; }
@@ -42,7 +43,8 @@
         color:#999; display:block; font-size:11px;
         margin-top:0.618em; line-height:1.3;
       }
-      a { color:#86C3FF; text-decoration:none; }
+      a { color:#A7D8FF; text-decoration:none; }
+      a:hover { text-decoration:underline; }
       
       footer {
         display:block;
@@ -65,13 +67,17 @@
       </form>
     </div>
     <div class="info">
+      <h1>
+        Kod is a programmers' editor for OS X<br>
+      </h1>
       <p>
-        Kod is a programmers' editor for OS X.<br>
-        <small>
-          Currently under development, but will soon be available for
-          dare-devil beta testing. "Kod" means "Code" in Swedish.
-        </small>
+          Download latest stable release at
+              <a href="/download/">http://kodapp.com/download/</a>
       </p>
+      <p>
+          Source available at <a href="http://github.com/rsms/kod">http://github.com/rsms/kod</a>
+      </p>
+      <h2>Goals and features</h2>
       <ul>
         <li>
           Fully concurrent — loading files, syntax highlighting, etc is distributed across available CPU cores. Minimal waiting time.</li>
@@ -104,5 +110,16 @@
         Updates on <a href="http://twitter.com/#!/kod_app">Twitter @kod_app</a> &mdash; Made with love by <a href="http://hunch.se/">Rasmus Andersson</a>
       </small></footer>
     </div>
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-9078556-3']);
+      _gaq.push(['_trackPageview']);
+
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
   </body>
 </html>
