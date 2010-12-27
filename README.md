@@ -13,35 +13,33 @@ If you want to use Kod, simply download the latest "stable" version from [http:/
 
 ## Development
 
-### 1. Get the source
-
-It's recommended you clone the repository `git://github.com/rsms/kod.git`:
+**Get the source:**
 
     git clone --recursive https://github.com/rsms/kod.git
 
-### 2. Build node
+**Build dependencies:**
 
     deps/node-build.sh
-
-### 3. Build libcss
-
     deps/libcss/build.sh
 
-### 4. Configure Source Highlight
+**Setup Source Highlight:**
 
-This currently requires MacPorts. Sorry.
+Note: This currently requires [MacPorts](http://www.macports.org/).
 
     port install source-highlight +universal
     deps/srchilight/import-from-macports.sh
     deps/srchilight/import-lang-files.sh
 
-### 5. Check out chromium-tabs
-
-    git clone git://github.com/rsms/chromium-tabs.git
-
-### 6. Start hacking
+**Start hacking:**
 
     open kod.xcodeproj
+
+
+### Refreshing your clone
+
+Since Kod is made up of a main repositroy as well as a few sub-repositories (git submodules) a simple `git pull` is not sufficient to update your source tree clone. Use the `pull.sh` shell script for this:
+
+    ./pull.sh
 
 
 ## License
