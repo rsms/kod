@@ -1387,8 +1387,6 @@
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_3)",
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_4)",
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_5)",
-					"\"$(SRCROOT)/deps/syck/ext/cocoa/build/Development\"",
-					"\"$(SRCROOT)/deps/syck/ext/cocoa/build/Deployment\"",
 					"\"$(SRCROOT)/deps\"",
 				);
 				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)\"";
@@ -1410,7 +1408,9 @@
 					src/ICU/include,
 					"$(HEADER_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
 					"deps/libcss/cocoa-framework/build/Release/CSS.framework/Headers",
+					include,
 					/opt/local/include,
+					/usr/local/include,
 				);
 				HEADER_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/deps/srchilight/include\"";
 				INFOPLIST_FILE = resources/Info.plist;
@@ -1450,8 +1450,6 @@
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_3)",
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_4)",
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_5)",
-					"\"$(SRCROOT)/deps/syck/ext/cocoa/build/Development\"",
-					"\"$(SRCROOT)/deps/syck/ext/cocoa/build/Deployment\"",
 					"\"$(SRCROOT)/deps\"",
 				);
 				FRAMEWORK_SEARCH_PATHS_QUOTED_1 = "\"$(SYSTEM_LIBRARY_DIR)/Frameworks/WebKit.framework/Versions/A/Frameworks\"";
@@ -1481,7 +1479,9 @@
 					src/ICU/include,
 					"$(HEADER_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
 					"deps/libcss/cocoa-framework/build/Release/CSS.framework/Headers",
+					include,
 					/opt/local/include,
+					/usr/local/include,
 				);
 				HEADER_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/deps/srchilight/include\"";
 				INFOPLIST_FILE = resources/Info.plist;
