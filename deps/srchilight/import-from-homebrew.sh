@@ -6,8 +6,7 @@
 #
 # Any dependencies to |LIB| will also be imported and processed.
 #
-CELLAR=`brew --cellar`
-LIB=$CELLAR/source-highlight/3.1.4/lib/libsource-highlight.dylib
+LIB=/usr/local/lib/libsource-highlight.dylib
 #
 # -----------------------------------------------------------------------------
 #
@@ -45,7 +44,7 @@ resolvedeps "$LIB"
 
 mkdir -vp include
 rm -rf include/srchilite
-cp -vpr $CELLAR/source-highlight/3.1.4/include/srchilite include/srchilite
+cp -vpr /usr/local/include/srchilite include/srchilite
 
 # Note: we use -I/usr/local/include instead of copying these ATM.
 #mkdir -vp include/boost
