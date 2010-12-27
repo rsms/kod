@@ -1411,8 +1411,7 @@
 					"$(HEADER_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
 					"deps/libcss/cocoa-framework/build/Release/CSS.framework/Headers",
 					/opt/local/include,
-					/usr/local/Cellar/boost/1.45.0/include,
-					"/usr/local/Cellar/source-highlight/3.1.4/include",
+					/usr/local/include,
 				);
 				HEADER_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/deps/srchilight/include\"";
 				INFOPLIST_FILE = resources/Info.plist;
