@@ -75,7 +75,7 @@
 		3A7E71831286F54A00D85E4C /* KFileTextFieldCell.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A7E71821286F54A00D85E4C /* KFileTextFieldCell.mm */; };
 		3A7E71901286F71100D85E4C /* KFileTreeNodeData.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A7E718F1286F71100D85E4C /* KFileTreeNodeData.mm */; };
 		3A7E723B1287024100D85E4C /* KFileTreeController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A7E723A1287024100D85E4C /* KFileTreeController.mm */; };
-		3A7E74A712873A7100D85E4C /* KScroller.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A7E74A612873A7100D85E4C /* KScroller.m */; };
+		3A7E74A712873A7100D85E4C /* KScroller.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A7E74A612873A7100D85E4C /* KScroller.mm */; };
 		3A7E751F1287403100D85E4C /* KScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A7E751E1287403100D85E4C /* KScrollView.m */; };
 		3A811A6E12AE7DE600BC08AE /* HDProcess.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A811A6312AE7DE600BC08AE /* HDProcess.m */; };
 		3A811A6F12AE7DE600BC08AE /* HDSemaphore.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A811A6512AE7DE600BC08AE /* HDSemaphore.m */; };
@@ -353,7 +353,7 @@
 		3A7E72391287024100D85E4C /* KFileTreeController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KFileTreeController.h; sourceTree = "<group>"; };
 		3A7E723A1287024100D85E4C /* KFileTreeController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KFileTreeController.mm; sourceTree = "<group>"; };
 		3A7E74A512873A7100D85E4C /* KScroller.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KScroller.h; sourceTree = "<group>"; };
-		3A7E74A612873A7100D85E4C /* KScroller.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KScroller.m; sourceTree = "<group>"; };
+		3A7E74A612873A7100D85E4C /* KScroller.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KScroller.mm; sourceTree = "<group>"; };
 		3A7E751D1287403100D85E4C /* KScrollView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KScrollView.h; sourceTree = "<group>"; };
 		3A7E751E1287403100D85E4C /* KScrollView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KScrollView.m; sourceTree = "<group>"; };
 		3A811A6112AE7DE600BC08AE /* hcommon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = hcommon.h; path = "deps/hunch-cocoa/hcommon.h"; sourceTree = SOURCE_ROOT; };
@@ -874,7 +874,7 @@
 			isa = PBXGroup;
 			children = (
 				3A7E74A512873A7100D85E4C /* KScroller.h */,
-				3A7E74A612873A7100D85E4C /* KScroller.m */,
+				3A7E74A612873A7100D85E4C /* KScroller.mm */,
 			);
 			name = Scrollbar;
 			sourceTree = "<group>";
@@ -1193,7 +1193,7 @@
 				3A7E71831286F54A00D85E4C /* KFileTextFieldCell.mm in Sources */,
 				3A7E71901286F71100D85E4C /* KFileTreeNodeData.mm in Sources */,
 				3A7E723B1287024100D85E4C /* KFileTreeController.mm in Sources */,
-				3A7E74A712873A7100D85E4C /* KScroller.m in Sources */,
+				3A7E74A712873A7100D85E4C /* KScroller.mm in Sources */,
 				3A7E751F1287403100D85E4C /* KScrollView.m in Sources */,
 				3A158ADB128A09D300339E6E /* ICUMatcher.m in Sources */,
 				3A158ADC128A09D300339E6E /* ICUPattern.m in Sources */,

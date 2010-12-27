@@ -1,5 +1,6 @@
 #import "KTextView.h"
 #import "KStyleElement.h"
+#import "KScroller.h"
 #import "common.h"
 
 @implementation KTextView
@@ -83,10 +84,33 @@ static CGFloat kTextContainerYOffset = 0.0;
 }
 
 
-// catch and filter key events here
 /*- (void)keyDown:(NSEvent*)event {
   DLOG("keyDown %@ %ld", event, [[event characters] characterAtIndex:0]);
 }*/
 
+
+- (void)mouseMoved:(NSEvent*)event {
+  NSPoint loc = [event locationInWindow]; // window coords
+  KScroller *scroller =
+      (KScroller*)[(NSScrollView*)(self.superview.superview) verticalScroller];
+  if (!scroller.isCollapsed) {
+    NSRect scrollerFrame = [scroller frame];
+    NSPoint loc2 = [scroller convertPointFromBase:loc];
+    if (loc2.x <= 0.0) {
+      // only delegate mouseMoved to NSTextView if the mouse is outside of the
+      // scroller
+      [super mouseMoved:event];
+    }
+  }
+}
+
+
+/*- (void)resetCursorRects {
+  [self addCursorRect:NSMakeRect(0.0, 0.0, 100.0, 100.0)
+               cursor:[NSCursor arrowCursor]];
+}
+- (void)cursorUpdate:(NSEvent*)event {
+  DLOG("cursorUpdate:%@", event);
+}*/
 
 @end

@@ -173,9 +173,11 @@ static int debugSimulateTextAppendingIteration = 0;
   // Create a NSScrollView to which we add the NSTextView
   KScrollView *sv = [[KScrollView alloc] initWithFrame:NSZeroRect];
   [sv setDocumentView:textView_];
+  ((KScroller*)[sv horizontalScroller]).tab = self; // weak
+  ((KScroller*)[sv verticalScroller]).tab = self; // weak
 
   // Set the NSScrollView as our view
-  view_ = sv;
+  self.view = [sv autorelease];
   
   // Configure meta ruler (line numbers)
   self.hasMetaRuler = !kconf_bool(@"editor/metaRuler/hidden", NO);

@@ -1,8 +1,11 @@
 #import "KScroller.h"
 #import "KFileOutlineView.h"
+#import "KTabContents.h"
 #import "common.h"
 
 @implementation KScroller
+
+@synthesize tab = tab_;
 
 NSColor *KScrollerKnobColorNormal;
 NSColor *KScrollerKnobColorHover;
@@ -61,17 +64,9 @@ NSColor *KScrollerKnobSlotColorHover;
 }
 
 
-- (void)viewWillMoveToSuperview:(NSView*)superview {
-  if (superview &&
-      [superview isKindOfClass:[NSScrollView class]] &&
-      (superview = [[superview subviews] lastObject]) &&
-      [superview isKindOfClass:[NSClipView class]] &&
-      (superview = [[superview subviews] lastObject]) &&
-      [superview isKindOfClass:[NSTextView class]]) {
-    parentTextView_ = (NSTextView*)superview;
-  } else {
-    parentTextView_ = nil;
-  }
+- (void)resetCursorRects {
+  if (!self.isCollapsed)
+    [self addCursorRect:[self bounds] cursor:[NSCursor arrowCursor]];
 }
 
 
@@ -89,11 +84,19 @@ NSColor *KScrollerKnobSlotColorHover;
 - (void)mouseEntered:(NSEvent*)ev {
   hover_ = YES;
   [self setNeedsDisplay:YES];
+  [[self window] invalidateCursorRectsForView:self];
 }
+
 
 - (void)mouseExited:(NSEvent*)ev {
   hover_ = NO;
   [self setNeedsDisplay:YES];
+}
+
+
+- (BOOL)isCollapsed {
+  NSSize size = [self rectForPart:NSScrollerKnob].size;
+  return (vertical_ ? size.width : size.height) == 0.0;
 }
 
 
