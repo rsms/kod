@@ -1,0 +1,23 @@
+PRODUCT_NAME = Kod
+ONLY_ACTIVE_ARCH = YES
+GCC_VERSION = com.apple.compilers.llvm.clang.1_0
+INSTALL_PATH = $(HOME)/Applications
+MACOSX_DEPLOYMENT_TARGET = 10.6
+OTHER_LDFLAGS = -framework Foundation -framework AppKit
+LD_RUNPATH_SEARCH_PATHS = @loader_path/../Frameworks
+INFOPLIST_FILE = resources/Info.plist
+ALWAYS_SEARCH_USER_PATHS = NO
+
+// Note: values can not wrap lines
+FRAMEWORK_SEARCH_PATHS = $(inherited) "$(SRCROOT)" "$(SRCROOT)/deps/chromium-tabs/build/$(BUILD_STYLE)" "$(SRCROOT)/deps/libcss/cocoa-framework/build/$(BUILD_STYLE)" "$(SRCROOT)/deps"
+HEADER_SEARCH_PATHS = "$(SRCROOT)/src/ICU/include" "$(SRCROOT)/deps/srchilight/include" "deps/libcss/cocoa-framework/build/$(BUILD_STYLE)/CSS.framework/Headers" "include" "/opt/local/include" "/usr/local/include"
+LIBRARY_SEARCH_PATHS = $(inherited) "$(SRCROOT)/deps/srchilight"
+
+GCC_C_LANGUAGE_STANDARD = gnu99
+GCC_PRECOMPILE_PREFIX_HEADER = YES
+GCC_PREFIX_HEADER = src/prefix.pch
+GCC_ENABLE_CPP_EXCEPTIONS	= YES
+ZERO_LINK = NO
+DEBUG_INFORMATION_FORMAT = dwarf
+GCC_GENERATE_DEBUGGING_SYMBOLS = YES
+GCC_DEBUGGING_SYMBOLS = used
