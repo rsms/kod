@@ -54,9 +54,9 @@ Since Kod is made up of a main repositroy as well as a few sub-repositories (git
 
 ### Contributing
 
-The mainline Kod source tree is hosted on git (a popular [DVCS](http://en.wikipedia.org/wiki/Distributed_revision_control)), thus you should create a fork of the repository in which you perform development. See <http://help.github.com/forking/>.
+The main Kod source tree is hosted on git (a popular [DVCS](http://en.wikipedia.org/wiki/Distributed_revision_control)), thus you should create a fork of the repository in which you perform development. See <http://help.github.com/forking/>.
 
-We prefer that you send a *pull request* here on GitHub (see <http://help.github.com/pull-requests/>) which will then be merged into the official main line repository. You need to sign the Kod CLA to be able to contribute (see below).
+We prefer that you send a [*pull request* here on GitHub](http://help.github.com/pull-requests/) which will then be merged into the official main line repository. You need to sign the Kod CLA to be able to contribute (see below).
 
 
 #### Contributor License Agreement
