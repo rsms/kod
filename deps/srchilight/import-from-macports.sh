@@ -44,7 +44,13 @@ resolvedeps "$LIB"
 
 mkdir -vp include
 rm -rf include/srchilite
-cp -vpr /opt/local/include/srchilite include/srchilite
+cp -vfpr /opt/local/include/srchilite include/srchilite
+sed 's/ branches build/ \/*branches build/g' \
+  include/srchilite/highlightstatebuilder.h \
+  > include/srchilite/highlightstatebuilder.h.2
+sed 's/endbranches$/endbranches*\//g' \
+  include/srchilite/highlightstatebuilder.h.2 \
+  > include/srchilite/highlightstatebuilder.h
 
 # Note: we use -I/opt/local/include instead of copying these ATM.
 #mkdir -vp include/boost
