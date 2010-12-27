@@ -25,7 +25,6 @@ It's recommended you clone the repository `git://github.com/rsms/kod.git`:
 
 ### 3. Build libcss
 
-    deps/libcss/checkout-deps.sh
     deps/libcss/build.sh
 
 ### 4. Configure Source Highlight
