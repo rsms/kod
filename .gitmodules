@@ -3,13 +3,16 @@
 	url = git://git.savannah.gnu.org/src-highlite.git
 [submodule "deps/libcss"]
 	path = deps/libcss
-	url = git@github.com:rsms/libcss-osx.git
+	url = https://github.com/rsms/libcss-osx.git
 [submodule "deps/json-framework"]
 	path = deps/json-framework
 	url = https://github.com/stig/json-framework.git
 [submodule "deps/hunch-cocoa"]
 	path = deps/hunch-cocoa
-	url = git@github.com:rsms/hunch-cocoa.git
+	url = https://github.com/rsms/hunch-cocoa.git
 [submodule "deps/node"]
 	path = deps/node
 	url = https://github.com/ry/node.git
+[submodule "deps/chromium-tabs"]
+	path = deps/chromium-tabs
+	url = https://github.com/rsms/chromium-tabs.git
