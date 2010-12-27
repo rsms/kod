@@ -7,10 +7,10 @@ include "_url.lang"
 # preformatted text block starts with at least 4 spaces or 1 tab
 fixed start '^([ ]{4,}|\t)'
 
-h1 start "#"
-h2 start "##"
-h3 start "###"
-h4 start "####"
-h5 start "#####"
-h6 start "######"
+h1 start '^#'
+h2 start '^##'
+h3 start '^###'
+h4 start '^####'
+h5 start '^#####'
+h6 start '^######'
 
