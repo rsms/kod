@@ -1404,10 +1404,7 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = src/prefix.pch;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"K_WITH_F_SCRIPT=1",
-					"K_DEBUG_BUILD=1",
-				);
+				GCC_PREPROCESSOR_DEFINITIONS = "K_DEBUG_BUILD=1";
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				HEADER_SEARCH_PATHS = (
 					src/ICU/include,
@@ -1433,8 +1430,6 @@
 					Foundation,
 					"-framework",
 					AppKit,
-					"-framework",
-					FScript,
 				);
 				PREBINDING = NO;
 				PRODUCT_NAME = Kod;
