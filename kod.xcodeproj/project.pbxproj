@@ -1410,6 +1410,7 @@
 					src/ICU/include,
 					"$(HEADER_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
 					"deps/libcss/cocoa-framework/build/Release/CSS.framework/Headers",
+					include,
 					/opt/local/include,
 					/usr/local/include,
 				);
@@ -1484,6 +1485,7 @@
 					src/ICU/include,
 					"$(HEADER_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
 					"deps/libcss/cocoa-framework/build/Release/CSS.framework/Headers",
+					include,
 					/opt/local/include,
 					/usr/local/include,
 				);
