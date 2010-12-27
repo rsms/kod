@@ -47,6 +47,6 @@ mkdir -vp include
 rm -rf include/srchilite
 cp -vpr $CELLAR/source-highlight/3.1.4/include/srchilite include/srchilite
 
-# Note: we use -I/usr/local/Cellar/boost/1.45.0/include instead of copying these ATM.
+# Note: we use -I/usr/local/include instead of copying these ATM.
 #mkdir -vp include/boost
-#cp -vpr /usr/local/Cellar/boost/1.45.0/include/boost/regex* include/boost/
+#cp -vpr /usr/local/include/boost/regex* include/boost/
