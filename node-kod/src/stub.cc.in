@@ -1,0 +1,45 @@
+#include "stub.h"
+
+Persistent<FunctionTemplate> Stub::constructor_template;
+
+// -----------------------------------------------------------------------------
+// Stub implementation
+
+Stub::Stub(void *userdata)
+  : node::EventEmitter()
+  , userdata_(userdata)
+{
+}
+
+Handle<Value> Stub::New(void *userdata) {
+  Local<Object> instance = constructor_template->GetFunction()->NewInstance(0, NULL);
+  Stub *p = ObjectWrap::Unwrap<Stub>(instance);
+  p->userdata_ = userdata;
+  return instance;
+}
+
+Handle<Value> Stub::New(const Arguments& args) {
+  (new Stub(NULL))->Wrap(args.This());
+  return args.This();
+}
+
+Handle<Value> Stub::FooGetter(Local<String> property, const AccessorInfo& info) {
+  HandleScope scope;
+  Stub *p = Unwrap<Stub>(info.This());
+  // do something with p
+  return Undefined();
+}
+
+void Stub::Initialize(Handle<Object> target) {
+  HandleScope scope;
+  Local<FunctionTemplate> t = FunctionTemplate::New(New);
+  constructor_template = Persistent<FunctionTemplate>::New(t);
+  constructor_template->SetClassName(String::NewSymbol("Stub"));
+  constructor_template->Inherit(EventEmitter::constructor_template);
+
+  Local<ObjectTemplate> instance_t = constructor_template->InstanceTemplate();
+  instance_t->SetInternalFieldCount(1);
+  instance_t->SetAccessor(String::New("foo"), FooGetter);
+
+  target->Set(String::New("Stub"), constructor_template->GetFunction());
+}

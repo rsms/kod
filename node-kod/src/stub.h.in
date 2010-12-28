@@ -1,0 +1,19 @@
+#ifndef SPOTIFY_STUB_H_
+#define SPOTIFY_STUB_H_
+
+#include "index.h"
+
+class Stub : public EventEmitter {
+ public:
+  static Persistent<FunctionTemplate> constructor_template;
+  static void Initialize(Handle<Object> target);
+  Stub(void* userdata);
+  static Handle<Value> New(const Arguments& args);
+  static Handle<Value> New(void *userdata);
+
+  static Handle<Value> FooGetter(Local<String> property, const AccessorInfo& info);
+ protected:
+  void* userdata_;
+};
+
+#endif
