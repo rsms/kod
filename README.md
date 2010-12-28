@@ -67,7 +67,7 @@ Before we can accept any contributions to Kod, you need to sign this [CLA](http:
 
 > The purpose of this agreement is to clearly define the terms under which intellectual property has been contributed to Kod and thereby allow us to defend the project should there be a legal dispute regarding the software at some future time.
 
-List of contributors: <https://github.com/rsms/kod/contributors>
+For a list of contributors, please see [AUTHORS](https://github.com/rsms/kod/blob/master/AUTHORS.md) and <https://github.com/rsms/kod/contributors>
 
 
 ## License
