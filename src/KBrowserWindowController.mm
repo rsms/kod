@@ -39,10 +39,6 @@
   fileTreeController_ =
       [[KFileTreeController alloc] initWithOutlineView:fileOutlineView_];
 
-  // We don't use the "New tab" button
-  kassert(tabStripController_);
-  self.showsNewTabButton = NO;
-
   // setup split view
   kassert(splitView_ != nil); // should get a ref from unarchived NIB
   splitView_.position = kconf_double(@"editor/splitView/position", 180.0);
