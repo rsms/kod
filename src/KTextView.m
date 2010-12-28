@@ -85,11 +85,18 @@ static CGFloat kTextContainerYOffset = 0.0;
 
 
 - (void)keyDown:(NSEvent*)event {
+	DLOG("keyDown %@ %ld", event, [[event characters] characterAtIndex:0]);
 	if (event.keyCode == 48) {
-		DLOG("TAB!");
+		NSInteger charIndex = [[[self selectedRanges] objectAtIndex:0] rangeValue].location;
+		//DLOG("%ld", charIndex);
+		NSInteger lineNumber = [self.textStorage.delegate lineNumberForLocation:charIndex];
+		
+		NSInteger start = [self.textStorage.delegate locationOfLineAtLineNumber:lineNumber];
+		
+		DLOG("%ld", start);
+	}else{
+		[super keyDown:event];
 	}
-  DLOG("keyDown %@ %ld", event, [[event characters] characterAtIndex:0]);
-	[super keyDown:event];
 }
 
 

@@ -657,6 +657,10 @@ static int debugSimulateTextAppendingIteration = 0;
   return lineRange;
 }
 
+- (NSUInteger) locationOfLineAtLineNumber:(NSUInteger)lineNumber {
+	NSRange lineRange = [self rangeOfLineAtLineNumber:lineNumber];
+	return lineRange.location;
+}
 
 - (NSUInteger)lineNumberForLocation:(NSUInteger)location {
   kassert([NSThread isMainThread]); // since lineToRangeVec_ is not thread safe
