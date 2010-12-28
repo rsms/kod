@@ -113,7 +113,6 @@ typedef struct URegularExpression URegularExpression;
 
 		CheckStatus(status);
 
-		groupSize = InitialGroupSize; // reset to default
 		NSString *result = [[NSString alloc] initWithBytes:dest length:buffSize*sizeof(UChar) encoding:[NSString nativeUTF16Encoding]];
 		NSZoneFree([self zone], dest);
 		return result;
