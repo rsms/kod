@@ -1460,7 +1460,11 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
          "(changeInLength == 0 && !lastEditedHighlightState_)");
     return;
   }
-  
+	
+	if (self.charCountOfLastLine == 0 && self.lineCount > 1) {
+		// maintain indentation
+		[self.textView indentLine:self.lineCount];
+	}
 
   // mark as dirty if not already dirty
   //if (!isDirty_) {

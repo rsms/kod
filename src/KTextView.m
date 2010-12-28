@@ -90,29 +90,40 @@ static CGFloat kTextContainerYOffset = 0.0;
 		NSInteger charIndex = [[[self selectedRanges] objectAtIndex:0] rangeValue].location;
 		NSInteger lineNumber = [self.textStorage.delegate lineNumberForLocation:charIndex];
 		
-		NSInteger start = [self.textStorage.delegate locationOfLineAtLineNumber:lineNumber];
-		
-		NSRange oldRange = [self selectedRange];
-		int delta = 0;
-		
 		if (([event modifierFlags] & (NSShiftKeyMask | NSAlphaShiftKeyMask)) != 0) {
-			// unindent
-			NSRange indent = NSMakeRange(start, 4);
-			if ([[self.textStorage.string substringWithRange:indent] isEqualToString:@"    "]) {
-				[super setSelectedRange:indent];
-				[super insertText:@""];
-				delta = -4;
-			}
+			[self unindentLine:lineNumber];
 		}else{
 			// indent
-			[super setSelectedRange:NSMakeRange(start, 0)];
-			[super insertText:@"    "];
-			delta = 4;
+			[self indentLine:lineNumber];
 		}
-		[super setSelectedRange:NSMakeRange(oldRange.location+delta, 0)];
 	}else{
 		[super keyDown:event];
 	}
+}
+
+- (void)unindentLine:(NSUInteger)lineNumber {
+	NSRange oldSelected = [self selectedRange];
+	NSInteger lineStart = [self.textStorage.delegate locationOfLineAtLineNumber:lineNumber];
+	int delta = 0;
+	NSRange indent = NSMakeRange(lineStart, 4);
+	
+	if ([[self.textStorage.string substringWithRange:indent] isEqualToString:@"    "]) {
+		[super setSelectedRange:indent];
+		[super insertText:@""];
+		delta = -4;
+	}
+	
+	[super setSelectedRange:NSMakeRange(oldSelected.location+delta, 0)];
+}
+
+- (void)indentLine:(NSUInteger)lineNumber {
+	NSRange oldSelected = [self selectedRange];
+	NSInteger lineStart = [self.textStorage.delegate locationOfLineAtLineNumber:lineNumber];
+	
+	[super setSelectedRange:NSMakeRange(lineStart, 0)];
+	[super insertText:@"    "];
+	
+	[super setSelectedRange:NSMakeRange(oldSelected.location+4, 0)];
 }
 
 
