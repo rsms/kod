@@ -85,18 +85,28 @@ static CGFloat kTextContainerYOffset = 0.0;
 
 
 - (void)keyDown:(NSEvent*)event {
-	DLOG("keyDown %@ %ld", event, [[event characters] characterAtIndex:0]);
+//	DLOG("keyDown %@ %ld", event, [[event characters] characterAtIndex:0]);
 	if (event.keyCode == 48) {
 		NSInteger charIndex = [[[self selectedRanges] objectAtIndex:0] rangeValue].location;
-		//DLOG("%ld", charIndex);
 		NSInteger lineNumber = [self.textStorage.delegate lineNumberForLocation:charIndex];
 		
 		NSInteger start = [self.textStorage.delegate locationOfLineAtLineNumber:lineNumber];
 		
 		NSRange oldRange = [self selectedRange];
-		[super setSelectedRange:NSMakeRange(start, 0)];
-		[super insertText:@"    "];
-		[super setSelectedRange:NSMakeRange(oldRange.location+4, 0)];
+		int delta = 0;
+		
+		if (([event modifierFlags] & (NSShiftKeyMask | NSAlphaShiftKeyMask)) != 0) {
+			// unindent
+			[super setSelectedRange:NSMakeRange(start, 4)];
+			[super insertText:@""];
+			delta = -4;
+		}else{
+			// indent
+			[super setSelectedRange:NSMakeRange(start, 0)];
+			[super insertText:@"    "];
+			delta = 4;
+		}
+		[super setSelectedRange:NSMakeRange(oldRange.location+delta, 0)];
 	}else{
 		[super keyDown:event];
 	}
