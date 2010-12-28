@@ -24,6 +24,7 @@ function resolvedeps() {
 	currname=$(echo "$currname" | sed -E 's/\.[0-9]+\.dylib$/.dylib/g')
 	
 	cp -fvp "$currpath" "$currname"
+	chmod +w "$currname"
 	echo install_name_tool -id "@rpath/$currname" "$currname"
 	install_name_tool -id "@rpath/$currname" "$currname"
 	
