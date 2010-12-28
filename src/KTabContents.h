@@ -82,6 +82,8 @@ typedef std::deque<KHighlightQueueEntry> KHighlightQueue;
 - (void)styleDidChange:(NSNotification*)notification;
 - (void)textStorageDidProcessEditing:(NSNotification*)notification;
 
+- (void)maintainIndentation;
+
 // Retrieve line number (first line is 1) for character |location|
 - (NSUInteger)lineNumberForLocation:(NSUInteger)location;
 
@@ -96,6 +98,8 @@ typedef std::deque<KHighlightQueueEntry> KHighlightQueue;
 
 // Location of line at |lineNumber| 
 - (NSUInteger)locationOfLineAtLineNumber:(NSUInteger)lineNumber;
+
+- (BOOL)isNewLine;
 
 
 

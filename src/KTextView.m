@@ -93,11 +93,16 @@ static CGFloat kTextContainerYOffset = 0.0;
 		if (([event modifierFlags] & (NSShiftKeyMask | NSAlphaShiftKeyMask)) != 0) {
 			[self unindentLine:lineNumber];
 		}else{
-			// indent
 			[self indentLine:lineNumber];
 		}
 	}else{
 		[super keyDown:event];
+		
+		// TODO: this way of maintaining indentation is a workaround
+		// I kept getting EXC_BAD_ACCESS otherwise and couldn't figure out why
+		if ([self.textStorage.delegate isNewLine]) {
+			[self.textStorage.delegate maintainIndentation];
+		}
 	}
 }
 
@@ -125,7 +130,6 @@ static CGFloat kTextContainerYOffset = 0.0;
 	
 	[super setSelectedRange:NSMakeRange(oldSelected.location+4, 0)];
 }
-
 
 - (void)mouseMoved:(NSEvent*)event {
   NSPoint loc = [event locationInWindow]; // window coords

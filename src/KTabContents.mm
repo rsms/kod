@@ -636,13 +636,13 @@ static int debugSimulateTextAppendingIteration = 0;
 }
 
 - (NSRange)rangeOfLineIndentationAtLineNumber:(NSUInteger)lineNumber {
-	NSUInteger i = [self locationOfLineAtLineNumber:prevLine];
+	NSUInteger i = [self locationOfLineAtLineNumber:lineNumber];
 	unichar space = ' ';
 	int	indentLen = 0;
-	while ([textStorage.string characterAtIndex:i] == space) {
+	while ([textView_.textStorage.string characterAtIndex:i] == space) {
 		i++; indentLen++;
 	}
-	return NSMakeRange(i, indentLen);
+	return NSMakeRange(i-indentLen, indentLen);
 }
 
 
@@ -689,6 +689,12 @@ static int debugSimulateTextAppendingIteration = 0;
   return lineno + 1;
 }
 
+- (BOOL) isNewLine {
+	if (self.charCountOfLastLine == 0 && self.lineCount > 1) {
+		return YES;
+	}
+	return NO;
+}
 
 #pragma mark -
 #pragma mark NSTextViewDelegate implementation
@@ -1440,17 +1446,17 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
     return;
   }
   kassert([NSThread isMainThread]);
-  
-  // range that was affected by the edit
+	
+	// range that was affected by the edit
 	NSRange	editedRange = [textStorage editedRange];
-  
-  // length delta of the edit (i.e. negative for deletions)
+	
+	// length delta of the edit (i.e. negative for deletions)
 	int	changeInLength = [textStorage changeInLength];
-
-  // update lineToRangeVec_
-  [self _updateLinesToRangesInfoForTextStorage:textStorage
-                                       inRange:editedRange
-                                   changeDelta:changeInLength];
+	
+	// update lineToRangeVec_
+	[self _updateLinesToRangesInfoForTextStorage:textStorage
+										 inRange:editedRange
+									 changeDelta:changeInLength];
 
   // we do not process edits when we are loading
   if (isLoading_) return;
@@ -1470,14 +1476,6 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
          "(changeInLength == 0 && !lastEditedHighlightState_)");
     return;
   }
-	
-	if (self.charCountOfLastLine == 0 && self.lineCount > 1) {
-		// maintain indentation
-		NSUInteger prevLine = self.lineCount-1;
-		
-		NSRange indent = [self rangeOfLineIndentationAtLineNumber:prevLine];
-		
-	}
 
   // mark as dirty if not already dirty
   //if (!isDirty_) {
@@ -1494,6 +1492,13 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
   [textView_ breakUndoCoalescing];
 }
 
+- (void)maintainIndentation {
+	NSUInteger prevLine = self.lineCount-1;
+	
+	NSRange indent = [self rangeOfLineIndentationAtLineNumber:prevLine];
+	
+	[textView_ insertText:[textView_.textStorage.string substringWithRange:indent]];
+}
 
 - (void)guessLanguageBasedOnUTI:(NSString*)uti textContent:(NSString*)text {
   KLangMap *langMap = [KLangMap sharedLangMap];
