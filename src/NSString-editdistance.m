@@ -145,8 +145,7 @@ static void diag(int xoff, int xlim, int yoff, int ylim,
            x < xlim && y < ylim && (xv[x] == yv[y]);
            x++, y++)
         continue;
-      if (x - x0 > SNAKE_LIMIT)
-        big_snake = true;
+
       fd[d] = x;
       if (odd && bmin <= d && d <= bmax && bd[d] <= x)
       {
@@ -178,8 +177,7 @@ static void diag(int xoff, int xlim, int yoff, int ylim,
            xoff < x && yoff < y && (xv[x - 1] == yv[y - 1]);
            x--, y--)
         continue;
-      if (x0 - x > SNAKE_LIMIT)
-        big_snake = true;
+
       bd[d] = x;
       if (!odd && fmin <= d && d <= fmax && x <= fd[d])
       {
