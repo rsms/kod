@@ -93,7 +93,10 @@ static CGFloat kTextContainerYOffset = 0.0;
 		
 		NSInteger start = [self.textStorage.delegate locationOfLineAtLineNumber:lineNumber];
 		
-		DLOG("%ld", start);
+		NSRange oldRange = [self selectedRange];
+		[super setSelectedRange:NSMakeRange(start, 0)];
+		[super insertText:@"    "];
+		[super setSelectedRange:NSMakeRange(oldRange.location+4, 0)];
 	}else{
 		[super keyDown:event];
 	}
