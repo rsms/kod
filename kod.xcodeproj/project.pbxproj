@@ -483,8 +483,6 @@
 		3AEC6C8C12BC12FB00F769DB /* KLineNumberMarker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KLineNumberMarker.m; sourceTree = "<group>"; };
 		3AEC6C8D12BC12FB00F769DB /* KMetaRulerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KMetaRulerView.h; sourceTree = "<group>"; };
 		3AEC6C8E12BC12FB00F769DB /* KMetaRulerView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KMetaRulerView.mm; sourceTree = "<group>"; };
-		3AEC6C9112BC14EE00F769DB /* KMetaRulerView2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KMetaRulerView2.h; sourceTree = "<group>"; };
-		3AEC6C9212BC14EE00F769DB /* KMetaRulerView2.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KMetaRulerView2.mm; sourceTree = "<group>"; };
 		3AF14C40128D792F00623011 /* KLangRegexRuleFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KLangRegexRuleFactory.h; sourceTree = "<group>"; };
 		3AF14C41128D792F00623011 /* KLangRegexRuleFactory.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KLangRegexRuleFactory.mm; sourceTree = "<group>"; };
 		3AF14D1E128D928A00623011 /* KLangSymbol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KLangSymbol.h; sourceTree = "<group>"; };
@@ -978,8 +976,6 @@
 				3AEC6C8C12BC12FB00F769DB /* KLineNumberMarker.m */,
 				3AEC6C8D12BC12FB00F769DB /* KMetaRulerView.h */,
 				3AEC6C8E12BC12FB00F769DB /* KMetaRulerView.mm */,
-				3AEC6C9112BC14EE00F769DB /* KMetaRulerView2.h */,
-				3AEC6C9212BC14EE00F769DB /* KMetaRulerView2.mm */,
 			);
 			name = Editor;
 			sourceTree = "<group>";
