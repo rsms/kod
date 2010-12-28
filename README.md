@@ -58,6 +58,8 @@ The main Kod source tree is hosted on git (a popular [DVCS](http://en.wikipedia.
 
 We prefer that you send a [*pull request* here on GitHub](http://help.github.com/pull-requests/) which will then be merged into the official main line repository. You need to sign the Kod CLA to be able to contribute (see below).
 
+Also, in your first contribution, add yourself to the end of `AUTHORS.md` (which of course is optional).
+
 
 #### Contributor License Agreement
 
