@@ -84,9 +84,13 @@ static CGFloat kTextContainerYOffset = 0.0;
 }
 
 
-/*- (void)keyDown:(NSEvent*)event {
+- (void)keyDown:(NSEvent*)event {
+	if (event.keyCode == 48) {
+		DLOG("TAB!");
+	}
   DLOG("keyDown %@ %ld", event, [[event characters] characterAtIndex:0]);
-}*/
+	[super keyDown:event];
+}
 
 
 - (void)mouseMoved:(NSEvent*)event {

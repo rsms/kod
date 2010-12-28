@@ -58,7 +58,6 @@ typedef std::deque<KHighlightQueueEntry> KHighlightQueue;
 @property(readonly, nonatomic) NSUInteger lineCount;
 @property(readonly, nonatomic) NSUInteger charCountOfLastLine;
 
-
 + (NSFont*)defaultFont;
 - (void)setIconBasedOnContents;
 

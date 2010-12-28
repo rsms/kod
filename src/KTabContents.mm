@@ -589,7 +589,6 @@ static int debugSimulateTextAppendingIteration = 0;
   }
 }
 
-
 #pragma mark -
 #pragma mark Line info
 
