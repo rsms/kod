@@ -10,7 +10,7 @@ ALWAYS_SEARCH_USER_PATHS = NO
 
 // Note: values can not wrap lines
 FRAMEWORK_SEARCH_PATHS = $(inherited) "$(SRCROOT)" "$(SRCROOT)/deps/chromium-tabs/build/$(BUILD_STYLE)" "$(SRCROOT)/deps/libcss/cocoa-framework/build/$(BUILD_STYLE)" "$(SRCROOT)/deps"
-HEADER_SEARCH_PATHS = "$(SRCROOT)/src/ICU/include" "$(SRCROOT)/deps/srchilight/include" "deps/libcss/cocoa-framework/build/$(BUILD_STYLE)/CSS.framework/Headers" "include" "/opt/local/include" "/usr/local/include"
+HEADER_SEARCH_PATHS = "$(SRCROOT)/src/ICU/include" "$(SRCROOT)/deps/srchilight/include" "deps/libcss/cocoa-framework/build/$(BUILD_STYLE)/CSS.framework/Headers" "/opt/local/include" "/usr/local/include"
 LIBRARY_SEARCH_PATHS = $(inherited) "$(SRCROOT)/deps/srchilight"
 
 GCC_C_LANGUAGE_STANDARD = gnu99
