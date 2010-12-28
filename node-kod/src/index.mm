@@ -1,37 +1,47 @@
-#include "index.h"
-#include "../../src/kod_version.h"
+#import "index.h"
+#import "kod_node_interface.h"
+#import "knode_ns_additions.h"
+#import "kod_version.h"
+
+#import "KDocumentController.h"
+#import "KNodeThread.h"
 
 
-// Triggered when there are stuff on inputQueue_
-/*static void InputQueueNotification(EV_P_ ev_async *watcher, int revents) {
+static v8::Handle<Value> GetAllDocuments(const Arguments& args) {
   HandleScope scope;
-
-  // retrieve our thread instance
-  KNodeThread* self = (NodeJSThread*)watcher->data;
-  //NSLog(@"InputQueueNotification");
-
-  // enumerate queue
-  PerformEntry* entry;
-  while ( (entry = (PerformEntry*)OSAtomicDequeue(
-      &self->inputQueue_, cxx_offsetof(PerformEntry, next_))) ) {
-    //NSLog(@"dequeued %p", entry);
-    entry->Perform();
-  }
-}*/
-
-
-static Handle<Value> SomeFunction(const Arguments& /*args*/){
-  HandleScope scope;
-  return scope.Close(Undefined());
+  KDocumentController *kodController = [KDocumentController kodController];
+  NSArray *documents = [kodController documents];
+  Local<Value> v = [documents v8Value];
+  return scope.Close(v);
 }
 
 
-extern "C" void init(Handle<Object> target) {
+static v8::Handle<Value> HandleUncaughtException(const Arguments& args) {
+  HandleScope scope;
+  id err = nil;
+  if (args.Length() > 0) {
+    if (args[0]->IsObject()) {
+      // don't include arguments (just gets messy when converted to objc)
+      args[0]->ToObject()->Delete(String::New("arguments"));
+    }
+    err = [NSObject fromV8Value:args[0]];
+  }
+  [KNodeThread handleUncaughtException:err];
+  return Undefined();
+}
+
+
+extern "C" void init(v8::Handle<Object> target) {
   HandleScope scope;
 
   // Constants
   target->Set(String::NewSymbol("version"), String::New(K_VERSION_STR));
+  target->Set(String::NewSymbol("externalFunctions"), Object::New());
 
   // Functions
-  //NODE_SET_METHOD(target, "someFunction", SomeFunction);
+  NODE_SET_METHOD(target, "getAllDocuments", GetAllDocuments);
+  NODE_SET_METHOD(target, "handleUncaughtException", HandleUncaughtException);
+  
+  // init Kod-Node interface
+  KNodeInitNode(target);
 }

@@ -43,4 +43,10 @@
 }
 
 
++ (void)handleUncaughtException:(id)err {
+  // called in the node thead
+  WLOG("[node] unhandled exception: %@", err);
+}
+
+
 @end

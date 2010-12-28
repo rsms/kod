@@ -19,6 +19,8 @@
 #import "KMetaRulerView.h"
 #import "HEventEmitter.h"
 #import "KNodeProcess.h"
+#import "kod_node_interface.h"
+#import "knode_ns_additions.h"
 
 #import "NSImage-kod.h"
 #import "CIImage-kod.h"
@@ -1472,7 +1474,14 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
   
   // Syntax highlight
   if (highlightingEnabled_) {
-    KNodeProcess *node = [KNodeProcess sharedProcess];
+    
+    KNodeInvokeExposedJSFunction("foo", nil, ^(NSError *err, NSArray *args){
+      DLOG("[knode] 1 called in kod. error: %@, args: %@", err, args);
+    });
+    
+
+  
+    /*KNodeProcess *node = [KNodeProcess sharedProcess];
     
     // cancel any active previous invocation
     if (activeNodeTextEditedInvocationRTag_) {
@@ -1492,7 +1501,7 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
                                                   args:args callback:
     ^(id args) {
       DLOG("textEdited returned with %@", args);
-    }];
+    }];*/
     
     //[self deferHighlightTextStorage:textStorage inRange:editedRange];
   }

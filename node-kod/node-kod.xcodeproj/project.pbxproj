@@ -9,6 +9,9 @@
 /* Begin PBXBuildFile section */
 		3AA9202812CA526C00132A25 /* index.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3AA9200812CA512900132A25 /* index.mm */; };
 		3AA9202B12CA52A700132A25 /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3AA9202A12CA529500132A25 /* AppKit.framework */; };
+		3AB57DC712CA58F700E528B1 /* kod_node_interface.h in Headers */ = {isa = PBXBuildFile; fileRef = 3AB57DC512CA58F700E528B1 /* kod_node_interface.h */; };
+		3AB57FD412CA9AD100E528B1 /* KDocument-node.h in Headers */ = {isa = PBXBuildFile; fileRef = 3AB57FD212CA9AD100E528B1 /* KDocument-node.h */; };
+		3AB57FD512CA9AD100E528B1 /* KDocument-node.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3AB57FD312CA9AD100E528B1 /* KDocument-node.mm */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -18,6 +21,11 @@
 		3AA9200A12CA512900132A25 /* stub.h.in */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = stub.h.in; sourceTree = "<group>"; };
 		3AA9202212CA526200132A25 /* binding.node */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = binding.node; sourceTree = BUILT_PRODUCTS_DIR; };
 		3AA9202A12CA529500132A25 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
+		3AB57DC512CA58F700E528B1 /* kod_node_interface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = kod_node_interface.h; path = ../../src/kod_node_interface.h; sourceTree = "<group>"; };
+		3AB57E4712CA671200E528B1 /* node.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = node.h; path = ../deps/node/src/node.h; sourceTree = SOURCE_ROOT; };
+		3AB57F8212CA950300E528B1 /* index.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = index.js; path = kod/index.js; sourceTree = SOURCE_ROOT; };
+		3AB57FD212CA9AD100E528B1 /* KDocument-node.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "KDocument-node.h"; sourceTree = "<group>"; };
+		3AB57FD312CA9AD100E528B1 /* KDocument-node.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = "KDocument-node.mm"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -44,10 +52,15 @@
 		3AA9200612CA512900132A25 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				3AB57F8212CA950300E528B1 /* index.js */,
+				3AB57E4712CA671200E528B1 /* node.h */,
+				3AB57DC512CA58F700E528B1 /* kod_node_interface.h */,
 				3AA9200712CA512900132A25 /* index.h */,
 				3AA9200812CA512900132A25 /* index.mm */,
 				3AA9200912CA512900132A25 /* stub.cc.in */,
 				3AA9200A12CA512900132A25 /* stub.h.in */,
+				3AB57FD212CA9AD100E528B1 /* KDocument-node.h */,
+				3AB57FD312CA9AD100E528B1 /* KDocument-node.mm */,
 			);
 			path = src;
 			sourceTree = "<group>";
@@ -75,6 +88,8 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3AB57DC712CA58F700E528B1 /* kod_node_interface.h in Headers */,
+				3AB57FD412CA9AD100E528B1 /* KDocument-node.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -129,6 +144,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				3AA9202812CA526C00132A25 /* index.mm in Sources */,
+				3AB57FD512CA9AD100E528B1 /* KDocument-node.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -166,6 +182,7 @@
 					_GNU_SOURCE,
 					"EV_MULTIPLICITY=0",
 				);
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/../deps/node/src",
 					"$(SRCROOT)/../deps/node/deps/v8/include",
@@ -179,6 +196,7 @@
 					dynamic_lookup,
 				);
 				PRODUCT_NAME = binding;
+				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)/../src";
 			};
 			name = Debug;
 		};
@@ -198,6 +216,7 @@
 					_GNU_SOURCE,
 					"EV_MULTIPLICITY=0",
 				);
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/../deps/node/src",
 					"$(SRCROOT)/../deps/node/deps/v8/include",
@@ -210,6 +229,7 @@
 					dynamic_lookup,
 				);
 				PRODUCT_NAME = binding;
+				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)/../src";
 				VALID_ARCHS = "i386 x86_64";
 				ZERO_LINK = NO;
 			};

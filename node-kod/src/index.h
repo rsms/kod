@@ -3,8 +3,9 @@
 #define NODE_KOD_INDEX_H_
 
 // Commonly used headers
-#include <node.h>           // includes v8.h, ev.h, eio.h, sys/types.h, etc
-#include <node_events.h>    // EventEmitter
+#import <node.h>           // includes v8.h, ev.h, eio.h, sys/types.h, etc
+#import <node_events.h>    // EventEmitter
+#import <Cocoa/Cocoa.h>
 
 // Since we are not building a C++ API, we dont' care about namespaces in .h's
 using namespace v8;
@@ -17,11 +18,11 @@ using namespace node;
 // Aiding construction of types
 
 // Property getter interface boilerplate
-#define GETTER_H(name)\
+#define K_GETTER_H(name)\
   static Handle<Value> name(Local<String> property, const AccessorInfo& info)
 
 // Property getter implementation boilerplate
-#define GETTER_C(name)\
+#define K_GETTER_C(name)\
   Handle<Value> name(Local<String> property, const AccessorInfo& info)
 
 // -----------------------------------------------------------------------------
@@ -33,7 +34,7 @@ using namespace node;
           __FILE__, __LINE__, ##__VA_ARGS__)
 
 // Dump a message to stderr
-#define DPRINTF(tmpl, ...)\
+#define DLOG(tmpl, ...)\
   do {\
     fprintf(stderr, "D [node-kod %s:%d] " tmpl "\n", \
             __FILE__, __LINE__, ##__VA_ARGS__);\
@@ -53,7 +54,7 @@ using namespace node;
 // can use String::Utf8Value:
 //   String::Utf8Value foo(value);
 //   const char *temp = *foo;
-static inline char* ToCString(Handle<Value> value) {
+static inline char* KToCString(v8::Handle<Value> value) {
   Local<String> str = value->ToString();
   char *p = new char[str->Utf8Length()];
   str->WriteUtf8(p);

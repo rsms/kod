@@ -10,7 +10,10 @@ ALWAYS_SEARCH_USER_PATHS = NO
 
 KOD_DEPS = "$(SRCROOT)/deps"
 
+NODE_PREPROCESSOR_DEFINITIONS = _LARGEFILE_SOURCE _FILE_OFFSET_BITS=64 _GNU_SOURCE EV_MULTIPLICITY=0
 NODE_HEADER_SEARCH_PATHS = "$(KOD_DEPS)/node/src" "$(KOD_DEPS)/node/deps/v8/include" "$(KOD_DEPS)/node/deps/libeio" "$(KOD_DEPS)/node/deps/libev"
+
+BASE_PREPROCESSOR_DEFINITIONS = $(NODE_PREPROCESSOR_DEFINITIONS)
 
 // Note: values can not wrap lines
 FRAMEWORK_SEARCH_PATHS = $(inherited) "$(SRCROOT)" "$(KOD_DEPS)/chromium-tabs/build/$(BUILD_STYLE)" "$(KOD_DEPS)/libcss/cocoa-framework/build/$(BUILD_STYLE)" "$(KOD_DEPS)"
