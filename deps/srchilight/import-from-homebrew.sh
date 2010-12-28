@@ -10,7 +10,7 @@ LIB=/usr/local/lib/libsource-highlight.dylib
 #
 # -----------------------------------------------------------------------------
 #
-cd "$(dirname '$0')"
+cd "$(dirname "$0")"
 LIB=$(python -c 'import os.path;print os.path.realpath("'"$LIB"'")')
 deps=
 
@@ -45,6 +45,13 @@ resolvedeps "$LIB"
 mkdir -vp include
 rm -rf include/srchilite
 cp -vpr /usr/local/include/srchilite include/srchilite
+sed 's/ branches build/ \/*branches build/g' \
+  include/srchilite/highlightstatebuilder.h \
+  > include/srchilite/highlightstatebuilder.h.2 || exit $?
+sed 's/endbranches$/endbranches*\//g' \
+  include/srchilite/highlightstatebuilder.h.2 \
+  > include/srchilite/highlightstatebuilder.h || exit $?
+rm -f include/srchilite/highlightstatebuilder.h.2
 
 # Note: we use -I/usr/local/include instead of copying these ATM.
 #mkdir -vp include/boost

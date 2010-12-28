@@ -421,6 +421,9 @@
 		3AA81B2512C62D6A0085F086 /* NSImage-kod.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSImage-kod.h"; sourceTree = "<group>"; };
 		3AA81B2612C62D6A0085F086 /* NSImage-kod.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSImage-kod.m"; sourceTree = "<group>"; };
 		3AA81B2E12C62E160085F086 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		3AA91E5C12C95CC000132A25 /* base.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = base.xcconfig; sourceTree = "<group>"; };
+		3AA91E5D12C95CC000132A25 /* debug.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = debug.xcconfig; sourceTree = "<group>"; };
+		3AA91E5E12C95CC000132A25 /* release.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = release.xcconfig; sourceTree = "<group>"; };
 		3AAA9F4112BFB7B50079F079 /* Sparkle.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Sparkle.framework; path = deps/Sparkle.framework; sourceTree = "<group>"; };
 		3AAA9F6512BFBB010079F079 /* dsa_pub.pem */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = dsa_pub.pem; sourceTree = "<group>"; };
 		3AAAA2FB12C1060C0079F079 /* node */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = node; path = deps/node/build/default/node; sourceTree = SOURCE_ROOT; };
@@ -480,8 +483,6 @@
 		3AEC6C8C12BC12FB00F769DB /* KLineNumberMarker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KLineNumberMarker.m; sourceTree = "<group>"; };
 		3AEC6C8D12BC12FB00F769DB /* KMetaRulerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KMetaRulerView.h; sourceTree = "<group>"; };
 		3AEC6C8E12BC12FB00F769DB /* KMetaRulerView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KMetaRulerView.mm; sourceTree = "<group>"; };
-		3AEC6C9112BC14EE00F769DB /* KMetaRulerView2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KMetaRulerView2.h; sourceTree = "<group>"; };
-		3AEC6C9212BC14EE00F769DB /* KMetaRulerView2.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KMetaRulerView2.mm; sourceTree = "<group>"; };
 		3AF14C40128D792F00623011 /* KLangRegexRuleFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KLangRegexRuleFactory.h; sourceTree = "<group>"; };
 		3AF14C41128D792F00623011 /* KLangRegexRuleFactory.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KLangRegexRuleFactory.mm; sourceTree = "<group>"; };
 		3AF14D1E128D928A00623011 /* KLangSymbol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KLangSymbol.h; sourceTree = "<group>"; };
@@ -658,6 +659,7 @@
 				3A92916A1229BDAA00DA7E43 /* chromium-tabs.xcodeproj */,
 				3A928C13122714E800DA7E43 /* src */,
 				3A928C19122714EE00DA7E43 /* resources */,
+				3AA91E5B12C95CC000132A25 /* xcconfig */,
 				3A92914F1229BD5E00DA7E43 /* Frameworks */,
 				3A928C211227151800DA7E43 /* Products */,
 			);
@@ -767,6 +769,16 @@
 				3AA819B212C549B60085F086 /* KCrashReportCollector.m */,
 			);
 			name = "Crash reporting";
+			sourceTree = "<group>";
+		};
+		3AA91E5B12C95CC000132A25 /* xcconfig */ = {
+			isa = PBXGroup;
+			children = (
+				3AA91E5C12C95CC000132A25 /* base.xcconfig */,
+				3AA91E5D12C95CC000132A25 /* debug.xcconfig */,
+				3AA91E5E12C95CC000132A25 /* release.xcconfig */,
+			);
+			path = xcconfig;
 			sourceTree = "<group>";
 		};
 		3AB97BD312B2834D00F4ADB2 /* Status bar */ = {
@@ -964,8 +976,6 @@
 				3AEC6C8C12BC12FB00F769DB /* KLineNumberMarker.m */,
 				3AEC6C8D12BC12FB00F769DB /* KMetaRulerView.h */,
 				3AEC6C8E12BC12FB00F769DB /* KMetaRulerView.mm */,
-				3AEC6C9112BC14EE00F769DB /* KMetaRulerView2.h */,
-				3AEC6C9212BC14EE00F769DB /* KMetaRulerView2.mm */,
 			);
 			name = Editor;
 			sourceTree = "<group>";
@@ -1377,140 +1387,15 @@
 		};
 		3A928C241227151800DA7E43 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 3AA91E5D12C95CC000132A25 /* debug.xcconfig */;
 			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				COPY_PHASE_STRIP = NO;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
-					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_2)",
-					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_3)",
-					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_4)",
-					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_5)",
-					"\"$(SRCROOT)/deps/syck/ext/cocoa/build/Development\"",
-					"\"$(SRCROOT)/deps/syck/ext/cocoa/build/Deployment\"",
-					"\"$(SRCROOT)/deps\"",
-				);
-				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)\"";
-				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_2 = "\"$(SRCROOT)/deps/chromium-tabs/build/$(BUILD_STYLE)\"";
-				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_3 = "\"$(SYSTEM_LIBRARY_DIR)/Frameworks/WebKit.framework/Versions/A/Frameworks\"";
-				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_4 = "\"$(SRCROOT)/../libcss/cocoa-framework/build/Release\"";
-				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_5 = "\"$(SRCROOT)/deps/libcss/cocoa-framework/build/Release\"";
-				GCC_C_LANGUAGE_STANDARD = gnu99;
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_ENABLE_EXCEPTIONS = NO;
-				GCC_ENABLE_FIX_AND_CONTINUE = YES;
-				GCC_MODEL_TUNING = G5;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = src/prefix.pch;
-				GCC_PREPROCESSOR_DEFINITIONS = "K_DEBUG_BUILD=1";
-				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
-				HEADER_SEARCH_PATHS = (
-					src/ICU/include,
-					"$(HEADER_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
-					"deps/libcss/cocoa-framework/build/Release/CSS.framework/Headers",
-					include,
-					/opt/local/include,
-					/usr/local/include,
-				);
-				HEADER_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/deps/srchilight/include\"";
-				INFOPLIST_FILE = resources/Info.plist;
-				INSTALL_PATH = "$(HOME)/Applications";
-				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
-				);
-				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/deps/srchilight\"";
-				MACOSX_DEPLOYMENT_TARGET = 10.6;
-				ONLY_ACTIVE_ARCH = YES;
-				OTHER_LDFLAGS = (
-					"-framework",
-					Foundation,
-					"-framework",
-					AppKit,
-				);
-				PREBINDING = NO;
-				PRODUCT_NAME = Kod;
-				SDKROOT = macosx10.6;
 			};
 			name = Debug;
 		};
 		3A928C251227151800DA7E43 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 3AA91E5E12C95CC000132A25 /* release.xcconfig */;
 			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				COPY_PHASE_STRIP = NO;
-				DEAD_CODE_STRIPPING = YES;
-				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEPLOYMENT_POSTPROCESSING = YES;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
-					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_2)",
-					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_3)",
-					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_4)",
-					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_5)",
-					"\"$(SRCROOT)/deps/syck/ext/cocoa/build/Development\"",
-					"\"$(SRCROOT)/deps/syck/ext/cocoa/build/Deployment\"",
-					"\"$(SRCROOT)/deps\"",
-				);
-				FRAMEWORK_SEARCH_PATHS_QUOTED_1 = "\"$(SYSTEM_LIBRARY_DIR)/Frameworks/WebKit.framework/Versions/A/Frameworks\"";
-				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)\"";
-				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_2 = "\"$(SRCROOT)/deps/chromium-tabs/build/$(BUILD_STYLE)\"";
-				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_3 = "\"$(SRCROOT)/../libcss/cocoa-framework/build/Release\"";
-				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_4 = "\"$(SRCROOT)/deps/libcss/cocoa-framework/build/Release\"";
-				GCC_AUTO_VECTORIZATION = YES;
-				GCC_C_LANGUAGE_STANDARD = gnu99;
-				GCC_DEBUGGING_SYMBOLS = used;
-				GCC_ENABLE_EXCEPTIONS = NO;
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
-				GCC_ENABLE_SSE3_EXTENSIONS = YES;
-				GCC_ENABLE_SSE41_EXTENSIONS = YES;
-				GCC_ENABLE_SSE42_EXTENSIONS = YES;
-				GCC_ENABLE_SUPPLEMENTAL_SSE3_INSTRUCTIONS = YES;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
-				GCC_MODEL_TUNING = G5;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = src/prefix.pch;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"K_WITH_CRASH_REPORT_COLLECTOR=1",
-					"NDEBUG=1",
-				);
-				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
-				HEADER_SEARCH_PATHS = (
-					src/ICU/include,
-					"$(HEADER_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
-					"deps/libcss/cocoa-framework/build/Release/CSS.framework/Headers",
-					include,
-					/opt/local/include,
-					/usr/local/include,
-				);
-				HEADER_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/deps/srchilight/include\"";
-				INFOPLIST_FILE = resources/Info.plist;
-				INSTALL_PATH = "$(HOME)/Applications";
-				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
-				);
-				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/deps/srchilight\"";
-				MACOSX_DEPLOYMENT_TARGET = 10.6;
-				OTHER_LDFLAGS = (
-					"-framework",
-					Foundation,
-					"-framework",
-					AppKit,
-				);
-				PREBINDING = NO;
-				PRESERVE_DEAD_CODE_INITS_AND_TERMS = YES;
-				PRODUCT_NAME = Kod;
-				SDKROOT = macosx10.6;
-				SEPARATE_STRIP = NO;
-				STRIP_INSTALLED_PRODUCT = NO;
-				VALID_ARCHS = "i386 x86_64";
-				ZERO_LINK = NO;
 			};
 			name = Release;
 		};
