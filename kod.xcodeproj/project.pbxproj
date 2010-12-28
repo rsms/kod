@@ -136,10 +136,12 @@
 		3ABF541F12A5DC6F0020233C /* KClipView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3ABF541E12A5DC6F0020233C /* KClipView.m */; };
 		3AC2D3FD1298C40A0066B586 /* KSourceHighlightState.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3AC2D3FC1298C40A0066B586 /* KSourceHighlightState.mm */; };
 		3AC2D4A71298D8050066B586 /* KTextStorage.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3AC2D4A61298D8050066B586 /* KTextStorage.mm */; };
+		3AC2D74012998D590066B586 /* CSS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3AE5EB871292DB5C00B17C4F /* CSS.framework */; };
 		3AC4FADC1296D049004CDCFD /* KLangMapLinePattern.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3AC4FADB1296D049004CDCFD /* KLangMapLinePattern.mm */; };
 		3AC6ECCD12C8E07D00C8DBFC /* ChromiumTabs.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3AC6ECC412C8E05B00C8DBFC /* ChromiumTabs.framework */; };
 		3AC6ECCE12C8E08000C8DBFC /* ChromiumTabs.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 3AC6ECC412C8E05B00C8DBFC /* ChromiumTabs.framework */; };
 		3AE5E5171290955000B17C4F /* kod.icns in Resources */ = {isa = PBXBuildFile; fileRef = 3AE5E5161290955000B17C4F /* kod.icns */; };
+		3AE5E9A3129180CB00B17C4F /* CSS.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 3AE5E8B312915ABA00B17C4F /* CSS.framework */; };
 		3AE5ECB61292F7B800B17C4F /* KThread.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3AE5ECB51292F7B800B17C4F /* KThread.mm */; };
 		3AEC6C8F12BC12FB00F769DB /* KLineNumberMarker.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AEC6C8C12BC12FB00F769DB /* KLineNumberMarker.m */; };
 		3AEC6C9012BC12FB00F769DB /* KMetaRulerView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3AEC6C8E12BC12FB00F769DB /* KMetaRulerView.mm */; };
@@ -149,8 +151,6 @@
 		3AF39DB212BE9C8A00FC534A /* KPopUp.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AF39DB112BE9C8A00FC534A /* KPopUp.m */; };
 		3AF39DE212BEC15E00FC534A /* KPopUpContentView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AF39DE112BEC15E00FC534A /* KPopUpContentView.m */; };
 		3AF3A0A512BF7F6400FC534A /* KAnimation.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AF3A0A412BF7F6400FC534A /* KAnimation.m */; };
-		97E87A7812C95662004988F3 /* CSS.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 3AE5E8B312915ABA00B17C4F /* CSS.framework */; };
-		97E87A8A12C9584D004988F3 /* CSS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3AE5E8B312915ABA00B17C4F /* CSS.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -232,7 +232,7 @@
 			files = (
 				3AC6ECCE12C8E08000C8DBFC /* ChromiumTabs.framework in Copy Frameworks */,
 				3AAA9F7712BFC0440079F079 /* Sparkle.framework in Copy Frameworks */,
-				97E87A7812C95662004988F3 /* CSS.framework in Copy Frameworks */,
+				3AE5E9A3129180CB00B17C4F /* CSS.framework in Copy Frameworks */,
 				3A25E4981281A9D500B6A33E /* libboost_regex-mt.dylib in Copy Frameworks */,
 				3A25E4971281A9D300B6A33E /* libsource-highlight.dylib in Copy Frameworks */,
 			);
@@ -476,6 +476,7 @@
 		3AE5E5161290955000B17C4F /* kod.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = kod.icns; path = icon/kod.icns; sourceTree = "<group>"; };
 		3AE5E8A912915ABA00B17C4F /* CSS.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = CSS.xcodeproj; path = "deps/libcss/cocoa-framework/CSS.xcodeproj"; sourceTree = "<group>"; };
 		3AE5EA551292B2D000B17C4F /* kconf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = kconf.h; sourceTree = "<group>"; };
+		3AE5EB871292DB5C00B17C4F /* CSS.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CSS.framework; path = "deps/libcss/cocoa-framework/build/Release/CSS.framework"; sourceTree = "<group>"; };
 		3AE5ECB41292F7B800B17C4F /* KThread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KThread.h; sourceTree = "<group>"; };
 		3AE5ECB51292F7B800B17C4F /* KThread.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KThread.mm; sourceTree = "<group>"; };
 		3AEC6C8B12BC12FB00F769DB /* KLineNumberMarker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KLineNumberMarker.h; sourceTree = "<group>"; };
@@ -511,7 +512,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				3AC6ECCD12C8E07D00C8DBFC /* ChromiumTabs.framework in Frameworks */,
-				97E87A8A12C9584D004988F3 /* CSS.framework in Frameworks */,
+				3AC2D74012998D590066B586 /* CSS.framework in Frameworks */,
 				3A25E47B1281A6A200B6A33E /* libboost_regex-mt.dylib in Frameworks */,
 				3A25E47D1281A6A700B6A33E /* libsource-highlight.dylib in Frameworks */,
 				3A158AFF128A0A3700339E6E /* libicucore.dylib in Frameworks */,
@@ -739,6 +740,7 @@
 				3A25E47A1281A6A200B6A33E /* libboost_regex-mt.dylib */,
 				3A25E47C1281A6A700B6A33E /* libsource-highlight.dylib */,
 				3A158AFE128A0A3700339E6E /* libicucore.dylib */,
+				3AE5EB871292DB5C00B17C4F /* CSS.framework */,
 				3ABF537912A5D0D80020233C /* FScript.framework */,
 				3A510BE912C2927A00AAC1D5 /* Security.framework */,
 				3AA8124412C2BDFC0085F086 /* SecurityFoundation.framework */,
@@ -1391,6 +1393,67 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 3AA91E5D12C95CC000132A25 /* debug.xcconfig */;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_2)",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_3)",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_4)",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_5)",
+					"\"$(SRCROOT)/deps/syck/ext/cocoa/build/Development\"",
+					"\"$(SRCROOT)/deps/syck/ext/cocoa/build/Deployment\"",
+					"\"$(SRCROOT)/deps\"",
+				);
+				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)\"";
+				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_2 = "\"$(SRCROOT)/deps/chromium-tabs/build/$(BUILD_STYLE)\"";
+				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_3 = "\"$(SYSTEM_LIBRARY_DIR)/Frameworks/WebKit.framework/Versions/A/Frameworks\"";
+				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_4 = "\"$(SRCROOT)/../libcss/cocoa-framework/build/Release\"";
+				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_5 = "\"$(SRCROOT)/deps/libcss/cocoa-framework/build/Release\"";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_EXCEPTIONS = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = src/prefix.pch;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"K_WITH_F_SCRIPT=1",
+					"K_DEBUG_BUILD=1",
+				);
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				HEADER_SEARCH_PATHS = (
+					src/ICU/include,
+					"$(HEADER_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
+					"deps/libcss/cocoa-framework/build/Release/CSS.framework/Headers",
+					/opt/local/include,
+				);
+				HEADER_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/deps/srchilight/include\"";
+				INFOPLIST_FILE = resources/Info.plist;
+				INSTALL_PATH = "$(HOME)/Applications";
+				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_2)",
+				);
+				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/deps/srchilight\"";
+				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_2 = "\"$(SRCROOT)/deps/boost\"";
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				ONLY_ACTIVE_ARCH = YES;
+				OTHER_LDFLAGS = (
+					"-framework",
+					Foundation,
+					"-framework",
+					AppKit,
+					"-framework",
+					FScript,
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = Kod;
+				SDKROOT = macosx10.6;
 			};
 			name = Debug;
 		};
@@ -1398,6 +1461,77 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 3AA91E5E12C95CC000132A25 /* release.xcconfig */;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEPLOYMENT_POSTPROCESSING = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_2)",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_3)",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_4)",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_5)",
+					"\"$(SRCROOT)/deps/syck/ext/cocoa/build/Development\"",
+					"\"$(SRCROOT)/deps/syck/ext/cocoa/build/Deployment\"",
+					"\"$(SRCROOT)/deps\"",
+				);
+				FRAMEWORK_SEARCH_PATHS_QUOTED_1 = "\"$(SYSTEM_LIBRARY_DIR)/Frameworks/WebKit.framework/Versions/A/Frameworks\"";
+				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)\"";
+				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_2 = "\"$(SRCROOT)/deps/chromium-tabs/build/$(BUILD_STYLE)\"";
+				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_3 = "\"$(SRCROOT)/../libcss/cocoa-framework/build/Release\"";
+				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_4 = "\"$(SRCROOT)/deps/libcss/cocoa-framework/build/Release\"";
+				GCC_AUTO_VECTORIZATION = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DEBUGGING_SYMBOLS = used;
+				GCC_ENABLE_EXCEPTIONS = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_ENABLE_SSE3_EXTENSIONS = YES;
+				GCC_ENABLE_SSE41_EXTENSIONS = YES;
+				GCC_ENABLE_SSE42_EXTENSIONS = YES;
+				GCC_ENABLE_SUPPLEMENTAL_SSE3_INSTRUCTIONS = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = src/prefix.pch;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"K_WITH_CRASH_REPORT_COLLECTOR=1",
+					"NDEBUG=1",
+				);
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				HEADER_SEARCH_PATHS = (
+					src/ICU/include,
+					"$(HEADER_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
+					"deps/libcss/cocoa-framework/build/Release/CSS.framework/Headers",
+					/opt/local/include,
+				);
+				HEADER_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/deps/srchilight/include\"";
+				INFOPLIST_FILE = resources/Info.plist;
+				INSTALL_PATH = "$(HOME)/Applications";
+				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_2)",
+				);
+				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/deps/srchilight\"";
+				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_2 = "\"$(SRCROOT)/deps/boost\"";
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				OTHER_LDFLAGS = (
+					"-framework",
+					Foundation,
+					"-framework",
+					AppKit,
+				);
+				PREBINDING = NO;
+				PRESERVE_DEAD_CODE_INITS_AND_TERMS = YES;
+				PRODUCT_NAME = Kod;
+				SDKROOT = macosx10.6;
+				SEPARATE_STRIP = NO;
+				STRIP_INSTALLED_PRODUCT = NO;
+				VALID_ARCHS = "i386 x86_64";
+				ZERO_LINK = NO;
 			};
 			name = Release;
 		};
