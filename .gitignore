@@ -1,5 +1,9 @@
-# Mac
+# Generic
 .DS_Store
+._*
+*.o
+*.dylib
+* copy.*
 
 # XCode
 build/*
@@ -8,7 +12,6 @@ build/*
 *.perspectivev3
 *.xcworkspace
 xcuserdata
-profile
 *.moved-aside
 
 # Dependencies
@@ -17,8 +20,5 @@ profile
 /deps/bwtoolkit/build
 
 # Kod Specific
-*.breakpad
 /src/kod_version.h
 /website/public/config.php
-include
-*.dylib
