@@ -7,7 +7,6 @@ import platform
 
 srcdir = "."
 blddir = 'build'
-VERSION = '0.0.1'
 
 import platform
 if platform.platform().find('Darwin') == -1:
@@ -65,6 +64,8 @@ def build(ctx):
   task.source = ctx.path.ant_glob('src/*.cc')
   if len(task.source): task.source += ' '
   task.source += ctx.path.ant_glob('src/*.mm')
+  
+  print ctx.env
 
 def test(ctx):
   status = Utils.exec_command('node test/all.js')

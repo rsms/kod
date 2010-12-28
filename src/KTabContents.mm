@@ -18,6 +18,7 @@
 #import "KStatusBarView.h"
 #import "KMetaRulerView.h"
 #import "HEventEmitter.h"
+#import "KNodeProcess.h"
 
 #import "NSImage-kod.h"
 #import "CIImage-kod.h"
@@ -204,6 +205,9 @@ static int debugSimulateTextAppendingIteration = 0;
   
   // set to zero
   lastEditedHighlightStateRange_ = NSMakeRange(NSNotFound,0);
+  
+  // set edit ts
+  lastEditTimestamp_ = [NSDate timeIntervalSinceReferenceDate];
 
   return self;
 }
@@ -482,6 +486,11 @@ static int debugSimulateTextAppendingIteration = 0;
     //icon = [icon imageByApplyingCIFilterNamed:@"CIColorInvert"];
   }
   return icon;
+}
+
+
+- (NSUInteger)identifier {
+  return [self hash]; // FIXME
 }
 
 
@@ -1439,6 +1448,9 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
                                        inRange:editedRange
                                    changeDelta:changeInLength];
 
+  // Update edit timestamp
+  lastEditTimestamp_ = [NSDate timeIntervalSinceReferenceDate];
+
   // we do not process edits when we are loading
   if (isLoading_) return;
   
@@ -1458,15 +1470,31 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
     return;
   }
   
-
-  // mark as dirty if not already dirty
-  //if (!isDirty_) {
-  //  [self updateChangeCount:NSChangeReadOtherContents];
-  //}
-  
   // Syntax highlight
   if (highlightingEnabled_) {
-    [self deferHighlightTextStorage:textStorage inRange:editedRange];
+    KNodeProcess *node = [KNodeProcess sharedProcess];
+    
+    // cancel any active previous invocation
+    if (activeNodeTextEditedInvocationRTag_) {
+      [node cancelCallbackForRTag:activeNodeTextEditedInvocationRTag_];
+    }
+    
+    NSDictionary *args = [NSDictionary dictionaryWithObjectsAndKeys:
+        [NSNumber numberWithUnsignedInteger:self.identifier], @"tabid",
+        [NSNumber numberWithUnsignedInteger:editedRange.location], @"location",
+        [NSNumber numberWithUnsignedInteger:editedRange.length], @"length",
+        [NSNumber numberWithInteger:changeInLength], @"changelen",
+        [NSNumber numberWithDouble:lastEditTimestamp_], @"timestamp",
+        // this is since it goes through 2x UTF-8 conversions:
+        textStorage.string, @"text",
+        nil];
+    activeNodeTextEditedInvocationRTag_ = [node invoke:@"textEdited"
+                                                  args:args callback:
+    ^(id args) {
+      DLOG("textEdited returned with %@", args);
+    }];
+    
+    //[self deferHighlightTextStorage:textStorage inRange:editedRange];
   }
   
   // this makes the edit an undoable entry (otherwise each "group" of edits will

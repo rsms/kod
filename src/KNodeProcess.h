@@ -28,10 +28,16 @@ extern NSString *const KNodeIPCTypeResponse;
  * {
  *   rtag: int,    // optional tag which if present need to be sent in a response
  *                 // as confirmation
- *   type: string, // type of request. One of: "invocation", "event", "response"
+ *   type: string, // type of request.
  *   name: string, // name of method to invoke or event to emit
  *   data: id,     // payload
  * }
+ *
+ * Request types:
+ *  - "invocation" -- a method invocation
+ *  - "event" -- an event
+ *  - "response" -- a response (to "invocation" or "event")
+ *  - "cancel" -- cancelation of an active transaction
  */
 - (NSNumber*)send:(NSString*)requestType
              name:(NSString*)name
@@ -40,6 +46,11 @@ extern NSString *const KNodeIPCTypeResponse;
 
 // Convenience metod w/o callback
 - (void)send:(NSString*)requestType name:(NSString*)name args:(id)args;
+
+// Send an invocation (requestType=@"invocation")
+- (NSNumber*)invoke:(NSString*)name
+               args:(id)args
+           callback:(void(^)(id args))callback;
 
 // Cancel a pending callback passed to send:name:args:callback:
 - (void)cancelCallbackForRTag:(NSNumber*)rtag;

@@ -1,0 +1,242 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		3AA9202812CA526C00132A25 /* index.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3AA9200812CA512900132A25 /* index.mm */; };
+		3AA9202B12CA52A700132A25 /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3AA9202A12CA529500132A25 /* AppKit.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		3AA9200712CA512900132A25 /* index.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = index.h; sourceTree = "<group>"; };
+		3AA9200812CA512900132A25 /* index.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = index.mm; sourceTree = "<group>"; };
+		3AA9200912CA512900132A25 /* stub.cc.in */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = stub.cc.in; sourceTree = "<group>"; };
+		3AA9200A12CA512900132A25 /* stub.h.in */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = stub.h.in; sourceTree = "<group>"; };
+		3AA9202212CA526200132A25 /* binding.node */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = binding.node; sourceTree = BUILT_PRODUCTS_DIR; };
+		3AA9202A12CA529500132A25 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		3AA9202012CA526200132A25 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3AA9202B12CA52A700132A25 /* AppKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		3AA91FE712CA50F600132A25 = {
+			isa = PBXGroup;
+			children = (
+				3AA9200612CA512900132A25 /* src */,
+				3AA9202912CA527D00132A25 /* frameworks */,
+				3AA9202312CA526200132A25 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		3AA9200612CA512900132A25 /* src */ = {
+			isa = PBXGroup;
+			children = (
+				3AA9200712CA512900132A25 /* index.h */,
+				3AA9200812CA512900132A25 /* index.mm */,
+				3AA9200912CA512900132A25 /* stub.cc.in */,
+				3AA9200A12CA512900132A25 /* stub.h.in */,
+			);
+			path = src;
+			sourceTree = "<group>";
+		};
+		3AA9202312CA526200132A25 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				3AA9202212CA526200132A25 /* binding.node */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		3AA9202912CA527D00132A25 /* frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				3AA9202A12CA529500132A25 /* AppKit.framework */,
+			);
+			name = frameworks;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		3AA9201E12CA526200132A25 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		3AA9202112CA526200132A25 /* node-kod */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 3AA9202612CA526200132A25 /* Build configuration list for PBXNativeTarget "node-kod" */;
+			buildPhases = (
+				3AA9201E12CA526200132A25 /* Headers */,
+				3AA9201F12CA526200132A25 /* Sources */,
+				3AA9202012CA526200132A25 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "node-kod";
+			productName = "node-kod";
+			productReference = 3AA9202212CA526200132A25 /* binding.node */;
+			productType = "com.apple.product-type.library.dynamic";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		3AA91FE912CA50F600132A25 /* Project object */ = {
+			isa = PBXProject;
+			buildConfigurationList = 3AA91FEC12CA50F600132A25 /* Build configuration list for PBXProject "node-kod" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				English,
+				Japanese,
+				French,
+				German,
+			);
+			mainGroup = 3AA91FE712CA50F600132A25;
+			productRefGroup = 3AA9202312CA526200132A25 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				3AA9202112CA526200132A25 /* node-kod */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		3AA9201F12CA526200132A25 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3AA9202812CA526C00132A25 /* index.mm in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		3AA91FEA12CA50F600132A25 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+			};
+			name = Debug;
+		};
+		3AA91FEB12CA50F600132A25 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+			};
+			name = Release;
+		};
+		3AA9202412CA526200132A25 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(NATIVE_ARCH_ACTUAL)";
+				COPY_PHASE_STRIP = NO;
+				EXECUTABLE_EXTENSION = node;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					_LARGEFILE_SOURCE,
+					"_FILE_OFFSET_BITS=64",
+					_GNU_SOURCE,
+					"EV_MULTIPLICITY=0",
+				);
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/../deps/node/src",
+					"$(SRCROOT)/../deps/node/deps/v8/include",
+					"$(SRCROOT)/../deps/node/deps/libev",
+					"$(SRCROOT)/../deps/node/deps/libeio",
+				);
+				INSTALL_PATH = /usr/local/lib;
+				ONLY_ACTIVE_ARCH = YES;
+				OTHER_LDFLAGS = (
+					"-undefined",
+					dynamic_lookup,
+				);
+				PRODUCT_NAME = binding;
+			};
+			name = Debug;
+		};
+		3AA9202512CA526200132A25 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				EXECUTABLE_EXTENSION = node;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_MODEL_TUNING = G5;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					_LARGEFILE_SOURCE,
+					"_FILE_OFFSET_BITS=64",
+					_GNU_SOURCE,
+					"EV_MULTIPLICITY=0",
+				);
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/../deps/node/src",
+					"$(SRCROOT)/../deps/node/deps/v8/include",
+					"$(SRCROOT)/../deps/node/deps/libev",
+					"$(SRCROOT)/../deps/node/deps/libeio",
+				);
+				INSTALL_PATH = /usr/local/lib;
+				OTHER_LDFLAGS = (
+					"-undefined",
+					dynamic_lookup,
+				);
+				PRODUCT_NAME = binding;
+				VALID_ARCHS = "i386 x86_64";
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		3AA91FEC12CA50F600132A25 /* Build configuration list for PBXProject "node-kod" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3AA91FEA12CA50F600132A25 /* Debug */,
+				3AA91FEB12CA50F600132A25 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		3AA9202612CA526200132A25 /* Build configuration list for PBXNativeTarget "node-kod" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3AA9202412CA526200132A25 /* Debug */,
+				3AA9202512CA526200132A25 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 3AA91FE912CA50F600132A25 /* Project object */;
+}

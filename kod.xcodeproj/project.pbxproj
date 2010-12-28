@@ -52,7 +52,6 @@
 		3A51081712C139B800AAC1D5 /* kod_helper.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A5107EB12C1351500AAC1D5 /* kod_helper.m */; };
 		3A51083612C13AF900AAC1D5 /* common.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A51083412C13AF900AAC1D5 /* common.m */; };
 		3A51084D12C13C9E00AAC1D5 /* common.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A51083412C13AF900AAC1D5 /* common.m */; };
-		3A510B3312C26C7700AAC1D5 /* kod in Copy Support Files */ = {isa = PBXBuildFile; fileRef = 3A5107F812C135A200AAC1D5 /* kod */; };
 		3A510B3C12C26EFE00AAC1D5 /* terminal-usage.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3A510B3B12C26EFE00AAC1D5 /* terminal-usage.xib */; };
 		3A510B3F12C26F1200AAC1D5 /* KTerminalUsageWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A510B3E12C26F1200AAC1D5 /* KTerminalUsageWindowController.m */; };
 		3A510BE612C2926000AAC1D5 /* KSudo.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A510BE512C2926000AAC1D5 /* KSudo.m */; };
@@ -110,13 +109,22 @@
 		3AA81B2412C62D270085F086 /* CIImage-kod.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AA81B2312C62D270085F086 /* CIImage-kod.m */; };
 		3AA81B2712C62D6A0085F086 /* NSImage-kod.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AA81B2612C62D6A0085F086 /* NSImage-kod.m */; };
 		3AA81B2F12C62E160085F086 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3AA81B2E12C62E160085F086 /* QuartzCore.framework */; };
+		3AA91EA512CA11B300132A25 /* KPresentationDamager.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3AA91EA412CA11B300132A25 /* KPresentationDamager.mm */; };
+		3AA91EA812CA12EF00132A25 /* KTextEvent.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3AA91EA712CA12EF00132A25 /* KTextEvent.mm */; };
+		3AA91F2312CA43DE00132A25 /* KNodeThread.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3AA91F2212CA43DE00132A25 /* KNodeThread.mm */; };
+		3AA91F3412CA467E00132A25 /* libcrypto.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 3AA91F3312CA467E00132A25 /* libcrypto.dylib */; };
+		3AA91F3612CA469100132A25 /* libdl.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 3AA91F3512CA469100132A25 /* libdl.dylib */; };
+		3AA91F3812CA469B00132A25 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 3AA91F3712CA469B00132A25 /* libz.dylib */; };
+		3AA91F3C12CA46B200132A25 /* libssl.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 3AA91F3B12CA46B200132A25 /* libssl.dylib */; };
+		3AA91F3F12CA46E400132A25 /* kod in Copy Support Files */ = {isa = PBXBuildFile; fileRef = 3A5107F812C135A200AAC1D5 /* kod */; };
 		3AAA9F4212BFB7B50079F079 /* Sparkle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3AAA9F4112BFB7B50079F079 /* Sparkle.framework */; };
 		3AAA9F6612BFBB010079F079 /* dsa_pub.pem in Resources */ = {isa = PBXBuildFile; fileRef = 3AAA9F6512BFBB010079F079 /* dsa_pub.pem */; };
 		3AAA9F7712BFC0440079F079 /* Sparkle.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 3AAA9F4112BFB7B50079F079 /* Sparkle.framework */; };
-		3AAAA2FD12C106410079F079 /* node in Copy Executable Files */ = {isa = PBXBuildFile; fileRef = 3AAAA2FB12C1060C0079F079 /* node */; };
 		3AAC02B812BD1110001BDC39 /* kconf.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AAC02B712BD1110001BDC39 /* kconf.m */; };
 		3AAC03F012BD2FC2001BDC39 /* sidebar-closed.png in Resources */ = {isa = PBXBuildFile; fileRef = 3AAC03EE12BD2FC2001BDC39 /* sidebar-closed.png */; };
 		3AAC03F112BD2FC2001BDC39 /* sidebar-open.png in Resources */ = {isa = PBXBuildFile; fileRef = 3AAC03EF12BD2FC2001BDC39 /* sidebar-open.png */; };
+		3AB57D8012CA565400E528B1 /* binding.node in Copy nodelib-kod */ = {isa = PBXBuildFile; fileRef = 3AB57D7312CA55F400E528B1 /* binding.node */; };
+		3AB57D8212CA567300E528B1 /* index.js in Copy nodelib-kod */ = {isa = PBXBuildFile; fileRef = 3AB57D8112CA567100E528B1 /* index.js */; };
 		3AB97BD612B2836800F4ADB2 /* KStatusBarView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AB97BD512B2836800F4ADB2 /* KStatusBarView.m */; };
 		3AB97C3612B2893C00F4ADB2 /* KStatusBarController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3AB97C3512B2893C00F4ADB2 /* KStatusBarController.mm */; };
 		3AB97D4512B2990500F4ADB2 /* BWSplitView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AB97D4412B2990500F4ADB2 /* BWSplitView.m */; };
@@ -167,6 +175,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = 3A928C1F1227151800DA7E43;
 			remoteInfo = Kod;
+		};
+		3AB57D7212CA55F400E528B1 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 3AB57D6E12CA55F400E528B1 /* node-kod.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 3AA9202212CA526200132A25 /* binding.node */;
+			remoteInfo = "node-kod";
 		};
 		3AC6ECC312C8E05B00C8DBFC /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -219,7 +234,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 12;
 			files = (
-				3A510B3312C26C7700AAC1D5 /* kod in Copy Support Files */,
+				3AA91F3F12CA46E400132A25 /* kod in Copy Support Files */,
 			);
 			name = "Copy Support Files";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -239,15 +254,16 @@
 			name = "Copy Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		3AAAA2FE12C1065F0079F079 /* Copy Executable Files */ = {
+		3AAAA2FE12C1065F0079F079 /* Copy nodelib-kod */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 6;
+			dstPath = nodelib/kod;
+			dstSubfolderSpec = 12;
 			files = (
-				3AAAA2FD12C106410079F079 /* node in Copy Executable Files */,
+				3AB57D8212CA567300E528B1 /* index.js in Copy nodelib-kod */,
+				3AB57D8012CA565400E528B1 /* binding.node in Copy nodelib-kod */,
 			);
-			name = "Copy Executable Files";
+			name = "Copy nodelib-kod";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
@@ -424,12 +440,24 @@
 		3AA91E5C12C95CC000132A25 /* base.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = base.xcconfig; sourceTree = "<group>"; };
 		3AA91E5D12C95CC000132A25 /* debug.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = debug.xcconfig; sourceTree = "<group>"; };
 		3AA91E5E12C95CC000132A25 /* release.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = release.xcconfig; sourceTree = "<group>"; };
+		3AA91EA312CA11B300132A25 /* KPresentationDamager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KPresentationDamager.h; sourceTree = "<group>"; };
+		3AA91EA412CA11B300132A25 /* KPresentationDamager.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KPresentationDamager.mm; sourceTree = "<group>"; };
+		3AA91EA612CA12EF00132A25 /* KTextEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KTextEvent.h; sourceTree = "<group>"; };
+		3AA91EA712CA12EF00132A25 /* KTextEvent.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KTextEvent.mm; sourceTree = "<group>"; };
+		3AA91F2112CA43DE00132A25 /* KNodeThread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KNodeThread.h; sourceTree = "<group>"; };
+		3AA91F2212CA43DE00132A25 /* KNodeThread.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KNodeThread.mm; sourceTree = "<group>"; };
+		3AA91F3312CA467E00132A25 /* libcrypto.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libcrypto.dylib; path = /usr/lib/libcrypto.dylib; sourceTree = "<absolute>"; };
+		3AA91F3512CA469100132A25 /* libdl.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libdl.dylib; path = /usr/lib/libdl.dylib; sourceTree = "<absolute>"; };
+		3AA91F3712CA469B00132A25 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = /usr/lib/libz.dylib; sourceTree = "<absolute>"; };
+		3AA91F3B12CA46B200132A25 /* libssl.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libssl.dylib; path = /usr/lib/libssl.dylib; sourceTree = "<absolute>"; };
 		3AAA9F4112BFB7B50079F079 /* Sparkle.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Sparkle.framework; path = deps/Sparkle.framework; sourceTree = "<group>"; };
 		3AAA9F6512BFBB010079F079 /* dsa_pub.pem */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = dsa_pub.pem; sourceTree = "<group>"; };
 		3AAAA2FB12C1060C0079F079 /* node */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = node; path = deps/node/build/default/node; sourceTree = SOURCE_ROOT; };
 		3AAC02B712BD1110001BDC39 /* kconf.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = kconf.m; sourceTree = "<group>"; };
 		3AAC03EE12BD2FC2001BDC39 /* sidebar-closed.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "sidebar-closed.png"; sourceTree = "<group>"; };
 		3AAC03EF12BD2FC2001BDC39 /* sidebar-open.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "sidebar-open.png"; sourceTree = "<group>"; };
+		3AB57D6E12CA55F400E528B1 /* node-kod.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "node-kod.xcodeproj"; path = "node-kod/node-kod.xcodeproj"; sourceTree = "<group>"; };
+		3AB57D8112CA567100E528B1 /* index.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = index.js; path = "node-kod/kod/index.js"; sourceTree = SOURCE_ROOT; };
 		3AB97BD412B2836800F4ADB2 /* KStatusBarView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KStatusBarView.h; sourceTree = "<group>"; };
 		3AB97BD512B2836800F4ADB2 /* KStatusBarView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KStatusBarView.m; sourceTree = "<group>"; };
 		3AB97C3412B2893C00F4ADB2 /* KStatusBarController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KStatusBarController.h; sourceTree = "<group>"; };
@@ -518,6 +546,10 @@
 				3A510BEA12C2927A00AAC1D5 /* Security.framework in Frameworks */,
 				3AA8124512C2BDFC0085F086 /* SecurityFoundation.framework in Frameworks */,
 				3AA81B2F12C62E160085F086 /* QuartzCore.framework in Frameworks */,
+				3AA91F3412CA467E00132A25 /* libcrypto.dylib in Frameworks */,
+				3AA91F3612CA469100132A25 /* libdl.dylib in Frameworks */,
+				3AA91F3812CA469B00132A25 /* libz.dylib in Frameworks */,
+				3AA91F3C12CA46B200132A25 /* libssl.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -543,6 +575,8 @@
 				3AAAA2FB12C1060C0079F079 /* node */,
 				3A40F8C412AFE5F7007B5879 /* KNodeProcess.h */,
 				3A40F8C512AFE5F7007B5879 /* KNodeProcess.m */,
+				3AA91F2112CA43DE00132A25 /* KNodeThread.h */,
+				3AA91F2212CA43DE00132A25 /* KNodeThread.mm */,
 			);
 			name = Node;
 			sourceTree = "<group>";
@@ -655,13 +689,16 @@
 		3A928BED1227143800DA7E43 = {
 			isa = PBXGroup;
 			children = (
+				3AB57D6E12CA55F400E528B1 /* node-kod.xcodeproj */,
 				3AE5E8A912915ABA00B17C4F /* CSS.xcodeproj */,
 				3A92916A1229BDAA00DA7E43 /* chromium-tabs.xcodeproj */,
 				3A928C13122714E800DA7E43 /* src */,
 				3A928C19122714EE00DA7E43 /* resources */,
+				3AA91FD012CA4EC600132A25 /* nodelib */,
 				3AA91E5B12C95CC000132A25 /* xcconfig */,
 				3A92914F1229BD5E00DA7E43 /* Frameworks */,
 				3A928C211227151800DA7E43 /* Products */,
+				3AA91F3B12CA46B200132A25 /* libssl.dylib */,
 			);
 			sourceTree = "<group>";
 		};
@@ -686,6 +723,7 @@
 				3A9293CB1229ED4C00DA7E43 /* KDocumentController.mm */,
 				3A9291191229B96A00DA7E43 /* KTabContents.h */,
 				3A92911A1229B96A00DA7E43 /* KTabContents.mm */,
+				3AA91E9D12CA118400132A25 /* Text parser */,
 				3AC2D4A51298D8050066B586 /* KTextStorage.h */,
 				3AC2D4A61298D8050066B586 /* KTextStorage.mm */,
 				3AA8133812C36B390085F086 /* URL handlers */,
@@ -743,6 +781,9 @@
 				3A510BE912C2927A00AAC1D5 /* Security.framework */,
 				3AA8124412C2BDFC0085F086 /* SecurityFoundation.framework */,
 				3AA81B2E12C62E160085F086 /* QuartzCore.framework */,
+				3AA91F3312CA467E00132A25 /* libcrypto.dylib */,
+				3AA91F3512CA469100132A25 /* libdl.dylib */,
+				3AA91F3712CA469B00132A25 /* libz.dylib */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -779,6 +820,34 @@
 				3AA91E5E12C95CC000132A25 /* release.xcconfig */,
 			);
 			path = xcconfig;
+			sourceTree = "<group>";
+		};
+		3AA91E9D12CA118400132A25 /* Text parser */ = {
+			isa = PBXGroup;
+			children = (
+				3AA91EA612CA12EF00132A25 /* KTextEvent.h */,
+				3AA91EA712CA12EF00132A25 /* KTextEvent.mm */,
+				3AA91EA312CA11B300132A25 /* KPresentationDamager.h */,
+				3AA91EA412CA11B300132A25 /* KPresentationDamager.mm */,
+			);
+			name = "Text parser";
+			sourceTree = "<group>";
+		};
+		3AA91FD012CA4EC600132A25 /* nodelib */ = {
+			isa = PBXGroup;
+			children = (
+				3AB57D8112CA567100E528B1 /* index.js */,
+			);
+			name = nodelib;
+			path = resources;
+			sourceTree = "<group>";
+		};
+		3AB57D6F12CA55F400E528B1 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				3AB57D7312CA55F400E528B1 /* binding.node */,
+			);
+			name = Products;
 			sourceTree = "<group>";
 		};
 		3AB97BD312B2834D00F4ADB2 /* Status bar */ = {
@@ -1020,7 +1089,7 @@
 				3A928C1E1227151800DA7E43 /* Frameworks */,
 				3A9291381229BBB600DA7E43 /* Copy Frameworks */,
 				3A40F8DA12AFEB89007B5879 /* Copy Support Files */,
-				3AAAA2FE12C1065F0079F079 /* Copy Executable Files */,
+				3AAAA2FE12C1065F0079F079 /* Copy nodelib-kod */,
 				3AAAA19712C0179E0079F079 /* Run Script: Clean */,
 			);
 			buildRules = (
@@ -1062,6 +1131,10 @@
 					ProductGroup = 3AE5E8AA12915ABA00B17C4F /* Products */;
 					ProjectRef = 3AE5E8A912915ABA00B17C4F /* CSS.xcodeproj */;
 				},
+				{
+					ProductGroup = 3AB57D6F12CA55F400E528B1 /* Products */;
+					ProjectRef = 3AB57D6E12CA55F400E528B1 /* node-kod.xcodeproj */;
+				},
 			);
 			projectRoot = "";
 			targets = (
@@ -1073,6 +1146,13 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
+		3AB57D7312CA55F400E528B1 /* binding.node */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.dylib";
+			path = binding.node;
+			remoteRef = 3AB57D7212CA55F400E528B1 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		3AC6ECC412C8E05B00C8DBFC /* ChromiumTabs.framework */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.framework;
@@ -1284,6 +1364,9 @@
 				3AA81A4212C60EEB0085F086 /* HURLConnection.m in Sources */,
 				3AA81B2412C62D270085F086 /* CIImage-kod.m in Sources */,
 				3AA81B2712C62D6A0085F086 /* NSImage-kod.m in Sources */,
+				3AA91EA512CA11B300132A25 /* KPresentationDamager.mm in Sources */,
+				3AA91EA812CA12EF00132A25 /* KTextEvent.mm in Sources */,
+				3AA91F2312CA43DE00132A25 /* KNodeThread.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

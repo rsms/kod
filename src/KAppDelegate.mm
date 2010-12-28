@@ -11,6 +11,7 @@
 #import "KNodeProcess.h"
 #import "KMachService.h"
 #import "KSudo.h"
+#import "KNodeThread.h"
 
 #import <Sparkle/SUUpdater.h>
 
@@ -103,7 +104,8 @@
   #endif
   
   // Start node.js
-  [KNodeProcess sharedProcess];
+  KNodeThread *nodeThread = [[KNodeThread alloc] init];
+  [nodeThread start];
   
   // Start Mach service
   [KMachService sharedService];

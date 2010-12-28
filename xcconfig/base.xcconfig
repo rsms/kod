@@ -3,15 +3,19 @@ ONLY_ACTIVE_ARCH = YES
 GCC_VERSION = com.apple.compilers.llvm.clang.1_0
 INSTALL_PATH = $(HOME)/Applications
 MACOSX_DEPLOYMENT_TARGET = 10.6
-OTHER_LDFLAGS = -framework Foundation -framework AppKit
+OTHER_LDFLAGS = -framework Foundation -framework AppKit -lv8 -lnode
 LD_RUNPATH_SEARCH_PATHS = @loader_path/../Frameworks
 INFOPLIST_FILE = resources/Info.plist
 ALWAYS_SEARCH_USER_PATHS = NO
 
+KOD_DEPS = "$(SRCROOT)/deps"
+
+NODE_HEADER_SEARCH_PATHS = "$(KOD_DEPS)/node/src" "$(KOD_DEPS)/node/deps/v8/include" "$(KOD_DEPS)/node/deps/libeio" "$(KOD_DEPS)/node/deps/libev"
+
 // Note: values can not wrap lines
-FRAMEWORK_SEARCH_PATHS = $(inherited) "$(SRCROOT)" "$(SRCROOT)/deps/chromium-tabs/build/$(BUILD_STYLE)" "$(SRCROOT)/deps/libcss/cocoa-framework/build/$(BUILD_STYLE)" "$(SRCROOT)/deps"
-HEADER_SEARCH_PATHS = "$(SRCROOT)/src/ICU/include" "$(SRCROOT)/deps/srchilight/include" "deps/libcss/cocoa-framework/build/$(BUILD_STYLE)/CSS.framework/Headers" "/opt/local/include" "/usr/local/include"
-LIBRARY_SEARCH_PATHS = $(inherited) "$(SRCROOT)/deps/srchilight"
+FRAMEWORK_SEARCH_PATHS = $(inherited) "$(SRCROOT)" "$(KOD_DEPS)/chromium-tabs/build/$(BUILD_STYLE)" "$(KOD_DEPS)/libcss/cocoa-framework/build/$(BUILD_STYLE)" "$(KOD_DEPS)"
+HEADER_SEARCH_PATHS = "$(SRCROOT)/src/ICU/include" $(NODE_HEADER_SEARCH_PATHS) "$(KOD_DEPS)/srchilight/include" "deps/libcss/cocoa-framework/build/$(BUILD_STYLE)/CSS.framework/Headers" "/opt/local/include" "/usr/local/include"
+LIBRARY_SEARCH_PATHS = $(inherited) "$(KOD_DEPS)/srchilight" "$(KOD_DEPS)/node/build/default"
 
 GCC_C_LANGUAGE_STANDARD = gnu99
 GCC_PRECOMPILE_PREFIX_HEADER = YES

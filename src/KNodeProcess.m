@@ -211,6 +211,13 @@ static NSString *_dataToWeakString(const void *bytes, size_t length) {
 }
 
 
+- (NSNumber*)invoke:(NSString*)name
+               args:(id)args
+           callback:(void(^)(id args))callback {
+  [self send:@"invocation" name:name args:args callback:callback];
+}
+
+
 - (void)send:(NSString*)requestType name:(NSString*)name args:(id)args {
   [self send:requestType name:name args:args callback:nil]; 
 }
@@ -219,6 +226,7 @@ static NSString *_dataToWeakString(const void *bytes, size_t length) {
 - (void)cancelCallbackForRTag:(NSNumber*)rtag {
   OSSpinLockLock(&responseWaitQueueLock_);
   [responseWaitQueue_ removeObjectForKey:rtag];
+  [self send:@"cancel" name:rtag args:nil callback:nil];
   OSSpinLockUnlock(&responseWaitQueueLock_);
 }
 
