@@ -4,13 +4,9 @@
 # XCode
 build/*
 *.pbxuser
-!default.pbxuser
 *.mode?v3
-!default.mode?v3
 *.perspectivev3
-!default.perspectivev3
 *.xcworkspace
-!default.xcworkspace
 xcuserdata
 profile
 *.moved-aside
@@ -18,6 +14,7 @@ profile
 # Dependencies
 /deps/srchilight/include
 /deps/srchilight/upstream-lang
+/deps/bwtoolkit/build
 
 # Kod Specific
 *.breakpad
