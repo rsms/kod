@@ -36,10 +36,6 @@ Via Homebrew:
     brew install source-highlight
     deps/srchilight/import-from-homebrew.sh
 
-Finally:
-
-    deps/srchilight/import-lang-files.sh
-
 **Start hacking:**
 
     open kod.xcodeproj
