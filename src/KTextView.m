@@ -97,9 +97,12 @@ static CGFloat kTextContainerYOffset = 0.0;
 		
 		if (([event modifierFlags] & (NSShiftKeyMask | NSAlphaShiftKeyMask)) != 0) {
 			// unindent
-			[super setSelectedRange:NSMakeRange(start, 4)];
-			[super insertText:@""];
-			delta = -4;
+			NSRange indent = NSMakeRange(start, 4);
+			if ([[self.textStorage.string substringWithRange:indent] isEqualToString:@"    "]) {
+				[super setSelectedRange:indent];
+				[super insertText:@""];
+				delta = -4;
+			}
 		}else{
 			// indent
 			[super setSelectedRange:NSMakeRange(start, 0)];
