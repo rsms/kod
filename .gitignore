@@ -25,3 +25,5 @@ profile
 *.breakpad
 /src/kod_version.h
 /website/public/config.php
+include
+*.dylib
