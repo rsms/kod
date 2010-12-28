@@ -52,6 +52,26 @@ Since Kod is made up of a main repositroy as well as a few sub-repositories (git
     ./pull.sh
 
 
+### Contributing
+
+The main Kod source tree is hosted on git (a popular [DVCS](http://en.wikipedia.org/wiki/Distributed_revision_control)), thus you should create a fork of the repository in which you perform development. See <http://help.github.com/forking/>.
+
+We prefer that you send a [*pull request* here on GitHub](http://help.github.com/pull-requests/) which will then be merged into the official main line repository. You need to sign the Kod CLA to be able to contribute (see below).
+
+Also, in your first contribution, add yourself to the end of `AUTHORS.md` (which of course is optional).
+
+
+#### Contributor License Agreement
+
+Before we can accept any contributions to Kod, you need to sign this [CLA](http://en.wikipedia.org/wiki/Contributor_License_Agreement):
+
+[http://kodapp.com/cla.html](http://kodapp.com/cla.html)
+
+> The purpose of this agreement is to clearly define the terms under which intellectual property has been contributed to Kod and thereby allow us to defend the project should there be a legal dispute regarding the software at some future time.
+
+For a list of contributors, please see [AUTHORS](https://github.com/rsms/kod/blob/master/AUTHORS.md) and <https://github.com/rsms/kod/contributors>
+
+
 ## License
 
 See the file `LICENSE`

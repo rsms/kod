@@ -1,12 +1,12 @@
 #!/bin/bash
 #
-# This script imports and configures dynamic libraries build by MacPorts:
+# This script imports and configures dynamic libraries build by homebrew:
 #
-#   port install source-highlight +universal
+#   brew install source-highlight
 #
 # Any dependencies to |LIB| will also be imported and processed.
 #
-LIB=/opt/local/lib/libsource-highlight.dylib
+LIB=/usr/local/lib/libsource-highlight.dylib
 #
 # -----------------------------------------------------------------------------
 #
@@ -44,7 +44,7 @@ resolvedeps "$LIB"
 
 mkdir -vp include
 rm -rf include/srchilite
-cp -vfpr /opt/local/include/srchilite include/srchilite
+cp -vpr /usr/local/include/srchilite include/srchilite
 sed 's/ branches build/ \/*branches build/g' \
   include/srchilite/highlightstatebuilder.h \
   > include/srchilite/highlightstatebuilder.h.2 || exit $?
@@ -53,7 +53,6 @@ sed 's/endbranches$/endbranches*\//g' \
   > include/srchilite/highlightstatebuilder.h || exit $?
 rm -f include/srchilite/highlightstatebuilder.h.2
 
-# Note: we use -I/opt/local/include instead of copying these ATM.
+# Note: we use -I/usr/local/include instead of copying these ATM.
 #mkdir -vp include/boost
-#cp -vpr /opt/local/include/boost/regex* include/boost/
-
+#cp -vpr /usr/local/include/boost/regex* include/boost/
