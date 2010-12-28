@@ -635,6 +635,16 @@ static int debugSimulateTextAppendingIteration = 0;
   }
 }
 
+- (NSRange)rangeOfLineIndentationAtLineNumber:(NSUInteger)lineNumber {
+	NSUInteger i = [self locationOfLineAtLineNumber:prevLine];
+	unichar space = ' ';
+	int	indentLen = 0;
+	while ([textStorage.string characterAtIndex:i] == space) {
+		i++; indentLen++;
+	}
+	return NSMakeRange(i, indentLen);
+}
+
 
 - (NSRange)rangeOfLineAtLineNumber:(NSUInteger)lineNumber {
   NSRange lineRange = [self rangeOfLineTerminatorAtLineNumber:lineNumber];
@@ -1463,7 +1473,10 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
 	
 	if (self.charCountOfLastLine == 0 && self.lineCount > 1) {
 		// maintain indentation
-		[self.textView indentLine:self.lineCount];
+		NSUInteger prevLine = self.lineCount-1;
+		
+		NSRange indent = [self rangeOfLineIndentationAtLineNumber:prevLine];
+		
 	}
 
   // mark as dirty if not already dirty
