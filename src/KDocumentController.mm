@@ -243,10 +243,12 @@
     if (!windowController) {
       windowController = [KBrowserWindowController mainBrowserWindowController];
     }
-    [self finalizeOpenDocument:tab
-          withWindowController:(KBrowserWindowController*)windowController
-             groupWithSiblings:NO
-                       display:display];
+    K_DISPATCH_MAIN_ASYNC(
+        [self finalizeOpenDocument:tab
+              withWindowController:(KBrowserWindowController*)windowController
+                 groupWithSiblings:NO
+                           display:display];
+    );
   } else {
     assert(!error || *error);
   }
