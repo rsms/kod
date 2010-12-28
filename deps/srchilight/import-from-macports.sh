@@ -10,7 +10,7 @@ LIB=/opt/local/lib/libsource-highlight.dylib
 #
 # -----------------------------------------------------------------------------
 #
-cd "$(dirname '$0')"
+cd "$(dirname "$0")"
 LIB=$(python -c 'import os.path;print os.path.realpath("'"$LIB"'")')
 deps=
 
