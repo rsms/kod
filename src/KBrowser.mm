@@ -52,7 +52,11 @@
   
   if ([doc isDirty]) {
     [doc canCloseDocumentWithDelegate:self shouldCloseSelector:@selector(document:shouldClose:contextInfo:) contextInfo:nil];
+  } else {
+    shouldCloseTab = YES;
+    [super closeTab];
   }
+
 }
 
 
