@@ -59,6 +59,7 @@
   // set splitView of toolbarController_
   if (toolbarController_) {
     ((KToolbarController*)toolbarController_).splitView = splitView_;
+    [toolbarController_ addObserver:self forKeyPath:@"directoryURL" options:NSKeyValueObservingOptionOld context:nil];
   }
 
   // setup status bar
@@ -399,22 +400,25 @@ willPositionSheet:(NSWindow *)sheet
 
 
 - (BOOL)openFileDirectoryAtURL:(NSURL *)absoluteURL error:(NSError **)outError {
-  NSString *path = [absoluteURL path];
   if (!fileTreeController_) {
     *outError = [NSError kodErrorWithFormat:
-        @"Internal error (fileTreeController_ is nil)"];
+                 @"Internal error (fileTreeController_ is nil)"];
     return NO;
   } else {
-    BOOL success =
-        [fileTreeController_ setRootTreeNodeFromDirectoryAtPath:path
-                                                          error:outError];
-    if (success) {
-      // make sure the sidebar is visible
-      splitView_.isCollapsed = NO;
-    }
-    return success;
+    ((KToolbarController *)toolbarController_).directoryURL = absoluteURL;
+    return YES;
   }
 }
 
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
+  NSURL *absoluteURL = ((KToolbarController *)toolbarController_).directoryURL;
+  NSString *path = [absoluteURL path];
+  NSError *error = nil;
+  BOOL success = [fileTreeController_ setRootTreeNodeFromDirectoryAtPath:path error:&error];
+  if (success) {
+    // make sure the sidebar is visible
+    splitView_.isCollapsed = NO;
+  }
+}
 
 @end

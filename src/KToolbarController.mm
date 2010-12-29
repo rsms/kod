@@ -12,7 +12,7 @@
 
 @implementation KToolbarController
 
-@synthesize locationBarTextField = locationBarTextField_;
+@synthesize locationBarTextField = locationBarTextField_, directoryURL = directoryURL_;
 
 
 // Called after the view is done loading and the outlets have been hooked up.
