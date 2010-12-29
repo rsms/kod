@@ -45,6 +45,29 @@
 }
 
 
+- (void)closeTab {
+  KDocument *doc = (KDocument *)[self tabContentsAtIndex:[self selectedTabIndex]];
+  
+  if ([doc isDirty]) {
+    NSLog(@"dirty, needs to ask");
+    [doc canCloseDocumentWithDelegate:self shouldCloseSelector:@selector(document:shouldClose:contextInfo:) contextInfo:nil];
+  }
+}
+
+
+- (BOOL)canCloseTab {
+  return shouldCloseTab;
+}
+
+
+- (void)document:(NSDocument *)tab
+     shouldClose:(BOOL)shouldClose
+     contextInfo:(void*)contextInfo {
+  shouldCloseTab = shouldClose;
+  [super closeTab];
+}
+
+
 /*-(void)updateTabStateForContent:(CTTabContents*)contents {
   DLOG("updateTabStateForContent:%@", contents);
   int index = tabStripModel_->GetIndexOfTabContents(contents);
