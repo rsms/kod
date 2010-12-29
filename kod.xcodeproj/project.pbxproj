@@ -108,8 +108,6 @@
 		3AA81B2412C62D270085F086 /* CIImage-kod.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AA81B2312C62D270085F086 /* CIImage-kod.m */; };
 		3AA81B2712C62D6A0085F086 /* NSImage-kod.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AA81B2612C62D6A0085F086 /* NSImage-kod.m */; };
 		3AA81B2F12C62E160085F086 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3AA81B2E12C62E160085F086 /* QuartzCore.framework */; };
-		3AA91EA512CA11B300132A25 /* KPresentationDamager.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3AA91EA412CA11B300132A25 /* KPresentationDamager.mm */; };
-		3AA91EA812CA12EF00132A25 /* KTextEvent.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3AA91EA712CA12EF00132A25 /* KTextEvent.mm */; };
 		3AA91F2312CA43DE00132A25 /* KNodeThread.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3AA91F2212CA43DE00132A25 /* KNodeThread.mm */; };
 		3AA91F3412CA467E00132A25 /* libcrypto.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 3AA91F3312CA467E00132A25 /* libcrypto.dylib */; };
 		3AA91F3612CA469100132A25 /* libdl.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 3AA91F3512CA469100132A25 /* libdl.dylib */; };
@@ -447,10 +445,6 @@
 		3AA91E5C12C95CC000132A25 /* base.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = base.xcconfig; sourceTree = "<group>"; };
 		3AA91E5D12C95CC000132A25 /* debug.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = debug.xcconfig; sourceTree = "<group>"; };
 		3AA91E5E12C95CC000132A25 /* release.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = release.xcconfig; sourceTree = "<group>"; };
-		3AA91EA312CA11B300132A25 /* KPresentationDamager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KPresentationDamager.h; sourceTree = "<group>"; };
-		3AA91EA412CA11B300132A25 /* KPresentationDamager.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KPresentationDamager.mm; sourceTree = "<group>"; };
-		3AA91EA612CA12EF00132A25 /* KTextEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KTextEvent.h; sourceTree = "<group>"; };
-		3AA91EA712CA12EF00132A25 /* KTextEvent.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KTextEvent.mm; sourceTree = "<group>"; };
 		3AA91F2112CA43DE00132A25 /* KNodeThread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KNodeThread.h; sourceTree = "<group>"; };
 		3AA91F2212CA43DE00132A25 /* KNodeThread.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KNodeThread.mm; sourceTree = "<group>"; };
 		3AA91F3312CA467E00132A25 /* libcrypto.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libcrypto.dylib; path = /usr/lib/libcrypto.dylib; sourceTree = "<absolute>"; };
@@ -736,7 +730,6 @@
 				3A9293CB1229ED4C00DA7E43 /* KDocumentController.mm */,
 				3A9291191229B96A00DA7E43 /* KDocument.h */,
 				3A92911A1229B96A00DA7E43 /* KDocument.mm */,
-				3AA91E9D12CA118400132A25 /* Text parser */,
 				3AC2D4A51298D8050066B586 /* KTextStorage.h */,
 				3AC2D4A61298D8050066B586 /* KTextStorage.mm */,
 				3AA8133812C36B390085F086 /* URL handlers */,
@@ -833,17 +826,6 @@
 				3AA91E5E12C95CC000132A25 /* release.xcconfig */,
 			);
 			path = xcconfig;
-			sourceTree = "<group>";
-		};
-		3AA91E9D12CA118400132A25 /* Text parser */ = {
-			isa = PBXGroup;
-			children = (
-				3AA91EA612CA12EF00132A25 /* KTextEvent.h */,
-				3AA91EA712CA12EF00132A25 /* KTextEvent.mm */,
-				3AA91EA312CA11B300132A25 /* KPresentationDamager.h */,
-				3AA91EA412CA11B300132A25 /* KPresentationDamager.mm */,
-			);
-			name = "Text parser";
 			sourceTree = "<group>";
 		};
 		3AA91FD012CA4EC600132A25 /* nodelib */ = {
@@ -1379,8 +1361,6 @@
 				3AA81A4212C60EEB0085F086 /* HURLConnection.m in Sources */,
 				3AA81B2412C62D270085F086 /* CIImage-kod.m in Sources */,
 				3AA81B2712C62D6A0085F086 /* NSImage-kod.m in Sources */,
-				3AA91EA512CA11B300132A25 /* KPresentationDamager.mm in Sources */,
-				3AA91EA812CA12EF00132A25 /* KTextEvent.mm in Sources */,
 				3AA91F2312CA43DE00132A25 /* KNodeThread.mm in Sources */,
 				3AB57E0612CA634C00E528B1 /* kod_node_interface.mm in Sources */,
 				3AB57EAD12CA725A00E528B1 /* knode_ns_additions.mm in Sources */,
