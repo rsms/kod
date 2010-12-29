@@ -3,6 +3,7 @@
 #import <err.h>
 #import <node_buffer.h>
 #import <vector>
+#import <objc/runtime.h>
 
 using namespace v8;
 
@@ -161,16 +162,36 @@ Persistent<Function> BuildContext::indexOf;
 @implementation NSNumber (v8)
 - (Local<Value>)v8Value {
   HandleScope scope;
-  const char *t = [self objCType];
-  if (t == @encode(int) || t == @encode(char)) {
-    return scope.Close(Integer::New([self intValue]));
-  } else if (t == @encode(unsigned int) || t == @encode(unsigned char)) {
-    return scope.Close(Integer::New([self unsignedIntValue]));
-  } else if (t == @encode(BOOL)) {
-    return scope.Close(Local<Value>::New(
-        v8::Boolean::New([self boolValue] == YES)));
+  const char *ts = [self objCType];
+  assert(ts != NULL);
+  switch (ts[0]) {
+    case _C_UCHR:
+    case _C_SHT:
+    case _C_USHT:
+    case _C_INT:
+      return scope.Close(Integer::New([self intValue]));
+    case _C_UINT:
+      return scope.Close(Integer::New([self unsignedIntValue]));
+    case _C_LNG:
+      return scope.Close(Integer::New([self longValue]));
+    case _C_ULNG:
+      return scope.Close(Integer::New([self unsignedLongValue]));
+    case _C_LNG_LNG:
+      return scope.Close(Integer::New([self longLongValue]));
+    case _C_ULNG_LNG:
+      return scope.Close(Integer::New([self unsignedLongLongValue]));
+    case _C_FLT:
+      return scope.Close(Number::New([self floatValue]));
+    case _C_DBL:
+      return scope.Close(Number::New([self doubleValue]));
+    case _C_BOOL:
+    case _C_CHR:
+      return scope.Close(Local<Value>::New(
+          v8::Boolean::New([self boolValue] == YES)));
+    default:
+      break;
   }
-  return scope.Close(Number::New([self doubleValue]));
+  return *Undefined();
 }
 @end
 
