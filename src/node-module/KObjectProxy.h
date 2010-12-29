@@ -1,4 +1,4 @@
-#import "index.h"
+#import "node_kod.h"
 
 #define KN_OBJC_CLASS_ADDITIONS_BEGIN(name) \
   @interface name##_node_ {} @end @implementation name##_node_

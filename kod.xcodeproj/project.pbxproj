@@ -33,6 +33,7 @@
 		3A15949F128B83F100339E6E /* NSString-cpp.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A15949E128B83F100339E6E /* NSString-cpp.mm */; };
 		3A159629128C3BCB00339E6E /* KSourceHighlighter.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A159628128C3BCB00339E6E /* KSourceHighlighter.mm */; };
 		3A159685128C432800339E6E /* KStyle.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A159684128C432800339E6E /* KStyle.mm */; };
+		3A24231712CB9A2100522D81 /* kod in Copy nodelib */ = {isa = PBXBuildFile; fileRef = 3A24231112CB99FF00522D81 /* kod */; };
 		3A25E47B1281A6A200B6A33E /* libboost_regex-mt.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A25E47A1281A6A200B6A33E /* libboost_regex-mt.dylib */; };
 		3A25E47D1281A6A700B6A33E /* libsource-highlight.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A25E47C1281A6A700B6A33E /* libsource-highlight.dylib */; };
 		3A25E4971281A9D300B6A33E /* libsource-highlight.dylib in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 3A25E47C1281A6A700B6A33E /* libsource-highlight.dylib */; };
@@ -122,7 +123,6 @@
 		3AAC02B812BD1110001BDC39 /* kconf.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AAC02B712BD1110001BDC39 /* kconf.m */; };
 		3AAC03F012BD2FC2001BDC39 /* sidebar-closed.png in Resources */ = {isa = PBXBuildFile; fileRef = 3AAC03EE12BD2FC2001BDC39 /* sidebar-closed.png */; };
 		3AAC03F112BD2FC2001BDC39 /* sidebar-open.png in Resources */ = {isa = PBXBuildFile; fileRef = 3AAC03EF12BD2FC2001BDC39 /* sidebar-open.png */; };
-		3AB57D8212CA567300E528B1 /* index.js in Copy nodelib-kod */ = {isa = PBXBuildFile; fileRef = 3AB57D8112CA567100E528B1 /* index.js */; };
 		3AB57E0612CA634C00E528B1 /* kod_node_interface.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3AB57E0512CA634C00E528B1 /* kod_node_interface.mm */; };
 		3AB57EAD12CA725A00E528B1 /* knode_ns_additions.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3AB57EAC12CA725A00E528B1 /* knode_ns_additions.mm */; };
 		3AB5823612CAD15300E528B1 /* k_objc_prop.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AB5823512CAD15300E528B1 /* k_objc_prop.m */; };
@@ -176,13 +176,6 @@
 			proxyType = 1;
 			remoteGlobalIDString = 3A928C1F1227151800DA7E43;
 			remoteInfo = Kod;
-		};
-		3AB57D7212CA55F400E528B1 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 3AB57D6E12CA55F400E528B1 /* node-kod.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 3AA9202212CA526200132A25;
-			remoteInfo = "node-kod";
 		};
 		3AC6ECC312C8E05B00C8DBFC /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -255,15 +248,15 @@
 			name = "Copy Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		3AAAA2FE12C1065F0079F079 /* Copy nodelib-kod */ = {
+		3AAAA2FE12C1065F0079F079 /* Copy nodelib */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
-			dstPath = nodelib/kod;
+			dstPath = nodelib;
 			dstSubfolderSpec = 12;
 			files = (
-				3AB57D8212CA567300E528B1 /* index.js in Copy nodelib-kod */,
+				3A24231712CB9A2100522D81 /* kod in Copy nodelib */,
 			);
-			name = "Copy nodelib-kod";
+			name = "Copy nodelib";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
@@ -291,6 +284,7 @@
 		3A159684128C432800339E6E /* KStyle.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KStyle.mm; sourceTree = "<group>"; };
 		3A15968A128C501C00339E6E /* HSemaphore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HSemaphore.h; sourceTree = "<group>"; };
 		3A1596E5128C607700339E6E /* hobjc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = hobjc.h; sourceTree = "<group>"; };
+		3A24231112CB99FF00522D81 /* kod */ = {isa = PBXFileReference; lastKnownFileType = folder; name = kod; path = "node-module/kod"; sourceTree = "<group>"; };
 		3A25E47A1281A6A200B6A33E /* libboost_regex-mt.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libboost_regex-mt.dylib"; path = "deps/srchilight/libboost_regex-mt.dylib"; sourceTree = "<group>"; };
 		3A25E47C1281A6A700B6A33E /* libsource-highlight.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libsource-highlight.dylib"; path = "deps/srchilight/libsource-highlight.dylib"; sourceTree = "<group>"; };
 		3A25E4B51281AE3700B6A33E /* KStyleElement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KStyleElement.h; sourceTree = "<group>"; };
@@ -453,8 +447,6 @@
 		3AAC02B712BD1110001BDC39 /* kconf.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = kconf.m; sourceTree = "<group>"; };
 		3AAC03EE12BD2FC2001BDC39 /* sidebar-closed.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "sidebar-closed.png"; sourceTree = "<group>"; };
 		3AAC03EF12BD2FC2001BDC39 /* sidebar-open.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "sidebar-open.png"; sourceTree = "<group>"; };
-		3AB57D6E12CA55F400E528B1 /* node-kod.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "node-kod.xcodeproj"; path = "node-kod/node-kod.xcodeproj"; sourceTree = "<group>"; };
-		3AB57D8112CA567100E528B1 /* index.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = index.js; path = "node-kod/kod/index.js"; sourceTree = SOURCE_ROOT; };
 		3AB57DD612CA5CF800E528B1 /* kod_node_interface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = kod_node_interface.h; sourceTree = "<group>"; };
 		3AB57E0512CA634C00E528B1 /* kod_node_interface.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = kod_node_interface.mm; sourceTree = "<group>"; };
 		3AB57EAB12CA725A00E528B1 /* knode_ns_additions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = knode_ns_additions.h; sourceTree = "<group>"; };
@@ -575,6 +567,7 @@
 		3A366A6F12CB86CA00257AE6 /* kod module */ = {
 			isa = PBXGroup;
 			children = (
+				3A24231112CB99FF00522D81 /* kod */,
 				3A366A8212CB873D00257AE6 /* node_kod.h */,
 				3A366A8312CB873D00257AE6 /* node_kod.mm */,
 				3A366A8012CB873D00257AE6 /* KObjectProxy.h */,
@@ -705,12 +698,10 @@
 		3A928BED1227143800DA7E43 = {
 			isa = PBXGroup;
 			children = (
-				3AB57D6E12CA55F400E528B1 /* node-kod.xcodeproj */,
 				3AE5E8A912915ABA00B17C4F /* CSS.xcodeproj */,
 				3A92916A1229BDAA00DA7E43 /* chromium-tabs.xcodeproj */,
 				3A928C13122714E800DA7E43 /* src */,
 				3A928C19122714EE00DA7E43 /* resources */,
-				3AA91FD012CA4EC600132A25 /* nodelib */,
 				3AA91E5B12C95CC000132A25 /* xcconfig */,
 				3A92914F1229BD5E00DA7E43 /* Frameworks */,
 				3A928C211227151800DA7E43 /* Products */,
@@ -835,23 +826,6 @@
 				3AA91E5E12C95CC000132A25 /* release.xcconfig */,
 			);
 			path = xcconfig;
-			sourceTree = "<group>";
-		};
-		3AA91FD012CA4EC600132A25 /* nodelib */ = {
-			isa = PBXGroup;
-			children = (
-				3AB57D8112CA567100E528B1 /* index.js */,
-			);
-			name = nodelib;
-			path = resources;
-			sourceTree = "<group>";
-		};
-		3AB57D6F12CA55F400E528B1 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				3AB57D7312CA55F400E528B1 /* binding.node */,
-			);
-			name = Products;
 			sourceTree = "<group>";
 		};
 		3AB97BD312B2834D00F4ADB2 /* Status bar */ = {
@@ -1095,7 +1069,7 @@
 				3A928C1E1227151800DA7E43 /* Frameworks */,
 				3A9291381229BBB600DA7E43 /* Copy Frameworks */,
 				3A40F8DA12AFEB89007B5879 /* Copy Support Files */,
-				3AAAA2FE12C1065F0079F079 /* Copy nodelib-kod */,
+				3AAAA2FE12C1065F0079F079 /* Copy nodelib */,
 				3AAAA19712C0179E0079F079 /* Run Script: Clean */,
 			);
 			buildRules = (
@@ -1137,10 +1111,6 @@
 					ProductGroup = 3AE5E8AA12915ABA00B17C4F /* Products */;
 					ProjectRef = 3AE5E8A912915ABA00B17C4F /* CSS.xcodeproj */;
 				},
-				{
-					ProductGroup = 3AB57D6F12CA55F400E528B1 /* Products */;
-					ProjectRef = 3AB57D6E12CA55F400E528B1 /* node-kod.xcodeproj */;
-				},
 			);
 			projectRoot = "";
 			targets = (
@@ -1152,13 +1122,6 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
-		3AB57D7312CA55F400E528B1 /* binding.node */ = {
-			isa = PBXReferenceProxy;
-			fileType = "compiled.mach-o.dylib";
-			path = binding.node;
-			remoteRef = 3AB57D7212CA55F400E528B1 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
 		3AC6ECC412C8E05B00C8DBFC /* ChromiumTabs.framework */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.framework;

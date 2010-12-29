@@ -28,18 +28,21 @@
   #define __FILENAME__ ((strrchr(__FILE__, '/') ?: __FILE__ - 1) + 1)
 #endif
 
-// Emitting WIP/development notes
-#define KN_TODO(tmpl, ...)\
-  fprintf(stderr, "TODO [node-kod %s:%d] " tmpl "\n", \
-          __FILENAME__, __LINE__, ##__VA_ARGS__)
-
-// Dump a message to stderr
-#define KN_DLOG(tmpl, ...)\
-  do {\
-    fprintf(stderr, "D [node-kod %s:%d] " tmpl "\n", \
-            __FILENAME__, __LINE__, ##__VA_ARGS__);\
-    fflush(stderr);\
-  } while (0)
+#if !NDEBUG
+  // Emitting WIP/development notes
+  #define KN_TODO(tmpl, ...)\
+    fprintf(stderr, "TODO [node-kod %s:%d] " tmpl "\n", \
+            __FILENAME__, __LINE__, ##__VA_ARGS__)
+  // Dump a message to stderr
+  #define KN_DLOG(tmpl, ...)\
+    do {\
+      fprintf(stderr, "D [node-kod %s:%d] " tmpl "\n", \
+              __FILENAME__, __LINE__, ##__VA_ARGS__);\
+      fflush(stderr);\
+    } while (0)
+#else
+  #define KN_DLOG(...) ((void)0)
+#endif  // !NDEBUG
 
 // Throwing exceptions
 #define JS_THROW(t, s) ThrowException(Exception::t(String::New(s)))
@@ -60,6 +63,9 @@ static inline char* KNToCString(v8::Handle<v8::Value> value) {
   str->WriteUtf8(p);
   return p;
 }
+
+// Initialize this module
+void node_kod_init(v8::Handle<v8::Object> target);
 
 // -----------------------------------------------------------------------------
 #endif  // NODE_KOD_INDEX_H_

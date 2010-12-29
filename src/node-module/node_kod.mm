@@ -1,7 +1,7 @@
-#import "index.h"
+#import "node_kod.h"
 #import "kod_node_interface.h"
 #import "knode_ns_additions.h"
-#import "kod_version.h"
+#import "../kod_version.h"
 
 #import "KObjectProxy.h"
 
@@ -36,12 +36,12 @@ static v8::Handle<Value> HandleUncaughtException(const Arguments& args) {
 }
 
 
-extern "C" void init(v8::Handle<Object> target) {
+void node_kod_init(v8::Handle<v8::Object> target) {
   HandleScope scope;
 
   // Constants
   target->Set(String::NewSymbol("version"), String::New(K_VERSION_STR));
-  target->Set(String::NewSymbol("externalFunctions"), Object::New());
+  target->Set(String::NewSymbol("exposedFunctions"), Object::New());
 
   // Functions
   NODE_SET_METHOD(target, "getAllDocuments", GetAllDocuments);

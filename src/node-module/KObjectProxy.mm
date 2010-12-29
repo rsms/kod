@@ -369,7 +369,7 @@ static v8::Handle<v8::Boolean> NamedDeleter(Local<String> property,
  */
 static v8::Handle<Array> NamedEnumerator(const AccessorInfo& info) {
   HandleScope scope;
-  //KN_DLOG("%s", __PRETTY_FUNCTION__);
+  KN_DLOG("%s", __PRETTY_FUNCTION__);
   KObjectProxy *p = ObjectWrap::Unwrap<KObjectProxy>(info.This());
   
   unsigned int propsCount;
@@ -393,7 +393,7 @@ static v8::Handle<Array> NamedEnumerator(const AccessorInfo& info) {
   // Other methods should be included as well when we support wrapping methods
   // in v8 functions
   
-  return list;
+  return scope.Close(list);
 }
 
 

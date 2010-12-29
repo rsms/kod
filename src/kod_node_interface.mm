@@ -46,7 +46,7 @@ static OSQueueHead KNodeIOInputQueue;
 static ev_async KNodeIOInputQueueNotifier;
 
 // maps mathod names to functions
-static v8::Persistent<v8::Object> *kExternalFunctions = NULL;
+static v8::Persistent<v8::Object> *kExposedFunctions = NULL;
 
 // max number of entries to dequeue in one flush
 #define KNODE_MAX_DEQUEUE 100
@@ -110,12 +110,12 @@ v8::Handle<Value> KNodeBlockFun::InvocationProxy(const Arguments& args) {
 bool KNodeInvokeExposedJSFunction(const char *name,
                                   int argc,
                                   v8::Handle<v8::Value> argv[]) {
-  Local<Value> v = (*kExternalFunctions)->Get(String::New(name));
+  Local<Value> v = (*kExposedFunctions)->Get(String::New(name));
   if (!v->IsFunction())
     return false;
   Local<Function> fun = Function::Cast(*v);
   //Local<Value> returnValue =
-  fun->Call(*kExternalFunctions, argc, argv);
+  fun->Call(*kExposedFunctions, argc, argv);
   return true;
 }
 
@@ -210,9 +210,9 @@ bool KNodeInvokeExposedJSFunction(const char *functionName,
 
 void KNodeInitNode(v8::Handle<Object> kodModule) {
   // get reference to method-name-to-js-func dict
-  v8::Local<Value> externalFunctions =
-      kodModule->Get(String::New("externalFunctions"))->ToObject();
-  kExternalFunctions = pobj_create(externalFunctions);
+  v8::Local<Value> exposedFunctions =
+      kodModule->Get(String::New("exposedFunctions"))->ToObject();
+  kExposedFunctions = pobj_create(exposedFunctions);
   
   // setup notifier
   KNodeIOInputQueueNotifier.data = NULL;

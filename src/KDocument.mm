@@ -1489,13 +1489,13 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
   // Syntax highlight
   if (highlightingEnabled_) {
     
-    /*NSTimeInterval startTime = [NSDate timeIntervalSinceReferenceDate];
+    NSTimeInterval startTime = [NSDate timeIntervalSinceReferenceDate];
     KNodeInvokeExposedJSFunction("foo", nil, ^(NSError *err, NSArray *args){
       NSTimeInterval endTime = [NSDate timeIntervalSinceReferenceDate];
       DLOG("[node] call returned to kod (error: %@, args: %@) "
            "real time spent: %.2f ms",
            err, args, (endTime - startTime)*1000.0);
-    });*/
+    });
     
     [self deferHighlightTextStorage:textStorage inRange:editedRange];
   }
