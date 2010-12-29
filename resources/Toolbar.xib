@@ -91,7 +91,9 @@
 									<int key="NSCellFlags2">165888</int>
 									<object class="NSURL" key="NSContents">
 										<nil key="NS.base"/>
-										<string key="NS.relative">file://localhost/</string>
+										<object class="NSMutableString" key="NS.relative">
+											<characters key="NS.bytes">file://localhost/</characters>
+										</object>
 									</object>
 									<object class="NSFont" key="NSSupport" id="26">
 										<string key="NSName">LucidaGrande</string>
@@ -103,7 +105,7 @@
 										<object class="NSPathComponentCell">
 											<int key="NSCellFlags">604110400</int>
 											<int key="NSCellFlags2">1024</int>
-											<string key="NSContents">rmbp2</string>
+											<string key="NSContents">subtlefuge</string>
 											<reference key="NSSupport" ref="26"/>
 											<object class="NSColor" key="NSBackgroundColor" id="650958098">
 												<int key="NSColorSpace">6</int>
@@ -128,7 +130,7 @@
 										<object class="NSPathComponentCell">
 											<int key="NSCellFlags">604110400</int>
 											<int key="NSCellFlags2">1024</int>
-											<string key="NSContents">OSX</string>
+											<string key="NSContents">Macintosh HD</string>
 											<reference key="NSSupport" ref="26"/>
 											<reference key="NSBackgroundColor" ref="650958098"/>
 											<reference key="NSTextColor" ref="460127142"/>
@@ -210,6 +212,14 @@
 						</object>
 					</object>
 					<int key="connectionID">244</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBActionConnection" key="connection">
+						<string key="label">selectPathInControl:</string>
+						<reference key="source" ref="1001"/>
+						<reference key="destination" ref="625760580"/>
+					</object>
+					<int key="connectionID">245</int>
 				</object>
 			</array>
 			<object class="IBMutableOrderedSet" key="objectRecords">
@@ -334,7 +344,7 @@
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">244</int>
+			<int key="maxID">245</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<array class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -406,6 +416,17 @@
 				<object class="IBPartialClassDescription">
 					<string key="className">KToolbarController</string>
 					<string key="superclassName">CTToolbarController</string>
+					<object class="NSMutableDictionary" key="actions">
+						<string key="NS.key.0">selectPathInControl:</string>
+						<string key="NS.object.0">id</string>
+					</object>
+					<object class="NSMutableDictionary" key="actionInfosByName">
+						<string key="NS.key.0">selectPathInControl:</string>
+						<object class="IBActionInfo" key="NS.object.0">
+							<string key="name">selectPathInControl:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+					</object>
 					<dictionary class="NSMutableDictionary" key="outlets">
 						<string key="leftViewGroup_">NSView</string>
 						<string key="locationBarTextField_">KAutocompleteTextField</string>

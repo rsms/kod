@@ -35,5 +35,6 @@
 @property(copy, nonatomic) NSURL *directoryURL;
 
 - (void)updateLayoutForSplitView;
+- (IBAction)selectPathInControl:(id)sender;
 
 @end
