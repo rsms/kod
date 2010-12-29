@@ -199,10 +199,10 @@ static NSString const *gDefaultElementSymbol;
   if (!baseFont_) {
     NSFontManager *fontManager = [NSFontManager sharedFontManager];
     NSFont *font =
-        [fontManager fontWithFamily:@"M+ 1m" traits:0 weight:0 size:11.0];
+        [fontManager fontWithFamily:@"Monaco" traits:0 weight:0 size:12.0];
     if (!font) {
-      WLOG("unable to find default font \"M+\" -- using system default");
-      font = [NSFont userFixedPitchFontOfSize:11.0];
+      WLOG("unable to find default font \"Monaco\" -- using system default");
+      font = [NSFont userFixedPitchFontOfSize:12.0];
     }
     baseFont_ = [font retain];
   }
@@ -231,8 +231,7 @@ static NSString const *gDefaultElementSymbol;
     // Setup a new CSS context
     // Is the baseStylesheet really needed?
     CSSContext* cssContext =
-        [[CSSContext alloc] initWithStylesheet:[KStyle baseStylesheet]];
-    [cssContext addStylesheet:stylesheet];
+    [[CSSContext alloc] initWithStylesheet:stylesheet];
     kassert(cssContext);
     [stylesheet release]; // our local reference
     
