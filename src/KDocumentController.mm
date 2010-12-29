@@ -119,10 +119,11 @@
   __block int32_t callbackCountdown = i;
   if (callback)
     callback = [callback copy];
-
+  
   // Dispatch opening of each document
   for (NSURL *url in urls) {
     int index = --i; // so it gets properly copied into the dispatched block
+    BOOL directory = NO;
     
     KDocument *alreadyOpenTab = [self _documentForURL:url
                                           makeKeyIfFound:index==0];
@@ -131,6 +132,11 @@
       if (callback && OSAtomicDecrement32(&callbackCountdown) == 0) {
         callback();
         [callback release];
+      }
+    } else if ([url isFileURL] && [fm fileExistsAtPath:[url path] isDirectory:&directory] && directory) {
+      NSError *error = nil;
+      if (![windowController openFileDirectoryAtURL:url error:&error]) {
+        WLOG("failed to read directory %@ -- %@", url, error);
       }
     } else if (newDocForNewURLs && [url isFileURL] &&
                ![fm fileExistsAtPath:[url path]]) {
