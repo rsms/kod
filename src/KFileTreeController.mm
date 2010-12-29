@@ -30,6 +30,8 @@ static NSString *kNameColumnId = @"name";
   h_objc_xch(&outlineView_, outlineView);
   [outlineView_ setDelegate:self];
   [outlineView_ setDataSource:self];
+  [outlineView_ setTarget:self];
+  [outlineView_ setDoubleAction:@selector(doubleClickOnOutlineView:)];
   return self;
 }
 
@@ -274,6 +276,17 @@ objectValueForTableColumn:(NSTableColumn *)tableColumn
   }
 }
 
+- (IBAction)doubleClickOnOutlineView:(id)sender {
+  NSTreeNode *treeNode = [outlineView_ itemAtRow:[outlineView_ clickedRow]];
+  KFileTreeNodeData *nodeData = [treeNode representedObject];
+  if (nodeData && nodeData.url && nodeData.container) {
+    KDocumentController *documentController =
+    (KDocumentController*)[NSDocumentController sharedDocumentController];
+    NSArray *fileURLs = [NSArray arrayWithObject:nodeData.url];
+    [documentController openDocumentsWithContentsOfURLs:fileURLs
+                                               callback:nil];
+  }
+}
 
 - (BOOL)outlineView:(NSOutlineView *)outlineView
     shouldTrackCell:(NSCell *)cell

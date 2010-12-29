@@ -1,7 +1,7 @@
 #import "KMetaRulerView.h"
 #import "KLineNumberMarker.h"
 #import "KTextView.h"
-#import "KTabContents.h"
+#import "KDocument.h"
 #import "KStyle.h"
 #import "common.h"
 #import <tgmath.h>
@@ -53,7 +53,7 @@
 
 
 - (id)initWithScrollView:(NSScrollView *)scrollView
-             tabContents:(KTabContents*)tabContents {
+             tabContents:(KDocument*)tabContents {
   if ((self = [super initWithScrollView:scrollView orientation:NSVerticalRuler]) != nil) {
 		markers_ = [[NSMutableDictionary alloc] init];
     tabContents_ = tabContents; // weak, owns us

@@ -3,14 +3,14 @@
 #import "KBrowser.h"
 #import "KBrowserWindowController.h"
 #import "KTerminalUsageWindowController.h"
-#import "KTabContents.h"
+#import "KDocument.h"
 #import "KDocumentController.h"
 #import "KCrashReportCollector.h"
 #import "kconf.h"
 #import "KStyle.h"
-#import "KNodeProcess.h"
 #import "KMachService.h"
 #import "KSudo.h"
+#import "KNodeThread.h"
 
 #import <Sparkle/SUUpdater.h>
 
@@ -103,7 +103,8 @@
   #endif
   
   // Start node.js
-  [KNodeProcess sharedProcess];
+  KNodeThread *nodeThread = [[KNodeThread alloc] init];
+  [nodeThread start];
   
   // Start Mach service
   [KMachService sharedService];
@@ -163,7 +164,7 @@
 
 
 - (void)applicationWillTerminate:(NSNotification *)aNotification {
-  [[KNodeProcess sharedProcess] terminate];
+  // TODO: terminate node thread
 }
 
 

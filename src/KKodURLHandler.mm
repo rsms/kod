@@ -45,7 +45,7 @@
 }
 
 
-- (void)readURL:(NSURL*)url ofType:(NSString*)typeName inTab:(KTabContents*)tab{
+- (void)readURL:(NSURL*)url ofType:(NSString*)typeName inTab:(KDocument*)tab{
   NSString *cmd = [[url kodURICommand] lowercaseString];
   NSString *fileResourceRelPath = [commandToFileResource_ objectForKey:cmd];
   kassert(fileResourceRelPath != nil);

@@ -1,5 +1,5 @@
 #import "KBrowser.h"
-#import "KTabContents.h"
+#import "KDocument.h"
 #import "kconf.h"
 #import "KBrowserWindowController.h"
 #import "KToolbarController.h"
@@ -9,7 +9,7 @@
 
 - (void) dealloc {
   // fix for a bug where tabs keep lingering after their browser has died
-  for (KTabContents *tab in self) {
+  for (KDocument *tab in self) {
     tab.browser = nil;
   }
   [super dealloc];
@@ -21,7 +21,7 @@
 // new CTTabContents object which will represent the contents of the new tab.
 - (CTTabContents*)createBlankTabBasedOn:(CTTabContents*)baseContents {
   // Create a new instance of our tab type
-  return [[[KTabContents alloc]
+  return [[[KDocument alloc]
       initWithBaseTabContents:baseContents] autorelease];
 }
 

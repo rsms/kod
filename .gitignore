@@ -4,6 +4,8 @@
 *.o
 *.dylib
 * copy.*
+.lock-wscript
+*.node
 
 # XCode
 build/*
@@ -22,3 +24,4 @@ xcuserdata
 # Kod Specific
 /src/kod_version.h
 /website/public/config.php
+/node-kod/build

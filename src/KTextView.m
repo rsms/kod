@@ -22,7 +22,7 @@ static CGFloat kTextContainerYOffset = 0.0;
     [self setAllowsImageEditing:NO];
     [self setRichText:NO];
     [self setImportsGraphics:NO];
-    [self turnOffKerning:self]; // we are monospace (robot voice)
+    //[self turnOffKerning:self]; // we are monospace (robot voice)
     [self setAutoresizingMask:NSViewWidthSizable];
     [self setUsesFindPanel:YES];
     [self setTextContainerInset:NSMakeSize(2.0, 4.0)];
@@ -57,6 +57,14 @@ static CGFloat kTextContainerYOffset = 0.0;
 - (void)mouseDown:(NSEvent*)event {
   NSPoint point = [self convertPoint:[event locationInWindow] fromView:nil];
   NSInteger charIndex = [self characterIndexForInsertionAtPoint:point];
+
+  // Prevent attributesAtIndex:effectiveRange: from throwing its exception
+  // by making sure we don't try to get the attributes for the last byte.
+  if (charIndex == [[self attributedString] length]) {
+    [super mouseDown: event];
+    return;
+  }
+
   NSRange effectiveRange;
   NSDictionary *attributes =
       [[self attributedString] attributesAtIndex:charIndex

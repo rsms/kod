@@ -36,11 +36,11 @@
  noodlesoft.com/blog/2008/10/05/displaying-line-numbers-with-nstextview/
  */
 
-@class KLineNumberMarker, KTabContents;
+@class KLineNumberMarker, KDocument;
 
 @interface KMetaRulerView : NSRulerView
 {
-  __weak KTabContents *tabContents_; // owns us
+  __weak KDocument *tabContents_; // owns us
   NSDictionary *textAttributes_;
   NSColor *backgroundColor_;
   NSColor *dividerColor_;
@@ -49,7 +49,7 @@
 }
 
 - (id)initWithScrollView:(NSScrollView *)aScrollView
-             tabContents:(KTabContents*)tabContents;
+             tabContents:(KDocument*)tabContents;
 
 - (CGFloat)requiredThickness;
 - (KLineNumberMarker *)markerAtLine:(NSUInteger)line;

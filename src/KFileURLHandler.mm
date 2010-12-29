@@ -86,7 +86,7 @@
 
 
 - (NSData*)_readFileURL:(NSURL *)absoluteURL
-                  inTab:(KTabContents*)tab
+                  inTab:(KDocument*)tab
           selectedRange:(NSRange*)selectedRange
                   error:(NSError**)outError {
   // utilize mmap to load a file
@@ -133,7 +133,7 @@
 
 - (void)_readURL:(NSURL*)absoluteURL
           ofType:(NSString*)typeName
-           inTab:(KTabContents*)tab
+           inTab:(KDocument*)tab
  successCallback:(void(^)(void))successCallback {
   NSError *error = nil;
   NSRange selectedRange;
@@ -170,7 +170,7 @@
 
 - (void)readURL:(NSURL*)absoluteURL
          ofType:(NSString*)typeName
-          inTab:(KTabContents*)tab
+          inTab:(KDocument*)tab
 successCallback:(void(^)(void))successCallback {
   if ([NSThread isMainThread]) {
     // file I/O is blocking an thus we always read files on a background thread
@@ -188,7 +188,7 @@ successCallback:(void(^)(void))successCallback {
 
 - (void)readURL:(NSURL*)absoluteURL
          ofType:(NSString*)typeName
-          inTab:(KTabContents*)tab {
+          inTab:(KDocument*)tab {
   [self readURL:absoluteURL
          ofType:typeName
           inTab:tab
@@ -205,7 +205,7 @@ successCallback:nil];
 }
 
 
-- (void)_writeXAttrsToPath:(NSString*)path forTab:(KTabContents*)tab {
+- (void)_writeXAttrsToPath:(NSString*)path forTab:(KDocument*)tab {
   // write xattrs
   KTextView *textView = tab.textView;
   int fd = open([path UTF8String], O_RDONLY);
@@ -240,7 +240,7 @@ successCallback:nil];
 - (void)writeData:(NSData*)data
            ofType:(NSString*)typeName
             toURL:(NSURL*)absoluteURL
-            inTab:(KTabContents*)tab
+            inTab:(KDocument*)tab
  forSaveOperation:(NSSaveOperationType)saveOperation
       originalURL:(NSURL*)absoluteOriginalContentsURL
          callback:(void(^)(NSError *err, NSDate *mtime))callback {

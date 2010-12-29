@@ -6,7 +6,7 @@
 #import "KBrowserWindowController.h"
 #import "KAppDelegate.h"
 #import "KBrowser.h"
-#import "KTabContents.h"
+#import "KDocument.h"
 #import "KFileTreeController.h"
 #import "KFileOutlineView.h"
 #import "KScroller.h"
@@ -41,7 +41,7 @@
 
   // We don't use the "New tab" button
   kassert(tabStripController_);
-  self.showsNewTabButton = NO;
+  self.showsNewTabButton = kconf_bool(@"window/newTabButton/enable", NO);
 
   // setup split view
   kassert(splitView_ != nil); // should get a ref from unarchived NIB
@@ -59,6 +59,7 @@
   // set splitView of toolbarController_
   if (toolbarController_) {
     ((KToolbarController*)toolbarController_).splitView = splitView_;
+    [toolbarController_ addObserver:self forKeyPath:@"directoryURL" options:NSKeyValueObservingOptionOld context:nil];
   }
 
   // setup status bar
@@ -193,7 +194,7 @@
   goToLineLastValue_ = [textField.cell integerValue];
   if (goToLineLastValue_ < 1)
     return; // 0 if the text field was empty or non-number
-  KTabContents *tab = (KTabContents*)[self selectedTabContents];
+  KDocument *tab = (KDocument*)[self selectedTabContents];
   if (!tab) return;
   NSRange lineRange = [tab rangeOfLineAtLineNumber:goToLineLastValue_];
   if (lineRange.location == NSNotFound) {
@@ -210,7 +211,7 @@
 
 - (BOOL)validateMenuItem:(NSMenuItem *)item {
   BOOL y = NO;
-  KTabContents *selectedTab = (KTabContents*)[self selectedTabContents];
+  KDocument *selectedTab = (KDocument*)[self selectedTabContents];
   if (item.action == @selector(saveAllDocuments:)) {
     return [[NSDocumentController sharedDocumentController] hasEditedDocuments];
   } else if (item.action == @selector(saveDocument:)) {
@@ -331,7 +332,7 @@ willPositionSheet:(NSWindow *)sheet
   // safe even if toolbarController_ is nil
   [toolbarController_ updateToolbarWithContents:contents
                              shouldRestoreState:shouldRestore];
-  [statusBarController_ updateWithContents:(KTabContents*)contents];
+  [statusBarController_ updateWithContents:(KDocument*)contents];
 }
 
 
@@ -368,7 +369,7 @@ willPositionSheet:(NSWindow *)sheet
 - (NSMethodSignature *)methodSignatureForSelector:(SEL)selector {
   NSMethodSignature* sig = [super methodSignatureForSelector:selector];
 	if (!sig) {
-    KTabContents* tab = (KTabContents*)[browser_ selectedTabContents];
+    KDocument* tab = (KDocument*)[browser_ selectedTabContents];
     if (tab)
       sig = [tab methodSignatureForSelector:selector];
   }
@@ -378,7 +379,7 @@ willPositionSheet:(NSWindow *)sheet
 - (BOOL)respondsToSelector:(SEL)selector {
 	BOOL y = [super respondsToSelector:selector];
   if (!y) {
-    KTabContents* tab = (KTabContents*)[browser_ selectedTabContents];
+    KDocument* tab = (KDocument*)[browser_ selectedTabContents];
     y = !!tab && [tab respondsToSelector:selector];
   }
   return y;
@@ -386,7 +387,7 @@ willPositionSheet:(NSWindow *)sheet
 
 - (void)forwardInvocation:(NSInvocation *)invocation {
   SEL selector = [invocation selector];
-  KTabContents* tab = (KTabContents*)[browser_ selectedTabContents];
+  KDocument* tab = (KDocument*)[browser_ selectedTabContents];
   if (tab && [tab respondsToSelector:selector])
     [invocation invokeWithTarget:tab];
   else
@@ -399,22 +400,25 @@ willPositionSheet:(NSWindow *)sheet
 
 
 - (BOOL)openFileDirectoryAtURL:(NSURL *)absoluteURL error:(NSError **)outError {
-  NSString *path = [absoluteURL path];
   if (!fileTreeController_) {
     *outError = [NSError kodErrorWithFormat:
-        @"Internal error (fileTreeController_ is nil)"];
+                 @"Internal error (fileTreeController_ is nil)"];
     return NO;
   } else {
-    BOOL success =
-        [fileTreeController_ setRootTreeNodeFromDirectoryAtPath:path
-                                                          error:outError];
-    if (success) {
-      // make sure the sidebar is visible
-      splitView_.isCollapsed = NO;
-    }
-    return success;
+    ((KToolbarController *)toolbarController_).directoryURL = absoluteURL;
+    return YES;
   }
 }
 
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
+  NSURL *absoluteURL = ((KToolbarController *)toolbarController_).directoryURL;
+  NSString *path = [absoluteURL path];
+  NSError *error = nil;
+  BOOL success = [fileTreeController_ setRootTreeNodeFromDirectoryAtPath:path error:&error];
+  if (success) {
+    // make sure the sidebar is visible
+    splitView_.isCollapsed = NO;
+  }
+}
 
 @end
