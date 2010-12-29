@@ -12,7 +12,7 @@ typedef std::deque<KHighlightQueueEntry> KHighlightQueue;
 
 // This class represents a tab. In this example application a tab contains a
 // simple scrollable text area.
-@interface KTabContents : CTTabContents <NSTextViewDelegate,
+@interface KDocument : CTTabContents <NSTextViewDelegate,
                                          NSTextStorageDelegate> {
   KTextView* textView_; // Owned by NSScrollView which is our view_
   __weak NSUndoManager *undoManager_; // Owned by textView_
@@ -35,11 +35,15 @@ typedef std::deque<KHighlightQueueEntry> KHighlightQueue;
   // Meta ruler (nil if not shown)
   __weak KMetaRulerView *metaRulerView_;
   
+  // Timestamp of last edit
+  NSTimeInterval lastEditTimestamp_;
+  
   // Internal state
   hatomic_flags_t stateFlags_;
   NSRange lastEditedHighlightStateRange_;
   __weak KSourceHighlightState *lastEditedHighlightState_;
   int64_t highlightWaitBackOffNSec_; // nanoseconds
+  NSNumber *activeNodeTextEditedInvocationRTag_;
 }
 
 @property(assign, nonatomic) BOOL isDirty;
@@ -57,6 +61,11 @@ typedef std::deque<KHighlightQueueEntry> KHighlightQueue;
 
 @property(readonly, nonatomic) NSUInteger lineCount;
 @property(readonly, nonatomic) NSUInteger charCountOfLastLine;
+
+// Tab identifier
+@property(readonly, nonatomic) NSUInteger identifier;
+
+@property(assign) NSURL *fileURL;
 
 
 + (NSFont*)defaultFont;

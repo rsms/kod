@@ -105,7 +105,7 @@ typedef struct URegularExpression URegularExpression;
 		UChar *dest = (UChar *)NSZoneCalloc([self zone], groupSize, sizeof(UChar));
 		int32_t buffSize = uregex_group(re, groupIndex, dest, groupSize, &status);
 
-		if(U_BUFFER_OVERFLOW_ERROR == status) {
+		if (U_BUFFER_OVERFLOW_ERROR == status) {
 			groupSize *= 2;
 			NSZoneFree([self zone], dest);
 			continue;
@@ -113,8 +113,10 @@ typedef struct URegularExpression URegularExpression;
 
 		CheckStatus(status);
 
-		groupSize = InitialGroupSize; // reset to default
-		NSString *result = [[NSString alloc] initWithBytes:dest length:buffSize*sizeof(UChar) encoding:[NSString nativeUTF16Encoding]];
+		NSString *result =
+        [[NSString alloc] initWithBytes:dest
+                                 length:buffSize*sizeof(UChar)
+                               encoding:[NSString nativeUTF16Encoding]];
 		NSZoneFree([self zone], dest);
 		return result;
 	}

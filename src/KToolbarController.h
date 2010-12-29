@@ -23,6 +23,7 @@
   IBOutlet KAutocompleteTextField* locationBarTextField_;
   IBOutlet NSView *leftViewGroup_;
   IBOutlet NSView *rightViewGroup_;
+  NSURL *directoryURL_;
   KSplitView *splitView_;
   KAutocompleteTextFieldEditor *autocompleteTextFieldEditor_;
   KLocationBarController *locationBarController_;
@@ -31,7 +32,9 @@
 
 @property(readonly, nonatomic) KAutocompleteTextField* locationBarTextField;
 @property(assign, nonatomic) __weak KSplitView *splitView;
+@property(copy, nonatomic) NSURL *directoryURL;
 
 - (void)updateLayoutForSplitView;
+- (IBAction)selectPathInControl:(id)sender;
 
 @end

@@ -8,12 +8,17 @@ export PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin
 
 make clean
 ./configure --dest-cpu=ia32
-make
-mv build/default/node build/default/node-ia32
+make staticlib
+mv build/default/libnode.a build/default/libnode-ia32.a
+mv build/default/libv8.a build/default/libv8-ia32.a
 
 make clean
 ./configure --dest-cpu=x64
-make
-mv build/default/node build/default/node-x64
+make staticlib
+mv build/default/libnode.a build/default/libnode-x64.a
+mv build/default/libv8.a build/default/libv8-x64.a
 
-lipo -create build/default/node-ia32 build/default/node-x64 -output build/default/node
+lipo -create build/default/libnode-ia32.a build/default/libnode-x64.a \
+     -output build/default/libnode.a
+lipo -create build/default/libv8-ia32.a build/default/libv8-x64.a \
+     -output build/default/libv8.a

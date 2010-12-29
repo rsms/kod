@@ -12,7 +12,7 @@
 
 @implementation KToolbarController
 
-@synthesize locationBarTextField = locationBarTextField_;
+@synthesize locationBarTextField = locationBarTextField_, directoryURL = directoryURL_;
 
 
 // Called after the view is done loading and the outlets have been hooked up.
@@ -26,9 +26,16 @@
 }
 
 
+// It's a little weird that we have to set the path control's action to do this manually.
+- (IBAction)selectPathInControl:(id)sender {
+  NSPathControl *pathControl = sender;
+  self.directoryURL = [pathControl clickedPathComponentCell].URL;
+}
+
 - (void)dealloc {
   [autocompleteTextFieldEditor_ release];
   [locationBarController_ release];
+  [directoryURL_ release];
   [super dealloc];
 }
 

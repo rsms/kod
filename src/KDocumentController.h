@@ -1,6 +1,6 @@
 #import <Cocoa/Cocoa.h>
 
-@class KTabContents, KCloseCycleContext, KBrowserWindowController, KURLHandler;
+@class KDocument, KCloseCycleContext, KBrowserWindowController, KURLHandler;
 
 @interface KDocumentController : NSDocumentController {
   KCloseCycleContext *closeCycleContext_;
@@ -18,7 +18,7 @@
 // Returns a set (unique) of all windows used by |documents|
 - (NSSet*)windows;
 
-- (void)addTabContents:(KTabContents*)tab
+- (void)addTabContents:(KDocument*)tab
   withWindowController:(KBrowserWindowController*)windowController
           inForeground:(BOOL)foreground
      groupWithSiblings:(BOOL)groupWithSiblings;
@@ -59,7 +59,7 @@
                             display:(BOOL)displayDocument
                               error:(NSError **)outError;
 
-- (void)finalizeOpenDocument:(KTabContents*)tab
+- (void)finalizeOpenDocument:(KDocument*)tab
         withWindowController:(KBrowserWindowController*)windowController
            groupWithSiblings:(BOOL)groupWithSiblings
                      display:(BOOL)display;

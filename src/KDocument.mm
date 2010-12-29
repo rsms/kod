@@ -3,7 +3,7 @@
 #import "common.h"
 
 #import "kconf.h"
-#import "KTabContents.h"
+#import "KDocument.h"
 #import "KBrowser.h"
 #import "KBrowserWindowController.h"
 #import "KSourceHighlighter.h"
@@ -18,6 +18,8 @@
 #import "KStatusBarView.h"
 #import "KMetaRulerView.h"
 #import "HEventEmitter.h"
+#import "kod_node_interface.h"
+#import "knode_ns_additions.h"
 
 #import "NSImage-kod.h"
 #import "CIImage-kod.h"
@@ -56,11 +58,13 @@ static NSString *_NSStringFromRangeArray(std::vector<NSRange> &lineToRangeVec,
 }
 
 
-@interface KTabContents (Private)
+@interface KDocument (Private)
 - (void)undoManagerCheckpoint:(NSNotification*)notification;
 @end
 
-@implementation KTabContents
+@implementation KDocument
+
+@dynamic fileURL; // impl by NSDocument
 
 @synthesize textEncoding = textEncoding_,
             textView = textView_;
@@ -204,6 +208,9 @@ static int debugSimulateTextAppendingIteration = 0;
   
   // set to zero
   lastEditedHighlightStateRange_ = NSMakeRange(NSNotFound,0);
+  
+  // set edit ts
+  lastEditTimestamp_ = [NSDate timeIntervalSinceReferenceDate];
 
   return self;
 }
@@ -485,6 +492,11 @@ static int debugSimulateTextAppendingIteration = 0;
 }
 
 
+- (NSUInteger)identifier {
+  return [self hash]; // FIXME
+}
+
+
 
 #pragma mark -
 #pragma mark Notifications
@@ -703,6 +715,19 @@ static int debugSimulateTextAppendingIteration = 0;
     if (index != -1)
       [browser_ closeTabAtIndex:index makeHistory:YES];
   }
+}
+
+- (void)canCloseDocumentWithDelegate:(id)delegate
+                 shouldCloseSelector:(SEL)shouldCloseSelector
+                         contextInfo:(void *)contextInfo {
+  if (self.isDirty && self.browser) {
+    //BOOL highlightingWasEnabled = highlightingEnabled_;
+    highlightingEnabled_ = NO;
+    [self.browser selectTabAtIndex:[self.browser indexOfTabContents:self]];
+  }
+  [super canCloseDocumentWithDelegate:delegate
+                  shouldCloseSelector:shouldCloseSelector
+                          contextInfo:contextInfo];
 }
 
 
@@ -1439,6 +1464,9 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
                                        inRange:editedRange
                                    changeDelta:changeInLength];
 
+  // Update edit timestamp
+  lastEditTimestamp_ = [NSDate timeIntervalSinceReferenceDate];
+
   // we do not process edits when we are loading
   if (isLoading_) return;
   
@@ -1458,14 +1486,17 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
     return;
   }
   
-
-  // mark as dirty if not already dirty
-  //if (!isDirty_) {
-  //  [self updateChangeCount:NSChangeReadOtherContents];
-  //}
-  
   // Syntax highlight
   if (highlightingEnabled_) {
+    
+    NSTimeInterval startTime = [NSDate timeIntervalSinceReferenceDate];
+    KNodeInvokeExposedJSFunction("foo", nil, ^(NSError *err, NSArray *args){
+      NSTimeInterval endTime = [NSDate timeIntervalSinceReferenceDate];
+      DLOG("[node] call returned to kod (error: %@, args: %@) "
+           "real time spent: %.2f ms",
+           err, args, (endTime - startTime)*1000.0);
+    });
+    
     [self deferHighlightTextStorage:textStorage inRange:editedRange];
   }
   
@@ -1845,5 +1876,6 @@ finishedReadingURL:(NSURL*)url
   return [NSString stringWithFormat:@"<%@@%p '%@'>",
       NSStringFromClass([self class]), self, self.title];
 }
+
 
 @end
