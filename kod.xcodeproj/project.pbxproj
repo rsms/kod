@@ -39,7 +39,6 @@
 		3A25E4981281A9D500B6A33E /* libboost_regex-mt.dylib in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 3A25E47A1281A6A200B6A33E /* libboost_regex-mt.dylib */; };
 		3A25E4B71281AE3700B6A33E /* KStyleElement.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A25E4B61281AE3700B6A33E /* KStyleElement.mm */; };
 		3A25E6101281CFEF00B6A33E /* NSColor-web.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A25E60F1281CFEF00B6A33E /* NSColor-web.m */; };
-		3A40F8C612AFE5F7007B5879 /* KNodeProcess.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A40F8C512AFE5F7007B5879 /* KNodeProcess.m */; };
 		3A40F92F12AFF21A007B5879 /* main.js in Resources */ = {isa = PBXBuildFile; fileRef = 3A40F92E12AFF21A007B5879 /* main.js */; };
 		3A40FA6612B02FD0007B5879 /* NSObject+SBJSON.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A40FA5D12B02FD0007B5879 /* NSObject+SBJSON.m */; };
 		3A40FA6712B02FD0007B5879 /* NSString+SBJSON.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A40FA5F12B02FD0007B5879 /* NSString+SBJSON.m */; };
@@ -183,14 +182,14 @@
 			isa = PBXContainerItemProxy;
 			containerPortal = 3AB57D6E12CA55F400E528B1 /* node-kod.xcodeproj */;
 			proxyType = 2;
-			remoteGlobalIDString = 3AA9202212CA526200132A25 /* binding.node */;
+			remoteGlobalIDString = 3AA9202212CA526200132A25;
 			remoteInfo = "node-kod";
 		};
 		3AB57F9B12CA96AE00E528B1 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 3AB57D6E12CA55F400E528B1 /* node-kod.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 3AA9202112CA526200132A25 /* node-kod */;
+			remoteGlobalIDString = 3AA9202112CA526200132A25;
 			remoteInfo = "node-kod";
 		};
 		3AC6ECC312C8E05B00C8DBFC /* PBXContainerItemProxy */ = {
@@ -307,8 +306,6 @@
 		3A25E4B61281AE3700B6A33E /* KStyleElement.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KStyleElement.mm; sourceTree = "<group>"; };
 		3A25E60E1281CFEF00B6A33E /* NSColor-web.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSColor-web.h"; sourceTree = "<group>"; };
 		3A25E60F1281CFEF00B6A33E /* NSColor-web.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSColor-web.m"; sourceTree = "<group>"; };
-		3A40F8C412AFE5F7007B5879 /* KNodeProcess.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KNodeProcess.h; sourceTree = "<group>"; };
-		3A40F8C512AFE5F7007B5879 /* KNodeProcess.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KNodeProcess.m; sourceTree = "<group>"; };
 		3A40F92E12AFF21A007B5879 /* main.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = main.js; sourceTree = "<group>"; };
 		3A40FA5B12B02FD0007B5879 /* JSON.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSON.h; sourceTree = "<group>"; };
 		3A40FA5C12B02FD0007B5879 /* NSObject+SBJSON.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSObject+SBJSON.h"; sourceTree = "<group>"; };
@@ -591,8 +588,6 @@
 				3AB57E0512CA634C00E528B1 /* kod_node_interface.mm */,
 				3AB57EAB12CA725A00E528B1 /* knode_ns_additions.h */,
 				3AB57EAC12CA725A00E528B1 /* knode_ns_additions.mm */,
-				3A40F8C412AFE5F7007B5879 /* KNodeProcess.h */,
-				3A40F8C512AFE5F7007B5879 /* KNodeProcess.m */,
 				3AA91F2112CA43DE00132A25 /* KNodeThread.h */,
 				3AA91F2212CA43DE00132A25 /* KNodeThread.mm */,
 			);
@@ -1347,7 +1342,6 @@
 				3A811A7212AE7DE600BC08AE /* HRefcountLogger.m in Sources */,
 				3A811A7312AE7DE600BC08AE /* NSThread-condensedStackTrace.m in Sources */,
 				3A811A7D12AE813800BC08AE /* KModeTextFieldDecoration.mm in Sources */,
-				3A40F8C612AFE5F7007B5879 /* KNodeProcess.m in Sources */,
 				3A40FA6612B02FD0007B5879 /* NSObject+SBJSON.m in Sources */,
 				3A40FA6712B02FD0007B5879 /* NSString+SBJSON.m in Sources */,
 				3A40FA6912B02FD0007B5879 /* SBJsonParser.m in Sources */,

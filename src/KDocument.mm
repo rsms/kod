@@ -18,7 +18,6 @@
 #import "KStatusBarView.h"
 #import "KMetaRulerView.h"
 #import "HEventEmitter.h"
-#import "KNodeProcess.h"
 #import "kod_node_interface.h"
 #import "knode_ns_additions.h"
 
@@ -1490,38 +1489,15 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
   // Syntax highlight
   if (highlightingEnabled_) {
     
-    NSTimeInterval startTime = [NSDate timeIntervalSinceReferenceDate];
+    /*NSTimeInterval startTime = [NSDate timeIntervalSinceReferenceDate];
     KNodeInvokeExposedJSFunction("foo", nil, ^(NSError *err, NSArray *args){
       NSTimeInterval endTime = [NSDate timeIntervalSinceReferenceDate];
       DLOG("[node] call returned to kod (error: %@, args: %@) "
            "real time spent: %.2f ms",
            err, args, (endTime - startTime)*1000.0);
-    });
+    });*/
     
-  
-    /*KNodeProcess *node = [KNodeProcess sharedProcess];
-    
-    // cancel any active previous invocation
-    if (activeNodeTextEditedInvocationRTag_) {
-      [node cancelCallbackForRTag:activeNodeTextEditedInvocationRTag_];
-    }
-    
-    NSDictionary *args = [NSDictionary dictionaryWithObjectsAndKeys:
-        [NSNumber numberWithUnsignedInteger:self.identifier], @"tabid",
-        [NSNumber numberWithUnsignedInteger:editedRange.location], @"location",
-        [NSNumber numberWithUnsignedInteger:editedRange.length], @"length",
-        [NSNumber numberWithInteger:changeInLength], @"changelen",
-        [NSNumber numberWithDouble:lastEditTimestamp_], @"timestamp",
-        // this is since it goes through 2x UTF-8 conversions:
-        textStorage.string, @"text",
-        nil];
-    activeNodeTextEditedInvocationRTag_ = [node invoke:@"textEdited"
-                                                  args:args callback:
-    ^(id args) {
-      DLOG("textEdited returned with %@", args);
-    }];*/
-    
-    //[self deferHighlightTextStorage:textStorage inRange:editedRange];
+    [self deferHighlightTextStorage:textStorage inRange:editedRange];
   }
   
   // this makes the edit an undoable entry (otherwise each "group" of edits will

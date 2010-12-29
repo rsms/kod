@@ -8,7 +8,6 @@
 #import "KCrashReportCollector.h"
 #import "kconf.h"
 #import "KStyle.h"
-#import "KNodeProcess.h"
 #import "KMachService.h"
 #import "KSudo.h"
 #import "KNodeThread.h"
@@ -165,7 +164,7 @@
 
 
 - (void)applicationWillTerminate:(NSNotification *)aNotification {
-  [[KNodeProcess sharedProcess] terminate];
+  // TODO: terminate node thread
 }
 
 
