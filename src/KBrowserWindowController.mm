@@ -41,7 +41,7 @@
 
   // We don't use the "New tab" button
   kassert(tabStripController_);
-  self.showsNewTabButton = NO;
+  self.showsNewTabButton = kconf_bool(@"window/newTabButton/enable", NO);
 
   // setup split view
   kassert(splitView_ != nil); // should get a ref from unarchived NIB
