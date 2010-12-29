@@ -87,7 +87,7 @@
 		3A841183129D5D5C00F4A36D /* KTextFieldCell.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A841182129D5D5C00F4A36D /* KTextFieldCell.mm */; };
 		3A8411C2129D615800F4A36D /* KAutocompleteTextFieldCell.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A8411C1129D615800F4A36D /* KAutocompleteTextFieldCell.mm */; };
 		3A9291181229B93C00DA7E43 /* Toolbar.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3A9291171229B93C00DA7E43 /* Toolbar.xib */; };
-		3A92911B1229B96A00DA7E43 /* KTabContents.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A92911A1229B96A00DA7E43 /* KTabContents.mm */; };
+		3A92911B1229B96A00DA7E43 /* KDocument.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A92911A1229B96A00DA7E43 /* KDocument.mm */; };
 		3A92911E1229B9D500DA7E43 /* KToolbarController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A92911D1229B9D500DA7E43 /* KToolbarController.mm */; };
 		3A9291C51229BF7500DA7E43 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A928C16122714E800DA7E43 /* main.m */; };
 		3A9291C61229BFAD00DA7E43 /* KAppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A928C15122714E800DA7E43 /* KAppDelegate.mm */; };
@@ -127,6 +127,7 @@
 		3AB57D8212CA567300E528B1 /* index.js in Copy nodelib-kod */ = {isa = PBXBuildFile; fileRef = 3AB57D8112CA567100E528B1 /* index.js */; };
 		3AB57E0612CA634C00E528B1 /* kod_node_interface.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3AB57E0512CA634C00E528B1 /* kod_node_interface.mm */; };
 		3AB57EAD12CA725A00E528B1 /* knode_ns_additions.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3AB57EAC12CA725A00E528B1 /* knode_ns_additions.mm */; };
+		3AB5823612CAD15300E528B1 /* k_objc_prop.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AB5823512CAD15300E528B1 /* k_objc_prop.m */; };
 		3AB97BD612B2836800F4ADB2 /* KStatusBarView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AB97BD512B2836800F4ADB2 /* KStatusBarView.m */; };
 		3AB97C3612B2893C00F4ADB2 /* KStatusBarController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3AB97C3512B2893C00F4ADB2 /* KStatusBarController.mm */; };
 		3AB97D4512B2990500F4ADB2 /* BWSplitView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AB97D4412B2990500F4ADB2 /* BWSplitView.m */; };
@@ -411,8 +412,8 @@
 		3A928C1B122714EE00DA7E43 /* MainMenu.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MainMenu.xib; sourceTree = "<group>"; };
 		3A928C201227151800DA7E43 /* Kod.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Kod.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3A9291171229B93C00DA7E43 /* Toolbar.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = Toolbar.xib; sourceTree = "<group>"; };
-		3A9291191229B96A00DA7E43 /* KTabContents.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KTabContents.h; sourceTree = "<group>"; };
-		3A92911A1229B96A00DA7E43 /* KTabContents.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KTabContents.mm; sourceTree = "<group>"; };
+		3A9291191229B96A00DA7E43 /* KDocument.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KDocument.h; sourceTree = "<group>"; };
+		3A92911A1229B96A00DA7E43 /* KDocument.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KDocument.mm; sourceTree = "<group>"; };
 		3A92911C1229B9D500DA7E43 /* KToolbarController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KToolbarController.h; sourceTree = "<group>"; };
 		3A92911D1229B9D500DA7E43 /* KToolbarController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KToolbarController.mm; sourceTree = "<group>"; };
 		3A92912B1229BB5100DA7E43 /* prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = prefix.pch; sourceTree = "<group>"; };
@@ -470,6 +471,8 @@
 		3AB57E0512CA634C00E528B1 /* kod_node_interface.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = kod_node_interface.mm; sourceTree = "<group>"; };
 		3AB57EAB12CA725A00E528B1 /* knode_ns_additions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = knode_ns_additions.h; sourceTree = "<group>"; };
 		3AB57EAC12CA725A00E528B1 /* knode_ns_additions.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = knode_ns_additions.mm; sourceTree = "<group>"; };
+		3AB5823412CAD15300E528B1 /* k_objc_prop.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = k_objc_prop.h; sourceTree = "<group>"; };
+		3AB5823512CAD15300E528B1 /* k_objc_prop.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = k_objc_prop.m; sourceTree = "<group>"; };
 		3AB97BD412B2836800F4ADB2 /* KStatusBarView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KStatusBarView.h; sourceTree = "<group>"; };
 		3AB97BD512B2836800F4ADB2 /* KStatusBarView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KStatusBarView.m; sourceTree = "<group>"; };
 		3AB97C3412B2893C00F4ADB2 /* KStatusBarController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KStatusBarController.h; sourceTree = "<group>"; };
@@ -736,8 +739,8 @@
 				3A9292981229D31200DA7E43 /* KBrowserWindowController.mm */,
 				3A9293CA1229ED4C00DA7E43 /* KDocumentController.h */,
 				3A9293CB1229ED4C00DA7E43 /* KDocumentController.mm */,
-				3A9291191229B96A00DA7E43 /* KTabContents.h */,
-				3A92911A1229B96A00DA7E43 /* KTabContents.mm */,
+				3A9291191229B96A00DA7E43 /* KDocument.h */,
+				3A92911A1229B96A00DA7E43 /* KDocument.mm */,
 				3AA91E9D12CA118400132A25 /* Text parser */,
 				3AC2D4A51298D8050066B586 /* KTextStorage.h */,
 				3AC2D4A61298D8050066B586 /* KTextStorage.mm */,
@@ -1008,6 +1011,8 @@
 				3AE5ECB51292F7B800B17C4F /* KThread.mm */,
 				3A510BE412C2926000AAC1D5 /* KSudo.h */,
 				3A510BE512C2926000AAC1D5 /* KSudo.m */,
+				3AB5823412CAD15300E528B1 /* k_objc_prop.h */,
+				3AB5823512CAD15300E528B1 /* k_objc_prop.m */,
 			);
 			name = Base;
 			sourceTree = "<group>";
@@ -1287,7 +1292,7 @@
 				3A9291C51229BF7500DA7E43 /* main.m in Sources */,
 				3A9291C61229BFAD00DA7E43 /* KAppDelegate.mm in Sources */,
 				3A9291C71229BFB000DA7E43 /* KBrowser.mm in Sources */,
-				3A92911B1229B96A00DA7E43 /* KTabContents.mm in Sources */,
+				3A92911B1229B96A00DA7E43 /* KDocument.mm in Sources */,
 				3A92911E1229B9D500DA7E43 /* KToolbarController.mm in Sources */,
 				3A9292991229D31200DA7E43 /* KBrowserWindowController.mm in Sources */,
 				3A9293671229E49A00DA7E43 /* NSError+KAdditions.m in Sources */,
@@ -1385,6 +1390,7 @@
 				3AA91F2312CA43DE00132A25 /* KNodeThread.mm in Sources */,
 				3AB57E0612CA634C00E528B1 /* kod_node_interface.mm in Sources */,
 				3AB57EAD12CA725A00E528B1 /* knode_ns_additions.mm in Sources */,
+				3AB5823612CAD15300E528B1 /* k_objc_prop.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

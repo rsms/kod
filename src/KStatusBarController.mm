@@ -1,6 +1,6 @@
 #import "KStatusBarController.h"
 #import "KSplitView.h"
-#import "KTabContents.h"
+#import "KDocument.h"
 #import "HEventEmitter.h"
 #import "common.h"
 
@@ -64,7 +64,7 @@ NSString * const KStatusBarDidChangeHiddenStateNotification =
 }
 
 
-- (void)updateWithContents:(KTabContents*)contents {
+- (void)updateWithContents:(KDocument*)contents {
   NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
   if (currentContents_) {
     [self stopObservingObject:currentContents_.textView];

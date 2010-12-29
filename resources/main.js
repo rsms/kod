@@ -9,7 +9,9 @@ kod.externalFunctions['foo'] = function(callback) {
     callback(null, {"bar":[1,2,3.4,"mos"],"grek en":"hoppär"});
 }
 
+// dump kod.allDocuments every 10 sec
 setInterval(function(){
   console.log("kod.allDocuments -> "+util.inspect(kod.allDocuments));
-}, 1000); // keepalive
+  kod.allDocuments[0].hasMetaRuler = true;
+}, 10000);
 

@@ -7,10 +7,6 @@
 #import <node_events.h>    // EventEmitter
 #import <Cocoa/Cocoa.h>
 
-// Since we are not building a C++ API, we dont' care about namespaces in .h's
-using namespace v8;
-using namespace node;
-
 // -----------------------------------------------------------------------------
 // Constants
 
@@ -18,26 +14,30 @@ using namespace node;
 // Aiding construction of types
 
 // Property getter interface boilerplate
-#define K_GETTER_H(name)\
+#define KN_GETTER_H(name)\
   static Handle<Value> name(Local<String> property, const AccessorInfo& info)
 
 // Property getter implementation boilerplate
-#define K_GETTER_C(name)\
+#define KN_GETTER_C(name)\
   Handle<Value> name(Local<String> property, const AccessorInfo& info)
 
 // -----------------------------------------------------------------------------
 // Helpers
 
+#ifndef __FILENAME__
+  #define __FILENAME__ ((strrchr(__FILE__, '/') ?: __FILE__ - 1) + 1)
+#endif
+
 // Emitting WIP/development notes
-#define TODO(tmpl, ...)\
+#define KN_TODO(tmpl, ...)\
   fprintf(stderr, "TODO [node-kod %s:%d] " tmpl "\n", \
-          __FILE__, __LINE__, ##__VA_ARGS__)
+          __FILENAME__, __LINE__, ##__VA_ARGS__)
 
 // Dump a message to stderr
-#define DLOG(tmpl, ...)\
+#define KN_DLOG(tmpl, ...)\
   do {\
     fprintf(stderr, "D [node-kod %s:%d] " tmpl "\n", \
-            __FILE__, __LINE__, ##__VA_ARGS__);\
+            __FILENAME__, __LINE__, ##__VA_ARGS__);\
     fflush(stderr);\
   } while (0)
 
@@ -54,8 +54,8 @@ using namespace node;
 // can use String::Utf8Value:
 //   String::Utf8Value foo(value);
 //   const char *temp = *foo;
-static inline char* KToCString(v8::Handle<Value> value) {
-  Local<String> str = value->ToString();
+static inline char* KNToCString(v8::Handle<v8::Value> value) {
+  v8::Local<v8::String> str = value->ToString();
   char *p = new char[str->Utf8Length()];
   str->WriteUtf8(p);
   return p;

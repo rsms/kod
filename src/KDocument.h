@@ -12,7 +12,7 @@ typedef std::deque<KHighlightQueueEntry> KHighlightQueue;
 
 // This class represents a tab. In this example application a tab contains a
 // simple scrollable text area.
-@interface KTabContents : CTTabContents <NSTextViewDelegate,
+@interface KDocument : CTTabContents <NSTextViewDelegate,
                                          NSTextStorageDelegate> {
   KTextView* textView_; // Owned by NSScrollView which is our view_
   __weak NSUndoManager *undoManager_; // Owned by textView_
@@ -64,6 +64,8 @@ typedef std::deque<KHighlightQueueEntry> KHighlightQueue;
 
 // Tab identifier
 @property(readonly, nonatomic) NSUInteger identifier;
+
+@property(assign) NSURL *fileURL;
 
 
 + (NSFont*)defaultFont;

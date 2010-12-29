@@ -3,8 +3,13 @@
 #import "knode_ns_additions.h"
 #import "kod_version.h"
 
+#import "KObjectProxy.h"
+
 #import "KDocumentController.h"
 #import "KNodeThread.h"
+
+using namespace v8;
+using namespace node;
 
 
 static v8::Handle<Value> GetAllDocuments(const Arguments& args) {
@@ -41,6 +46,15 @@ extern "C" void init(v8::Handle<Object> target) {
   // Functions
   NODE_SET_METHOD(target, "getAllDocuments", GetAllDocuments);
   NODE_SET_METHOD(target, "handleUncaughtException", HandleUncaughtException);
+  
+  // Object prototypes
+  KObjectProxy::Initialize(target, String::NewSymbol("KDocument"));
+  KObjectProxy::Initialize(target, String::NewSymbol("KScrollView"));
+  KObjectProxy::Initialize(target, String::NewSymbol("KTextView"));
+  //KObjectProxy::Initialize(target, String::NewSymbol("KSplitView"));
+  KObjectProxy::Initialize(target, String::NewSymbol("KClipView"));
+  KObjectProxy::Initialize(target, String::NewSymbol("KBrowserWindowController"));
+  KObjectProxy::Initialize(target, String::NewSymbol("NSParagraphStyle"));
   
   // init Kod-Node interface
   KNodeInitNode(target);

@@ -3,7 +3,7 @@
 #import "common.h"
 
 #import "kconf.h"
-#import "KTabContents.h"
+#import "KDocument.h"
 #import "KBrowser.h"
 #import "KBrowserWindowController.h"
 #import "KSourceHighlighter.h"
@@ -59,11 +59,13 @@ static NSString *_NSStringFromRangeArray(std::vector<NSRange> &lineToRangeVec,
 }
 
 
-@interface KTabContents (Private)
+@interface KDocument (Private)
 - (void)undoManagerCheckpoint:(NSNotification*)notification;
 @end
 
-@implementation KTabContents
+@implementation KDocument
+
+@dynamic fileURL; // impl by NSDocument
 
 @synthesize textEncoding = textEncoding_,
             textView = textView_;
@@ -714,6 +716,19 @@ static int debugSimulateTextAppendingIteration = 0;
     if (index != -1)
       [browser_ closeTabAtIndex:index makeHistory:YES];
   }
+}
+
+- (void)canCloseDocumentWithDelegate:(id)delegate
+                 shouldCloseSelector:(SEL)shouldCloseSelector
+                         contextInfo:(void *)contextInfo {
+  if (self.isDirty && self.browser) {
+    //BOOL highlightingWasEnabled = highlightingEnabled_;
+    highlightingEnabled_ = NO;
+    [self.browser selectTabAtIndex:[self.browser indexOfTabContents:self]];
+  }
+  [super canCloseDocumentWithDelegate:delegate
+                  shouldCloseSelector:shouldCloseSelector
+                          contextInfo:contextInfo];
 }
 
 
@@ -1475,11 +1490,14 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
   // Syntax highlight
   if (highlightingEnabled_) {
     
+    NSTimeInterval startTime = [NSDate timeIntervalSinceReferenceDate];
     KNodeInvokeExposedJSFunction("foo", nil, ^(NSError *err, NSArray *args){
-      DLOG("[knode] 1 called in kod. error: %@, args: %@", err, args);
+      NSTimeInterval endTime = [NSDate timeIntervalSinceReferenceDate];
+      DLOG("[node] call returned to kod (error: %@, args: %@) "
+           "real time spent: %.2f ms",
+           err, args, (endTime - startTime)*1000.0);
     });
     
-
   
     /*KNodeProcess *node = [KNodeProcess sharedProcess];
     
@@ -1882,5 +1900,6 @@ finishedReadingURL:(NSURL*)url
   return [NSString stringWithFormat:@"<%@@%p '%@'>",
       NSStringFromClass([self class]), self, self.title];
 }
+
 
 @end

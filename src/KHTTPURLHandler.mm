@@ -11,7 +11,7 @@
 
 - (void)readURL:(NSURL*)absoluteURL
          ofType:(NSString*)typeName
-          inTab:(KTabContents*)tab {
+          inTab:(KDocument*)tab {
   // set state to "waiting"
   tab.isLoading = YES;
   tab.isWaitingForResponse = YES;

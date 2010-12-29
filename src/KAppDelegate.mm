@@ -3,7 +3,7 @@
 #import "KBrowser.h"
 #import "KBrowserWindowController.h"
 #import "KTerminalUsageWindowController.h"
-#import "KTabContents.h"
+#import "KDocument.h"
 #import "KDocumentController.h"
 #import "KCrashReportCollector.h"
 #import "kconf.h"

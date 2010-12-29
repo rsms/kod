@@ -10,8 +10,9 @@
 		3AA9202812CA526C00132A25 /* index.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3AA9200812CA512900132A25 /* index.mm */; };
 		3AA9202B12CA52A700132A25 /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3AA9202A12CA529500132A25 /* AppKit.framework */; };
 		3AB57DC712CA58F700E528B1 /* kod_node_interface.h in Headers */ = {isa = PBXBuildFile; fileRef = 3AB57DC512CA58F700E528B1 /* kod_node_interface.h */; };
-		3AB57FD412CA9AD100E528B1 /* KDocument-node.h in Headers */ = {isa = PBXBuildFile; fileRef = 3AB57FD212CA9AD100E528B1 /* KDocument-node.h */; };
-		3AB57FD512CA9AD100E528B1 /* KDocument-node.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3AB57FD312CA9AD100E528B1 /* KDocument-node.mm */; };
+		3AB57FD412CA9AD100E528B1 /* KObjectProxy.h in Headers */ = {isa = PBXBuildFile; fileRef = 3AB57FD212CA9AD100E528B1 /* KObjectProxy.h */; };
+		3AB57FD512CA9AD100E528B1 /* KObjectProxy.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3AB57FD312CA9AD100E528B1 /* KObjectProxy.mm */; };
+		3AB5825912CAD36E00E528B1 /* k_objc_prop.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AB5825812CAD36E00E528B1 /* k_objc_prop.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -24,8 +25,10 @@
 		3AB57DC512CA58F700E528B1 /* kod_node_interface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = kod_node_interface.h; path = ../../src/kod_node_interface.h; sourceTree = "<group>"; };
 		3AB57E4712CA671200E528B1 /* node.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = node.h; path = ../deps/node/src/node.h; sourceTree = SOURCE_ROOT; };
 		3AB57F8212CA950300E528B1 /* index.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = index.js; path = kod/index.js; sourceTree = SOURCE_ROOT; };
-		3AB57FD212CA9AD100E528B1 /* KDocument-node.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "KDocument-node.h"; sourceTree = "<group>"; };
-		3AB57FD312CA9AD100E528B1 /* KDocument-node.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = "KDocument-node.mm"; sourceTree = "<group>"; };
+		3AB57FD212CA9AD100E528B1 /* KObjectProxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KObjectProxy.h; sourceTree = "<group>"; };
+		3AB57FD312CA9AD100E528B1 /* KObjectProxy.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KObjectProxy.mm; sourceTree = "<group>"; };
+		3AB5802112CAA35D00E528B1 /* node_object_wrap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = node_object_wrap.h; path = ../deps/node/src/node_object_wrap.h; sourceTree = SOURCE_ROOT; };
+		3AB5825812CAD36E00E528B1 /* k_objc_prop.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = k_objc_prop.m; path = ../src/k_objc_prop.m; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -54,13 +57,15 @@
 			children = (
 				3AB57F8212CA950300E528B1 /* index.js */,
 				3AB57E4712CA671200E528B1 /* node.h */,
+				3AB5802112CAA35D00E528B1 /* node_object_wrap.h */,
 				3AB57DC512CA58F700E528B1 /* kod_node_interface.h */,
 				3AA9200712CA512900132A25 /* index.h */,
 				3AA9200812CA512900132A25 /* index.mm */,
 				3AA9200912CA512900132A25 /* stub.cc.in */,
 				3AA9200A12CA512900132A25 /* stub.h.in */,
-				3AB57FD212CA9AD100E528B1 /* KDocument-node.h */,
-				3AB57FD312CA9AD100E528B1 /* KDocument-node.mm */,
+				3AB5825812CAD36E00E528B1 /* k_objc_prop.m */,
+				3AB57FD212CA9AD100E528B1 /* KObjectProxy.h */,
+				3AB57FD312CA9AD100E528B1 /* KObjectProxy.mm */,
 			);
 			path = src;
 			sourceTree = "<group>";
@@ -89,7 +94,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				3AB57DC712CA58F700E528B1 /* kod_node_interface.h in Headers */,
-				3AB57FD412CA9AD100E528B1 /* KDocument-node.h in Headers */,
+				3AB57FD412CA9AD100E528B1 /* KObjectProxy.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -144,7 +149,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				3AA9202812CA526C00132A25 /* index.mm in Sources */,
-				3AB57FD512CA9AD100E528B1 /* KDocument-node.mm in Sources */,
+				3AB57FD512CA9AD100E528B1 /* KObjectProxy.mm in Sources */,
+				3AB5825912CAD36E00E528B1 /* k_objc_prop.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

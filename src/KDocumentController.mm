@@ -1,6 +1,6 @@
 #import "common.h"
 #import "KDocumentController.h"
-#import "KTabContents.h"
+#import "KDocument.h"
 #import "KBrowserWindowController.h"
 #import "KBrowser.h"
 #import "KFileURLHandler.h"
@@ -61,7 +61,7 @@
 - (NSSet*)windows {
   NSArray* documents = [self documents];
   NSMutableSet* windows = [NSMutableSet set];
-  for (KTabContents* tab in documents) {
+  for (KDocument* tab in documents) {
     if (tab && tab.browser && tab.browser.windowController) // FIXME! Should'nt happen
       [windows addObject:[tab.browser.windowController window]];
   }
@@ -79,10 +79,10 @@
 #pragma mark Creating and opening documents
 
 
-- (KTabContents*)_documentForURL:(NSURL*)absoluteURL
+- (KDocument*)_documentForURL:(NSURL*)absoluteURL
                   makeKeyIfFound:(BOOL)makeKeyIfFound {
   // check if |url| is already open
-  KTabContents *tab = (KTabContents *)[self documentForURL:absoluteURL];
+  KDocument *tab = (KDocument *)[self documentForURL:absoluteURL];
   if (makeKeyIfFound) {
     // make sure the tab is presented to the user (need to run on main)
     if (![NSThread isMainThread]) {
@@ -124,7 +124,7 @@
   for (NSURL *url in urls) {
     int index = --i; // so it gets properly copied into the dispatched block
     
-    KTabContents *alreadyOpenTab = [self _documentForURL:url
+    KDocument *alreadyOpenTab = [self _documentForURL:url
                                           makeKeyIfFound:index==0];
     if (alreadyOpenTab) {
       // done?
@@ -135,7 +135,7 @@
     } else if (newDocForNewURLs && [url isFileURL] &&
                ![fm fileExistsAtPath:[url path]]) {
       // create new document
-      KTabContents *tab =
+      KDocument *tab =
           [self openUntitledDocumentWithWindowController:windowController
                                                  display:index==0
                                                    error:nil];
@@ -152,7 +152,7 @@
       dispatch_async(dispatchQueue, ^{
         NSAutoreleasePool *pool = [NSAutoreleasePool new];
         NSError *error = nil;
-        KTabContents *tab = [self openDocumentWithContentsOfURL:url
+        KDocument *tab = [self openDocumentWithContentsOfURL:url
                                            withWindowController:windowController
                                               groupWithSiblings:YES
                                                   // display last document opened:
@@ -215,7 +215,7 @@
 
 
 - (id)makeUntitledDocumentOfType:(NSString *)typeName error:(NSError **)error {
-  KTabContents* tab = [[KTabContents alloc] initWithBaseTabContents:nil];
+  KDocument* tab = [[KDocument alloc] initWithBaseTabContents:nil];
   assert(tab); // since we don't set error
   
   // Give the new tab a "Untitled #" name
@@ -236,7 +236,7 @@
 - (id)openUntitledDocumentWithWindowController:(NSWindowController*)windowController
                                        display:(BOOL)display
                                          error:(NSError **)error {
-  KTabContents* tab = [self makeUntitledDocumentOfType:[self defaultType]
+  KDocument* tab = [self makeUntitledDocumentOfType:[self defaultType]
                                                  error:error];
   if (tab) {
     assert([NSThread isMainThread]);
@@ -266,7 +266,7 @@
 static double kSiblingAutoGroupEditDistanceThreshold = 0.4;
 
 
-- (void)addTabContents:(KTabContents*)tab
+- (void)addTabContents:(KDocument*)tab
   withWindowController:(KBrowserWindowController*)windowController
           inForeground:(BOOL)foreground
      groupWithSiblings:(BOOL)groupWithSiblings {
@@ -279,9 +279,9 @@ static double kSiblingAutoGroupEditDistanceThreshold = 0.4;
   // and then Open... one or more files.
   KBrowser* browser = (KBrowser*)windowController.browser;
   if ([browser tabCount] == 1) {
-    KTabContents* tab0 = (KTabContents*)[browser tabContentsAtIndex:0];
+    KDocument* tab0 = (KDocument*)[browser tabContentsAtIndex:0];
     kassert(tab0);
-    // TODO: DRY this up and move into KTabContents
+    // TODO: DRY this up and move into KDocument
     BOOL existingTabIsVirgin = ![tab0 isDocumentEdited] && ![tab0 fileURL];
     BOOL newTabIsVirgin = ![tab isDocumentEdited] && ![tab fileURL];
     if (existingTabIsVirgin && !newTabIsVirgin) {
@@ -297,13 +297,13 @@ static double kSiblingAutoGroupEditDistanceThreshold = 0.4;
   int insertIndex = -1;
   
   if (groupWithSiblings) {
-    KTabContents *otherTab;
+    KDocument *otherTab;
     double bestSiblingDistance = 1.0;
     int i = 0, tabCount = [browser tabCount];
     NSString *tabExt = [tab.title pathExtension];
     
     for (; i<tabCount; ++i) {
-      otherTab = (KTabContents*)[browser tabContentsAtIndex:i];
+      otherTab = (KDocument*)[browser tabContentsAtIndex:i];
       if (otherTab) {
         NSString *tabName = [tab.title stringByDeletingPathExtension];
         NSString *otherName = [otherTab.title stringByDeletingPathExtension];
@@ -314,7 +314,7 @@ static double kSiblingAutoGroupEditDistanceThreshold = 0.4;
           // did we already find a perfect match? Compare file extensions.
           if (bestSiblingDistance == 0.0) {
             kassert(insertIndex != -1);
-            otherTab = (KTabContents*)[browser tabContentsAtIndex:insertIndex];
+            otherTab = (KDocument*)[browser tabContentsAtIndex:insertIndex];
             NSString *otherExt = [otherTab.title pathExtension];
             if ([tabExt caseInsensitiveCompare:otherExt] == NSOrderedDescending) {
               // tabExt = z, otherExt = a -- use this tab instead of previously
@@ -340,7 +340,7 @@ static double kSiblingAutoGroupEditDistanceThreshold = 0.4;
     }
     
     if (insertIndex != -1) {
-      otherTab = (KTabContents*)[browser tabContentsAtIndex:insertIndex];
+      otherTab = (KDocument*)[browser tabContentsAtIndex:insertIndex];
       NSString *otherExt = [otherTab.title pathExtension];
       if ([tabExt caseInsensitiveCompare:otherExt] == NSOrderedDescending) {
         // insert after
@@ -357,7 +357,7 @@ static double kSiblingAutoGroupEditDistanceThreshold = 0.4;
 }
 
 
-- (void)finalizeOpenDocument:(KTabContents*)tab
+- (void)finalizeOpenDocument:(KDocument*)tab
         withWindowController:(KBrowserWindowController*)windowController
            groupWithSiblings:(BOOL)groupWithSiblings
                      display:(BOOL)display {
@@ -410,7 +410,7 @@ static double kSiblingAutoGroupEditDistanceThreshold = 0.4;
   // Note: This may be called by a background thread
 
   // Dive down into the opening mechanism...
-  KTabContents* tab = [[KTabContents alloc] initWithContentsOfURL:url
+  KDocument* tab = [[KDocument alloc] initWithContentsOfURL:url
                                                            ofType:typeName
                                                             error:error];
   if (!tab && error) {
@@ -430,7 +430,7 @@ static double kSiblingAutoGroupEditDistanceThreshold = 0.4;
   // check if |url| is already open. Although we check this earlier, we need
   // to check again since we are running on a background thread and things might
   // have changed.
-  KTabContents *tab = [self _documentForURL:absoluteURL makeKeyIfFound:display];
+  KDocument *tab = [self _documentForURL:absoluteURL makeKeyIfFound:display];
   if (tab) return tab;
   
   // make a document from |absoluteURL|
@@ -468,12 +468,12 @@ static double kSiblingAutoGroupEditDistanceThreshold = 0.4;
 
 /*- (NSArray*)documentClassNames {
   DLOG_TRACE();
-  return [NSArray arrayWithObject:@"KTabContents"];
+  return [NSArray arrayWithObject:@"KDocument"];
 }
 
 - (Class)documentClassForType:(NSString *)documentTypeName {
   DLOG_TRACE();
-  return [KTabContents class];
+  return [KDocument class];
 }
 
 - (NSString *)displayNameForType:(NSString *)documentTypeName {
@@ -493,7 +493,7 @@ static double kSiblingAutoGroupEditDistanceThreshold = 0.4;
 
 - (Class)documentClassForType:(NSString *)typeName {
   // we only have one document type at the moment
-  return [KTabContents class];
+  return [KDocument class];
 }
 
 
@@ -521,13 +521,8 @@ static double kSiblingAutoGroupEditDistanceThreshold = 0.4;
   NSUInteger count = [closeCycleContext_->documents count];
   if (count > 0) {
     // Query next tab in the list
-    KTabContents* tab = [closeCycleContext_->documents objectAtIndex:count-1];
+    KDocument* tab = [closeCycleContext_->documents objectAtIndex:count-1];
     [closeCycleContext_->documents removeObjectAtIndex:count-1];
-    
-    // Select the tab
-    if (tab.browser) {
-      [tab.browser selectTabAtIndex:[tab.browser indexOfTabContents:tab]];
-    }
     
     //NSWindow* window = [tab.browser.windowController window];
     //[window makeKeyAndOrderFront:self];

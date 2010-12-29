@@ -1,6 +1,6 @@
 #import "KScroller.h"
 #import "KFileOutlineView.h"
-#import "KTabContents.h"
+#import "KDocument.h"
 #import "common.h"
 
 @implementation KScroller

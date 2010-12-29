@@ -13,7 +13,7 @@
 - (BOOL)canWriteURL:(NSURL*)url { return NO; }
 
 
-- (void)readURL:(NSURL*)url ofType:(NSString*)typeName inTab:(KTabContents*)tab{
+- (void)readURL:(NSURL*)url ofType:(NSString*)typeName inTab:(KDocument*)tab{
   NOTIMPLEMENTED();
 }
 
@@ -21,7 +21,7 @@
 - (void)writeData:(NSData*)data
            ofType:(NSString*)typeName
             toURL:(NSURL*)url
-            inTab:(KTabContents*)tab
+            inTab:(KDocument*)tab
  forSaveOperation:(NSSaveOperationType)saveOperation
       originalURL:(NSURL*)absoluteOriginalContentsURL
          callback:(void(^)(NSError *err, NSDate *mtime))callback {

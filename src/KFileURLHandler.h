@@ -5,7 +5,7 @@
 
 - (void)readURL:(NSURL*)absoluteURL
          ofType:(NSString*)typeName
-          inTab:(KTabContents*)tab
+          inTab:(KDocument*)tab
 successCallback:(void(^)(void))successCallback;
 
 @end

@@ -1,4 +1,4 @@
-#import "KTabContents.h"
+#import "KDocument.h"
 
 /*!
  * Lives in the shared KDocumentController instance's urlHandlers_ dict,
@@ -14,12 +14,12 @@
 
 - (void)readURL:(NSURL*)absoluteURL
          ofType:(NSString*)typeName
-          inTab:(KTabContents*)tab;
+          inTab:(KDocument*)tab;
 
 - (void)writeData:(NSData*)data
            ofType:(NSString*)typeName
             toURL:(NSURL*)url
-            inTab:(KTabContents*)tab
+            inTab:(KDocument*)tab
  forSaveOperation:(NSSaveOperationType)saveOperation
       originalURL:(NSURL*)absoluteOriginalContentsURL
          callback:(void(^)(NSError *err, NSDate *mtime))callback;
