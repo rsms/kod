@@ -29,9 +29,7 @@
 // It's a little weird that we have to set the path control's action to do this manually.
 - (IBAction)selectPathInControl:(id)sender {
   NSPathControl *pathControl = sender;
-  NSURL *url = [pathControl clickedPathComponentCell].URL;
-  pathControl.URL = url;
-  self.directoryURL = url;
+  self.directoryURL = [pathControl clickedPathComponentCell].URL;
 }
 
 - (void)dealloc {
