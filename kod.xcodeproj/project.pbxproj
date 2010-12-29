@@ -39,6 +39,8 @@
 		3A25E4981281A9D500B6A33E /* libboost_regex-mt.dylib in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 3A25E47A1281A6A200B6A33E /* libboost_regex-mt.dylib */; };
 		3A25E4B71281AE3700B6A33E /* KStyleElement.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A25E4B61281AE3700B6A33E /* KStyleElement.mm */; };
 		3A25E6101281CFEF00B6A33E /* NSColor-web.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A25E60F1281CFEF00B6A33E /* NSColor-web.m */; };
+		3A366A8412CB873D00257AE6 /* KObjectProxy.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A366A8112CB873D00257AE6 /* KObjectProxy.mm */; };
+		3A366A8512CB873D00257AE6 /* node_kod.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A366A8312CB873D00257AE6 /* node_kod.mm */; };
 		3A40F92F12AFF21A007B5879 /* main.js in Resources */ = {isa = PBXBuildFile; fileRef = 3A40F92E12AFF21A007B5879 /* main.js */; };
 		3A40FA6612B02FD0007B5879 /* NSObject+SBJSON.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A40FA5D12B02FD0007B5879 /* NSObject+SBJSON.m */; };
 		3A40FA6712B02FD0007B5879 /* NSString+SBJSON.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A40FA5F12B02FD0007B5879 /* NSString+SBJSON.m */; };
@@ -120,7 +122,6 @@
 		3AAC02B812BD1110001BDC39 /* kconf.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AAC02B712BD1110001BDC39 /* kconf.m */; };
 		3AAC03F012BD2FC2001BDC39 /* sidebar-closed.png in Resources */ = {isa = PBXBuildFile; fileRef = 3AAC03EE12BD2FC2001BDC39 /* sidebar-closed.png */; };
 		3AAC03F112BD2FC2001BDC39 /* sidebar-open.png in Resources */ = {isa = PBXBuildFile; fileRef = 3AAC03EF12BD2FC2001BDC39 /* sidebar-open.png */; };
-		3AB57D8012CA565400E528B1 /* binding.node in Copy nodelib-kod */ = {isa = PBXBuildFile; fileRef = 3AB57D7312CA55F400E528B1 /* binding.node */; };
 		3AB57D8212CA567300E528B1 /* index.js in Copy nodelib-kod */ = {isa = PBXBuildFile; fileRef = 3AB57D8112CA567100E528B1 /* index.js */; };
 		3AB57E0612CA634C00E528B1 /* kod_node_interface.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3AB57E0512CA634C00E528B1 /* kod_node_interface.mm */; };
 		3AB57EAD12CA725A00E528B1 /* knode_ns_additions.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3AB57EAC12CA725A00E528B1 /* knode_ns_additions.mm */; };
@@ -181,13 +182,6 @@
 			containerPortal = 3AB57D6E12CA55F400E528B1 /* node-kod.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 3AA9202212CA526200132A25;
-			remoteInfo = "node-kod";
-		};
-		3AB57F9B12CA96AE00E528B1 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 3AB57D6E12CA55F400E528B1 /* node-kod.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 3AA9202112CA526200132A25;
 			remoteInfo = "node-kod";
 		};
 		3AC6ECC312C8E05B00C8DBFC /* PBXContainerItemProxy */ = {
@@ -268,7 +262,6 @@
 			dstSubfolderSpec = 12;
 			files = (
 				3AB57D8212CA567300E528B1 /* index.js in Copy nodelib-kod */,
-				3AB57D8012CA565400E528B1 /* binding.node in Copy nodelib-kod */,
 			);
 			name = "Copy nodelib-kod";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -304,6 +297,10 @@
 		3A25E4B61281AE3700B6A33E /* KStyleElement.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KStyleElement.mm; sourceTree = "<group>"; };
 		3A25E60E1281CFEF00B6A33E /* NSColor-web.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSColor-web.h"; sourceTree = "<group>"; };
 		3A25E60F1281CFEF00B6A33E /* NSColor-web.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSColor-web.m"; sourceTree = "<group>"; };
+		3A366A8012CB873D00257AE6 /* KObjectProxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KObjectProxy.h; path = "node-module/KObjectProxy.h"; sourceTree = "<group>"; };
+		3A366A8112CB873D00257AE6 /* KObjectProxy.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = KObjectProxy.mm; path = "node-module/KObjectProxy.mm"; sourceTree = "<group>"; };
+		3A366A8212CB873D00257AE6 /* node_kod.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = node_kod.h; path = "node-module/node_kod.h"; sourceTree = "<group>"; };
+		3A366A8312CB873D00257AE6 /* node_kod.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = node_kod.mm; path = "node-module/node_kod.mm"; sourceTree = "<group>"; };
 		3A40F92E12AFF21A007B5879 /* main.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = main.js; sourceTree = "<group>"; };
 		3A40FA5B12B02FD0007B5879 /* JSON.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSON.h; sourceTree = "<group>"; };
 		3A40FA5C12B02FD0007B5879 /* NSObject+SBJSON.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSObject+SBJSON.h"; sourceTree = "<group>"; };
@@ -575,6 +572,17 @@
 			path = ICU;
 			sourceTree = "<group>";
 		};
+		3A366A6F12CB86CA00257AE6 /* kod module */ = {
+			isa = PBXGroup;
+			children = (
+				3A366A8212CB873D00257AE6 /* node_kod.h */,
+				3A366A8312CB873D00257AE6 /* node_kod.mm */,
+				3A366A8012CB873D00257AE6 /* KObjectProxy.h */,
+				3A366A8112CB873D00257AE6 /* KObjectProxy.mm */,
+			);
+			name = "kod module";
+			sourceTree = "<group>";
+		};
 		3A40F8C312AFE5D7007B5879 /* Node */ = {
 			isa = PBXGroup;
 			children = (
@@ -584,6 +592,7 @@
 				3AB57EAC12CA725A00E528B1 /* knode_ns_additions.mm */,
 				3AA91F2112CA43DE00132A25 /* KNodeThread.h */,
 				3AA91F2212CA43DE00132A25 /* KNodeThread.mm */,
+				3A366A6F12CB86CA00257AE6 /* kod module */,
 			);
 			name = Node;
 			sourceTree = "<group>";
@@ -1095,7 +1104,6 @@
 				3AE5E8B712915AC600B17C4F /* PBXTargetDependency */,
 				3A510B3212C26C3E00AAC1D5 /* PBXTargetDependency */,
 				3AC6ECD612C8E09A00C8DBFC /* PBXTargetDependency */,
-				3AB57F9C12CA96AE00E528B1 /* PBXTargetDependency */,
 			);
 			name = Kod;
 			productName = Kod;
@@ -1365,6 +1373,8 @@
 				3AB57E0612CA634C00E528B1 /* kod_node_interface.mm in Sources */,
 				3AB57EAD12CA725A00E528B1 /* knode_ns_additions.mm in Sources */,
 				3AB5823612CAD15300E528B1 /* k_objc_prop.m in Sources */,
+				3A366A8412CB873D00257AE6 /* KObjectProxy.mm in Sources */,
+				3A366A8512CB873D00257AE6 /* node_kod.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1380,11 +1390,6 @@
 			isa = PBXTargetDependency;
 			target = 3A928C1F1227151800DA7E43 /* Kod */;
 			targetProxy = 3AAA9FB612BFC8900079F079 /* PBXContainerItemProxy */;
-		};
-		3AB57F9C12CA96AE00E528B1 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = "node-kod";
-			targetProxy = 3AB57F9B12CA96AE00E528B1 /* PBXContainerItemProxy */;
 		};
 		3AC6ECD612C8E09A00C8DBFC /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
