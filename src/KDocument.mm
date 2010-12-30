@@ -648,13 +648,14 @@ static int debugSimulateTextAppendingIteration = 0;
 }
 
 - (NSRange)rangeOfLineIndentationAtLineNumber:(NSUInteger)lineNumber {
-	NSUInteger i = [self locationOfLineAtLineNumber:lineNumber];
-	unichar space = ' ';
-	int	indentLen = 0;
-	while ([textView_.textStorage.string characterAtIndex:i] == space) {
-		i++; indentLen++;
+	NSRange line = [self rangeOfLineAtLineNumber:lineNumber];
+	NSString *lineString = [textView_.textStorage.string substringWithRange:line];
+	
+	int indentLen = 0;
+	while ([lineString characterAtIndex:line.location+indentLen] == ' ') {
+		indentLen++;
 	}
-	return NSMakeRange(i-indentLen, indentLen);
+	return NSMakeRange(line.location, indentLen);
 }
 
 
@@ -677,11 +678,6 @@ static int debugSimulateTextAppendingIteration = 0;
   }
   
   return lineRange;
-}
-
-- (NSUInteger) locationOfLineAtLineNumber:(NSUInteger)lineNumber {
-	NSRange lineRange = [self rangeOfLineAtLineNumber:lineNumber];
-	return lineRange.location;
 }
 
 - (NSUInteger)lineNumberForLocation:(NSUInteger)location {
@@ -1525,12 +1521,12 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
 }
 
 - (void)maintainIndentation {
-	NSInteger caret = [[[textView_ selectedRanges] objectAtIndex:0] rangeValue].location;
+	NSInteger caret = [textView_ selectedRange].location;
 	NSUInteger lineNumber = [self lineNumberForLocation:caret];
 	
 	if ([self isNewLine:lineNumber]) {
 		NSRange indent = [self rangeOfLineIndentationAtLineNumber:lineNumber-1];
-	
+		
 		[textView_ insertText:[textView_.textStorage.string substringWithRange:indent]];
 	}
 }

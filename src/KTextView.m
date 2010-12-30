@@ -95,15 +95,15 @@ static CGFloat kTextContainerYOffset = 0.0;
 - (void)keyDown:(NSEvent*)event {
 	//DLOG("keyDown %@ %ld", event, event.keyCode);
 	if (event.keyCode == 48) {
-		NSInteger charIndex = [[[self selectedRanges] objectAtIndex:0] rangeValue].location;
+		NSInteger charIndex = [self selectedRange].location;
 		NSInteger lineNumber = [self.textStorage.delegate lineNumberForLocation:charIndex];
 		
 		if (([event modifierFlags] & (NSShiftKeyMask | NSAlphaShiftKeyMask)) != 0) {
 			[self unindentLine:lineNumber];
-		}else{
+		} else {
 			[self indentLine:lineNumber];
 		}
-	}else{
+	} else {
 		[super keyDown:event];
 		
 		// TODO: this way of maintaining indentation is a workaround
@@ -116,27 +116,27 @@ static CGFloat kTextContainerYOffset = 0.0;
 
 - (void)unindentLine:(NSUInteger)lineNumber {
 	NSRange oldSelected = [self selectedRange];
-	NSInteger lineStart = [self.textStorage.delegate locationOfLineAtLineNumber:lineNumber];
+	NSInteger lineStart = [[self.textStorage.delegate rangeOfLineAtLineNumber:lineNumber] location];
 	int delta = 0;
 	NSRange indent = NSMakeRange(lineStart, 4);
 	
 	if ([[self.textStorage.string substringWithRange:indent] isEqualToString:@"    "]) {
-		[super setSelectedRange:indent];
-		[super insertText:@""];
+		[self setSelectedRange:indent];
+		[self insertText:@""];
 		delta = -4;
 	}
 	
-	[super setSelectedRange:NSMakeRange(oldSelected.location+delta, 0)];
+	[self setSelectedRange:NSMakeRange(oldSelected.location+delta, 0)];
 }
 
 - (void)indentLine:(NSUInteger)lineNumber {
 	NSRange oldSelected = [self selectedRange];
-	NSInteger lineStart = [self.textStorage.delegate locationOfLineAtLineNumber:lineNumber];
+	NSInteger lineStart = [[self.textStorage.delegate rangeOfLineAtLineNumber:lineNumber] location];
 	
-	[super setSelectedRange:NSMakeRange(lineStart, 0)];
-	[super insertText:@"    "];
+	[self setSelectedRange:NSMakeRange(lineStart, 0)];
+	[self insertText:@"    "];
 	
-	[super setSelectedRange:NSMakeRange(oldSelected.location+4, 0)];
+	[self setSelectedRange:NSMakeRange(oldSelected.location+4, 0)];
 }
 
 - (void)mouseMoved:(NSEvent*)event {
