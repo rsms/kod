@@ -652,7 +652,8 @@ static int debugSimulateTextAppendingIteration = 0;
 	NSString *lineString = [textView_.textStorage.string substringWithRange:line];
 	
 	int indentLen = 0;
-	while ([lineString characterAtIndex:line.location+indentLen] == ' ') {
+	int length = [lineString length];
+	while ([lineString characterAtIndex:indentLen] == ' ' && indentLen < length) {
 		indentLen++;
 	}
 	return NSMakeRange(line.location, indentLen);
@@ -1533,6 +1534,8 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
 	
 	if ([self isNewLine:lineNumber]) {
 		NSRange indent = [self rangeOfLineIndentationAtLineNumber:lineNumber-1];
+		
+		DLOG("INDENT %@", NSStringFromRange(indent));
 		
 		[textView_ insertText:[textView_.textStorage.string substringWithRange:indent]];
 	}
