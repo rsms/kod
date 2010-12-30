@@ -11,7 +11,7 @@ kod.exposedFunctions['foo'] = function(callback) {
 
 // dump kod.allDocuments every 10 sec
 setInterval(function(){
-  console.log("kod.allDocuments -> "+util.inspect(kod.allDocuments));
-  kod.allDocuments[0].hasMetaRuler = true;
+  //console.log("kod.allDocuments -> "+util.inspect(kod.allDocuments));
+  //kod.allDocuments[0].hasMetaRuler = true;
 }, 10000);
 

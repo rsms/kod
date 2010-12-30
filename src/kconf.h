@@ -6,7 +6,16 @@ extern "C" {
 // Kod configuration
 // All operations are thread safe unless stated otherwise
 
+/*!
+ * Notification posted by kconf_defaults() when a value changed. The userInfo
+ * dictionary contains the key ("key") for which the value was changed.
+ */
+extern NSString * const KConfValueDidChangeNotification;
+
+// Kod user defaults.
 SI NSUserDefaults* kconf_defaults() { return [NSUserDefaults standardUserDefaults]; }
+
+// Kod application bundle
 SI NSBundle*       kconf_bundle() { return [NSBundle mainBundle]; }
 
 // URL for a resource
@@ -39,14 +48,18 @@ SI int           kconf_int(NSString* key, int def)            _NIMPL(intValue)
 SI float         kconf_float(NSString* key, float def)        _NIMPL(floatValue)
 SI double        kconf_double(NSString* key, double def)      _NIMPL(doubleValue)
 
+// Posts a "change" notification on kconf_defaults() passing |key| in userInfo
+void kconf_notify_change(NSString *key);
 
 // Setters
 
 #undef  _OIMPL
 #define _OIMPL(M) { if (v) [kconf_defaults() set##M:v forKey:key]; \
-                    else [kconf_defaults() removeObjectForKey:key]; }
+                    else [kconf_defaults() removeObjectForKey:key]; \
+                    kconf_notify_change(key); }
 #undef  _NIMPL
-#define _NIMPL(M) { [kconf_defaults() set##M:v forKey:key]; }
+#define _NIMPL(M) { [kconf_defaults() set##M:v forKey:key]; \
+                    kconf_notify_change(key); }
 
 SI void kconf_set_object(NSString* key, id v)       _OIMPL(Object)
 

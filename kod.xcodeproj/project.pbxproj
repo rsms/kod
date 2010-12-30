@@ -141,7 +141,7 @@
 		3ABF4C6D12A48E7D0020233C /* NSData-kod.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3ABF4C6C12A48E7D0020233C /* NSData-kod.mm */; };
 		3ABF4F3E12A55AFC0020233C /* NSString-editdistance.m in Sources */ = {isa = PBXBuildFile; fileRef = 3ABF4F3D12A55AFC0020233C /* NSString-editdistance.m */; };
 		3ABF539612A5D52F0020233C /* KSplitView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3ABF539512A5D52F0020233C /* KSplitView.m */; };
-		3ABF541012A5DB1D0020233C /* KTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3ABF540F12A5DB1D0020233C /* KTextView.m */; };
+		3ABF541012A5DB1D0020233C /* KTextView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3ABF540F12A5DB1D0020233C /* KTextView.mm */; };
 		3ABF541F12A5DC6F0020233C /* KClipView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3ABF541E12A5DC6F0020233C /* KClipView.m */; };
 		3AC2D3FD1298C40A0066B586 /* KSourceHighlightState.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3AC2D3FC1298C40A0066B586 /* KSourceHighlightState.mm */; };
 		3AC2D4A71298D8050066B586 /* KTextStorage.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3AC2D4A61298D8050066B586 /* KTextStorage.mm */; };
@@ -487,7 +487,7 @@
 		3ABF539412A5D52F0020233C /* KSplitView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSplitView.h; sourceTree = "<group>"; };
 		3ABF539512A5D52F0020233C /* KSplitView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KSplitView.m; sourceTree = "<group>"; };
 		3ABF540E12A5DB1D0020233C /* KTextView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KTextView.h; sourceTree = "<group>"; };
-		3ABF540F12A5DB1D0020233C /* KTextView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KTextView.m; sourceTree = "<group>"; };
+		3ABF540F12A5DB1D0020233C /* KTextView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KTextView.mm; sourceTree = "<group>"; };
 		3ABF541D12A5DC6F0020233C /* KClipView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KClipView.h; sourceTree = "<group>"; };
 		3ABF541E12A5DC6F0020233C /* KClipView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KClipView.m; sourceTree = "<group>"; };
 		3AC2D3FB1298C40A0066B586 /* KSourceHighlightState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSourceHighlightState.h; sourceTree = "<group>"; };
@@ -1020,7 +1020,7 @@
 				3ABF541D12A5DC6F0020233C /* KClipView.h */,
 				3ABF541E12A5DC6F0020233C /* KClipView.m */,
 				3ABF540E12A5DB1D0020233C /* KTextView.h */,
-				3ABF540F12A5DB1D0020233C /* KTextView.m */,
+				3ABF540F12A5DB1D0020233C /* KTextView.mm */,
 				3AEC6C8B12BC12FB00F769DB /* KLineNumberMarker.h */,
 				3AEC6C8C12BC12FB00F769DB /* KLineNumberMarker.m */,
 				3AEC6C8D12BC12FB00F769DB /* KMetaRulerView.h */,
@@ -1286,7 +1286,7 @@
 				3ABF4C6D12A48E7D0020233C /* NSData-kod.mm in Sources */,
 				3ABF4F3E12A55AFC0020233C /* NSString-editdistance.m in Sources */,
 				3ABF539612A5D52F0020233C /* KSplitView.m in Sources */,
-				3ABF541012A5DB1D0020233C /* KTextView.m in Sources */,
+				3ABF541012A5DB1D0020233C /* KTextView.mm in Sources */,
 				3ABF541F12A5DC6F0020233C /* KClipView.m in Sources */,
 				3A811A6E12AE7DE600BC08AE /* HDProcess.m in Sources */,
 				3A811A6F12AE7DE600BC08AE /* HDSemaphore.m in Sources */,

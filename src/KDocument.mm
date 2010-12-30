@@ -681,19 +681,22 @@ static int debugSimulateTextAppendingIteration = 0;
   return lineRange;
 }
 
-// this function is needed because otherwise we keep getting
-// EXC_BAD_ACCESS errors when attempting to get this information
-// from KTextView via the self.textStorage.delegate
-- (NSUInteger)locationOfLineAtLineNumber:(NSUInteger)lineNumber {
-	return [self rangeOfLineAtLineNumber:lineNumber].location;
+
+- (NSRange)lineRangeForCurrentSelection {
+  NSRange selectedRange = [textView_ selectedRange];
+  NSTextStorage *textStorage = textView_.textStorage;
+  NSRange lineRange = [textStorage.string lineRangeForRange:selectedRange];
+  return lineRange;
 }
+
 
 - (NSUInteger)lineNumberForLocation:(NSUInteger)location {
   kassert([NSThread isMainThread]); // since lineToRangeVec_ is not thread safe
 
-  // TODO: we could be "smart" here and guess a position to start looking by
-  // comparing location to current number of total characters, which would give
-  // us an approximate position in lineToRangeVec_ at which to start looking.
+  // TODO(rsms): we could be "smart" here and guess a position to start looking
+  // by comparing location to current number of total characters, which would
+  // give us an approximate position in lineToRangeVec_ at which to start
+  // looking.
 
   NSUInteger lineno = 0;
   for (; lineno < lineToRangeVec_.size(); ++lineno) {
@@ -705,7 +708,7 @@ static int debugSimulateTextAppendingIteration = 0;
   return lineno + 1;
 }
 
-- (BOOL) isNewLine:(NSUInteger)lineNumber {
+- (BOOL)isNewLine:(NSUInteger)lineNumber {
 	if ([self rangeOfLineAtLineNumber:lineNumber].length <= [self rangeOfLineTerminatorAtLineNumber:lineNumber].length) {
 		return YES;
 	}
@@ -1495,7 +1498,7 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
   
   BOOL wasInUndoRedo = [[self undoManager] isUndoing] ||
                        [[self undoManager] isRedoing];
-  #if K_DEBUG_BUILD
+  #if 0 && K_DEBUG_BUILD
   DLOG_RANGE(editedRange, textStorage.string);
   #endif
   DLOG("editedRange: %@, changeInLength: %d, wasInUndoRedo: %@, editedMask: %d",
@@ -1512,6 +1515,7 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
   // Syntax highlight
   if (highlightingEnabled_) {
     
+    #if 0
     NSTimeInterval startTime = [NSDate timeIntervalSinceReferenceDate];
     KNodeInvokeExposedJSFunction("foo", nil, ^(NSError *err, NSArray *args){
       NSTimeInterval endTime = [NSDate timeIntervalSinceReferenceDate];
@@ -1519,27 +1523,16 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
            "real time spent: %.2f ms",
            err, args, (endTime - startTime)*1000.0);
     });
+    #endif
     
     [self deferHighlightTextStorage:textStorage inRange:editedRange];
   }
   
-  // this makes the edit an undoable entry (otherwise each "group" of edits will
-  // be undoable, which is not fine-grained enough for us)
-  [textView_ breakUndoCoalescing];
+  // this makes the edit an undoable entry
+  // TODO(rsms): Make this configurable through kconf "editor/undo/granularity"
+  //[textView_ breakUndoCoalescing];
 }
 
-- (void)maintainIndentation {
-	NSInteger caret = [textView_ selectedRange].location;
-	NSUInteger lineNumber = [self lineNumberForLocation:caret];
-	
-	if ([self isNewLine:lineNumber]) {
-		NSRange indent = [self rangeOfLineIndentationAtLineNumber:lineNumber-1];
-		
-		DLOG("INDENT %@", NSStringFromRange(indent));
-		
-		[textView_ insertText:[textView_.textStorage.string substringWithRange:indent]];
-	}
-}
 
 - (void)guessLanguageBasedOnUTI:(NSString*)uti textContent:(NSString*)text {
   KLangMap *langMap = [KLangMap sharedLangMap];
