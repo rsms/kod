@@ -109,7 +109,7 @@ typedef std::deque<KHighlightQueueEntry> KHighlightQueue;
 // Location of line at |lineNumber| 
 - (NSUInteger)locationOfLineAtLineNumber:(NSUInteger)lineNumber;
 
-- (BOOL)isNewLine;
+- (BOOL)isNewLine:(NSUInteger)lineNumber;
 
 
 
