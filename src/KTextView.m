@@ -116,7 +116,7 @@ static CGFloat kTextContainerYOffset = 0.0;
 
 - (void)unindentLine:(NSUInteger)lineNumber {
 	NSRange oldSelected = [self selectedRange];
-	NSInteger lineStart = [[self.textStorage.delegate rangeOfLineAtLineNumber:lineNumber] location];
+	NSInteger lineStart = [self.textStorage.delegate locationOfLineAtLineNumber:lineNumber];
 	int delta = 0;
 	NSRange indent = NSMakeRange(lineStart, 4);
 	
@@ -131,7 +131,7 @@ static CGFloat kTextContainerYOffset = 0.0;
 
 - (void)indentLine:(NSUInteger)lineNumber {
 	NSRange oldSelected = [self selectedRange];
-	NSInteger lineStart = [[self.textStorage.delegate rangeOfLineAtLineNumber:lineNumber] location];
+	NSInteger lineStart = [self.textStorage.delegate locationOfLineAtLineNumber:lineNumber];
 	
 	[self setSelectedRange:NSMakeRange(lineStart, 0)];
 	[self insertText:@"    "];

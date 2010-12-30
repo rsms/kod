@@ -106,6 +106,10 @@ typedef std::deque<KHighlightQueueEntry> KHighlightQueue;
 // Range of line at |lineNumber| including line terminator (first line is 1)
 - (NSRange)rangeOfLineAtLineNumber:(NSUInteger)lineNumber;
 
+// Location of line at |lineNumber| 
+- (NSRange)locationOfLineAtLineNumber:(NSUInteger)lineNumber;
+
+
 - (BOOL)isNewLine:(NSUInteger)lineNumber;
 
 

@@ -680,6 +680,13 @@ static int debugSimulateTextAppendingIteration = 0;
   return lineRange;
 }
 
+// this function is needed because otherwise we keep getting
+// EXC_BAD_ACCESS errors when attempting to get this information
+// from KTextView via the self.textStorage.delegate
+- (NSUInteger)locationOfLineAtLineNumber:(NSUInteger)lineNumber {
+	return [self rangeOfLineAtLineNumber:lineNumber].location;
+}
+
 - (NSUInteger)lineNumberForLocation:(NSUInteger)location {
   kassert([NSThread isMainThread]); // since lineToRangeVec_ is not thread safe
 
