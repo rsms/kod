@@ -702,6 +702,7 @@ static int debugSimulateTextAppendingIteration = 0;
 }
 
 - (BOOL) isNewLine {
+	
 	if (self.charCountOfLastLine == 0 && self.lineCount > 1) {
 		return YES;
 	}
@@ -1525,11 +1526,14 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
 }
 
 - (void)maintainIndentation {
-	NSUInteger prevLine = self.lineCount-1;
+	NSInteger caret = [[[textView_ selectedRanges] objectAtIndex:0] rangeValue].location;
+	NSUInteger lineNumber = [self lineNumberForLocation:caret];
 	
-	NSRange indent = [self rangeOfLineIndentationAtLineNumber:prevLine];
+	if ([self rangeOfLineAtLineNumber:lineNumber].length <= [self rangeOfLineTerminatorAtLineNumber:lineNumber].length) {
+		NSRange indent = [self rangeOfLineIndentationAtLineNumber:lineNumber-1];
 	
-	[textView_ insertText:[textView_.textStorage.string substringWithRange:indent]];
+		[textView_ insertText:[textView_.textStorage.string substringWithRange:indent]];
+	}
 }
 
 - (void)guessLanguageBasedOnUTI:(NSString*)uti textContent:(NSString*)text {

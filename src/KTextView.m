@@ -93,7 +93,7 @@ static CGFloat kTextContainerYOffset = 0.0;
 
 
 - (void)keyDown:(NSEvent*)event {
-//	DLOG("keyDown %@ %ld", event, [[event characters] characterAtIndex:0]);
+	//DLOG("keyDown %@ %ld", event, event.keyCode);
 	if (event.keyCode == 48) {
 		NSInteger charIndex = [[[self selectedRanges] objectAtIndex:0] rangeValue].location;
 		NSInteger lineNumber = [self.textStorage.delegate lineNumberForLocation:charIndex];
@@ -108,7 +108,7 @@ static CGFloat kTextContainerYOffset = 0.0;
 		
 		// TODO: this way of maintaining indentation is a workaround
 		// I kept getting EXC_BAD_ACCESS otherwise and couldn't figure out why
-		if ([self.textStorage.delegate isNewLine]) {
+		if (event.keyCode == 36) {
 			[self.textStorage.delegate maintainIndentation];
 		}
 	}
