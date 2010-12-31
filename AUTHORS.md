@@ -6,3 +6,4 @@
 - August Joki <august.joki@gmail.com>
 - Swizec Teller <swizec@swizec.com>
 - Cody Krieger <cody@codykrieger.com>
+- Luc Heinrich <luc@honk-honk.com>
