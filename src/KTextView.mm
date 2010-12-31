@@ -576,18 +576,49 @@ static CGFloat kTextContainerYOffset = 0.0;
 #pragma mark -
 #pragma mark Autocomplete
 
+// Set of all words in the autocomplete dictionary
+- (NSSet *)allWords {
+  // May need to change this based on language
+  NSCharacterSet *irrelevantChars = [NSCharacterSet characterSetWithCharactersInString:@" \t\r\n;()[]{},.!@#$%^&*-_=+?<>/\\|~`\":"];
+  
+  // TODO: Update a set incrementally instead of scanning in one go (which doesn't scale)
+  
+  NSString *everything = [self string];
+  
+  //Initial guess for number of words:
+  //Average English word length is a hair above 5, so we'll go with 8 to account for whitespace
+  NSSet *s = [NSSet setWithArray:[everything componentsSeparatedByCharactersInSet:irrelevantChars]];
+  NSLog(@"%@", s);
+  return s;
+}
+
+// Set of completions for a string at a given location in the document.
+// Default behavior is currently to match prefix and sort alphabetically, ignoring position.
+- (NSArray *)completionsForPrefix:(NSString *)prefix atPosition:(NSUInteger)position {
+  // TODO: sort by proximity to cursor rather than alphabetically
+  
+  prefix = [prefix lowercaseString];
+  NSSet *allWords = [self allWords];
+  // Initial guess for number of completions:
+  // 16^(length of prefix), i.e. 1/16th the set for each letter
+  NSMutableArray *completions = [NSMutableArray arrayWithCapacity:[allWords count]/pow(16.0, (double)[prefix length])];
+  for (NSString *word in [self allWords]) {
+    if ([[word lowercaseString] hasPrefix:prefix]) {
+      [completions addObject:word];
+    }
+  }
+  return completions;
+}
+
+// TODO: override default NSTextView behavior to not autocomplete if not at a word boundary
 - (void)complete:(id)sender {
-  // TODO: Check for word boundary at cursor and ignore if no boundary
   [super complete:sender];
 }
 
-- (NSArray *)completionsForPartialWordRange:(NSRange)charRange indexOfSelectedItem:(NSInteger *)index {
-  return [NSArray arrayWithObjects:@"aa", @"bb", @"cc", nil];
-}
 
-- (void)insertCompletion:(NSString *)word forPartialWordRange:(NSRange)charRange movement:(NSInteger)movement isFinal:(BOOL)flag {
-  [super insertCompletion:word forPartialWordRange:charRange movement:movement isFinal:flag];
-  [self setSelectedRange:NSMakeRange(charRange.location+charRange.length, [word length])];
+// TODO: allow plugins to override default autocomplete results
+- (NSArray *)completionsForPartialWordRange:(NSRange)charRange indexOfSelectedItem:(NSInteger *)index {
+  return [self completionsForPrefix:[[self string] substringWithRange:charRange] atPosition:charRange.location];
 }
 
 @end
