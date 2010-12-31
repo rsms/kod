@@ -343,13 +343,20 @@ static CGFloat kTextContainerYOffset = 0.0;
   // reference to the text
   NSString *text = self.textStorage.string;
 
+  // Get current selection
+  NSRange selectedRange = [self selectedRange];
+
   // Find whitespace sequence at the start of the line
+  NSString *prefixString;
   NSRange whitespacePrefixRange =
       [text rangeOfWhitespaceStringAtBeginningOfLineForRange:
-       [self selectedRange] substring:&indentationString];
-  if (whitespacePrefixRange.location != NSNotFound) {
+       selectedRange substring:&prefixString];
+  if (whitespacePrefixRange.location != NSNotFound &&
+      (selectedRange.location >=
+       (whitespacePrefixRange.location + whitespacePrefixRange.length)) ) {
     // append the indentation string
-    indentationString = [@"\n" stringByAppendingString:indentationString];
+    indentationString =
+        [indentationString stringByAppendingString:prefixString];
   }
 
   // Insert newline and possible indetation string
