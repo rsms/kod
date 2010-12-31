@@ -2,13 +2,13 @@
 #import "kconf.h"
 #import "KNodeThread.h"
 #import "node_kod.h"
+#import "kod_node_interface.h"
 
 #import <node.h>
 #import <node_events.h>
 
 using namespace v8;
 
-static Persistent<Object> gKodNodeModule;
 static ev_prepare gPrepareNodeWatcher;
 
 static void _KPrepareNode(EV_P_ ev_prepare *watcher, int revents) {
@@ -61,25 +61,52 @@ static void _KPrepareNode(EV_P_ ev_prepare *watcher, int revents) {
   }
   setenv("NODE_PATH", [NODE_PATH UTF8String], 1);
 
+  // Make sure HOME is correct and set
+  setenv("HOME", [NSHomeDirectory() UTF8String], 1);
+
+  // Export some basic info about kod
+  setenv("KOD_APP_BUNDLE", [[kconf_bundle() bundlePath] UTF8String], 1);
+
   // register our initializer
   ev_prepare_init(&gPrepareNodeWatcher, _KPrepareNode);
   // set max priority so _KPrepareNode gets called before main.js is executed
   ev_set_priority(&gPrepareNodeWatcher, EV_MAXPRI);
   ev_prepare_start(EV_DEFAULT_UC_ &gPrepareNodeWatcher);
-  ev_unref(EV_DEFAULT_UC);
+  // Note: We do NOT ev_unref here since we want to keep node alive for as long
+  // as we are not canceled.
 
   // start
   DLOG("[node] starting in %@", self);
   int exitStatus = node::Start(argc, argv);
   DLOG("[node] exited with status %d in %@", exitStatus, self);
 
+  // clean up
+  if (!gKodNodeModule.IsEmpty()) {
+    gKodNodeModule.Clear();
+    // Note(rsms): Calling gKodNodeModule.Dispose() here seems to bug out on
+    // program termination
+  }
+
   [pool drain];
+}
+
+
+- (void)cancel {
+  // break all currently active ev_run's
+  ev_break(EV_DEFAULT_UC_ EVBREAK_ALL);
+  
+  [super cancel];
 }
 
 
 + (void)handleUncaughtException:(id)err {
   // called in the node thead
-  WLOG("[node] unhandled exception: %@", err);
+  id msg = err;
+  if ([err isKindOfClass:[NSDictionary class]]) {
+    if (!(msg = [err objectForKey:@"stack"]))
+      msg = err;
+  }
+  WLOG("[node] unhandled exception: %@", msg);
 }
 
 

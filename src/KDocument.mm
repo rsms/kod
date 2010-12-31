@@ -552,6 +552,8 @@ static int debugSimulateTextAppendingIteration = 0;
   K_DISPATCH_MAIN_ASYNC({
     self.clipView.allowsScrolling = YES;
   });
+  
+  KNodeEmitEvent("tabDidBecomeSelected", self, nil);
 }
 
 
@@ -1480,10 +1482,10 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
   kassert([NSThread isMainThread]);
 
   // range that was affected by the edit
-  NSRange  editedRange = [textStorage editedRange];
+  NSRange editedRange = [textStorage editedRange];
 
   // length delta of the edit (i.e. negative for deletions)
-  int  changeInLength = [textStorage changeInLength];
+  int changeInLength = [textStorage changeInLength];
 
   // update lineToRangeVec_
   [self _updateLinesToRangesInfoForTextStorage:textStorage
