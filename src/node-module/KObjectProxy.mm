@@ -71,6 +71,7 @@ KObjectProxy::KObjectProxy(id representedObject) : node::EventEmitter() {
 }
 
 KObjectProxy::~KObjectProxy() {
+  //fprintf(stderr, "### dealloc KObjectProxy\n");
   [representedObject_ release];
 }
 
@@ -369,7 +370,7 @@ static v8::Handle<v8::Boolean> NamedDeleter(Local<String> property,
  */
 static v8::Handle<Array> NamedEnumerator(const AccessorInfo& info) {
   HandleScope scope;
-  KN_DLOG("%s", __PRETTY_FUNCTION__);
+  //KN_DLOG("%s", __PRETTY_FUNCTION__);
   KObjectProxy *p = ObjectWrap::Unwrap<KObjectProxy>(info.This());
 
   unsigned int propsCount;
