@@ -9,6 +9,8 @@
 
   // kconf value "editor/text/indentation" (defaults to 2xSP)
   NSString *indentationString_;
+  
+  NSMutableSet *autocompleteWords_;
 }
 
 // The parent document

@@ -13,6 +13,9 @@ static NSSize kTextContainerInset = (NSSize){6.0, 4.0}; // {(LR),(TB)}
 static CGFloat kTextContainerXOffset = -8.0;
 static CGFloat kTextContainerYOffset = 0.0;
 
+// Amount of string for autocomplete to search when looking for nearby matching keywords
+static NSUInteger kAutocompleteProximitySearchDistance = 1024;
+
 
 @implementation KTextView
 
@@ -56,6 +59,7 @@ static CGFloat kTextContainerYOffset = 0.0;
   newlineString_ = [kconf_string(@"editor/text/newline", @"\n") retain];
   indentationString_ =
       [kconf_string(@"editor/text/indentation", @"  ") retain];
+  autocompleteWords_ = [[NSMutableSet alloc] initWithCapacity:1024];
 
   // observe configuration changes so we can update cached reps
   [self observe:KConfValueDidChangeNotification
@@ -70,6 +74,7 @@ static CGFloat kTextContainerYOffset = 0.0;
   [self stopObserving];
   [newlineString_ release];
   [indentationString_ release];
+  [autocompleteWords_ release];
   [super dealloc];
 }
 
@@ -576,38 +581,96 @@ static CGFloat kTextContainerYOffset = 0.0;
 #pragma mark -
 #pragma mark Autocomplete
 
+// Characters that should be ignored by the autocomplete word finder
+// May need to change this based on language
+- (NSCharacterSet *)irrelevantChars {
+  return [NSCharacterSet characterSetWithCharactersInString:@" \t\r\n;()[]{},.!@#$%^&*-_=+?<>/\\|~`\":"];
+}
+
 // Set of all words in the autocomplete dictionary
 - (NSSet *)allWords {
-  // May need to change this based on language
-  NSCharacterSet *irrelevantChars = [NSCharacterSet characterSetWithCharactersInString:@" \t\r\n;()[]{},.!@#$%^&*-_=+?<>/\\|~`\":"];
   
   // TODO: Update a set incrementally instead of scanning in one go (which doesn't scale)
   
   NSString *everything = [self string];
+  NSSet *s = [NSSet setWithArray:[everything componentsSeparatedByCharactersInSet:[self irrelevantChars]]];
   
-  //Initial guess for number of words:
-  //Average English word length is a hair above 5, so we'll go with 8 to account for whitespace
-  NSSet *s = [NSSet setWithArray:[everything componentsSeparatedByCharactersInSet:irrelevantChars]];
-  NSLog(@"%@", s);
   return s;
 }
 
+// Searches string within kAutocompleteProximitySearchDistance for occurrences of matching keywords
+// and puts the closest ones at the top. Keywords that do not appear closer than 1024 characters to
+// the cursor are unsorted and are listed after the sorted keywords.
+//
+// Putting the sorting in a separate method from finding the completions will make it simpler to
+// test different sorting strategies or allow extensions to provide them.
+- (NSArray *)sortedCompletions:(NSArray *)completions forPrefix:(NSString *)prefix atPosition:(NSUInteger)position {
+  
+  // word -> smallest number of characters between cursor and any occurrence of this keyword
+  // Magic number guess is 2048 (size of character search space) / 8 (average word size + arbitrary whitespace guess)
+  NSMutableDictionary *proximities = [NSMutableDictionary dictionaryWithCapacity:256];
+  
+  // Scanner starts at start of document or kAutocompleteProximitySearchDistance before cursor,
+  // whichever is closes to cursor
+  NSScanner *scanner = [NSScanner scannerWithString:[self string]];
+  NSCharacterSet *irrelevantChars = [self irrelevantChars];
+  [scanner setCharactersToBeSkipped:irrelevantChars];
+  [scanner setScanLocation:(NSUInteger)MAX((NSInteger)position - (NSInteger)kAutocompleteProximitySearchDistance, 0)];
+  
+  // Scan.
+  NSString *word = nil;
+  while (![scanner isAtEnd] && [scanner scanLocation] < position + kAutocompleteProximitySearchDistance) {
+    [scanner scanUpToCharactersFromSet:irrelevantChars intoString:&word];
+    
+    if ([word hasPrefix:prefix] && ![word isEqualToString:prefix]) {
+      
+      // Compute a distance score (distance between beginning of this word and the cursor)
+      NSInteger score = (NSInteger)[scanner scanLocation] - (NSInteger)position;
+      if (score < 0) score = -score;
+      
+      // Save score if no score stored or if old score was greater
+      NSNumber *oldScore = [proximities objectForKey:word];
+      if (oldScore == nil || [oldScore intValue] > score) {
+        [proximities setObject:[NSNumber numberWithInt:score] forKey:word];
+      }
+    }
+  }
+  
+  // Return version sorted by score given earlier (or max distance + 1 if word was not in the search space)
+  return [completions sortedArrayUsingComparator:^(id obj1, id obj2) {
+    NSNumber *v1 = [proximities objectForKey:obj1];
+    NSNumber *v2 = [proximities objectForKey:obj2];
+    NSInteger i1 = [v1 intValue];
+    NSInteger i2 = [v2 intValue];
+    
+    if (v1 == nil) i1 = kAutocompleteProximitySearchDistance + 1;
+    if (v2 == nil) i2 = kAutocompleteProximitySearchDistance + 1;
+    
+    if (i1 < i2) return (NSComparisonResult)NSOrderedAscending;
+    else if (i1 > i2) return (NSComparisonResult)NSOrderedDescending;
+    else return (NSComparisonResult)NSOrderedSame;
+  }];
+}
+
 // Set of completions for a string at a given location in the document.
-// Default behavior is currently to match prefix and sort alphabetically, ignoring position.
 - (NSArray *)completionsForPrefix:(NSString *)prefix atPosition:(NSUInteger)position {
-  // TODO: sort by proximity to cursor rather than alphabetically
   
   prefix = [prefix lowercaseString];
   NSSet *allWords = [self allWords];
+  
   // Initial guess for number of completions:
   // 16^(length of prefix), i.e. 1/16th the set for each letter
   NSMutableArray *completions = [NSMutableArray arrayWithCapacity:[allWords count]/pow(16.0, (double)[prefix length])];
-  for (NSString *word in [self allWords]) {
-    if ([[word lowercaseString] hasPrefix:prefix]) {
+  
+  // Insert all matches into an array
+  for (NSString *word in allWords) {
+    if ([[word lowercaseString] hasPrefix:prefix] && ![word isEqualToString:prefix]) {
       [completions addObject:word];
     }
   }
-  return completions;
+  
+  // Sort and return
+  return [self sortedCompletions:completions forPrefix:prefix atPosition:position];
 }
 
 // TODO: override default NSTextView behavior to not autocomplete if not at a word boundary
