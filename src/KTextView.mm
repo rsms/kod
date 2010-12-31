@@ -195,7 +195,11 @@ static CGFloat kTextContainerYOffset = 0.0;
 - (void)keyDown:(NSEvent*)event {
   unsigned short keyCode = event.keyCode;
 	if (keyCode == kVK_Tab && tabControlsIndentationLevel_) {
-		if ( ([event modifierFlags] & (NSShiftKeyMask | NSAlphaShiftKeyMask)) ) {
+    NSUInteger modifiers = [event modifierFlags];
+    if (modifiers & NSAlternateKeyMask) {
+      // When pressing TAB+Alt, let a regular tab character be inserted
+      [super keyDown:event];
+		} else if (modifiers & (NSShiftKeyMask | NSAlphaShiftKeyMask)) {
 			[self decreaseIndentation];
 		} else {
 			[self increaseIndentation];
