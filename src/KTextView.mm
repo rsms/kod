@@ -66,6 +66,15 @@ static CGFloat kTextContainerYOffset = 0.0;
 }
 
 
+- (void)dealloc {
+  [self stopObserving];
+  [newlineString_ release];
+  [indentationString_ release];
+  [super dealloc];
+}
+
+
+
 #pragma mark -
 #pragma mark Properties
 
