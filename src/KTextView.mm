@@ -673,15 +673,15 @@ static NSUInteger kAutocompleteProximitySearchDistance = 1024;
   return [self sortedCompletions:completions forPrefix:prefix atPosition:position];
 }
 
-// TODO: override default NSTextView behavior to not autocomplete if not at a word boundary
+// Override default NSTextView behavior to not autocomplete if not at a word boundary
 - (void)complete:(id)sender {
   NSRange selectedRange = [self selectedRange];
   NSCharacterSet *irrelevantChars = [self irrelevantChars];
   if (selectedRange.length == 0 && selectedRange.location > 0 && selectedRange.location < [[self layoutManager] numberOfGlyphs]-1) {
     NSString *surrounding = [[self attributedSubstringFromRange:NSMakeRange(selectedRange.location-1, 2)] string];
-    BOOL leftOk = ![irrelevantChars characterIsMember:[surrounding characterAtIndex:0]];
-    BOOL rightOk = [irrelevantChars characterIsMember:[surrounding characterAtIndex:1]];
-    if (!(leftOk && rightOk)) {
+    BOOL leftIsSpace = [irrelevantChars characterIsMember:[surrounding characterAtIndex:0]];
+    BOOL rightIsSpace = [irrelevantChars characterIsMember:[surrounding characterAtIndex:1]];
+    if (leftIsSpace == rightIsSpace) {
       return;
     }
   }
