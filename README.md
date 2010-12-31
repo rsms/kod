@@ -44,7 +44,7 @@ Via Homebrew:
 
 ### Refreshing your clone
 
-Since Kod is made up of a main repositroy as well as a few sub-repositories (git submodules) a simple `git pull` is not sufficient to update your source tree clone. Use the `pull.sh` shell script for this:
+Since Kod is made up of a main repository as well as a few sub-repositories (git submodules) a simple `git pull` is not sufficient to update your source tree clone. Use the `pull.sh` shell script for this:
 
     ./pull.sh
 
