@@ -1771,7 +1771,7 @@ finishedReadingURL:(NSURL*)url
   NSURL *url = self.fileURL;
   KURLHandler *urlHandler =
       [[KDocumentController kodController] urlHandlerForURL:url];
-  return ( urlHandler && [urlHandler canWriteURL:url] );
+  return ( (urlHandler && [urlHandler canWriteURL:url]) || !url );
 }
 
 
