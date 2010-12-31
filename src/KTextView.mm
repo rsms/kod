@@ -572,4 +572,22 @@ static CGFloat kTextContainerYOffset = 0.0;
   DLOG("cursorUpdate:%@", event);
 }*/
 
+
+#pragma mark -
+#pragma mark Autocomplete
+
+- (void)complete:(id)sender {
+  // TODO: Check for word boundary at cursor and ignore if no boundary
+  [super complete:sender];
+}
+
+- (NSArray *)completionsForPartialWordRange:(NSRange)charRange indexOfSelectedItem:(NSInteger *)index {
+  return [NSArray arrayWithObjects:@"aa", @"bb", @"cc", nil];
+}
+
+- (void)insertCompletion:(NSString *)word forPartialWordRange:(NSRange)charRange movement:(NSInteger)movement isFinal:(BOOL)flag {
+  [super insertCompletion:word forPartialWordRange:charRange movement:movement isFinal:flag];
+  [self setSelectedRange:NSMakeRange(charRange.location+charRange.length, [word length])];
+}
+
 @end
