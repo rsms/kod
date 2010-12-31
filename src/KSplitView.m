@@ -5,9 +5,10 @@ NSString * const KSplitViewDidChangeCollapseStateNotification =
                @"KSplitViewDidChangeCollapseStateNotification";
 
 
-@interface BWSplitView (Private)
-// for silencing warnings
+@interface BWSplitView (know_private)
 - (void)splitViewDidResizeSubviews:(NSNotification*)notification;
+- (void)setMinSizeForCollapsibleSubview:(NSNumber*)minSize;
+- (void)resizeAndAdjustSubviews;
 @end
 
 
@@ -18,6 +19,10 @@ NSString * const KSplitViewDidChangeCollapseStateNotification =
 
 - (void)awakeFromNib {
   [super awakeFromNib];
+  self.dividerCanCollapse = YES;
+  self.collapsiblePopupSelection = 1;
+  [self setMinSizeForCollapsibleSubview:
+      [NSNumber numberWithDouble:self.collapsePositionThreshold]];
 }
 
 
@@ -48,19 +53,19 @@ NSString * const KSplitViewDidChangeCollapseStateNotification =
 - (void)setIsCollapsed:(BOOL)collapsed {
   if (!collapsed_ == !collapsed) return;
   collapsed_ = collapsed;
+
   NSView *collapsibleSubview = [[self subviews] objectAtIndex:0];
 
   if (collapsed_) {
     [collapsibleSubview setHidden:YES];
-    [collapsibleSubview setAutoresizesSubviews:NO];
     [self setPosition:0.0 ofDividerAtIndex:0];
   } else {
     if (position_ < self.collapsePositionThreshold)
       position_ = self.collapsePositionThreshold;
     [self setPosition:position_ ofDividerAtIndex:0];
     [collapsibleSubview setHidden:NO];
-    [collapsibleSubview setAutoresizesSubviews:YES];
   }
+  [self resizeAndAdjustSubviews];
 
   [[NSNotificationCenter defaultCenter]
       postNotificationName:KSplitViewDidChangeCollapseStateNotification
