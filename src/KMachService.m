@@ -60,4 +60,24 @@ shouldMakeNewConnection:(NSConnection *)newConnnection {
 }
 
 
+- (void)openWithDataFromFileHandle:(NSFileHandle *)fileHandle {
+  DLOG("%@ openWithDataFromFileHandle:%@", self, fileHandle);
+  
+  KDocumentController *documentController = [KDocumentController kodController];
+  kassert(documentController != nil);
+
+  NSError *outError = nil;
+  id document = [documentController openUntitledDocumentAndDisplay:YES error:&outError];
+  if (outError) {
+    WLOG("error: failed to open an untitled document");
+    [document presentError:outError];
+  } else {
+    [document readFromData:[fileHandle readDataToEndOfFile] ofType:[documentController defaultType] error:&outError];
+    if (outError) {
+        WLOG("error: failed to read data from fileHandle %@ to document %@", fileHandle, document);
+    }
+  }
+}
+
+
 @end
