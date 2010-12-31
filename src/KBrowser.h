@@ -4,6 +4,7 @@
 // See the implementation file for details.
 
 @interface KBrowser : CTBrowser {
+  BOOL shouldCloseTab;
 }
 
 @end
