@@ -79,21 +79,21 @@ static inline void _initbg() {
   [self retain];
   [h_objc_swap(&runLoop_, [[NSRunLoop currentRunLoop] retain]) release];
   NSDate *distantFuture = [NSDate distantFuture];
-  
+
   if (keepalive_) {
     NSTimer *keepaliveTimer = [NSTimer timerWithTimeInterval:DBL_MAX
                                                   invocation:nil
                                                      repeats:NO];
     [runLoop_ addTimer:keepaliveTimer forMode:NSDefaultRunLoopMode];
   }
-  
+
   // runSemaphore_ is only used for initial waiting -- allow up to 5 concurrent
   // locks w/o causing contention and thus an expensive call to the kernel.
   for (int i = 5; i--;) dispatch_semaphore_signal(runSemaphore_);
-  
+
   // for anyone waiting at +backgroundThread
   dispatch_semaphore_signal(backgroundThreadSemaphore_);
-  
+
   NSAutoreleasePool *pool;
   while (![self isCancelled]) {
     pool = [NSAutoreleasePool new];

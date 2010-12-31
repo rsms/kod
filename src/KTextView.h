@@ -3,10 +3,10 @@
 @interface KTextView : NSTextView {
   BOOL automaticallyKeepsIndentation_;
   BOOL tabControlsIndentationLevel_;
-  
+
   // kconf value "editor/text/newline" (defaults to LF)
   NSString *newlineString_;
-  
+
   // kconf value "editor/text/indentation" (defaults to 2xSP)
   NSString *indentationString_;
 }

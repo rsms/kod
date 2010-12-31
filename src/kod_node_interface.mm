@@ -130,7 +130,7 @@ bool KNodeInvokeExposedJSFunction(const char *functionName,
     //DLOG("[knode] 1 called in node");
     //DLOG("[knode] 1 calling kod from node");
     v8::HandleScope scope;
-    
+
     // create a block function
     __block BOOL blockFunDidExecute = NO;
     KNodeBlockFun *blockFun = new KNodeBlockFun(^(const v8::Arguments& args){
@@ -153,7 +153,7 @@ bool KNodeInvokeExposedJSFunction(const char *functionName,
       returnCallback(callback, err, args2);
       blockFunDidExecute = YES;
     });
-    
+
     // invoke the block function
     v8::TryCatch tryCatch;
     v8::Local<v8::Value> fun = blockFun->function();
@@ -213,7 +213,7 @@ void KNodeInitNode(v8::Handle<Object> kodModule) {
   v8::Local<Value> exposedFunctions =
       kodModule->Get(String::New("exposedFunctions"))->ToObject();
   kExposedFunctions = pobj_create(exposedFunctions);
-  
+
   // setup notifier
   KNodeIOInputQueueNotifier.data = NULL;
   ev_async_init(&KNodeIOInputQueueNotifier, &InputQueueNotification);

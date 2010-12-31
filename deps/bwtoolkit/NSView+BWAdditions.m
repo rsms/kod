@@ -11,12 +11,12 @@
 NSComparisonResult compareViews(id firstView, id secondView, id context);
 NSComparisonResult compareViews(id firstView, id secondView, id context)
 {
-	if (firstView != context && secondView != context) {return NSOrderedSame;}
-	else
-	{
-		if (firstView == context) {return NSOrderedDescending;}
-		else {return NSOrderedAscending;}
-	}
+  if (firstView != context && secondView != context) {return NSOrderedSame;}
+  else
+  {
+    if (firstView == context) {return NSOrderedDescending;}
+    else {return NSOrderedAscending;}
+  }
 }
 
 @interface NSView (BWPrivateAdditions)
@@ -27,20 +27,20 @@ NSComparisonResult compareViews(id firstView, id secondView, id context)
 
 - (void)bwBringToFront
 {
-	[[self superview] sortSubviewsUsingFunction:(NSComparisonResult (*)(id, id, void *))compareViews context:self];
+  [[self superview] sortSubviewsUsingFunction:(NSComparisonResult (*)(id, id, void *))compareViews context:self];
 }
 
 - (id)bwAnimator
 {
-	float duration = [[NSAnimationContext currentContext] duration];
-	[self performSelector:@selector(bwTurnOffLayer) withObject:nil afterDelay:duration];
-	
-	return [self animator];
+  float duration = [[NSAnimationContext currentContext] duration];
+  [self performSelector:@selector(bwTurnOffLayer) withObject:nil afterDelay:duration];
+
+  return [self animator];
 }
 
 - (void)bwTurnOffLayer
 {
-	[self setWantsLayer:NO];
+  [self setWantsLayer:NO];
 }
 
 @end

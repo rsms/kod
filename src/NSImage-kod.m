@@ -19,7 +19,7 @@
   <http://inessential.com/2007/03/07/workaround_for_ciimage_to_nsimage_memory>
   the above code might leak and the below code doesn't. But that was in an older
   version of OS X. Might still be a good idea to investigate this.
-  
+
   NSImage *image = [[[NSImage alloc] initWithSize:
                      NSMakeSize([ciImage extent].size.width,
                                 [ciImage extent].size.height)]
@@ -33,7 +33,7 @@
                           options:options];
   [ciContext drawImage:ciImage
                atPoint:CGPointMake(0, 0) fromRect:[ciImage extent]];
-  // Note: Does not leak when using the software renderer. See 
+  // Note: Does not leak when using the software renderer. See
   [image unlockFocus];
   return image;*/
 }
@@ -46,7 +46,7 @@
   //  ciImage = [ciImage flippedImage];
   ciImage = [ciImage imageByApplyingFilterNamed:ciFilterName
                                      parameters:filterParameters];
-  return [NSImage imageWithCIImage:ciImage]; 
+  return [NSImage imageWithCIImage:ciImage];
 }
 
 

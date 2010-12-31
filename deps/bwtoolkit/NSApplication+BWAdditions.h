@@ -8,7 +8,7 @@
 
 #import <Cocoa/Cocoa.h>
 
-@interface NSApplication (BWAdditions) 
+@interface NSApplication (BWAdditions)
 
 + (BOOL)bwIsOnLeopard;
 

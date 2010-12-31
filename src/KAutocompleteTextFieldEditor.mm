@@ -188,7 +188,7 @@
     // TODO: depends on fullscreen impl in KBrowserWindowController
     //[[BrowserWindowController browserWindowControllerForView:atf]
     //    releaseBarVisibilityForOwner:atf withAnimation:YES delay:YES];
-    
+
     id<KAutocompleteTextFieldDelegate> atfDelegate = atf.delegate;
     DCHECK(atfDelegate);
     if (atfDelegate) {
@@ -271,7 +271,7 @@
   interpretingKeyEvents_ = YES;
   textChangedByKeyEvents_ = NO;
   [super interpretKeyEvents:eventArray];
-  
+
   KAutocompleteTextField *atf = [self delegate];
   id<KAutocompleteTextFieldDelegate> atfDelegate = atf.delegate;
   if (textChangedByKeyEvents_ && atfDelegate)

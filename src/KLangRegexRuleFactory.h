@@ -10,14 +10,14 @@ class KLangRegexRuleFactory : public srchilite::RegexRuleFactory {
 public:
   KLangRegexRuleFactory() {}
   virtual ~KLangRegexRuleFactory() {}
-  
+
 
   inline srchilite::HighlightRule *createSimpleRule(const std::string &name,
                                              const std::string &s) {
     //DLOG("createSimpleRule ('%s', '%s')", name.c_str(), s.c_str());
     return RegexRuleFactory::createSimpleRule(KLangSymbol::symbolize(name), s);
   }
-  
+
   inline srchilite::HighlightRule *
       createWordListRule(const std::string &name,
                          const srchilite::WordList &list,
@@ -26,7 +26,7 @@ public:
     return RegexRuleFactory::createWordListRule(KLangSymbol::symbolize(name),
                                                 list, caseSensitive);
   }
-  
+
   inline srchilite::HighlightRule *
       createListRule(const std::string &name,
                      const srchilite::WordList &list,
@@ -35,7 +35,7 @@ public:
     return RegexRuleFactory::createListRule(KLangSymbol::symbolize(name), list,
                                             caseSensitive);
   }
-  
+
   srchilite::HighlightRule *
       createCompoundRule(const srchilite::ElemNameList &names,
                          const std::string &rep) {

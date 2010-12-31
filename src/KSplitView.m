@@ -49,7 +49,7 @@ NSString * const KSplitViewDidChangeCollapseStateNotification =
   if (!collapsed_ == !collapsed) return;
   collapsed_ = collapsed;
   NSView *collapsibleSubview = [[self subviews] objectAtIndex:0];
-  
+
   if (collapsed_) {
     [collapsibleSubview setHidden:YES];
     [collapsibleSubview setAutoresizesSubviews:NO];
@@ -61,7 +61,7 @@ NSString * const KSplitViewDidChangeCollapseStateNotification =
     [collapsibleSubview setHidden:NO];
     [collapsibleSubview setAutoresizesSubviews:YES];
   }
-  
+
   [[NSNotificationCenter defaultCenter]
       postNotificationName:KSplitViewDidChangeCollapseStateNotification
                     object:self];

@@ -17,8 +17,8 @@
 
 
 - (NSArray*)URLsForUnprocessedCrashReports {
-	NSFileManager *fm = [NSFileManager defaultManager];
-	NSString *crashReporterLogdir =
+  NSFileManager *fm = [NSFileManager defaultManager];
+  NSString *crashReporterLogdir =
       [@"~/Library/Logs/CrashReporter/" stringByExpandingTildeInPath];
   NSError *error;
   NSArray *metaKeys = [NSArray arrayWithObject:NSURLContentModificationDateKey];
@@ -133,7 +133,7 @@
       @"Oops. Looks like Kod crashed earlier. Would you please like to send"
        "us the crash report so Kod can be improved?"];
   //[alertBox setIcon:[NSImage imageNamed:@"crash-reporter.png"]];
-  
+
   if ([alertModal runModal] == NSCancelButton)
     return;
   NSError *error = nil;

@@ -30,7 +30,7 @@ class KStyleElement {
   static void clearAttributes(NSMutableAttributedString *astr,
                               NSRange range,
                               bool removeSpecials=false);
-  
+
   KStyleElement(NSString *name=@"body", CSSStyle *style=nil, KStyle *parent=nil);
   virtual ~KStyleElement();
 
@@ -38,10 +38,10 @@ class KStyleElement {
   NSString *symbol() {
     return [textAttributes_ objectForKey:KStyleElementAttributeName];
   }
-  
+
   void setStyle(CSSStyle *style, KStyle *parent=nil);
   inline NSDictionary *textAttributes() { return textAttributes_; }
-  
+
   inline void setAttribute(NSString *key, id value) {
     if (value) [textAttributes_ setObject:value forKey:key];
     else [textAttributes_ removeObjectForKey:key];
@@ -49,7 +49,7 @@ class KStyleElement {
   inline id attribute(NSString *key) {
     return [textAttributes_ objectForKey:key];
   }
-  
+
   void setFont(NSFont *font) {
     setAttribute(NSFontAttributeName, font);
   }
@@ -68,7 +68,7 @@ class KStyleElement {
   NSColor *backgroundColor() {
     return attribute(NSBackgroundColorAttributeName);
   }
-  
+
   /**
    * Applies attributes to |astr| in |range|. If |replace| is true, any existing
    * atributes will be removed (replaced with my attributes).

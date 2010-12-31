@@ -33,15 +33,15 @@
     callback([NSError kodErrorWithFormat:@"Not an executable file"], nil);
     return;
   }
-  
+
   executablePch = strdup(executablePch);
 
   // Setup authorization
-	OSStatus status;
+  OSStatus status;
   AuthorizationRef authRef;
-	AuthorizationEnvironment authEnv;
-	AuthorizationItem authEnvItems[2];
-	authEnv.items = authEnvItems;
+  AuthorizationEnvironment authEnv;
+  AuthorizationItem authEnvItems[2];
+  authEnv.items = authEnvItems;
   authEnv.count = 1;
   const char *iconPath = [[kconf_res_url(@"kod.icns") path] UTF8String];
   authEnvItems[0].name = kAuthorizationEnvironmentIcon;
@@ -56,7 +56,7 @@
     authEnvItems[1].value = (void*)strdup(promptPch);
     authEnvItems[1].flags = 0;
   }
-  
+
   // create auth object
   status = AuthorizationCreate(NULL, &authEnv, kAuthorizationFlagDefaults,
                                &authRef);
@@ -68,7 +68,7 @@
 
   // copy auth rights
   AuthorizationItem right = {kAuthorizationRightExecute, 0, NULL, 0};
-	AuthorizationRights rightSet = { 1, &right };
+  AuthorizationRights rightSet = { 1, &right };
   status = AuthorizationCopyRights(authRef, &rightSet, &authEnv,
                                    kAuthorizationFlagDefaults
                                    |kAuthorizationFlagPreAuthorize
@@ -107,7 +107,7 @@
     callback([NSError kodErrorWithOSStatus:status], nil);
     return;
   }
-  
+
   // setup a duplex stream to gather stdout
   HDStream *stream = [HDStream streamWithFileDescriptor:fileno(ioPipe)];
   NSMutableData *data = [NSMutableData data];

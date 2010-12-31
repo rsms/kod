@@ -210,21 +210,21 @@ static const CGFloat kLeftMarginWhenNoSidebar = 4.0;
       [absoluteURLs addObject:url];
     }
   }
-  
+
   // bail if empty
   if (absoluteURLs.count == 0)
     return;
-  
+
   // find our window controller
   KBrowserWindowController *windowController = (KBrowserWindowController*)
       [CTBrowserWindowController browserWindowControllerForView:view];
   kassert(windowController != nil);
-  
+
   // find shared document controller
   KDocumentController *documentController =
       (KDocumentController*)[NSDocumentController sharedDocumentController];
   kassert(documentController != nil);
-  
+
   // use the high-level "open" API
   [documentController openDocumentsWithContentsOfURLs:absoluteURLs
                                  withWindowController:windowController

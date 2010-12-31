@@ -94,7 +94,7 @@ static NSFont* _kDefaultFont = nil;
 
 // DEBUG: intercepts and dumps selector queries
 /*- (BOOL)respondsToSelector:(SEL)selector {
-	BOOL y = [super respondsToSelector:selector];
+  BOOL y = [super respondsToSelector:selector];
   DLOG("respondsToSelector %@ -> %@", NSStringFromSelector(selector), y?@"YES":@"NO");
   return y;
 }*/
@@ -144,10 +144,10 @@ static int debugSimulateTextAppendingIteration = 0;
   // Default title and icon
   self.title = _kDefaultTitle;
   self.icon = _kDefaultIcon;
-  
+
   // Default text encoding for new "Untitled" documents
   textEncoding_ = NSUTF8StringEncoding;
-  
+
   // Default highlighter
   sourceHighlighter_.reset(new KSourceHighlighter);
   highlightingEnabled_ = YES;
@@ -159,16 +159,16 @@ static int debugSimulateTextAppendingIteration = 0;
   textView_ = [[KTextView alloc] initWithFrame:NSZeroRect];
   [textView_ setDelegate:self];
   [textView_ setFont:[isa defaultFont]];
-  
+
   // configure layout manager
   //NSLayoutManager *layoutManager = []
-  
+
   // default paragraph style
   NSMutableParagraphStyle *paragraphStyle = [NSMutableParagraphStyle new];
   [paragraphStyle setParagraphStyle:[NSParagraphStyle defaultParagraphStyle]];
   [paragraphStyle setLineBreakMode:NSLineBreakByCharWrapping];
   [textView_ setDefaultParagraphStyle:paragraphStyle];
-  
+
   // TODO: this defines the attributes to apply to "marked" text, input which is
   // pending, like "¨" waiting for "u" to build the character "ü". Should match
   // the current style.
@@ -182,10 +182,10 @@ static int debugSimulateTextAppendingIteration = 0;
 
   // Set the NSScrollView as our view
   self.view = [sv autorelease];
-  
+
   // Configure meta ruler (line numbers)
   self.hasMetaRuler = !kconf_bool(@"editor/metaRuler/hidden", NO);
-  
+
   // Start with the empty style and load the default style
   kassert([KStyle sharedStyle] != nil);
   [self observe:KStyleDidChangeNotification
@@ -195,20 +195,20 @@ static int debugSimulateTextAppendingIteration = 0;
 
   // Let the global document controller know we came to life
   [[NSDocumentController sharedDocumentController] addDocument:self];
-  
+
   // Observe when the document is modified so we can update the UI accordingly
   /*NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
-	[nc addObserver:self
+  [nc addObserver:self
          selector:@selector(undoManagerCheckpoint:)
              name:NSUndoManagerCheckpointNotification
-					 object:undoManager_];*/
+           object:undoManager_];*/
 
   // register as text storage delegate
   textView_.textStorage.delegate = self;
-  
+
   // set to zero
   lastEditedHighlightStateRange_ = NSMakeRange(NSNotFound,0);
-  
+
   // set edit ts
   lastEditTimestamp_ = [NSDate timeIntervalSinceReferenceDate];
 
@@ -217,7 +217,7 @@ static int debugSimulateTextAppendingIteration = 0;
 
 /*
  This method is invoked by the NSDocumentController method
- makeDocumentWithContentsOfURL:ofType:error: 
+ makeDocumentWithContentsOfURL:ofType:error:
  */
 - (id)initWithContentsOfURL:(NSURL *)absoluteURL
                      ofType:(NSString *)typeName
@@ -225,14 +225,14 @@ static int debugSimulateTextAppendingIteration = 0;
   // This may be called on a background thread
   self = [self initWithBaseTabContents:nil];
   kassert(self);
-  
+
   // call upon the mighty read-from-URL machinery
   if (![self readFromURL:absoluteURL ofType:typeName error:outError]) {
     [self release];
     if (outError) kassert(*outError != nil);
     return nil;
   }
-  
+
   return self;
 }
 
@@ -367,9 +367,9 @@ static int debugSimulateTextAppendingIteration = 0;
 
 /*- (NSDate*)fileModificationDate {
   NSDate *mtime = [super fileModificationDate];
-  
+
   NSDate *mtime2 = [[[NSFileManager defaultManager] attributesOfItemAtPath:[self.fileURL path] error:nil] objectForKey:NSFileModificationDate];
-  
+
   DLOG("%@ fileModificationDate -> %@ (actual: %@)", self, mtime, mtime2);
   return mtime;
 }
@@ -410,12 +410,12 @@ static int debugSimulateTextAppendingIteration = 0;
 - (void)setWindow:(NSWindow*)window {
   // Called when this tab receives either |tabDidBecomeSelected| (with a window
   // object) or |tabDidBecomeSelected| (with nil).
-  
+
   [super setWindow:window];
-  
+
   if (window) {
     // case: we just became the key content of |window|
-    
+
     // update window title
     NSURL *url = [self fileURL];
     // We need to set repr. filename to the empty string if we do not
@@ -464,7 +464,7 @@ static int debugSimulateTextAppendingIteration = 0;
     [scrollView setRulersVisible:NO];
     metaRulerView_ = nil;
   }
-  
+
   // Update config
   kconf_set_bool(@"editor/metaRuler/hidden", !displayRuler);
 }
@@ -525,11 +525,11 @@ static int debugSimulateTextAppendingIteration = 0;
 
 - (void)tabWillCloseInBrowser:(CTBrowser*)browser atIndex:(NSInteger)index {
   [super tabWillCloseInBrowser:browser atIndex:index];
-  
+
   // cancel and disable highlighting
   highlightingEnabled_ = NO;
   sourceHighlighter_->cancel();
-  
+
   NSWindowController *wc = browser.windowController;
   if (wc) {
     [self removeWindowController:wc];
@@ -648,15 +648,15 @@ static int debugSimulateTextAppendingIteration = 0;
 }
 
 - (NSRange)rangeOfLineIndentationAtLineNumber:(NSUInteger)lineNumber {
-	NSRange line = [self rangeOfLineAtLineNumber:lineNumber];
-	NSString *lineString = [textView_.textStorage.string substringWithRange:line];
-	
-	int indentLen = 0;
-	int length = [lineString length];
-	while ([lineString characterAtIndex:indentLen] == ' ' && indentLen < length) {
-		indentLen++;
-	}
-	return NSMakeRange(line.location, indentLen);
+  NSRange line = [self rangeOfLineAtLineNumber:lineNumber];
+  NSString *lineString = [textView_.textStorage.string substringWithRange:line];
+
+  int indentLen = 0;
+  int length = [lineString length];
+  while ([lineString characterAtIndex:indentLen] == ' ' && indentLen < length) {
+    indentLen++;
+  }
+  return NSMakeRange(line.location, indentLen);
 }
 
 
@@ -664,7 +664,7 @@ static int debugSimulateTextAppendingIteration = 0;
   NSRange lineRange = [self rangeOfLineTerminatorAtLineNumber:lineNumber];
   if (lineRange.location == NSNotFound)
     return lineRange;
-  
+
   // find previous line end
   NSUInteger startLocation = 0;
   if (lineNumber == 1) {
@@ -677,7 +677,7 @@ static int debugSimulateTextAppendingIteration = 0;
     lineRange.length = lineEnd - prevLineEnd;
     lineRange.location = prevLineEnd;
   }
-  
+
   return lineRange;
 }
 
@@ -709,10 +709,10 @@ static int debugSimulateTextAppendingIteration = 0;
 }
 
 - (BOOL)isNewLine:(NSUInteger)lineNumber {
-	if ([self rangeOfLineAtLineNumber:lineNumber].length <= [self rangeOfLineTerminatorAtLineNumber:lineNumber].length) {
-		return YES;
-	}
-	return NO;
+  if ([self rangeOfLineAtLineNumber:lineNumber].length <= [self rangeOfLineTerminatorAtLineNumber:lineNumber].length) {
+    return YES;
+  }
+  return NO;
 }
 
 #pragma mark -
@@ -809,14 +809,14 @@ static int debugSimulateTextAppendingIteration = 0;
   NSRange selectedRange = [textView_ selectedRange];
   NSRange range = selectedRange;
   NSUInteger index = range.location + range.length;
-  
+
   while (YES) {
     NSUInteger maxLength = mastr.length;
     [mastr attribute:KStyleElementAttributeName
              atIndex:index
 longestEffectiveRange:&range
              inRange:NSMakeRange(0, maxLength)];
-    
+
     // trim left
     NSRange r = [text rangeOfCharactersFromSet:cs
                                        options:NSAnchoredSearch
@@ -830,7 +830,7 @@ longestEffectiveRange:&range
       range.location += r.length;
       range.length -= r.length;
     }
-    
+
     // trim right
     r = [text rangeOfCharactersFromSet:cs
                                options:NSAnchoredSearch|NSBackwardsSearch
@@ -958,25 +958,25 @@ longestEffectiveRange:&range
   KStyle *style = [KStyle sharedStyle];
   kassert(style);
   KStyleElement *defaultElem = [style defaultStyleElement];
-  
+
   // textview bgcolor
   NSColor *color = defaultElem->backgroundColor();
   kassert(color);
   [textView_ setBackgroundColor:color];
-  
+
   // text attributes
   NSTextStorage *textStorage = textView_.textStorage;
   [textStorage beginEditing];
   [textStorage setAttributesFromKStyle:style
                                  range:NSMakeRange(0, textStorage.length)];
   [textStorage endEditing];
-  
+
   // find parent scroll view and mark it for redraw
   /*NSScrollView *scrollView =
       (NSScrollView*)[textView_ findFirstParentViewOfKind:[NSScrollView class]];
   if (scrollView)
     [scrollView setNeedsDisplay:YES];*/
-  
+
   // mark everything in this window as needing redisplay (style is window-wide)
   NSWindow *window = textView_.window;
   if (window) {
@@ -1024,39 +1024,39 @@ longestEffectiveRange:&range
                           inRange:(NSRange)editedRange {
   //#define DLOG_HL DLOG
   #define DLOG_HL(...) ((void)0)
-  
+
   // WARNING: this must not be called on the same thread as the
   // dispatch_get_global_queue(0,0) run in -- it will cause a deadlock.
-  
+
   if (!highlightingEnabled_)
     return NO;
-  
+
   // Make copies of these as they may change before we start processing
   KSourceHighlightState* state = lastEditedHighlightState_;
   NSRange stateRange = lastEditedHighlightStateRange_;
   int changeInLength = [textStorage changeInLength];
-  
+
   // Aquire semaphore
   if (!highlightSem_.tryGet()) {
     // currently processing
     DLOG_HL("highlight --CANCEL & WAIT--");
-    
+
     // Combine range of previous hl with current edit
     if (editedRange.location != NSNotFound) {
       NSRange prevHighlightRange = sourceHighlighter_->currentRange();
       editedRange = NSUnionRange(prevHighlightRange, editedRange);
     }
-    
+
     // We can no longer rely on state
     //state = nil;
     //stateRange = (NSRange){NSNotFound,0};
-    
+
     // TODO: some kind of funky logic here to deduce range changes
     //int prevChangeInLength = sourceHighlighter_->currentChangeInLength();
-    
+
     // signal "cancel" and wait for lock
     sourceHighlighter_->cancel();
-    
+
     // Since we put back the lock on main we need to reschedule for next tick.
     // We will reschedule on to next tick until we get the semaphore.
     if ([NSThread isMainThread]) {
@@ -1069,7 +1069,7 @@ longestEffectiveRange:&range
         [self deferHighlightTextStorage:textStorage inRange:editedRange];
         [pool drain];
       };
-      
+
       // execute with back-off delay
       if (highlightWaitBackOffNSec_ == 0) {
         // ASAP on next tick
@@ -1083,16 +1083,16 @@ longestEffectiveRange:&range
         // increase back-off delay (100, 200, 400, 800, 1600, 3200 ms and so on)
         highlightWaitBackOffNSec_ *= 2;
       }
-      
+
       return YES;
     } else {
       highlightSem_.get();
     }
   }
-  
+
   // reset cancel-and-wait back-off timeout
   highlightWaitBackOffNSec_ = 0;
-  
+
   // Dispatch
   DLOG_HL("highlight --LOCKED--");
   dispatch_async(gDispatchQueueSyntaxHighlight, ^{
@@ -1101,7 +1101,7 @@ longestEffectiveRange:&range
       return;
     }
     NSAutoreleasePool *pool = [NSAutoreleasePool new];
-    
+
     // Begin processing, buffering all attributes created
     sourceHighlighter_->beginBufferingOfAttributes();
 
@@ -1121,7 +1121,7 @@ longestEffectiveRange:&range
            NSStringFromRange(editedRange), e);
       sourceHighlighter_->cancel();
     }
-    
+
     if (sourceHighlighter_->isCancelled()) {
       // highlighting was cancelled
       // Note: No need to call clearBufferedAttributes() here since we know that
@@ -1158,10 +1158,10 @@ longestEffectiveRange:&range
                 sourceHighlighter_->isCancelled() ? @"YES":@"NO");
       );
     }
-    
+
     [pool drain];
   });
-  
+
   return YES;
   #undef DLOG_HL
 }
@@ -1177,9 +1177,9 @@ replacementString:(NSString *)replacementString {
        [textView_.textStorage.string substringWithRange:range],
        NSStringFromRange(range), replacementString);
   #endif
-  
+
   BOOL didEditCharacters = YES;
-  
+
   // find range of highlighting state at edit location
   NSTextStorage *textStorage = textView_.textStorage;
   if (textStorage.length != 0) {
@@ -1198,7 +1198,7 @@ replacementString:(NSString *)replacementString {
       // insertion/replacement
       index = MIN(range.location, textStorage.length-1);
     }
-    
+
     if (index != NSNotFound) {
       lastEditedHighlightState_ =
         [textStorage attribute:KSourceHighlightStateAttribute
@@ -1211,7 +1211,7 @@ replacementString:(NSString *)replacementString {
     lastEditedHighlightState_ = nil;
     didEditCharacters = (replacementString.length != 0);
   }
-  
+
   // Cancel any in-flight highlighting
   if (didEditCharacters && highlightingEnabled_) {
     #if 0
@@ -1237,9 +1237,9 @@ shouldChangeTextInRanges:(NSArray *)affectedRanges
     DLOG("replace text '%@' at %@ with '%@'",
          [textView_.textStorage.string substringWithRange:range],
          NSStringFromRange(range), str);
-    
+
     // find full range of state at edit location
-    
+
     NSRange highlightStateRange;
     NSTextStorage *textStorage = textView_.textStorage;
     KSourceHighlightState *hlstate =
@@ -1249,7 +1249,7 @@ shouldChangeTextInRanges:(NSArray *)affectedRanges
                      inRange:NSMakeRange(0, textStorage.length)];
     DLOG("state at %u -> %@ '%@'", range.location, hlstate,
          [textStorage.string substringWithRange:highlightStateRange]);
-    
+
   }
   return YES;
 }*/
@@ -1277,7 +1277,7 @@ static BOOL _lb_lines_in_editedRange(std::vector<NSRange> &lineToRangeVec,
   for (; i < count; ++i) {
     NSRange &lineRange = lineToRangeVec[i];
     NSUInteger lineRangeEnd = lineRange.location + lineRange.length;
-    
+
     if (startIndex == count) {
       // looking for start
       if (lineRangeEnd > editedRange.location) {
@@ -1293,7 +1293,7 @@ static BOOL _lb_lines_in_editedRange(std::vector<NSRange> &lineToRangeVec,
       endIndex = i;
     }
   }
-  
+
   if (startIndex != count) {
     if (startIndex > endIndex) {
       // we did not find an end, which means the edit extends to the end of the
@@ -1346,7 +1346,7 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
          editSpansToEndOfDocument?@"YES":@"NO");
     #endif
   }
-  
+
   if (changeInLength == 1 && editedRange.length == 1) {
     unichar ch = [string characterAtIndex:editedRange.location];
     if ([newlines characterIsMember:ch]) {
@@ -1358,7 +1358,7 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
                   forRange:editedRange];
       NSRange lineRange = NSMakeRange(contentsEnd, lineEnd - contentsEnd);
       //DLOG_RANGE(lineRange, string);
-      
+
       if (editSpansToEndOfDocument || !didAffectLines) {
         // simply appended a new line to the end of the document
         lineToRangeVec_.push_back(lineRange);
@@ -1379,7 +1379,7 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
   } else if (changeInLength > 0) {
     // reset |i|
     __block size_t i = lbStartIndex;
-    
+
     // consider each line which was affected by the edit
     [string enumerateSubstringsInRange:editedRange
                                options:NSStringEnumerationByLines
@@ -1395,12 +1395,12 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
       //DLOG("nlCharCount -> %lu", nlCharCount);
       //DLOG_RANGE(substringRange, string);
       //DLOG_RANGE(enclosingRange, string);
-      
+
       if (!nlCharCount) {
         // most likely the last line (no newline anyhow, so "continue")
         return;
       }
-      
+
       // register range
       if (i < lbEndIndex) {
         NSRange &r = lineToRangeVec_[i];
@@ -1414,26 +1414,26 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
       }
       ++i;
     }];
-    
+
     offsetRangesStart = i;
 
   } else if (changeInLength < 0) {
     // edit action was "deletion"
 
     if (didAffectLines) {
-      
+
       NSRange deletedRange = editedRange;
       deletedRange.length = -changeInLength;
       //DLOG("deletedRange -> %@", NSStringFromRange(deletedRange));
-      
+
       // figure out if any lines where deleted
       size_t i = lbStartIndex;
       BOOL didFoundOneInside = NO;
       for (; i < lbEndIndex && i < lineToRangeVec_.size(); ) {
         NSRange &lineRange = lineToRangeVec_[i];
-        
+
         if ( NSLocationInRange(lineRange.location, deletedRange) ||
-             (lineRange.length > 1 && 
+             (lineRange.length > 1 &&
               NSLocationInRange(lineRange.location+lineRange.length-1,
                                 deletedRange)) ) {
           //DLOG("[%lu] %@ was inside delete", i, NSStringFromRange(lineRange));
@@ -1455,7 +1455,7 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
     //DLOG("_lb_offset_ranges(%lu, %ld)", offsetRangesStart, changeInLength);
     _lb_offset_ranges(lineToRangeVec_, offsetRangesStart, changeInLength);
   }
-  
+
   if (changeInLength != 0 &&
       (lineToRangeVec_.size() != 0 || lineCountDelta != 0)) {
     [self linesDidChangeWithLineCountDelta:lineCountDelta];
@@ -1471,31 +1471,31 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
 //- (void)textStorageDidProcessEditing:(NSNotification *)notification {}
 
 - (void)textStorageDidProcessEditing:(NSNotification *)notification {
-  NSTextStorage	*textStorage = [notification object];
-  
+  NSTextStorage  *textStorage = [notification object];
+
   // no-op unless characters where edited
   if (!(textStorage.editedMask & NSTextStorageEditedCharacters)) {
     return;
   }
   kassert([NSThread isMainThread]);
-	
-	// range that was affected by the edit
-	NSRange	editedRange = [textStorage editedRange];
-	
-	// length delta of the edit (i.e. negative for deletions)
-	int	changeInLength = [textStorage changeInLength];
-	
-	// update lineToRangeVec_
-	[self _updateLinesToRangesInfoForTextStorage:textStorage
-										 inRange:editedRange
-									 changeDelta:changeInLength];
+
+  // range that was affected by the edit
+  NSRange  editedRange = [textStorage editedRange];
+
+  // length delta of the edit (i.e. negative for deletions)
+  int  changeInLength = [textStorage changeInLength];
+
+  // update lineToRangeVec_
+  [self _updateLinesToRangesInfoForTextStorage:textStorage
+                     inRange:editedRange
+                   changeDelta:changeInLength];
 
   // Update edit timestamp
   lastEditTimestamp_ = [NSDate timeIntervalSinceReferenceDate];
 
   // we do not process edits when we are loading
   if (isLoading_) return;
-  
+
   BOOL wasInUndoRedo = [[self undoManager] isUndoing] ||
                        [[self undoManager] isRedoing];
   #if 0 && K_DEBUG_BUILD
@@ -1511,10 +1511,10 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
          "(changeInLength == 0 && !lastEditedHighlightState_)");
     return;
   }
-  
+
   // Syntax highlight
   if (highlightingEnabled_) {
-    
+
     #if 0
     NSTimeInterval startTime = [NSDate timeIntervalSinceReferenceDate];
     KNodeInvokeExposedJSFunction("foo", nil, ^(NSError *err, NSArray *args){
@@ -1524,10 +1524,10 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
            err, args, (endTime - startTime)*1000.0);
     });
     #endif
-    
+
     [self deferHighlightTextStorage:textStorage inRange:editedRange];
   }
-  
+
   // this makes the edit an undoable entry
   // TODO(rsms): Make this configurable through kconf "editor/undo/granularity"
   //[textView_ breakUndoCoalescing];
@@ -1537,7 +1537,7 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
 - (void)guessLanguageBasedOnUTI:(NSString*)uti textContent:(NSString*)text {
   KLangMap *langMap = [KLangMap sharedLangMap];
   NSString *firstLine = nil;
-  
+
   // find first line
   if (text) {
     NSUInteger stopIndex = MIN(512, text.length);
@@ -1552,7 +1552,7 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
       firstLine = text;
     }
   }
-  
+
   self.langId = [langMap langIdForSourceURL:self.fileURL
                                     withUTI:uti
                        consideringFirstLine:firstLine];
@@ -1573,13 +1573,13 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
 
   // we are in a loading state
   self.isLoading = YES;
-  
+
   // reset encoding (so it can be set by the loading machinery)
   textEncoding_ = 0;
 
   // set url
   self.fileURL = absoluteURL;
-  
+
   // locate handler
   KURLHandler *urlHandler =
       [[KDocumentController kodController] urlHandlerForURL:absoluteURL];
@@ -1590,7 +1590,7 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
     }
     return NO;
   }
-  
+
   // check if the handler can read URLs
   if (![urlHandler canReadURL:absoluteURL]) {
     if (outError) {
@@ -1598,11 +1598,11 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
     }
     return NO;
   }
-  
+
   // trigger reading
   [urlHandler readURL:absoluteURL ofType:typeName inTab:self];
   return YES;
-  
+
   // different branches depending on local file or remote
   /*if (![absoluteURL isFileURL]) {
     [self startReadingFromRemoteURL:absoluteURL ofType:typeName];
@@ -1622,13 +1622,13 @@ finishedReadingURL:(NSURL*)url
     error = [NSError kodErrorWithFormat:@"%@ failed to read '%@': %@",
              urlHandler, url, [error localizedDescription]];
   }
-  
+
   // handle error
   if (error) {
     [self presentError:error];
     return;
   }
-  
+
   // intermediate success callback
   dispatch_block_t successCallback = nil;
   if (callback) {
@@ -1636,7 +1636,7 @@ finishedReadingURL:(NSURL*)url
       callback(nil);
     };
   }
-  
+
   // invoke internal data loader
   NSError *outError = nil;
   if (![self readFromData:data
@@ -1683,17 +1683,17 @@ finishedReadingURL:(NSURL*)url
                error:(NSError **)outError
             callback:(void(^)(void))callback {
   DLOG("readFromData:%p ofType:%@", data, typeName);
-  
+
   NSString *text = nil;
 
   // If we have an explicit encoding, try decoding using that encoding
   if (textEncoding_ != 0)
     text = [data weakStringWithEncoding:textEncoding_];
-  
+
   // Guess encoding if no explicit encoding, or explicit decode failed
   if (!text)
     text = [data weakStringByGuessingEncoding:&textEncoding_];
-  
+
   if (!text) {
     // We're out of hope
     textEncoding_ = 0;
@@ -1712,16 +1712,16 @@ finishedReadingURL:(NSURL*)url
     //  locked nor unlocked.  The memory has been smashed."
     //
     // That's scary.
-    
+
     // log encoding used
     DLOG("Decoded text data using %@",
          [NSString localizedNameOfStringEncoding:textEncoding_]);
-    
+
     // we need to retain |data| and |text| since |text| contains a weak
     // reference to bytes in |data|.
     [data retain];
     [text retain];
-    
+
     K_DISPATCH_MAIN_ASYNC2(
       //NSTextStorage *textStorage = textView_.textStorage;
       [textView_ setString:text];
@@ -1731,7 +1731,7 @@ finishedReadingURL:(NSURL*)url
       self.isLoading = NO;
       self.isWaitingForResponse = NO;
       self.fileType = typeName;
-      
+
       // guess language if no language has been set
       if (!langId_) {
         // implies queueing of complete highlighting
@@ -1757,7 +1757,7 @@ finishedReadingURL:(NSURL*)url
   return [self readFromData:data
                      ofType:typeName
                       error:outError
-                   callback:nil]; 
+                   callback:nil];
 }
 
 
@@ -1807,19 +1807,19 @@ finishedReadingURL:(NSURL*)url
     }
     return NO;
   }
-  
+
   // make data
   NSData *data = [self dataOfType:typeName
                             error:outError];
   if (!data)
     return NO;
-  
+
   // freeze tab during writing
   BOOL tabWasEditable = [self.textView isEditable];
   if (tabWasEditable)
     [self.textView setEditable:NO];
   self.isLoading = YES;
-  
+
   // delegate writing to the handler
   NSURL *originalURL = self.fileURL;
   [urlHandler writeData:data
@@ -1840,19 +1840,19 @@ finishedReadingURL:(NSURL*)url
       // set fileURL (needed for the internal resource tracking logic of
       // NSDocument)
       [self setFileURL:absoluteURL];
-      
+
       // Clear change count
       [self updateChangeCount:NSChangeCleared];
-      
+
       // update modification date -- needed for NSDocument's interal "did someone
       // else change our document?" logic.
       self.fileModificationDate = mtime ? mtime : [NSDate date];
-      
+
       // If we wrote the stylesheet, trigger a reload or load
       if (originalURL && [originalURL isEqual:[KStyle sharedStyle].url]) {
         [[KStyle sharedStyle] loadFromURL:absoluteURL withCallback:nil];
       }
-      
+
       // Guess syntax
       if (highlightingEnabled_) {
         // TODO: typeName might have changed during reading
@@ -1860,12 +1860,12 @@ finishedReadingURL:(NSURL*)url
                           textContent:self.textView.string];
       }
     }
-    
+
     // unfreeze tab
     if (tabWasEditable)
       [self.textView setEditable:YES];
     self.isLoading = NO;
-    
+
     K_DISPATCH_MAIN_ASYNC({
       // restart cursor blink timer. This fails to restart when writing a file
       // asynchronously (my guess is the setEditable call fail to trigger the

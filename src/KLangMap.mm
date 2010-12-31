@@ -49,15 +49,15 @@ static void kio_iterdirs_async(NSArray *dirs,
     [dirs release];
     return;
   }
-  
+
   // dispatch queue
   dispatch_queue_t queue = dispatch_get_global_queue(0,0);
-  
+
   // retain handler and callback
   __block BOOL(^_entryHandler)(NSError**,NSURL*) = [entryHandler copy];
   if (callback) callback = [callback copy];
   Class NSURLClass = [NSURL class];
-  
+
   // dispatch each operation
   [dirs retain]; //< we need to retain this for some reason
   for (NSURL *dirURL_ in dirs) {
@@ -134,7 +134,7 @@ static ICUPattern *gSheBangEnvRegExp;
 
 + (void)load {
   NSAutoreleasePool *pool = [NSAutoreleasePool new];
-  
+
   // Shared regular expressions
   // '#! /usr/bin/env perl'
   gSheBangEnvRegExp = [[ICUPattern alloc] initWithString:
@@ -209,7 +209,7 @@ static ICUPattern *gSheBangEnvRegExp;
 - (NSArray*)searchPaths {
   HSpinLock::Scope slscope(searchPathsLock_);
   if (searchPaths_) return searchPaths_;
-  
+
   // users' paths take precedence
   static NSString *const configKey = @"langSearchPaths";
   NSArray *userDirnames = kconf_array(configKey, nil);
@@ -229,10 +229,10 @@ static ICUPattern *gSheBangEnvRegExp;
   } else {
     searchPaths_ = [[NSMutableArray alloc] initWithCapacity:1];
   }
-  
+
   // Append the built-in lang dir
   [searchPaths_ addObject:[kconf_res_url(@"lang") path]];
-  
+
   return searchPaths_;
 }
 
@@ -263,7 +263,7 @@ static ICUPattern *gSheBangEnvRegExp;
    * 6. Case-insensitive extension
    */
   NSString *langId = nil;
-  
+
   // 1. UTI
   if (uti) {
     UTIToLangIdMapLock_.lock();
@@ -271,11 +271,11 @@ static ICUPattern *gSheBangEnvRegExp;
     UTIToLangIdMapLock_.unlock();
     if (langId) return langId;
   }
-  
+
   // Test on first line of content
   if (firstLine && firstLine.length) {
     ICUMatcher *m;
-    
+
     // 2. She-bang program ('#! /usr/bin/env perl')
     NSString *program = nil;
     m = [ICUMatcher matcherWithPattern:gSheBangEnvRegExp overString:firstLine];
@@ -297,7 +297,7 @@ static ICUPattern *gSheBangEnvRegExp;
       programToLangIdMapLock_.unlock();
       if (langId) return langId;
     }
-  
+
     // 3. First line pattern
     HSpinLockSync(firstLinePatternListLock_) {
       for (KLangMapLinePattern *pattern in firstLinePatternList_) {
@@ -311,17 +311,17 @@ static ICUPattern *gSheBangEnvRegExp;
       }
     }
   }
-  
+
   // The rest of the tests involve |url| -- bail unless non-nil
   if (!url) return nil;
-  
+
   // 4. Complete filename ("basename"), case-sensitive
   NSString *name = [url lastPathComponent];
   nameToLangIdMapLock_.lock();
   langId = [nameToLangIdMap_ objectForKey:name];
   nameToLangIdMapLock_.unlock();
   if (langId) return langId;
-  
+
   // 5. Filename extension
   NSString *ext = [name pathExtension];
   if (ext.length) {
@@ -334,13 +334,13 @@ static ICUPattern *gSheBangEnvRegExp;
     extToLangIdMapLock_.unlock();
     if (langId) return langId;
   }
-  
+
   // 6. Complete filename ("basename"), case-insensitive
   nameToLangIdMapLock_.lock();
   langId = [nameToLangIdMap_ objectForKey:[name lowercaseString]];
   nameToLangIdMapLock_.unlock();
   if (langId) return langId;
-  
+
   return nil;
 }
 
@@ -361,7 +361,7 @@ static ICUPattern *gSheBangEnvRegExp;
                                   path, strerror(errno)];
     return NO; // abort
   }
-  
+
   // register langId => URL
   NSString *ident = [[pathstr lastPathComponent] stringByDeletingPathExtension];
   ident = [ident internedString];
@@ -371,7 +371,7 @@ static ICUPattern *gSheBangEnvRegExp;
   [langIdToInfo_ setObject:langInfo forKey:ident];
   langIdToInfoLock_.unlock();
   [langInfo release];
-  
+
   // read the first <=1024 bytes
   static const int bufz = 1024;
   char buf[bufz];
@@ -410,7 +410,7 @@ static ICUPattern *gSheBangEnvRegExp;
           SKIP_UNTIL_WHITESPACE_OR_NEWLINE;
           int matchlen = p-startp;
           if (matchlen) {
-            langInfo->name = [[NSString allocWithZone:zone] 
+            langInfo->name = [[NSString allocWithZone:zone]
                               initWithBytes:startp
                                      length:matchlen
                                    encoding:NSUTF8StringEncoding];
@@ -440,9 +440,9 @@ static ICUPattern *gSheBangEnvRegExp;
         } else {
           continue;
         }
-        
+
         // we got a match
-        
+
         // register match
         if (match == MATCH_EXT || match == MATCH_UTI || match == MATCH_NAME ||
             match == MATCH_PROGRAM) {
@@ -450,7 +450,7 @@ static ICUPattern *gSheBangEnvRegExp;
             startp = p;
             for (; *p && (*p != ',' && *p != '\n'); p++ );
             if (p-startp) {
-              NSString *s = [[NSString allocWithZone:zone] 
+              NSString *s = [[NSString allocWithZone:zone]
                               initWithBytes:startp
                                      length:p-startp
                                    encoding:NSUTF8StringEncoding];
@@ -492,7 +492,7 @@ static ICUPattern *gSheBangEnvRegExp;
           [entry release];
           //DLOG("regexp: '%@'", s);
         }
-        
+
       }
     } else if ( (!*p || *p == '\n' || *p == '\r') && !pastWhitespaceLeading ) {
       pastWhitespaceLeading = YES;
@@ -502,7 +502,7 @@ static ICUPattern *gSheBangEnvRegExp;
     }
   }
   fclose(f);
-  
+
   return YES;
 }
 

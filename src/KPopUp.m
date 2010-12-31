@@ -15,7 +15,7 @@
                             backing:NSBackingStoreBuffered
                               defer:NO];
   if (!self) return nil;
-  
+
   [super setBackgroundColor:[NSColor clearColor]];
   [self setMovableByWindowBackground:NO];
   [self setExcludedFromWindowsMenu:YES];
@@ -26,12 +26,12 @@
   [self setMovable:NO];
   [self setCollectionBehavior:NSWindowCollectionBehaviorTransient];
   animatesAppearance_ = YES;
-  
+
   KPopUpContentView *contentView =
       [[KPopUpContentView alloc] initWithFrame:NSZeroRect];
   [self setContentView:contentView];
   [contentView release];
-  
+
   return self;
 }
 
@@ -130,14 +130,14 @@ static const CGFloat kAnimationFrameYOffset = 10.0;
         kAnimationFrameYOffset - (kAnimationFrameYOffset * progress);
     [self setFrame:frame display:YES];
   };
-  
+
   [self setAlphaValue:0.0];
-  
+
   originalFrame_ = self.frame;
   NSRect frame = originalFrame_;
   frame.origin.y += kAnimationFrameYOffset;
   [self setFrame:frame display:YES];
-  
+
   [animation startAnimation];
 }
 

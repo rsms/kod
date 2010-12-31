@@ -72,14 +72,14 @@ static NSColor *kShadowColor, *kStrokeColorActive, *kStrokeColorInactive,
 
 + (void)load {
   NSAutoreleasePool *pool = [NSAutoreleasePool new];
-  
+
   kShadowColor = [[NSColor colorWithCalibratedWhite:0.0 alpha:0.05] retain];
   kStrokeColorActive =
       [[NSColor colorWithCalibratedWhite:0.0 alpha:0.3] retain];
   kStrokeColorInactive =
       [[NSColor colorWithCalibratedWhite:0.0 alpha:0.1] retain];
   kBezelColor = [[NSColor colorWithCalibratedWhite:0.9 alpha:1.0] retain];
-  
+
   [pool drain];
 }
 
@@ -208,12 +208,12 @@ static NSColor *kShadowColor, *kStrokeColorActive, *kStrokeColorInactive,
         true);
     FrameRectWithInset(frame, 0.0, radius, 1.0, strokeColor);
   }*/
-  
+
   // Draw the outer stroke (over the background).
   BOOL active = [[controlView window] isMainWindow];
   NSColor* strokeColor = active ? kStrokeColorActive : kStrokeColorInactive;
   FrameRectWithInset(frame, 0.0, radius, 1.0, strokeColor);
-  
+
   [self setTextColor:active ? [NSColor controlTextColor]
                             : [NSColor disabledControlTextColor]];
 

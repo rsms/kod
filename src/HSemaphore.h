@@ -15,23 +15,23 @@ class HSemaphore {
     dispatch_release(dsema_);
     dsema_ = NULL;
   }
-  
+
   /// Access the underlying dispatch_semaphore_t struct
   inline dispatch_semaphore_t dsema() const { return dsema_; }
-  
+
   /// Waits for (decrements) a semaphore.
   /// Returns true on success, or false if the timeout occurred.
   inline long get(dispatch_time_t timeout=DISPATCH_TIME_FOREVER) {
     return dispatch_semaphore_wait(dsema_, timeout) == 0;
   }
-  
+
   /// Like wait, but returns immediately. Returns true if aquired.
   inline long tryGet() { return get(DISPATCH_TIME_NOW); }
-  
+
   /// Signals (increments) a semaphore.
   /// Returns true if a thread is woken. Otherwise, false is returned.
   inline long put() { return dispatch_semaphore_signal(dsema_) != 0; }
-  
+
   // get-put scope
   class Scope {
    private:

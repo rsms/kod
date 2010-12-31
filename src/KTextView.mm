@@ -36,7 +36,7 @@ static CGFloat kTextContainerYOffset = 0.0;
   [self setTextContainerInset:NSMakeSize(2.0, 4.0)];
   [self setVerticallyResizable:YES];
   [self setMaxSize:NSMakeSize(FLT_MAX, FLT_MAX)];
-  
+
   // TODO: the following settings should follow the current style
   [self setBackgroundColor:
       [NSColor colorWithCalibratedWhite:0.1 alpha:1.0]];
@@ -49,14 +49,14 @@ static CGFloat kTextContainerYOffset = 0.0;
 
   // later adjusted by textContainerOrigin
   [self setTextContainerInset:kTextContainerInset];
-  
+
   // set values from configuration
   automaticallyKeepsIndentation_ = kconf_bool(@"editor/indent/newline", YES);
   tabControlsIndentationLevel_ = kconf_bool(@"editor/indent/tabkey", YES);
   newlineString_ = [kconf_string(@"editor/text/newline", @"\n") retain];
   indentationString_ =
       [kconf_string(@"editor/text/indentation", @"  ") retain];
-  
+
   // observe configuration changes so we can update cached reps
   [self observe:KConfValueDidChangeNotification
          source:kconf_defaults()
@@ -194,19 +194,19 @@ static CGFloat kTextContainerYOffset = 0.0;
 
 - (void)keyDown:(NSEvent*)event {
   unsigned short keyCode = event.keyCode;
-	if (keyCode == kVK_Tab && tabControlsIndentationLevel_) {
+  if (keyCode == kVK_Tab && tabControlsIndentationLevel_) {
     NSUInteger modifiers = [event modifierFlags];
     if (modifiers & NSAlternateKeyMask) {
       // When pressing TAB+Alt, let a regular tab character be inserted
       [super keyDown:event];
-		} else if (modifiers & (NSShiftKeyMask | NSAlphaShiftKeyMask)) {
-			[self decreaseIndentation];
-		} else {
-			[self increaseIndentation];
-		}
+    } else if (modifiers & (NSShiftKeyMask | NSAlphaShiftKeyMask)) {
+      [self decreaseIndentation];
+    } else {
+      [self increaseIndentation];
+    }
   } else {
-		[super keyDown:event];
-	}
+    [super keyDown:event];
+  }
 }
 
 
@@ -216,22 +216,22 @@ static CGFloat kTextContainerYOffset = 0.0;
 
 - (void)increaseIndentation {
   // make a copy of the selection before we insert text
-	NSRange initialSelectedRange = [self selectedRange];
+  NSRange initialSelectedRange = [self selectedRange];
   NSRange finalSelectedRange = initialSelectedRange;
 
   // reference to the text
   NSString *text = self.textStorage.string;
-  
+
   if (initialSelectedRange.length == 0) {
     // append |indentationString_| to the start of the current line
     NSUInteger lineStartIndex = [text lineStartForRange:initialSelectedRange];
-    
+
     // indentation string
     NSString *indentationString = indentationString_;
-    
+
     // length of indentation
     NSUInteger indentLength = indentationString.length;
-    
+
     // Find whitespace sequence at the start of the line
     NSRange whitespacePrefixRange =
         [text rangeOfWhitespaceStringAtBeginningOfLineForRange:
@@ -244,7 +244,7 @@ static CGFloat kTextContainerYOffset = 0.0;
         indentationString = [indentationString substringToIndex:indentLength];
       }
     }
-    
+
     // insert indentation string
     [self setSelectedRange:NSMakeRange(lineStartIndex, 0)];
     [self insertText:indentationString];
@@ -252,10 +252,10 @@ static CGFloat kTextContainerYOffset = 0.0;
   } else {
     // expand the effective range to span whole lines
     NSRange effectiveRange = [text lineRangeForRange:initialSelectedRange];
-    
+
     // local copy of indentLength
     NSUInteger indentLength = indentationString_.length;
-    
+
     // insert indentation string at the start of each line
     unichar* srcbuf = [text copyOfCharactersInRange:effectiveRange];
     __block NSUInteger dstlen = 0;
@@ -263,7 +263,7 @@ static CGFloat kTextContainerYOffset = 0.0;
     __block unichar* dstbuf = NULL;
     __block NSUInteger charactersRemovedFirstLine = NSNotFound;
     __block NSUInteger lineCount = 0;
-    
+
     // for each line ...
     [NSString kodEnumerateLinesOfCharacters:srcbuf
                                    ofLength:effectiveRange.length
@@ -278,21 +278,21 @@ static CGFloat kTextContainerYOffset = 0.0;
         dstCapacity = requiredCapacity + (lineCount * indentLength);
         dstbuf = (unichar*)realloc(dstbuf, dstCapacity * sizeof(unichar));
       }
-      
+
       // copy indentation string to dstbuf
       [indentationString_ getCharacters:(dstbuf + dstlen)
                                   range:NSMakeRange(0, indentLength)];
       dstlen += indentLength;
-      
+
       // copy source characters to dstbuf
       memcpy((void*)(dstbuf+dstlen), (const void*)(srcbuf+lineRange.location),
              sizeof(unichar) * lineRange.length);
       dstlen += lineRange.length;
-      
+
       // increase line count
       ++lineCount;
     }];
-    
+
     // Make replacement string
     NSString *replacementString =
         [[[NSString alloc] initWithCharactersNoCopy:dstbuf
@@ -302,16 +302,16 @@ static CGFloat kTextContainerYOffset = 0.0;
     // free temporary char buffer
     dstbuf = NULL;
     free(srcbuf); srcbuf = NULL;
-    
+
     // replace string
     [self setSelectedRange:effectiveRange];
     [self insertText:replacementString];
-    
+
     // adjust new selection range
     finalSelectedRange.location += indentLength;
     finalSelectedRange.length += (dstlen - effectiveRange.length) -indentLength;
   }
-  
+
   // Note(rsms): As we maintain the attributed string, applying text parsing as
   // a result of this change is redundant in many cases. The endEditing call
   // will cause textStorageDidProcessEditing: to be invoked on the parent
@@ -321,9 +321,9 @@ static CGFloat kTextContainerYOffset = 0.0;
   // parsers will take different decisions based on the indentation level
   // (e.g. Python), so we keep the current behaviour. What can be done here is
   // simply a performance optimization.
-	
+
   // Adjust selection
-	[self setSelectedRange:finalSelectedRange];
+  [self setSelectedRange:finalSelectedRange];
 }
 
 
@@ -361,7 +361,7 @@ static CGFloat kTextContainerYOffset = 0.0;
   if (automaticallyKeepsIndentation_) {
     // Remove indentationString_.length number of spaces at the beginning of the
     // line if possible
-    
+
     // if indentation length is less than two, we can delegate to super
     NSUInteger indentLength = indentationString_.length;
     if (indentLength < 2) {
@@ -382,7 +382,7 @@ static CGFloat kTextContainerYOffset = 0.0;
 
     // reference to the text
     NSString *text = self.textStorage.string;
-    
+
     // if previous character is not a space character, delegate to super
     NSCharacterSet *whitespace = [NSCharacterSet whitespaceCharacterSet];
     unichar prevChar = [text characterAtIndex:(selectedRange.location-1)];
@@ -397,7 +397,7 @@ static CGFloat kTextContainerYOffset = 0.0;
       [super deleteBackward:sender];
       return;
     }
-    
+
     // find whitespace prefix
     NSRange whitespacePrefixRange =
         [text rangeOfCharactersFromSet:whitespace
@@ -407,7 +407,7 @@ static CGFloat kTextContainerYOffset = 0.0;
       [super deleteBackward:sender];
       return;
     }
-    
+
     // delegate to super if we are positioned beyond the whitespace prefix
     NSUInteger whitespacePrefixEnd = whitespacePrefixRange.location +
                                      whitespacePrefixRange.length;
@@ -415,19 +415,19 @@ static CGFloat kTextContainerYOffset = 0.0;
       [super deleteBackward:sender];
       return;
     }
-    
+
     // is there enough whitespace to remove?
     if (whitespacePrefixRange.length < indentLength) {
       // not enough characters
       [super deleteBackward:sender];
       return;
     }
-    
+
     // adjust indent length if there are uneven number of virtual indentations
     NSUInteger reminder = whitespacePrefixRange.length % indentLength;
     if (reminder)
       indentLength = reminder;
-    
+
     // remove |indentLength| characters
     whitespacePrefixRange.location += whitespacePrefixRange.length-indentLength;
     whitespacePrefixRange.length = indentLength;
@@ -436,7 +436,7 @@ static CGFloat kTextContainerYOffset = 0.0;
 
     return;
   }
-  
+
   // unless already returned...
   [super deleteBackward:sender];
 }
@@ -444,11 +444,11 @@ static CGFloat kTextContainerYOffset = 0.0;
 
 - (void)decreaseIndentation {
   // make a copy of the selection before we insert text
-	NSRange initialSelectedRange = [self selectedRange];
+  NSRange initialSelectedRange = [self selectedRange];
 
   // reference to the text
   NSString *text = self.textStorage.string;
-  
+
   // find selected line(s) boundary
   NSUInteger lineStart = 0, lineEnd = 0, lineEnd2 = 0;
   [text getLineStart:&lineStart
@@ -470,13 +470,13 @@ static CGFloat kTextContainerYOffset = 0.0;
          initialSelectedRange];
     if (whitespacePrefixRange.location != NSNotFound) {
       NSUInteger indentLength = indentationString_.length;
-      
+
       // adjust indent length if there are uneven number of virtual indentations
       NSUInteger reminder = whitespacePrefixRange.length % indentLength;
       if (reminder) {
         indentLength = reminder;
       }
-      
+
       // remove a chunk of whitespace
       indentLength = MIN(whitespacePrefixRange.length, indentLength);
       if (indentLength != 0) {
@@ -491,14 +491,14 @@ static CGFloat kTextContainerYOffset = 0.0;
   } else {
     // multiple lines
     NSUInteger indentLength = indentationString_.length;
-    
+
     // insert indentation string at the start of each line
     unichar* srcbuf = [text copyOfCharactersInRange:lineRange];
     __block unichar* dstbuf =
         (unichar*)malloc(lineRange.length * sizeof(unichar));
     __block NSUInteger dstlen = 0;
     __block NSUInteger charactersRemovedFirstLine = NSNotFound;
-    
+
     // for each line ...
     [NSString kodEnumerateLinesOfCharacters:srcbuf
                                    ofLength:lineRange.length
@@ -512,29 +512,29 @@ static CGFloat kTextContainerYOffset = 0.0;
         if (ch != ' ' && ch != '\t')
           break;
       }
-      
+
       // record char count
       if (charactersRemovedFirstLine == NSNotFound)
         charactersRemovedFirstLine = (i - lineRange.location);
-      
+
       // transfer rest of the characters to dstbuf
       NSUInteger remainingCount = lineRange.length - (i - lineRange.location);
       memcpy((void*)(dstbuf+dstlen), (const void*)(srcbuf+i),
              sizeof(unichar) * remainingCount);
       dstlen += remainingCount;
     }];
-    
+
     NSString *replacementString =
         [[[NSString alloc] initWithCharactersNoCopy:dstbuf
                                              length:dstlen
                                        freeWhenDone:YES] autorelease];
     dstbuf = NULL;
     free(srcbuf); srcbuf = NULL;
-    
+
     // replace text
     [self setSelectedRange:lineRange];
     [self insertText:replacementString];
-    
+
     // restore selection
     if (charactersRemovedFirstLine != NSNotFound) {
       NSRange finalSelectedRange = initialSelectedRange;

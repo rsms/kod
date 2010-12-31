@@ -56,19 +56,19 @@ class KNodeIOEntry {
       returnDispatchQueue_ = NULL;
     }
   }
-  
+
   ~KNodeIOEntry() {
     [performBlock_ release];
     dispatch_release(returnDispatchQueue_);
   }
-  
+
   void perform() {
     performBlock_(^(KNodeCallbackBlock callback, NSError *err, NSArray *args) {
       KNodePerformInKod(callback, err, args, returnDispatchQueue_);
     });
     delete this;
   }
-  
+
   KNodeIOEntry *next_;
  protected:
   KNodePerformBlock performBlock_;

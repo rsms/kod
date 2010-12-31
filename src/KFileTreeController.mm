@@ -81,7 +81,7 @@ static NSString *kNameColumnId = @"name";
                                        forKey:NSLocalizedDescriptionKey]];
     return nil;
   }
-  
+
   static NSArray *metaKeys = nil;
   if (!metaKeys) {
     metaKeys = [[NSArray alloc] initWithObjects:
@@ -93,20 +93,20 @@ static NSString *kNameColumnId = @"name";
       NSURLEffectiveIconKey,
       nil];
   }
-  
+
   NSURL *dirurl = [NSURL fileURLWithPath:path isDirectory:YES];
   NSArray *urls = [fm contentsOfDirectoryAtURL:dirurl
                     includingPropertiesForKeys:metaKeys
                                   options:NSDirectoryEnumerationSkipsHiddenFiles
                                          error:error];
   if (!urls) return nil;
-  
+
   KFileTreeNodeData *nodeData =
       [KFileTreeNodeData fileTreeNodeDataWithPath:path];
   nodeData.container = YES;
   NSTreeNode *root = [NSTreeNode treeNodeWithRepresentedObject:nodeData];
   NSMutableArray *childNodes = [root mutableChildNodes];
-  
+
   for (NSURL *url in urls) {
     NSDictionary *meta = [url resourceValuesForKeys:metaKeys error:nil];
     if (!meta) continue;
@@ -128,7 +128,7 @@ static NSString *kNameColumnId = @"name";
       [childNodes addObject:node];
     }
   }
-  
+
   return root;
 }
 
@@ -160,7 +160,7 @@ static NSString *kNameColumnId = @"name";
   }
 }
 
-// Required methods. 
+// Required methods.
 - (id)outlineView:(NSOutlineView *)outlineView child:(NSInteger)index ofItem:(id)item {
   // 'item' may potentially be nil for the root item.
   NSArray *children = [self childrenForItem:item];
@@ -244,7 +244,7 @@ objectValueForTableColumn:(NSTableColumn *)tableColumn
 }
 
 - (BOOL)outlineView:(NSOutlineView *)outlineView shouldSelectItem:(id)item {
-  // Control selection of a particular item. 
+  // Control selection of a particular item.
   KFileTreeNodeData *nodeData = [item representedObject];
   return nodeData && nodeData.selectable;
 }
@@ -292,7 +292,7 @@ objectValueForTableColumn:(NSTableColumn *)tableColumn
     shouldTrackCell:(NSCell *)cell
      forTableColumn:(NSTableColumn *)tableColumn
                item:(id)item {
-  // We want to allow tracking for all the button cells, even if we don't allow selecting that particular row. 
+  // We want to allow tracking for all the button cells, even if we don't allow selecting that particular row.
   if ([cell isKindOfClass:[NSButtonCell class]]) {
     // We can also take a peek and make sure that the part of the cell clicked is an area that is normally tracked. Otherwise, clicking outside of the checkbox may make it check the checkbox
     NSRect cellFrame = [outlineView frameOfCellAtColumn:[[outlineView tableColumns] indexOfObject:tableColumn] row:[outlineView rowForItem:item]];
@@ -316,7 +316,7 @@ static NSString *GenerateUniqueFileNameAtPath(NSString *path, NSString *basename
     filename = [NSString stringWithFormat:@"%@ %ld.%@", basename, (long)i, extension];
     result = [path stringByAppendingPathComponent:filename];
     i++;
-  }    
+  }
   return result;
 }
 
@@ -325,7 +325,7 @@ static NSString *GenerateUniqueFileNameAtPath(NSString *path, NSString *basename
 namesOfPromisedFilesDroppedAtDestination:(NSURL *)dropDestination
          forDraggedItems:(NSArray *)items {
   NSMutableArray *result = nil;
-  
+
   for (NSInteger i = 0; i < [items count]; i++) {
     NSString *filepath =
         GenerateUniqueFileNameAtPath([dropDestination path], @"PromiseTestFile",
@@ -337,7 +337,7 @@ namesOfPromisedFilesDroppedAtDestination:(NSURL *)dropDestination
     NSError *error = nil;
     if (![itemString writeToURL:[NSURL fileURLWithPath:filepath] atomically:NO encoding:NSUTF8StringEncoding error:&error]) {
       [NSApp presentError:error];
-      
+
     }
   }
   return result;
@@ -350,7 +350,7 @@ namesOfPromisedFilesDroppedAtDestination:(NSURL *)dropDestination
   // information, and it is only used during a drag! We could put this in the
   // pboard actually.
   draggedNodes_ = items;
-  
+
   // Provide data for our custom type, and simple NSStrings.
   NSArray *pbTypes = [NSArray arrayWithObjects:NSStringPboardType,
                                                NSFilesPromisePboardType, nil];
@@ -371,7 +371,7 @@ namesOfPromisedFilesDroppedAtDestination:(NSURL *)dropDestination
 
   // Put the promised type we handle on the pasteboard.
   [pboard setPropertyList:[NSArray arrayWithObjects:@"txt", nil] forType:NSFilesPromisePboardType];
-  
+
   return YES;
 }
 
@@ -392,11 +392,11 @@ namesOfPromisedFilesDroppedAtDestination:(NSURL *)dropDestination
   DLOG("validateDrop:%@ item:%@", info, item);
   // To make it easier to see exactly what is called, uncomment the following line:
   //    NSLog(@"outlineView:validateDrop:proposedItem:%@ proposedChildIndex:%ld", item, (long)childIndex);
-  
+
   // This method validates whether or not the proposal is a valid one.
   // We start out by assuming that we will do a "generic" drag operation, which means we are accepting the drop. If we return NSDragOperationNone, then we are not accepting the drop.
   NSDragOperation result = NSDragOperationGeneric;
-  
+
   // Check to see what we are proposed to be dropping on
   NSTreeNode *targetNode = item;
   // A target of "nil" means we are on the main root tree
@@ -423,7 +423,7 @@ namesOfPromisedFilesDroppedAtDestination:(NSURL *)dropDestination
       result = NSDragOperationNone;
     }
   }
-  
+
   // If we are allowing the drop, we see if we are draggng from ourselves and
   // dropping into a descendent, which wouldn't be allowed...
   if (result != NSDragOperationNone) {
@@ -444,7 +444,7 @@ namesOfPromisedFilesDroppedAtDestination:(NSURL *)dropDestination
   }
   // To see what we decide to return, uncomment this line
   //    NSLog(result == NSDragOperationNone ? @" - Refusing drop" : @" + Accepting drop");
-  
+
   return result;
 }
 
@@ -454,14 +454,14 @@ namesOfPromisedFilesDroppedAtDestination:(NSURL *)dropDestination
          childIndex:(NSInteger)childIndex {
   DLOG("acceptDrop:%@ item:%@", info, item);
   NSArray *oldSelectedNodes = [outlineView selectedItems];
-  
+
   NSTreeNode *targetNode = item;
   // A target of "nil" means we are on the main root tree
   if (targetNode == nil) {
     targetNode = rootTreeNode_;
   }
   KFileTreeNodeData *nodeData = [targetNode representedObject];
-  
+
   // Determine the parent to insert into and the child index to insert at.
   if (!nodeData.container) {
     // If our target is a leaf, and we are dropping on it
@@ -476,13 +476,13 @@ namesOfPromisedFilesDroppedAtDestination:(NSURL *)dropDestination
       targetNode = [targetNode parentNode];
       childIndex = [[targetNode childNodes] indexOfObject:oldTargetNode] + 1;
     }
-  } else {            
+  } else {
     if (childIndex == NSOutlineViewDropOnItemIndex) {
       // Insert it at the start, if we were dropping on it
       childIndex = 0;
     }
   }
-  
+
   NSArray *currentDraggedNodes = nil;
   // If the source was ourselves, we use our dragged nodes.
   if ([info draggingSource] == outlineView
@@ -510,9 +510,9 @@ namesOfPromisedFilesDroppedAtDestination:(NSURL *)dropDestination
     // Finally, add it to the array of dragged items to insert
     currentDraggedNodes = [NSArray arrayWithObject:treeNode];
   }
-  
+
   NSMutableArray *childNodeArray = [targetNode mutableChildNodes];
-  // Go ahead and move things. 
+  // Go ahead and move things.
   for (NSTreeNode *treeNode in currentDraggedNodes) {
     // Remove the node from its old location
     NSInteger oldIndex = [childNodeArray indexOfObject:treeNode];
@@ -529,13 +529,13 @@ namesOfPromisedFilesDroppedAtDestination:(NSURL *)dropDestination
     [childNodeArray insertObject:treeNode atIndex:newIndex];
     newIndex++;
   }
-  
+
   [outlineView reloadData];
   // Make sure the target is expanded
   [outlineView expandItem:targetNode];
   // Reselect old items.
   [outlineView setSelectedItems:oldSelectedNodes];
-  
+
   // Return YES to indicate we were successful with the drop. Otherwise, it would slide back the drag image.
   return YES;
 }
@@ -546,14 +546,14 @@ namesOfPromisedFilesDroppedAtDestination:(NSURL *)dropDestination
   id item = nil;
   KFileTreeNodeData *nodeData = nil;
   BOOL clickedOnMultipleItems = NO;
-  
+
   if (clickedRow != -1) {
     // If we clicked on a selected row, then we want to consider all rows in the selection. Otherwise, we only consider the clicked on row.
     item = [outlineView itemAtRow:clickedRow];
     nodeData = [item representedObject];
     clickedOnMultipleItems = [outlineView isRowSelected:clickedRow] && ([outlineView numberOfSelectedRows] > 1);
   }
-  
+
   if (menu == outlineViewContextMenu) {
     NSMenuItem *menuItem = [menu itemAtIndex:0];
     if (nodeData != nil) {
@@ -568,7 +568,7 @@ namesOfPromisedFilesDroppedAtDestination:(NSURL *)dropDestination
       [menuItem setTitle:@"You didn't click on any rows..."];
       [menuItem setEnabled:NO];
     }
-    
+
   } else if (menu == expandableColumnMenu) {
     NSMenuItem *menuItem = [menu itemAtIndex:0];
     if (!clickedOnMultipleItems && (nodeData != nil)) {
@@ -591,7 +591,7 @@ namesOfPromisedFilesDroppedAtDestination:(NSURL *)dropDestination
   nodeData.expandable = !nodeData.expandable;
   // Refresh that row (since its state has changed)
   [outlineView setNeedsDisplayInRect:[outlineView rectOfRow:clickedRow]];
-  // And collopse it if we can no longer expand it 
+  // And collopse it if we can no longer expand it
   if (!nodeData.expandable && [outlineView isItemExpanded:treeNode]) {
     [outlineView collapseItem:treeNode];
   }

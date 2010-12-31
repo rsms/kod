@@ -162,10 +162,10 @@ size_t HUTF8MappedUTF16String::convert(uint8_t *u8buf,
     u8to16_table_ = new size_t[maximumUTF8Size()];
     u8to16_table_weak_ = false;
   }
-  
+
   // reset u8_len_
   u8_len_ = 0;
-  
+
   // For each UTF-16 character...
   for (size_t u16i=0; u16i < u16_len_; ) {
     // Retrieve 1-2 UTF-16 characters, forming one 32-bit unicode character
@@ -174,11 +174,11 @@ size_t HUTF8MappedUTF16String::convert(uint8_t *u8buf,
     // slower, but "safer"
     // U16_NEXT(u16_buf_, u16i_next, u16_len_, u32c);
     // faster, but does not handle unpaired surrogates or checks bounds
-    U16_NEXT_UNSAFE(u16_buf_, u16i_next, u32c); 
-    
+    U16_NEXT_UNSAFE(u16_buf_, u16i_next, u32c);
+
     // u16 offset added to |u8to16_table_|
     size_t u16ix = u16i;
-    
+
     // Append u32c to u8buf (1-4 bytes)
     if ((uint32_t)u32c <= 0x7f) {
       u8to16_table_[u8_len_] = u16ix;
@@ -203,10 +203,10 @@ size_t HUTF8MappedUTF16String::convert(uint8_t *u8buf,
       u8to16_table_[u8_len_] = u16ix;
       u8buf[u8_len_++] = (uint8_t)((u32c&0x3f)|0x80);
     }
-    
+
     u16i = u16i_next;
   }
-  
+
   return u8_len_;
 }
 

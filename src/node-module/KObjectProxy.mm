@@ -27,9 +27,9 @@ class ARPoolScope {
 static BOOL KNodeEnableProxyForObjCClass(const char *name,
                                          const char *srcName) {
   static const char *suffix = "_node_";
-  
+
   Class srcCls;
-  
+
   if (!srcName) {
     char srcNameBuf[1024];
     int len = MIN(1023-strlen(suffix), strlen(name));
@@ -45,7 +45,7 @@ static BOOL KNodeEnableProxyForObjCClass(const char *name,
 
   Class dstCls = (Class)objc_getClass(name);
   if (!dstCls) return NO;
-  
+
   BOOL success = YES;
   unsigned int methodsCount = 0;
   Method *methods = class_copyMethodList(srcCls, &methodsCount);
@@ -59,7 +59,7 @@ static BOOL KNodeEnableProxyForObjCClass(const char *name,
     }
   }
   free(methods);
-  
+
   return success;
 }
 
@@ -95,7 +95,7 @@ static NSInvocation *_findInvocation(KObjectProxy *p, NSString *selectorName) {
   HandleScope scope;
   if (!selectorName || !p->representedObject_)
     return NULL;
-  
+
   // find method with name "key"
   SEL sel = NSSelectorFromString(selectorName);
   //NSLog(@"keysel -> %@", keysel ? NSStringFromSelector(keysel) : nil);
@@ -135,7 +135,7 @@ static BOOL _invokeSetter(NSInvocation *invocation,
       [invocation invoke];
       break;
     }
-    case _C_FLT: 
+    case _C_FLT:
     case _C_DBL: {
       double f = value->NumberValue();
       [invocation setArgument:(void*)&f atIndex:2];
@@ -254,14 +254,14 @@ static v8::Handle<Value> NamedGetter(Local<String> property,
   KObjectProxy *p = ObjectWrap::Unwrap<KObjectProxy>(info.This());
   String::Utf8Value _name(property); const char *name = *_name;
   Local<Value> returnValue;
-  
+
   NSString *selectorName = [NSString stringWithUTF8String:name];
   if ([selectorName isEqualToString:@"inspect"]) {
     // special case -- called to return an inspect function for util.inspect
     selectorName = @"nodeInspect";
     name = "nodeInspect";
   }
-  
+
   //KN_DLOG("%s '%s'", __FUNCTION__, name);
 
   objc_property_t prop = class_getProperty([p->representedObject_ class], name);
@@ -298,7 +298,7 @@ static v8::Handle<Value> NamedSetter(Local<String> property,
   KObjectProxy *p = ObjectWrap::Unwrap<KObjectProxy>(info.This());
   String::Utf8Value _name(property); const char *name = *_name;
   //KN_DLOG("%s '%s'", __FUNCTION__, name);
-  
+
   objc_property_t prop = class_getProperty([p->representedObject_ class], name);
   if (prop) {
     char typecode;
@@ -314,7 +314,7 @@ static v8::Handle<Value> NamedSetter(Local<String> property,
       }
     }
   }
-  
+
   return scope.Close(r);
 }
 
@@ -371,13 +371,13 @@ static v8::Handle<Array> NamedEnumerator(const AccessorInfo& info) {
   HandleScope scope;
   KN_DLOG("%s", __PRETTY_FUNCTION__);
   KObjectProxy *p = ObjectWrap::Unwrap<KObjectProxy>(info.This());
-  
+
   unsigned int propsCount;
   Class cls = [p->representedObject_ class];
   objc_property_t *props = class_copyPropertyList(cls, &propsCount);
   Local<Array> list = Array::New(propsCount);
   uint32_t index = 0;
-  
+
   for (unsigned int i=0; i<propsCount; ++i) {
     KObjCPropFlags propflags = k_objc_propattrs(props[i], NULL, NULL, NULL);
     if (propflags & KObjCPropReadable) {
@@ -385,14 +385,14 @@ static v8::Handle<Array> NamedEnumerator(const AccessorInfo& info) {
     }
   }
   free(props);
-  
+
   // TODO: list methods and include methods which match the property pattern:
   //  -*
   //  -set*: AND -* exists
   //
   // Other methods should be included as well when we support wrapping methods
   // in v8 functions
-  
+
   return scope.Close(list);
 }
 
@@ -434,9 +434,9 @@ void KObjectProxy::Initialize(v8::Handle<Object> target,
                                       );
 
   target->Set(className, constructor_template->GetFunction());
-  
-  
-  
+
+
+
   // Curry Objective-C class
   if (!srcObjCClassName)
     srcObjCClassName = "NSObject_node_";

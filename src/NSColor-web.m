@@ -166,7 +166,7 @@ static uint32_t _touint32(NSColor *color) {
 
 
 - (NSColor*)labColor {
-  return [self colorUsingColorSpace:[NSColorSpace genericLabColorSpace]];    
+  return [self colorUsingColorSpace:[NSColorSpace genericLabColorSpace]];
 }
 
 

@@ -13,7 +13,7 @@
 // copies of the Software, and to permit persons to whom the
 // Software is furnished to do so, subject to the following
 // conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be
 // included in all copies or substantial portions of the Software.
 //
@@ -31,7 +31,7 @@
 
 /*
  Displays line numbers for an NSTextView.
- 
+
  For more details, see the related blog post at:
  noodlesoft.com/blog/2008/10/05/displaying-line-numbers-with-nstextview/
  */
@@ -45,7 +45,7 @@
   NSColor *backgroundColor_;
   NSColor *dividerColor_;
   CGFloat dividerWidth_;
-	NSMutableDictionary	*markers_;
+  NSMutableDictionary  *markers_;
 }
 
 - (id)initWithScrollView:(NSScrollView *)aScrollView

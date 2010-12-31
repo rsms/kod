@@ -8,23 +8,23 @@
 
 + (Class)_verticalScrollerClass {
   //NSLog(@"KScrollView _verticalScrollerClass");
-	return [KScroller class];
+  return [KScroller class];
 }
 
 + (Class)_horizontalScrollerClass {
   //NSLog(@"KScrollView _horizontalScrollerClass");
-	return [KScroller class];
+  return [KScroller class];
 }
 
 
 - (id)initWithFrame:(NSRect)frame {
   if ((self = [super initWithFrame:frame])) {
     [self setDrawsBackground:NO];
-    
+
     KClipView *clipView = [[KClipView alloc] initWithFrame:frame];
     [self setContentView:clipView];
     [clipView release];
-    
+
     [self setHasVerticalScroller:YES];
     [self setHasHorizontalScroller:YES];
     [self setHasHorizontalRuler:NO];

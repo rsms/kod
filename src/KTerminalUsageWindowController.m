@@ -45,15 +45,15 @@
   DLOG("%@ createLink:%@", self, sender);
   NSFileManager *fm = [NSFileManager defaultManager];
   NSBundle *bundle = kconf_bundle();
-  
+
   // build dst path
   NSString *dstPath =
       [[bundle sharedSupportPath] stringByAppendingPathComponent:@"kod"];
   kassert([fm fileExistsAtPath:dstPath]);
-  
+
   NSString *binPath = [binPathTextField_ stringValue];
   binPath = [self _canonicalizePath:binPath isDirectory:YES];
-  
+
   // check link path
   NSError *error = nil;
   BOOL isDir;
@@ -71,10 +71,10 @@
     [NSApp presentError:error];
     return;
   }
-  
+
   // build link path
   NSString *linkPath = [binPath stringByAppendingPathComponent:@"kod"];
-  
+
   // remove existing file if found
   NSString *existingLinkDst = [fm destinationOfSymbolicLinkAtPath:linkPath
                                                             error:&error];
@@ -92,7 +92,7 @@
       return;
     }
   }
-  
+
   // need sudo to write?
   if (![fm isWritableFileAtPath:binPath]) {
     [binPathTextField_ setEnabled:NO];

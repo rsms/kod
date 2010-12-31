@@ -38,9 +38,9 @@
 /*!
     @method     findPattern:
     @abstract   Finds the given expression and and groups.
-	@discussion Returns the match and any grouped matches in the returned 
-	array.  The first element of the array is the entire match and subsequent
-	elements are the groups in the order the matches occur.
+  @discussion Returns the match and any grouped matches in the returned
+  array.  The first element of the array is the entire match and subsequent
+  elements are the groups in the order the matches occur.
 */
 -(NSArray *)findPattern:(NSString *)aRegex;
 
@@ -48,7 +48,7 @@
     @method     componentsSeparatedByPattern:
     @abstract   Returns the components separated by the given pattern.
     @discussion Break a string into components where components separated
-	by occurrences of the given pattern.
+  by occurrences of the given pattern.
 */
 -(NSArray *)componentsSeparatedByPattern:(NSString *)aRegex;
 

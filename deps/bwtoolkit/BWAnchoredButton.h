@@ -8,11 +8,11 @@
 
 #import <Cocoa/Cocoa.h>
 
-@interface BWAnchoredButton : NSButton 
+@interface BWAnchoredButton : NSButton
 {
-	BOOL isAtLeftEdgeOfBar;
-	BOOL isAtRightEdgeOfBar;
-	NSPoint topAndLeftInset;
+  BOOL isAtLeftEdgeOfBar;
+  BOOL isAtRightEdgeOfBar;
+  NSPoint topAndLeftInset;
 }
 
 @property BOOL isAtLeftEdgeOfBar;

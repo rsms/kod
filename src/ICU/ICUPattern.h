@@ -14,17 +14,17 @@ extern const unsigned ICUUnicodeWordBoundaries;
 extern NSString * const ICUPatternException;
 
 /*!
-    @class		 ICUPattern
+    @class     ICUPattern
     @abstract    A compiled regular expression.
     @discussion  <a href="http://icu.sourceforge.net/">ICU</a> provides a widely used Unicode
- regular expression library.  This class can be roughly mapped to the <a href="http://icu.sourceforge.net/apiref/icu4c/classRegexPattern.html">ICU C++ Pattern class</a>.  Notes about ICU regular expressions can be found at the 
+ regular expression library.  This class can be roughly mapped to the <a href="http://icu.sourceforge.net/apiref/icu4c/classRegexPattern.html">ICU C++ Pattern class</a>.  Notes about ICU regular expressions can be found at the
  <a href="http://icu.sourceforge.net/userguide/regexp.html">ICU User Guide</a>.
 */
 @interface ICUPattern: NSObject <NSCopying> {
-	void *re;
-	void *textToSearch;
-	unsigned flags;
-	NSString *stringToSearch;
+  void *re;
+  void *textToSearch;
+  unsigned flags;
+  NSString *stringToSearch;
 }
 
 /*!
@@ -35,28 +35,28 @@ extern NSString * const ICUPatternException;
 +(ICUPattern *)patternWithString:(NSString *)aPattern flags:(unsigned)flags;
 
 /*!
-	@method     patternWithString:
-	@abstract   Returns an autoreleased pattern with the default flags.
-	@discussion Flags are given by 0.
+  @method     patternWithString:
+  @abstract   Returns an autoreleased pattern with the default flags.
+  @discussion Flags are given by 0.
 */
 +(ICUPattern *)patternWithString:(NSString *)aPattern;
 
 /*!
-	@method     initWithString:flags:
-	@abstract   Returns a pattern with the specified flags set.
-	@discussion Flags are defined as the OR of the constants defined in the class.
+  @method     initWithString:flags:
+  @abstract   Returns a pattern with the specified flags set.
+  @discussion Flags are defined as the OR of the constants defined in the class.
 */
 -(id)initWithString:(NSString *)aPattern flags:(unsigned)flags;
 
 /*!
     @method     initWithString:
-	@abstract   Returns a pattern with the specified flags set.
-	@discussion Flags are defined as 0.
+  @abstract   Returns a pattern with the specified flags set.
+  @discussion Flags are defined as 0.
 */
 -(id)initWithString:(NSString *)aPattern;
 
 /*!
-    @method		componentsSplitFromString:
+    @method    componentsSplitFromString:
     @abstract   Splits the input string into fields delineated by the expression given by the pattern.
     @discussion Returns an empty array if the pattern is not found.
 */
@@ -87,7 +87,7 @@ extern NSString * const ICUPatternException;
     @method     stringToSearch
     @abstract   Returns the string that is being searched over with the pattern.
     @discussion This method creates an NSString from the underlying UTF16 character array used by ICU.  For large
- strings, this may be memory-intensive/time-consuming.  Performance-critical applications may want to modify this 
+ strings, this may be memory-intensive/time-consuming.  Performance-critical applications may want to modify this
  class to suite their needs to reduce the number of NSString objects that are created.
 */
 -(NSString *)stringToSearch;

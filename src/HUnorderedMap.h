@@ -34,28 +34,28 @@ class HUnorderedMap {
 
  protected:
   map_type map_;
-  
+
   #if H_UNORDERED_MAP_WITH_ATOMIC
   HSpinLock spinlock_;
   #endif
- 
+
  public:
-  
+
   HUnorderedMap(size_t nbuckets=0) : map_(nbuckets) { }
-  
+
   virtual ~HUnorderedMap() { }
-  
+
   inline map_type &map() { return map_; }
-  
+
   inline void insert(K key, T value) { map_.insert(entry_type(key, value)); }
-  
+
   inline iterator find(K key) { return map_.find(key); }
   inline const_iterator find(K key) const { return map_.find(key); }
   inline iterator findSync(K key) {
     _HSLScope(spinlock_);
     return map_.find(key);
   }
-  
+
   inline void swap(map_type& other) { map_.swap(other.map_); }
   inline void swapSync(map_type& other) { _HSLScope(spinlock_); swap(other); }
 
@@ -92,7 +92,7 @@ class HUnorderedMapObjC : public HUnorderedMap<K, T> {
   inline void putSync(K key, id value) {
     _HSLScope(this->spinlock_); put(key, value);
   }
-  
+
   inline id get(K key) {
     iterator it = this->map_.find(key);
     return (it != this->map_.end()) ? it->second.get() : nil;
@@ -127,20 +127,20 @@ class HUnorderedMapSharedPtr : public HUnorderedMap<K, boost::shared_ptr<T> > {
   inline void putSync(K key, T *value) {
     _HSLScope(this->spinlock_); put(key, value);
   }
-  
+
   inline void put(K key, value_type &value) {
     this->map_.insert(entry_type(key, value));
   }
   inline void putSync(K key, value_type &value) {
     _HSLScope(this->spinlock_); put(key, value);
   }
-  
+
   inline T *get(K key) {
     iterator it = this->map_.find(key);
     return (it != this->map_.end()) ? it->second.get() : NULL;
   }
   inline T *getSync(K key) { _HSLScope(this->spinlock_); return get(key); }
-  
+
   inline value_type & getValue(K key) {
     iterator it = this->map_.find(key);
     return it->second;

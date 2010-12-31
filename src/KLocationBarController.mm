@@ -12,7 +12,7 @@
   if ((self = [super init])) {
     textField_ = atf; // weak, owned by toolbar controller
     textField_.delegate = self;
-    
+
     // mode decoration
     //KModeTextFieldDecoration *modeDecoration =
     //    [[KModeTextFieldDecoration alloc] initWithName:@"C++"];
@@ -88,7 +88,7 @@
   BOOL altPressed = (modifierFlags & NSAlternateKeyMask) != 0;
   DLOG("commitEditing (cmd: %d, ctrl: %d, alt: %d)", cmdPressed, ctrlPressed,
        altPressed);
-  
+
   // get current string
   NSString *locationText = [textField_ stringValue];
   locationText = [locationText
@@ -97,8 +97,8 @@
     // empty -- noop
     return;
   }
-  
-  
+
+
   // build a URL
   NSURL *absoluteURL = [self absoluteURL];
   if (!absoluteURL) {
@@ -106,18 +106,18 @@
     [NSApp presentError:[NSError kodErrorWithFormat:@"Failed to parse URL"]];
   } else if ([absoluteURL isEqual:currentContents_.fileURL]) {
     // Same URL -- noop
-    
+
   } else {
     // find our window controller
     KBrowserWindowController *windowController = (KBrowserWindowController *)
         [CTBrowserWindowController browserWindowControllerForView:textField_];
     assert(windowController != nil);
-    
+
     // find shared document controller
     KDocumentController *documentController =
         (KDocumentController*)[NSDocumentController sharedDocumentController];
     assert(documentController != nil);
-    
+
     // use the high-level "open" API
     NSArray *urls = [NSArray arrayWithObject:absoluteURL];
     [documentController openDocumentsWithContentsOfURLs:urls
@@ -146,16 +146,16 @@ inAutocompleteTextField:(KAutocompleteTextField*)atf {
 - (void)pasteInAutocompleteTextField:(KAutocompleteTextField*)atf {
   // This code currently expects |field_| to be focussed.
   kassert([textField_ currentEditor]);
-  
+
   NSPasteboard *pboard = [NSPasteboard generalPasteboard];
   NSArray *classes = [NSArray arrayWithObject:[NSString class]];
   NSArray *items = [pboard readObjectsForClasses:classes options:nil];
   DLOG("pasted items: %@", items);
   if (items.count == 0)
     return;
-  
+
   NSString *s = [items objectAtIndex:0];
-  
+
   // -shouldChangeTextInRange:* and -didChangeText are documented in
   // NSTextView as things you need to do if you write additional
   // user-initiated editing functions.  They cause the appropriate
@@ -268,7 +268,7 @@ inAutocompleteTextField:(KAutocompleteTextField*)atf {
       [self restoreState];
     }
   }
-  
+
 }
 
 // NSResponder translates certain keyboard actions into selectors

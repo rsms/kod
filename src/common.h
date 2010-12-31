@@ -56,7 +56,7 @@
     // trace "<ObjCClass: 0xAddress> selector"
     #define DLOG_TRACE_M() \
       _LOG('T', "%@ %@", self, NSStringFromSelector(_cmd));
-    
+
     NSString *VTPG_DDToStringFromTypeAndValue(const char *tc, void *v);
     #define DLOG_EXPR(_X_) do{\
       __typeof__(_X_) _Y_ = (_X_);\

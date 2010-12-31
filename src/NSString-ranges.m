@@ -28,7 +28,7 @@
     // no characters found within given range
     return (NSRange){NSNotFound, 0u};
   }
-  
+
   found:
   for (curr = start; curr != end; curr += step) {
     if (![aSet characterIsMember:[self characterAtIndex:curr]]) {

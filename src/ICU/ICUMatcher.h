@@ -2,25 +2,25 @@
 @class ICUPattern;
 
 /*!
-    @class		 ICUMatcher
+    @class     ICUMatcher
     @abstract    ICUMatcher provides matching functionality for regular expression matching.
     @discussion  This class is based off of the <a href="http://icu.sourceforge.net/apiref/icu4c/classRegexMatcher.html">C++ ICU RegexMatcher class</a>.  For examples of how to use the matcher, see the NSString category included in this project.
 */
 @interface ICUMatcher : NSObject {
-	ICUPattern *pattern;
+  ICUPattern *pattern;
 }
 
 /*!
     @method     matcherWithPattern:overString:
     @abstract   Returns a matcher that can match the given pattern over the given string.
-    @discussion 
+    @discussion
 */
 +(ICUMatcher *)matcherWithPattern:(ICUPattern *)p overString:(NSString *)stringToSearchOver;
 
 /*!
     @method     initWithPattern:overString:
     @abstract   Initializes a matcher that can match the given patter over the given string.
-    @discussion 
+    @discussion
 */
 -(ICUMatcher *)initWithPattern:(ICUPattern *)p overString:(NSString *)stringToSearchOver;
 
@@ -69,7 +69,7 @@
 /*!
     @method     pattern
     @abstract   Returns the pattern for this matcher.
-    @discussion 
+    @discussion
 */
 -(ICUPattern *)pattern;
 -(void)setPattern:(ICUPattern *)p;
@@ -77,7 +77,7 @@
 /*!
     @method     matches
     @abstract   Returns YES if the patterns matches the <b>entire</b> input string.
-    @discussion 
+    @discussion
 */
 -(BOOL)matches;
 
@@ -98,7 +98,7 @@
 /*!
     @method     reset
     @abstract   Resets any state associated with the matcher and its pattern.
-    @discussion 
+    @discussion
 */
 -(void)reset;
 
