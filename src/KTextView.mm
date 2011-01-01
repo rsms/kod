@@ -59,7 +59,7 @@ static NSUInteger kAutocompleteProximitySearchDistance = 1024;
   newlineString_ = [kconf_string(@"editor/text/newline", @"\n") retain];
   indentationString_ =
       [kconf_string(@"editor/text/indentation", @"  ") retain];
-  autocompleteWords_ = [[NSMutableSet alloc] initWithCapacity:1024];
+  autocompleteWords_ = [[NSMutableDictionary alloc] initWithCapacity:1024];
 
   // observe configuration changes so we can update cached reps
   [self observe:KConfValueDidChangeNotification
@@ -587,15 +587,13 @@ static NSUInteger kAutocompleteProximitySearchDistance = 1024;
   return [NSCharacterSet characterSetWithCharactersInString:@" \t\r\n;()[]{},.!@#$%^&*-_=+?<>/\\|~`\":"];
 }
 
-// Set of all words in the autocomplete dictionary
-- (NSSet *)allWords {
-  
-  // TODO: Update a set incrementally instead of scanning in one go (which doesn't scale)
-  
-  NSString *everything = [self string];
-  NSSet *s = [NSSet setWithArray:[everything componentsSeparatedByCharactersInSet:[self irrelevantChars]]];
-  
-  return s;
+// Rescan entire file to get all possible completions
+- (void)scanEntireFileForAutocompleteDictionary {
+  [autocompleteWords_ removeAllObjects];
+  for (NSString *word in [[self string] componentsSeparatedByCharactersInSet:[self irrelevantChars]]) {
+    NSNumber *occurrences = [autocompleteWords_ valueForKey:word];
+    [autocompleteWords_ setValue:[NSNumber numberWithUnsignedInt:[occurrences unsignedIntValue]+1] forKey:word];
+  }
 }
 
 // Searches string within kAutocompleteProximitySearchDistance for occurrences of matching keywords
@@ -656,18 +654,17 @@ static NSUInteger kAutocompleteProximitySearchDistance = 1024;
 - (NSArray *)completionsForPrefix:(NSString *)prefix atPosition:(NSUInteger)position {
   
   prefix = [prefix lowercaseString];
-  NSSet *allWords = [self allWords];
   
   // Initial guess for number of completions:
   // 16^(length of prefix), i.e. 1/16th the set for each letter
-  NSMutableArray *completions = [NSMutableArray arrayWithCapacity:[allWords count]/pow(16.0, (double)[prefix length])];
+  NSMutableArray *completions = [NSMutableArray arrayWithCapacity:[autocompleteWords_ count]/pow(16.0, (double)[prefix length])];
   
   // Insert all matches into an array
-  for (NSString *word in allWords) {
+  [autocompleteWords_ enumerateKeysAndObjectsUsingBlock:^(id word, id occurrences, BOOL *stop) {
     if ([[word lowercaseString] hasPrefix:prefix] && ![word isEqualToString:prefix]) {
       [completions addObject:word];
     }
-  }
+  }];
   
   // Sort and return
   return [self sortedCompletions:completions forPrefix:prefix atPosition:position];
@@ -688,9 +685,9 @@ static NSUInteger kAutocompleteProximitySearchDistance = 1024;
   [super complete:sender];
 }
 
-
 // TODO: allow plugins to override default autocomplete results
 - (NSArray *)completionsForPartialWordRange:(NSRange)charRange indexOfSelectedItem:(NSInteger *)index {
+  [self scanEntireFileForAutocompleteDictionary];
   return [self completionsForPrefix:[[self string] substringWithRange:charRange] atPosition:charRange.location];
 }
 
