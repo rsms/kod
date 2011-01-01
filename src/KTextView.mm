@@ -677,7 +677,7 @@ static NSUInteger kAutocompleteProximitySearchDistance = 1024;
 - (void)complete:(id)sender {
   NSRange selectedRange = [self selectedRange];
   NSCharacterSet *irrelevantChars = [self irrelevantChars];
-  if (selectedRange.length == 0 && selectedRange.location > 0 && selectedRange.location < [[self layoutManager] numberOfGlyphs]-1) {
+  if (selectedRange.length == 0 && selectedRange.location > 0 && selectedRange.location < [[self string] length]-1) {
     NSString *surrounding = [[self attributedSubstringFromRange:NSMakeRange(selectedRange.location-1, 2)] string];
     BOOL leftIsSpace = [irrelevantChars characterIsMember:[surrounding characterAtIndex:0]];
     BOOL rightIsSpace = [irrelevantChars characterIsMember:[surrounding characterAtIndex:1]];
