@@ -40,4 +40,7 @@
 // Decrease the indentation level for the currently selected text
 - (void)decreaseIndentation;
 
+// When contents change, update the autocomplete dictionary
+- (void)updateAutocompleteForRange:(NSRange)range withString:(NSString *)replacementString;
+
 @end

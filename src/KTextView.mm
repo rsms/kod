@@ -587,13 +587,62 @@ static NSUInteger kAutocompleteProximitySearchDistance = 1024;
   return [NSCharacterSet characterSetWithCharactersInString:@" \t\r\n;()[]{},.!@#$%^&*-_=+?<>/\\|~`\":"];
 }
 
-// Rescan entire file to get all possible completions
-- (void)scanEntireFileForAutocompleteDictionary {
-  [autocompleteWords_ removeAllObjects];
-  for (NSString *word in [[self string] componentsSeparatedByCharactersInSet:[self irrelevantChars]]) {
+- (void)scanStringForNewCompletions:(NSString *)string {
+  for (NSString *word in [string componentsSeparatedByCharactersInSet:[self irrelevantChars]]) {
     NSNumber *occurrences = [autocompleteWords_ valueForKey:word];
     [autocompleteWords_ setValue:[NSNumber numberWithUnsignedInt:[occurrences unsignedIntValue]+1] forKey:word];
   }
+}
+
+// Rescan entire file to get all possible completions
+- (void)scanEntireFileForAutocompleteDictionary {
+  [autocompleteWords_ removeAllObjects];
+  [self scanStringForNewCompletions:[self string]];
+}
+
+// Update the autocomplete dictionary for the part of the text that changed
+- (void)updateAutocompleteForRange:(NSRange)range withString:(NSString *)replacementString {
+  // Copy the range so we can change it without fear of side effects
+  NSRange newRange = NSMakeRange(range.location, range.length);
+  
+  NSCharacterSet *irrelevantChars = [self irrelevantChars];
+  
+  // And I'm backin' up backin' up backin' up baaaackin' up
+  // 'cause my daddy taught me good
+  // (backin' up to whitespace, that is)
+  while (newRange.location > 0 && ![irrelevantChars characterIsMember:[[self string] characterAtIndex:newRange.location-1]]) {
+    newRange.location -= 1;
+  }
+  
+  // Scan forward and decrement the frequency counts until we are past the edit point
+  NSScanner *scanner = [NSScanner scannerWithString:[self string]];
+  [scanner setCharactersToBeSkipped:irrelevantChars];
+  
+  NSString *word = nil;
+  while (![scanner isAtEnd] && [scanner scanLocation] < range.location + range.length) {
+    [scanner scanUpToCharactersFromSet:irrelevantChars intoString:&word];
+    NSUInteger newFrequency = [[autocompleteWords_ objectForKey:word] unsignedIntValue] - 1;
+    if (newFrequency > 0) {
+      [autocompleteWords_ setValue:[NSNumber numberWithUnsignedInt:newFrequency] forKey:word];
+    } else {
+      [autocompleteWords_ removeObjectForKey:word];
+    }
+  }
+  
+  // Construct the new substring and scan it for autocomplete words
+  NSRange preRange = NSMakeRange(newRange.location, range.location-newRange.location);
+  NSString *preString = [[self string] substringWithRange:preRange];
+  
+  NSRange postRange;
+  if ([scanner scanLocation] > (range.location + range.length)) {
+    NSUInteger distFromRangeEndToScanLocation = [scanner scanLocation] - (range.location + range.length);
+    postRange = NSMakeRange(range.location + range.length, distFromRangeEndToScanLocation);
+  } else {
+    postRange = NSMakeRange(range.location + range.length, 0);
+  }
+  NSString *postString = [[self string] substringWithRange:postRange];
+  NSString *newString = [NSString stringWithFormat:@"%@%@%@", preString, replacementString, postString];
+  [self scanStringForNewCompletions:newString];
 }
 
 - (void)setString:(NSString *)string {
