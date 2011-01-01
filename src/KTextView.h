@@ -9,6 +9,9 @@
 
   // kconf value "editor/text/indentation" (defaults to 2xSP)
   NSString *indentationString_;
+  
+  // Frequency counts of all words used for autocomplete
+  NSMutableDictionary *autocompleteWords_;
 }
 
 // The parent document
@@ -37,5 +40,8 @@
 
 // Decrease the indentation level for the currently selected text
 - (void)decreaseIndentation;
+
+// When contents change, update the autocomplete dictionary
+- (void)updateAutocompleteForRange:(NSRange)range withString:(NSString *)replacementString;
 
 @end

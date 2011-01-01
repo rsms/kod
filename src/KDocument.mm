@@ -1249,6 +1249,8 @@ replacementString:(NSString *)replacementString {
     #endif
     sourceHighlighter_->cancel();
   }
+  
+  [textView_ updateAutocompleteForRange:range withString:replacementString];
 
   return YES;
 }
