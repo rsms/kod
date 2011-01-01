@@ -589,8 +589,8 @@ static NSUInteger kAutocompleteProximitySearchDistance = 1024;
 
 - (void)scanStringForNewCompletions:(NSString *)string {
   for (NSString *word in [string componentsSeparatedByCharactersInSet:[self irrelevantChars]]) {
-    NSNumber *occurrences = [autocompleteWords_ valueForKey:word];
-    [autocompleteWords_ setValue:[NSNumber numberWithUnsignedInt:[occurrences unsignedIntValue]+1] forKey:word];
+    NSUInteger newOccurrences = [[autocompleteWords_ valueForKey:word] unsignedIntegerValue] + 1;
+    [autocompleteWords_ setValue:[NSNumber numberWithUnsignedInteger:newOccurrences] forKey:word];
   }
 }
 
@@ -617,13 +617,14 @@ static NSUInteger kAutocompleteProximitySearchDistance = 1024;
   // Scan forward and decrement the frequency counts until we are past the edit point
   NSScanner *scanner = [NSScanner scannerWithString:[self string]];
   [scanner setCharactersToBeSkipped:irrelevantChars];
+  [scanner setScanLocation:newRange.location];
   
   NSString *word = nil;
   while (![scanner isAtEnd] && [scanner scanLocation] < range.location + range.length) {
     [scanner scanUpToCharactersFromSet:irrelevantChars intoString:&word];
-    NSUInteger newFrequency = [[autocompleteWords_ objectForKey:word] unsignedIntValue] - 1;
+    NSUInteger newFrequency = [[autocompleteWords_ objectForKey:word] unsignedIntegerValue] - 1;
     if (newFrequency > 0) {
-      [autocompleteWords_ setValue:[NSNumber numberWithUnsignedInt:newFrequency] forKey:word];
+      [autocompleteWords_ setValue:[NSNumber numberWithUnsignedInteger:newFrequency] forKey:word];
     } else {
       [autocompleteWords_ removeObjectForKey:word];
     }
@@ -674,7 +675,7 @@ static NSUInteger kAutocompleteProximitySearchDistance = 1024;
   while (![scanner isAtEnd] && [scanner scanLocation] < position + kAutocompleteProximitySearchDistance) {
     [scanner scanUpToCharactersFromSet:irrelevantChars intoString:&word];
     
-    if ([word hasPrefix:prefix] && ![word isEqualToString:prefix]) {
+    if ([word length] > 0 && [word hasPrefix:prefix] && ![word isEqualToString:prefix]) {
       
       // Compute a distance score (distance between beginning of this word and the cursor)
       NSInteger score = (NSInteger)[scanner scanLocation] - (NSInteger)position;
@@ -695,8 +696,10 @@ static NSUInteger kAutocompleteProximitySearchDistance = 1024;
     NSInteger i1 = [v1 intValue];
     NSInteger i2 = [v2 intValue];
     
-    if (v1 == nil) i1 = kAutocompleteProximitySearchDistance + 1;
-    if (v2 == nil) i2 = kAutocompleteProximitySearchDistance + 1;
+    // This is a bit weird. Proximities are sorted ascending but frequencies should be sorted descending.
+    // So this should subtract the frequency from the unsigned int limit.
+    if (v1 == nil) i1 = 4294967295-[[autocompleteWords_ objectForKey:obj1] unsignedIntegerValue];
+    if (v2 == nil) i2 = 4294967295-[[autocompleteWords_ objectForKey:obj2] unsignedIntegerValue];
     
     if (i1 < i2) return (NSComparisonResult)NSOrderedAscending;
     else if (i1 > i2) return (NSComparisonResult)NSOrderedDescending;
