@@ -3,6 +3,7 @@
 #import "KScroller.h"
 #import "KDocument.h"
 #import "HEventEmitter.h"
+#import "KWordDictionary.h"
 #import "virtual_key_codes.h"
 #import "kconf.h"
 #import "common.h"
@@ -13,13 +14,11 @@ static NSSize kTextContainerInset = (NSSize){6.0, 4.0}; // {(LR),(TB)}
 static CGFloat kTextContainerXOffset = -8.0;
 static CGFloat kTextContainerYOffset = 0.0;
 
-// Amount of string for autocomplete to search when looking for nearby matching keywords
-static NSUInteger kAutocompleteProximitySearchDistance = 1024;
-
 
 @implementation KTextView
 
 @dynamic automaticallyKeepsIndentation, tabControlsIndentationLevel;
+@synthesize wordDictionary = wordDictionary_;
 
 
 - (id)initWithFrame:(NSRect)frame {
@@ -61,7 +60,9 @@ static NSUInteger kAutocompleteProximitySearchDistance = 1024;
   newlineString_ = [kconf_string(@"editor/text/newline", @"\n") retain];
   indentationString_ =
       [kconf_string(@"editor/text/indentation", @"  ") retain];
-  autocompleteWords_ = [[NSMutableDictionary alloc] initWithCapacity:1024];
+
+  // word dictionary
+  wordDictionary_ = [KWordDictionary new];
 
   // observe configuration changes so we can update cached reps
   [self observe:KConfValueDidChangeNotification
@@ -76,7 +77,7 @@ static NSUInteger kAutocompleteProximitySearchDistance = 1024;
   [self stopObserving];
   [newlineString_ release];
   [indentationString_ release];
-  [autocompleteWords_ release];
+  [wordDictionary_ release];
   [super dealloc];
 }
 
@@ -108,6 +109,12 @@ static NSUInteger kAutocompleteProximitySearchDistance = 1024;
   KDocument *document = (KDocument*)self.textStorage.delegate;
   kassert([document isKindOfClass:[KDocument class]]);
   return document;
+}
+
+
+- (void)setString:(NSString*)string {
+  [super setString:string];
+  [self rescanWords];
 }
 
 
@@ -581,172 +588,75 @@ static NSUInteger kAutocompleteProximitySearchDistance = 1024;
 
 
 #pragma mark -
+#pragma mark Words
+
+
+- (void)scanWordsInString:(NSString *)string {
+  [wordDictionary_ scanString:string];
+}
+
+
+- (void)rescanWords {
+  [wordDictionary_ reset];
+  [wordDictionary_ scanString:[self string]];
+}
+
+
+// overload of super
+- (BOOL)shouldChangeTextInRange:(NSRange)affectedRange
+              replacementString:(NSString *)replacementString {
+  if ([super shouldChangeTextInRange:affectedRange
+                   replacementString:replacementString]) {
+    // update word dictionary
+    [wordDictionary_ rescanUpdatedText:[self string]
+                              forRange:affectedRange
+                 withReplacementString:replacementString];
+    return YES;
+  }
+  return NO;
+}
+
+
+#pragma mark -
 #pragma mark Autocomplete
 
-// Characters that should be ignored by the autocomplete word finder
-// May need to change this based on language
-- (NSCharacterSet *)irrelevantChars {
-  return [NSCharacterSet characterSetWithCharactersInString:@" \t\r\n;()[]{},.!@#$%^&*-_=+?<>/\\|~`\":"];
-}
 
-- (void)scanStringForNewCompletions:(NSString *)string {
-  for (NSString *word in [string componentsSeparatedByCharactersInSet:[self irrelevantChars]]) {
-    NSUInteger newOccurrences = [[autocompleteWords_ valueForKey:word] unsignedIntegerValue] + 1;
-    [autocompleteWords_ setValue:[NSNumber numberWithUnsignedInteger:newOccurrences] forKey:word];
-  }
-}
-
-// Rescan entire file to get all possible completions
-- (void)scanEntireFileForAutocompleteDictionary {
-  [autocompleteWords_ removeAllObjects];
-  [self scanStringForNewCompletions:[self string]];
-}
-
-// Update the autocomplete dictionary for the part of the text that changed
-- (void)updateAutocompleteForRange:(NSRange)range withString:(NSString *)replacementString {
-  // Copy the range so we can change it without fear of side effects
-  NSRange newRange = NSMakeRange(range.location, range.length);
-  
-  NSCharacterSet *irrelevantChars = [self irrelevantChars];
-  
-  // And I'm backin' up backin' up backin' up baaaackin' up
-  // 'cause my daddy taught me good
-  // (backin' up to whitespace, that is)
-  while (newRange.location > 0 && ![irrelevantChars characterIsMember:[[self string] characterAtIndex:newRange.location-1]]) {
-    newRange.location -= 1;
-  }
-  
-  // Scan forward and decrement the frequency counts until we are past the edit point
-  NSScanner *scanner = [NSScanner scannerWithString:[self string]];
-  [scanner setCharactersToBeSkipped:irrelevantChars];
-  [scanner setScanLocation:newRange.location];
-  
-  NSString *word = nil;
-  while (![scanner isAtEnd] && [scanner scanLocation] < range.location + range.length) {
-    [scanner scanUpToCharactersFromSet:irrelevantChars intoString:&word];
-    NSUInteger newFrequency = [[autocompleteWords_ objectForKey:word] unsignedIntegerValue] - 1;
-    if (newFrequency > 0) {
-      [autocompleteWords_ setValue:[NSNumber numberWithUnsignedInteger:newFrequency] forKey:word];
-    } else {
-      [autocompleteWords_ removeObjectForKey:word];
-    }
-  }
-  
-  // Construct the new substring and scan it for autocomplete words
-  NSRange preRange = NSMakeRange(newRange.location, range.location-newRange.location);
-  NSString *preString = [[self string] substringWithRange:preRange];
-  
-  NSRange postRange;
-  if ([scanner scanLocation] > (range.location + range.length)) {
-    NSUInteger distFromRangeEndToScanLocation = [scanner scanLocation] - (range.location + range.length);
-    postRange = NSMakeRange(range.location + range.length, distFromRangeEndToScanLocation);
-  } else {
-    postRange = NSMakeRange(range.location + range.length, 0);
-  }
-  NSString *postString = [[self string] substringWithRange:postRange];
-  NSString *newString = [NSString stringWithFormat:@"%@%@%@", preString, replacementString, postString];
-  [self scanStringForNewCompletions:newString];
-}
-
-- (void)setString:(NSString *)string {
-  [super setString:string];
-  [self scanEntireFileForAutocompleteDictionary];
-}
-
-// Searches string within kAutocompleteProximitySearchDistance for occurrences of matching keywords
-// and puts the closest ones at the top. Keywords that do not appear closer than 1024 characters to
-// the cursor are unsorted and are listed after the sorted keywords.
-//
-// Putting the sorting in a separate method from finding the completions will make it simpler to
-// test different sorting strategies or allow extensions to provide them.
-- (NSArray *)sortedCompletions:(NSArray *)completions forPrefix:(NSString *)prefix atPosition:(NSUInteger)position {
-  
-  // word -> smallest number of characters between cursor and any occurrence of this keyword
-  // Magic number guess is 2048 (size of character search space) / 8 (average word size + arbitrary whitespace guess)
-  NSMutableDictionary *proximities = [NSMutableDictionary dictionaryWithCapacity:256];
-  
-  // Scanner starts at start of document or kAutocompleteProximitySearchDistance before cursor,
-  // whichever is closes to cursor
-  NSScanner *scanner = [NSScanner scannerWithString:[self string]];
-  NSCharacterSet *irrelevantChars = [self irrelevantChars];
-  [scanner setCharactersToBeSkipped:irrelevantChars];
-  [scanner setScanLocation:(NSUInteger)MAX((NSInteger)position - (NSInteger)kAutocompleteProximitySearchDistance, 0)];
-  
-  // Scan.
-  NSString *word = nil;
-  while (![scanner isAtEnd] && [scanner scanLocation] < position + kAutocompleteProximitySearchDistance) {
-    [scanner scanUpToCharactersFromSet:irrelevantChars intoString:&word];
-    
-    if ([word length] > 0 && [word hasPrefix:prefix] && ![word isEqualToString:prefix]) {
-      
-      // Compute a distance score (distance between beginning of this word and the cursor)
-      NSInteger score = (NSInteger)[scanner scanLocation] - (NSInteger)position;
-      if (score < 0) score = -score;
-      
-      // Save score if no score stored or if old score was greater
-      NSNumber *oldScore = [proximities objectForKey:word];
-      if (oldScore == nil || [oldScore intValue] > score) {
-        [proximities setObject:[NSNumber numberWithInt:score] forKey:word];
-      }
-    }
-  }
-  
-  // Return version sorted by score given earlier (or max distance + 1 if word was not in the search space)
-  return [completions sortedArrayUsingComparator:^(id obj1, id obj2) {
-    NSNumber *v1 = [proximities objectForKey:obj1];
-    NSNumber *v2 = [proximities objectForKey:obj2];
-    NSInteger i1 = [v1 intValue];
-    NSInteger i2 = [v2 intValue];
-    
-    // This is a bit weird. Proximities are sorted ascending but frequencies should be sorted descending.
-    // So this should subtract the frequency from the unsigned int limit.
-    if (v1 == nil) i1 = 4294967295-[[autocompleteWords_ objectForKey:obj1] unsignedIntegerValue];
-    if (v2 == nil) i2 = 4294967295-[[autocompleteWords_ objectForKey:obj2] unsignedIntegerValue];
-    
-    if (i1 < i2) return (NSComparisonResult)NSOrderedAscending;
-    else if (i1 > i2) return (NSComparisonResult)NSOrderedDescending;
-    else return (NSComparisonResult)NSOrderedSame;
-  }];
-}
-
-// Set of completions for a string at a given location in the document.
-- (NSArray *)completionsForPrefix:(NSString *)prefix atPosition:(NSUInteger)position {
-  
-  prefix = [prefix lowercaseString];
-  
-  // Initial guess for number of completions:
-  // 16^(length of prefix), i.e. 1/16th the set for each letter
-  NSMutableArray *completions = [NSMutableArray arrayWithCapacity:[autocompleteWords_ count]/pow(16.0, (double)[prefix length])];
-  
-  // Insert all matches into an array
-  [autocompleteWords_ enumerateKeysAndObjectsUsingBlock:^(id word, id occurrences, BOOL *stop) {
-    if ([[word lowercaseString] hasPrefix:prefix] && ![word isEqualToString:prefix]) {
-      [completions addObject:word];
-    }
-  }];
-  
-  // Sort and return
-  return [self sortedCompletions:completions forPrefix:prefix atPosition:position];
-}
-
-// Override default NSTextView behavior to not autocomplete if not at a word boundary
+// Override default NSTextView behavior to not autocomplete if not at a word
+// boundary
 - (void)complete:(id)sender {
   NSRange selectedRange = [self selectedRange];
-  NSCharacterSet *irrelevantChars = [self irrelevantChars];
-  if (selectedRange.length == 0 && selectedRange.location > 0 && selectedRange.location < [[self string] length]-1) {
-    NSString *surrounding = [[self attributedSubstringFromRange:NSMakeRange(selectedRange.location-1, 2)] string];
-    BOOL leftIsSpace = [irrelevantChars characterIsMember:[surrounding characterAtIndex:0]];
-    BOOL rightIsSpace = [irrelevantChars characterIsMember:[surrounding characterAtIndex:1]];
-    if (leftIsSpace == rightIsSpace) {
+  NSCharacterSet *irrelevantChars = wordDictionary_.wordSeparatorCharacterSet;
+  NSString *text = [self string];
+  NSUInteger cursorLocation = selectedRange.location;
+  if (selectedRange.length == 0 &&
+      cursorLocation > 0 &&
+      cursorLocation < [text length]-1 ) {
+    NSString *surrounding =
+        [text substringWithRange:NSMakeRange(cursorLocation-1, 2)];
+    unichar charLeftOfCursor = [text characterAtIndex:cursorLocation-1];
+    unichar charAtCursor = [text characterAtIndex:cursorLocation];
+    if ([irrelevantChars characterIsMember:charLeftOfCursor] ==
+        [irrelevantChars characterIsMember:charAtCursor]) {
       return;
     }
   }
   [super complete:sender];
 }
 
-// TODO: allow plugins to override default autocomplete results
-- (NSArray *)completionsForPartialWordRange:(NSRange)charRange indexOfSelectedItem:(NSInteger *)index {
-  return [self completionsForPrefix:[[self string] substringWithRange:charRange] atPosition:charRange.location];
+
+// TODO(irskep): allow plugins to override default autocomplete results
+- (NSArray*)completionsForPartialWordRange:(NSRange)charRange
+                       indexOfSelectedItem:(NSInteger*)index {
+  // ignore completions to the start of the document
+  if (charRange.location == 0 && charRange.length == 0)
+    return nil;
+
+  NSString *text = [self string];
+  NSString *prefix = [text substringWithRange:charRange];
+  return [wordDictionary_ completionsForPrefix:prefix
+                                    atPosition:charRange.location
+                                        inText:text
+                                    countLimit:100];
 }
 
 @end

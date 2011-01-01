@@ -21,4 +21,6 @@
                              ofLength:(NSUInteger)characterCount
                             withBlock:(void(^)(NSRange lineRange))block;
 
+- (BOOL)hasPrefix:(NSString*)prefix options:(NSStringCompareOptions)options;
+
 @end

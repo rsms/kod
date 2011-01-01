@@ -123,4 +123,12 @@
 }
 
 
+- (BOOL)hasPrefix:(NSString*)prefix options:(NSStringCompareOptions)options {
+  NSRange range = NSMakeRange(0, prefix.length);
+  if (self.length < range.length)
+    return NO;
+  return [self compare:prefix options:options range:range] == NSOrderedSame;
+}
+
+
 @end

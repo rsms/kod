@@ -574,7 +574,7 @@ static int debugSimulateTextAppendingIteration = 0;
   K_DISPATCH_MAIN_ASYNC({
     self.clipView.allowsScrolling = YES;
   });
-  
+
   KNodeEmitEvent("tabDidBecomeSelected", self, nil);
 }
 
@@ -1249,8 +1249,6 @@ replacementString:(NSString *)replacementString {
     #endif
     sourceHighlighter_->cancel();
   }
-  
-  [textView_ updateAutocompleteForRange:range withString:replacementString];
 
   return YES;
 }
