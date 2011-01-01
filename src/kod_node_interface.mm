@@ -265,7 +265,6 @@ void KNodePerformInNode(KNodePerformBlock block) {
 
 KNodeEventIOEntry::KNodeEventIOEntry(const char *name, int argc, id *argv) {
   v8::HandleScope scope;
-
   argc_ = argc + 1;
   argv_ = new Persistent<Value>[argc];
   argv_[0] = Persistent<Value>::New(String::NewSymbol(name));

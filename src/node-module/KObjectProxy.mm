@@ -1,6 +1,10 @@
 #import "KObjectProxy.h"
 #import "knode_ns_additions.h"
 #import "k_objc_prop.h"
+#import "common.h"
+
+#include <objc/runtime.h>
+#include <objc/message.h>
 
 using namespace v8;
 using namespace node;
@@ -21,8 +25,6 @@ class ARPoolScope {
 #define CHECKPOINT() do { \
   fprintf(stderr, "\n-- CHECKPOINT %s:%d --\n", __FILE__, __LINE__); \
   fflush(stderr); } while(0)
-
-#import <objc/runtime.h>
 
 static BOOL KNodeEnableProxyForObjCClass(const char *name,
                                          const char *srcName) {
@@ -118,6 +120,18 @@ static BOOL _invokeSetter(NSInvocation *invocation,
                           char typecode,
                           Local<Value> &value) {
   switch (typecode) {
+    case '"': {
+      String::Utf8Value utf8pch(value->ToString());
+      id arg2 = [NSString stringWithUTF8String:*utf8pch];
+      // Note(rsms): we need to use objc_msgSend directly in the case of string
+      // arguments for some weird reason. [invocation invoke] causes
+      // "+[NSCFString length]: unrecognized selector" and finally a
+      // NSInvalidArgumentException to be raised.
+      objc_msgSend([invocation target], [invocation selector], arg2);
+      //[invocation setArgument:arg2 atIndex:2];
+      //[invocation invoke];
+      break;
+    }
     case _C_ID: {
       String::Utf8Value utf8pch(value->ToString());
       [invocation setArgument:[NSString stringWithUTF8String:*utf8pch]
@@ -158,6 +172,7 @@ static BOOL _invokeSetter(NSInvocation *invocation,
       break;
     }
     default:
+      KN_DLOG("_invokeSetter: unable to handle typecode '%c'", typecode);
       return NO;
   }
   return YES;
