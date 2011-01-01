@@ -596,6 +596,11 @@ static NSUInteger kAutocompleteProximitySearchDistance = 1024;
   }
 }
 
+- (void)setString:(NSString *)string {
+  [super setString:string];
+  [self scanEntireFileForAutocompleteDictionary];
+}
+
 // Searches string within kAutocompleteProximitySearchDistance for occurrences of matching keywords
 // and puts the closest ones at the top. Keywords that do not appear closer than 1024 characters to
 // the cursor are unsorted and are listed after the sorted keywords.
@@ -687,7 +692,6 @@ static NSUInteger kAutocompleteProximitySearchDistance = 1024;
 
 // TODO: allow plugins to override default autocomplete results
 - (NSArray *)completionsForPartialWordRange:(NSRange)charRange indexOfSelectedItem:(NSInteger *)index {
-  [self scanEntireFileForAutocompleteDictionary];
   return [self completionsForPrefix:[[self string] substringWithRange:charRange] atPosition:charRange.location];
 }
 
