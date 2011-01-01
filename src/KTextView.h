@@ -10,6 +10,7 @@
   // kconf value "editor/text/indentation" (defaults to 2xSP)
   NSString *indentationString_;
   
+  // Frequency counts of all words used for autocomplete
   NSMutableDictionary *autocompleteWords_;
 }
 
