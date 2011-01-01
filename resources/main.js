@@ -35,7 +35,10 @@ kod.exposedFunctions.foo = function(callback) {
 // example event listener for the "tabDidBecomeSelected" event, emitted when a
 // document becomes selected (when the selection changes)
 kod.on('tabDidBecomeSelected', function(document) {
-  console.log('tabDidBecomeSelected: '+util.inspect(document));
+  //console.log('tabDidBecomeSelected: '+util.inspect(document));
+
+  // Replace the contents of the document:
+  document.text = "Text\nreplaced\nby main.js";
 });
 
 // dump kod.allDocuments every 10 sec

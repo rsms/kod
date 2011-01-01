@@ -3,6 +3,7 @@
 #import "common.h"
 #import "KSourceHighlighter.h"
 #import "HSemaphore.h"
+#import "HSpinLock.h"
 
 @class KBrowser, KStyle, KBrowserWindowController, KScrollView, KMetaRulerView;
 @class KTextView, KClipView, KURLHandler;
@@ -31,12 +32,13 @@ typedef std::deque<KHighlightQueueEntry> KHighlightQueue;
   // of a linebreak and the length denotes how many characters are included in
   // that linebreak (normally 1 or 2: LF, CR or CRLF).
   std::vector<NSRange> lineToRangeVec_;
+  HSpinLock lineToRangeSpinLock_;
 
   // Meta ruler (nil if not shown)
   __weak KMetaRulerView *metaRulerView_;
 
-  // Timestamp of last edit
-  NSTimeInterval lastEditTimestamp_;
+  // Timestamp of last edit (in microseconds). 0 if never edited.
+  uint64_t lastEditTimestamp_;
 
   // Internal state
   hatomic_flags_t stateFlags_;
@@ -64,6 +66,9 @@ typedef std::deque<KHighlightQueueEntry> KHighlightQueue;
 
 // Tab identifier
 @property(readonly, nonatomic) NSUInteger identifier;
+
+// Text contents
+@property(assign) NSString *text;
 
 @property(assign) NSURL *fileURL;
 

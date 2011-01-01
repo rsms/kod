@@ -60,6 +60,7 @@ static NSString *_NSStringFromRangeArray(std::vector<NSRange> &lineToRangeVec,
 
 @interface KDocument (Private)
 - (void)undoManagerCheckpoint:(NSNotification*)notification;
+- (BOOL)_updateLastEditTimestamp;
 @end
 
 @implementation KDocument
@@ -209,11 +210,9 @@ static int debugSimulateTextAppendingIteration = 0;
   // set to zero
   lastEditedHighlightStateRange_ = NSMakeRange(NSNotFound,0);
 
-  // set edit ts
-  lastEditTimestamp_ = [NSDate timeIntervalSinceReferenceDate];
-
   return self;
 }
+
 
 /*
  This method is invoked by the NSDocumentController method
@@ -246,6 +245,18 @@ static int debugSimulateTextAppendingIteration = 0;
   if (sourceHighlighter_.get())
     sourceHighlighter_->cancel();
   [super dealloc];
+}
+
+
+#pragma mark -
+#pragma mark Internal support functions
+
+
+// Returns true if the calling thread was the one to alter the timestamp value
+- (BOOL)_updateLastEditTimestamp {
+  NSTimeInterval ts = [NSDate timeIntervalSinceReferenceDate];
+  uint64_t d = (uint64_t)((ts * 1000000.0)+0.5); // usec
+  return h_atomic_cas(&lastEditTimestamp_, lastEditTimestamp_, d);
 }
 
 
@@ -497,6 +508,17 @@ static int debugSimulateTextAppendingIteration = 0;
 }
 
 
+- (NSString*)text {
+  return textView_.textStorage.string;
+}
+
+
+- (void)setText:(NSString*)text {
+  NSTextStorage *textStorage = textView_.textStorage;
+  [textStorage replaceCharactersInRange:NSMakeRange(0, textStorage.length)
+                             withString:text];
+}
+
 
 #pragma mark -
 #pragma mark Notifications
@@ -608,6 +630,7 @@ static int debugSimulateTextAppendingIteration = 0;
 
 
 - (NSUInteger)charCountOfLastLine {
+  HSpinLock::Scope slscope(lineToRangeSpinLock_);
   NSUInteger remainingCharCount = textView_.textStorage.length;
   if (!lineToRangeVec_.empty()) {
     NSRange &r = lineToRangeVec_.back();
@@ -618,11 +641,14 @@ static int debugSimulateTextAppendingIteration = 0;
 
 
 - (NSUInteger)lineCount {
+  HSpinLock::Scope slscope(lineToRangeSpinLock_);
   return lineToRangeVec_.size() + 1;
 }
 
 
 - (NSRange)rangeOfLineTerminatorAtLineNumber:(NSUInteger)lineNumber {
+  HSpinLock::Scope slscope(lineToRangeSpinLock_);
+
   if (lineNumber > 0) // 1-based
     --lineNumber;
   if (lineNumber < lineToRangeVec_.size()) {
@@ -693,7 +719,7 @@ static int debugSimulateTextAppendingIteration = 0;
 
 
 - (NSUInteger)lineNumberForLocation:(NSUInteger)location {
-  kassert([NSThread isMainThread]); // since lineToRangeVec_ is not thread safe
+  HSpinLock::Scope slscope(lineToRangeSpinLock_);
 
   // TODO(rsms): we could be "smart" here and guess a position to start looking
   // by comparing location to current number of total characters, which would
@@ -1325,6 +1351,10 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
 - (void)_updateLinesToRangesInfoForTextStorage:(NSTextStorage*)textStorage
                                        inRange:(NSRange)editedRange
                                        changeDelta:(NSInteger)changeInLength {
+  // Note: We can't use a HSpinLock::Scope here since we need to release the
+  // lock before we call linesDidChangeWithLineCountDelta: at the end
+  lineToRangeSpinLock_.lock();
+
   // update linebreaks mapping
   NSString *string = textStorage.string;
 
@@ -1350,6 +1380,7 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
   }
 
   if (changeInLength == 1 && editedRange.length == 1) {
+    // simple use-case: inserted a single character at the end of a line
     unichar ch = [string characterAtIndex:editedRange.location];
     if ([newlines characterIsMember:ch]) {
       //DLOG("linebreak: inserted one explicitly");
@@ -1375,6 +1406,7 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
       ++lineCountDelta;
     } else if (editSpansToEndOfDocument) {
       // inserted a non-linebreak char at end of document -- noop
+      lineToRangeSpinLock_.unlock();
       return;
     }
 
@@ -1422,6 +1454,9 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
   } else if (changeInLength < 0) {
     // edit action was "deletion"
 
+    // BUG(rsms): There's a bug in here somewhere which "removes" more lines
+    // than actually removed
+
     if (didAffectLines) {
 
       NSRange deletedRange = editedRange;
@@ -1458,6 +1493,11 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
     _lb_offset_ranges(lineToRangeVec_, offsetRangesStart, changeInLength);
   }
 
+  // release the spin lock before calling linesDidChangeWithLineCountDelta:
+  // which in turn might call a function using lineToRangeVec_ which would
+  // otherwise cause a deadlock.
+  lineToRangeSpinLock_.unlock();
+
   if (changeInLength != 0 &&
       (lineToRangeVec_.size() != 0 || lineCountDelta != 0)) {
     [self linesDidChangeWithLineCountDelta:lineCountDelta];
@@ -1473,13 +1513,14 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
 //- (void)textStorageDidProcessEditing:(NSNotification *)notification {}
 
 - (void)textStorageDidProcessEditing:(NSNotification *)notification {
+  // Note: this might be called on different threads
+
   NSTextStorage  *textStorage = [notification object];
 
   // no-op unless characters where edited
   if (!(textStorage.editedMask & NSTextStorageEditedCharacters)) {
     return;
   }
-  kassert([NSThread isMainThread]);
 
   // range that was affected by the edit
   NSRange editedRange = [textStorage editedRange];
@@ -1487,13 +1528,21 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
   // length delta of the edit (i.e. negative for deletions)
   int changeInLength = [textStorage changeInLength];
 
-  // update lineToRangeVec_
-  [self _updateLinesToRangesInfoForTextStorage:textStorage
-                     inRange:editedRange
-                   changeDelta:changeInLength];
+  // update lineToRangeVec_ (need to run in main)
+  if ([NSThread isMainThread]) {
+    [self _updateLinesToRangesInfoForTextStorage:textStorage
+                                         inRange:editedRange
+                                     changeDelta:changeInLength];
+  } else {
+    K_DISPATCH_MAIN_ASYNC({
+      [self _updateLinesToRangesInfoForTextStorage:textStorage
+                                           inRange:editedRange
+                                       changeDelta:changeInLength];
+    });
+  }
 
   // Update edit timestamp
-  lastEditTimestamp_ = [NSDate timeIntervalSinceReferenceDate];
+  [self _updateLastEditTimestamp];
 
   // we do not process edits when we are loading
   if (isLoading_) return;
