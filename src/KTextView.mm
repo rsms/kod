@@ -28,7 +28,6 @@ static CGFloat kTextContainerYOffset = 0.0;
   [self setAutomaticQuoteSubstitutionEnabled:NO];
   [self setAllowsDocumentBackgroundColorChange:NO];
   [self setAllowsImageEditing:NO];
-  [self setRichText:NO];
   [self setImportsGraphics:NO];
   //[self turnOffKerning:self]; // we are monospace (robot voice)
   [self setAutoresizingMask:NSViewWidthSizable];
@@ -36,6 +35,9 @@ static CGFloat kTextContainerYOffset = 0.0;
   [self setTextContainerInset:NSMakeSize(2.0, 4.0)];
   [self setVerticallyResizable:YES];
   [self setMaxSize:NSMakeSize(FLT_MAX, FLT_MAX)];
+
+  // this bastard causes sporadical crashes when run in other than main
+  K_DISPATCH_MAIN_ASYNC( [self setRichText:NO]; );
 
   // TODO: the following settings should follow the current style
   [self setBackgroundColor:
