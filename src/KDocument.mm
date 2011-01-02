@@ -1869,6 +1869,7 @@ finishedReadingURL:(NSURL*)url
       if (!langId_) {
         // implies queueing of complete highlighting
         [self guessLanguageBasedOnUTI:typeName textContent:text];
+
       } else {
         if (isVisible_)
           [self setNeedsHighlightingOfCompleteDocument];
@@ -1989,8 +1990,14 @@ finishedReadingURL:(NSURL*)url
       // Guess syntax
       if (highlightingEnabled_) {
         // TODO: typeName might have changed during reading
-        [self guessLanguageBasedOnUTI:typeName
-                          textContent:self.textView.string];
+
+        // Turn typeName (php) back into UTI (public.php-script)
+
+        NSString *uti = nil;
+        [absoluteURL getResourceValue:&uti forKey:NSURLTypeIdentifierKey error:nil];
+
+        [self guessLanguageBasedOnUTI:uti
+                          textContent:self.textView.string];        
       }
     }
 
