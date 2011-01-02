@@ -39,14 +39,17 @@ kod.exposedFunctions.foo = function(callback) {
     callback(null, {"bar":[1,2,3.4,"mos"],"grek en":"hoppär"});
 }
 
-// example event listener for the "tabDidBecomeSelected" event, emitted when a
+kod.on('openDocument', function(document) {
+  //console.log('openDocument: '+ util.inspect(document, 0, 4));
+  console.log('openDocument: '+document.identifier+' '+document.url);
+});
+
+// example event listener for the "activateDocument" event, emitted when a
 // document becomes selected (when the selection changes)
-kod.on('tabDidBecomeSelected', function(document) {
-  // Dump document. Set inspectionDepth to 4 in order to dump things like the
-  // word dictionary.
-  var inspectionDepth = 1;
-  console.log('tabDidBecomeSelected: '+
-              util.inspect(document, false, inspectionDepth));
+kod.on('activateDocument', function(document) {
+  // Dump document -- includes things like the word dictionary. Massive output.
+  //console.log('activateDocument: '+util.inspect(document, 0, 4));
+  console.log('activateDocument: '+document.identifier+' '+document.url);
 
   // As document objects are persistent, we can add properties to it which will
   // survive as long as the document is open
@@ -60,6 +63,11 @@ kod.on('tabDidBecomeSelected', function(document) {
 
   // Replace the contents of the document:
   //document.text = "Text\nreplaced\nby main.js";
+});
+
+kod.on('closeDocument', function(document, docId) {
+  //console.log('closeDocument: ['+docId+'] '+ util.inspect(document, 0, 4));
+  console.log('closeDocument: '+document.identifier+' '+document.url);
 });
 
 // dump kod.allDocuments every 10 sec

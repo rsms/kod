@@ -70,7 +70,7 @@ typedef std::deque<KHighlightQueueEntry> KHighlightQueue;
 // Text contents
 @property(assign) NSString *text;
 
-@property(assign) NSURL *fileURL;
+@property(assign) NSURL *url; // alias of fileURL
 
 
 + (NSFont*)defaultFont;

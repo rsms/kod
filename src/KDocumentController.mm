@@ -6,6 +6,7 @@
 #import "KFileURLHandler.h"
 #import "KHTTPURLHandler.h"
 #import "KKodURLHandler.h"
+#import "kod_node_interface.h"
 
 #import <objc/objc-runtime.h>
 
@@ -382,6 +383,8 @@ static double kSiblingAutoGroupEditDistanceThreshold = 0.4;
           [[KBrowserWindowController browserWindowController] retain];
     }
   }
+
+  KNodeEmitEvent("openDocument", tab, nil);
 
   [self addTabContents:tab
   withWindowController:windowController

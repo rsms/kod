@@ -65,8 +65,6 @@ static NSString *_NSStringFromRangeArray(std::vector<NSRange> &lineToRangeVec,
 
 @implementation KDocument
 
-@dynamic fileURL; // impl by NSDocument
-
 @synthesize textEncoding = textEncoding_,
             textView = textView_;
 
@@ -397,6 +395,15 @@ static int debugSimulateTextAppendingIteration = 0;
 }
 
 
+- (NSURL*)url {
+  return [self fileURL];
+}
+
+- (void)setUrl:(NSURL *)url {
+  [self setFileURL:url];
+}
+
+
 /*- (NSDate*)fileModificationDate {
   NSDate *mtime = [super fileModificationDate];
 
@@ -567,6 +574,9 @@ static int debugSimulateTextAppendingIteration = 0;
 
 
 - (void)tabWillCloseInBrowser:(CTBrowser*)browser atIndex:(NSInteger)index {
+  NSNumber *ident = [NSNumber numberWithUnsignedInteger:self.identifier];
+  KNodeEmitEvent("closeDocument", self, ident, nil);
+
   [super tabWillCloseInBrowser:browser atIndex:index];
 
   // cancel and disable highlighting
@@ -596,7 +606,7 @@ static int debugSimulateTextAppendingIteration = 0;
     self.clipView.allowsScrolling = YES;
   });
 
-  KNodeEmitEvent("tabDidBecomeSelected", self, nil);
+  KNodeEmitEvent("activateDocument", self, nil);
 }
 
 
