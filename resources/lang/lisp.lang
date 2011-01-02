@@ -1,6 +1,6 @@
 # @title Lisp
 # @matchuti public.lisp-source
-# @matchext lisp, cl, mud, el
+# @matchext lisp, cl, mud, el, l, lsp
 
 comment delim "#\|" "\|#" multiline nested
 comment start ";"

@@ -1,6 +1,6 @@
 # @title PHP
 # @matchuti public.php-script
-# @matchext php, php3, phtml
+# @matchext php, php3, php4, php5, phtml
 # @matchprogram php
 state symbol delim "<?" "?>" multiline begin
 

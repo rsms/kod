@@ -1,6 +1,6 @@
 # @title Ruby
 # @matchuti public.ruby-script
-# @matchext rb, rbw
+# @matchext rb, rbw, rjs, rxml, rbx
 # @matchprogram ruby
 # @matchname Rakefile
 

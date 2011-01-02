@@ -1,6 +1,6 @@
 # @title Ada
 # @matchuti public.ada-source
-# @matchext ada, adb
+# @matchext ada, adb, ads
 
 # definitions for Ada, by Reto Buerki
 

@@ -1,5 +1,5 @@
 # @name HTML
-# @matchext html, htm, shtml, xhtml, phtml, php, inc, tmpl, tpl, ctp
+# @matchext html, htm, shtml, xhtml, phtml, php, inc, tmpl, tpl, ctp, htc
 # @matchfirstline <!DOCTYPE|<(?i:html)|<\?(?i:php)
 	
 # deal with embedded CSS

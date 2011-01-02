@@ -63,6 +63,7 @@
 			"CFBundleTypeExtensions" = (
 				adb,
 				ads,
+				ada,
 			);
 			CFBundleTypeRole = Editor;
 			NSDocumentClass = KDocument;
@@ -112,9 +113,55 @@
 			NSDocumentClass = KDocument;
 		},
 		{
+			CFBundleTypeName = "Assembly document";
+			"CFBundleTypeExtensions" = (
+				s,
+				asm,
+			);
+			CFBundleTypeRole = Editor;
+			NSDocumentClass = KDocument;
+		},
+		{
+			CFBundleTypeName = "Autoconf/M4 Document";
+			"CFBundleTypeExtensions" = (
+				ac,
+				m4,
+				autoconf,
+			);
+			CFBundleTypeRole = Editor;
+			NSDocumentClass = KDocument;
+		},
+		{
+			CFBundleTypeName = "Awk document";
+			"CFBundleTypeExtensions" = (
+				awk,
+			);
+			CFBundleTypeRole = Editor;
+			NSDocumentClass = KDocument;
+		},
+		{
+			CFBundleTypeName = "Microsoft Batch file";
+			"CFBundleTypeExtensions" = (
+				bat,
+			);
+			CFBundleTypeRole = Editor;
+			NSDocumentClass = KDocument;
+		},
+		{
 			CFBundleTypeName = "BibTeX bibliography";
 			"CFBundleTypeExtensions" = (
 				bib,
+			);
+			CFBundleTypeRole = Editor;
+			NSDocumentClass = KDocument;
+		},
+		{
+			CFBundleTypeName = "Bison document";
+			"CFBundleTypeExtensions" = (
+				bison,
+				yacc,
+				yy,
+				y,
 			);
 			CFBundleTypeRole = Editor;
 			NSDocumentClass = KDocument;
@@ -135,6 +182,7 @@
 				cpp,
 				cxx,
 				"c++",
+				moc,
 			);
 			CFBundleTypeRole = Editor;
 			NSDocumentClass = KDocument;
@@ -143,6 +191,16 @@
 			CFBundleTypeName = "C# source";
 			"CFBundleTypeExtensions" = (
 				cs,
+				csharp,
+			);
+			CFBundleTypeRole = Editor;
+			NSDocumentClass = KDocument;
+		},
+		{
+			CFBundleTypeName = "Cobol document";
+			"CFBundleTypeExtensions" = (
+				cobol,
+				cbl,
 			);
 			CFBundleTypeRole = Editor;
 			NSDocumentClass = KDocument;
@@ -159,6 +217,15 @@
 			CFBundleTypeName = "Comma separated values";
 			"CFBundleTypeExtensions" = (
 				csv,
+			);
+			CFBundleTypeRole = Editor;
+			NSDocumentClass = KDocument;
+		},
+		{
+			CFBundleTypeName = "Clipper document";
+			"CFBundleTypeExtensions" = (
+				clipper,
+				prg,
 			);
 			CFBundleTypeRole = Editor;
 			NSDocumentClass = KDocument;
@@ -296,8 +363,10 @@
 			"CFBundleTypeExtensions" = (
 				htm,
 				html,
-				phtml,
 				shtml,
+				inc,
+				tmpl,
+				ctp,
 			);
 			CFBundleTypeRole = Editor;
 			NSDocumentClass = KDocument;
@@ -319,9 +388,11 @@
 			NSDocumentClass = KDocument;
 		},
 		{
-			CFBundleTypeName = "MS Windows initialization file";
+			CFBundleTypeName = "Configuration File";
 			"CFBundleTypeExtensions" = (
 				ini,
+				conf,
+				cnf,
 			);
 			CFBundleTypeRole = Editor;
 			NSDocumentClass = KDocument;
@@ -338,6 +409,14 @@
 			CFBundleTypeName = "Java source";
 			"CFBundleTypeExtensions" = (
 				java,
+			);
+			CFBundleTypeRole = Editor;
+			NSDocumentClass = KDocument;
+		},
+		{
+			CFBundleTypeName = "Java Properties Document";
+			"CFBundleTypeExtensions" = (
+				properties,
 			);
 			CFBundleTypeRole = Editor;
 			NSDocumentClass = KDocument;
@@ -363,6 +442,8 @@
 			"CFBundleTypeExtensions" = (
 				js,
 				htc,
+				jscript,
+				javascript,
 			);
 			CFBundleTypeRole = Editor;
 			NSDocumentClass = KDocument;
@@ -417,6 +498,17 @@
 			CFBundleTypeName = "LUA source";
 			"CFBundleTypeExtensions" = (
 				lua,
+			);
+			CFBundleTypeRole = Editor;
+			NSDocumentClass = KDocument;
+		},
+		{
+			CFBundleTypeName = "Makefile document";
+			"CFBundleTypeExtensions" = (
+				am,
+				in,
+				make,
+				makefile,
 			);
 			CFBundleTypeRole = Editor;
 			NSDocumentClass = KDocument;
@@ -539,6 +631,15 @@
 				php3,
 				php4,
 				php5,
+				phtml,
+			);
+			CFBundleTypeRole = Editor;
+			NSDocumentClass = KDocument;
+		},
+		{
+			CFBundleTypeName = "Pkgconfig document";
+			"CFBundleTypeExtensions" = (
+				pc,
 			);
 			CFBundleTypeRole = Editor;
 			NSDocumentClass = KDocument;
@@ -655,6 +756,10 @@
 				"bash_login",
 				profile,
 				"bash_logout",
+				bash,
+				csh,
+				shell,
+				command,
 			);
 			CFBundleTypeRole = Editor;
 			NSDocumentClass = KDocument;
@@ -671,6 +776,8 @@
 			CFBundleTypeName = "SQL source";
 			"CFBundleTypeExtensions" = (
 				sql,
+				ddl,
+				dml,
 			);
 			CFBundleTypeRole = Editor;
 			NSDocumentClass = KDocument;
@@ -722,6 +829,8 @@
 				tex,
 				sty,
 				cls,
+				latex,
+				dtx,
 			);
 			CFBundleTypeRole = Editor;
 			NSDocumentClass = KDocument;
@@ -769,6 +878,9 @@
 				pt,
 				cpt,
 				dtml,
+				docbook,
+				kidl,
+				opml,
 			);
 			CFBundleTypeRole = Editor;
 			NSDocumentClass = KDocument;
@@ -856,7 +968,6 @@
 				ifb,
 				dwt,
 				g,
-				in,
 				l,
 				m4,
 				mp,
@@ -870,7 +981,6 @@
 				tpl,
 				tt,
 				xql,
-				yy,
 				"*",
 			);
 			CFBundleTypeRole = Editor;

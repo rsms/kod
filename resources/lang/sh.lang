@@ -1,6 +1,6 @@
 # @title Shell script
 # @matchuti public.shell-script
-# @matchext sh, bash, csh, shell, command
+# @matchext sh, ss, bash, csh, shell, command, bashrc, bash_profile, bash_login, profile, bash_logout
 # @matchprogram sh, bash, csh, zsh, tcsh, ksh, dash
 
 preproc = "import"
