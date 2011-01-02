@@ -29,6 +29,7 @@
   commandToFileResource_ = [[NSDictionary alloc] initWithObjectsAndKeys:
       @"about.md", @"about",
       @"changelog", @"changelog",
+      @"authors.md", @"authors",
       nil];
 
   return self;

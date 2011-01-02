@@ -4,6 +4,7 @@ I'm a programmers' editor for OS X.
 
 See kod:changelog for details on what changed in what version.
 
+See kod:authors for the list of authors.
 
 Copyright (c) 2010, Rasmus Andersson
 Kod™ is a trademark of Rasmus Andersson.
@@ -1217,7 +1218,8 @@ Public License instead of this License.  But first, please read
 
 ### BWToolkit
 
-Copyright (c) 2010, Brandon Walkin All rights reserved.
+Copyright (c) 2010, Brandon Walkin
+All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
 are permitted provided that the following conditions are met:
