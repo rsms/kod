@@ -19,10 +19,11 @@ try { userModule = require(process.env.HOME + '/.kod'); } catch (e) {}
 // Things below this line is only used for development and debugging and not
 // really meant to be in this file
 
-if (typeof gc === 'function') {
-  // if we are running with --expose_gc, force collection every second
-  setInterval(gc, 1000);
-}
+/*if (typeof gc === 'function') {
+  // if we are running with --expose_gc, force collection at a steady interval.
+  // Note: this is a serious performance killer and only used for debugging
+  setInterval(gc, 10000);
+}*/
 
 // debug
 var util = require('util');
