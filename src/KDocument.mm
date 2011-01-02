@@ -237,6 +237,9 @@ static int debugSimulateTextAppendingIteration = 0;
 
 
 - (void)dealloc {
+  DLOG("--- DEALLOC %@ ---", self);
+  fprintf(stderr, ">>>>> %s dealloc\n", [[self description] UTF8String]);
+  fflush(stderr);
   KStyle *style = [KStyle sharedStyle];
   NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
   [nc removeObserver:self
@@ -246,6 +249,33 @@ static int debugSimulateTextAppendingIteration = 0;
     sourceHighlighter_->cancel();
   [super dealloc];
 }
+
+
+
+/*- (id)retain {
+  DLOG("\n%@ retain (%lu) %@\n", self, [self retainCount],
+       //@""//
+       [NSThread callStackSymbols]
+       );
+   fflush(stderr); fsync(STDERR_FILENO);
+  return [super retain];
+}
+- (void)release {
+  //DLOG("%@ release %@", self, [NSThread callStackSymbols]);
+  DLOG("\n%@ release (%lu) %@\n", self, [self retainCount],
+       //@""//
+       [NSThread callStackSymbols]
+       );
+  fflush(stderr); fsync(STDERR_FILENO);
+  [super release];
+}
+- (id)autorelease {
+  DLOG("%@ autorelease %@", self,
+       //@""//
+       [NSThread callStackSymbols]
+       );
+  return [super autorelease];
+}*/
 
 
 #pragma mark -
@@ -624,6 +654,17 @@ static int debugSimulateTextAppendingIteration = 0;
     [metaRulerView_ linesDidChangeWithLineCountDelta:lineCountDelta];
   }
 }
+
+
+#pragma mark -
+#pragma mark Node.js
+
+
+// wrappers for KDocuments should be persistent
+/*- (BOOL)nodeWrapperIsPersistent {
+  return YES;
+}*/
+
 
 #pragma mark -
 #pragma mark Line info
