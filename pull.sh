@@ -1,2 +1,2 @@
 #!/bin/sh
-git pull && git submodule update --init
+git pull upstream && git submodule update --init
