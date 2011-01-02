@@ -1,517 +1,898 @@
 {
-  CFBundleExecutable = "${EXECUTABLE_NAME}";
-  CFBundleShortVersionString = "0.0.3";
-  CFBundleVersion = "0.0.3";
-  CFBundleIconFile = "kod.icns";
-  CFBundleIdentifier = "se.hunch.kod";
-  CFBundleInfoDictionaryVersion = "6.0";
-  CFBundleName = "${PRODUCT_NAME}";
-  CFBundlePackageType = APPL;
-  CFBundleSignature = Kode;
-  CFBundleDevelopmentRegion = English;
-
-  NSMainNibFile = MainMenu;
-  NSPrincipalClass = NSApplication;
-
-  ATSApplicationFontsPath = "fonts/";
-
-  LSArchitecturePriority = ( "x86_64", i386 );
-  LSMinimumSystemVersion = "10.6.0";
-  LSMinimumSystemVersionByArchitecture = { "x86_64" = "10.6"; };
-
-  /* Sparkle (other settings are hard-coded) */
-  SUPublicDSAKeyFile = "dsa_pub.pem";
-  SUShowReleaseNotes = NO;
-
-  BreakpadProduct = "${EXECUTABLE_NAME}";
-  BreakpadProductDisplay = "${PRODUCT_NAME}";
-  BreakpadVendor = "the developers of Kod";
-  BreakpadReportInterval = 60;
-  BreakpadRequestEmail = YES;
-  BreakpadRequestComments = YES;
-
-  NSServices = (
-    {
-      NSMenuItem = { default = "Kod/Open link in Kod"; };
-      NSMessage = openLink;
-      NSPortName = Kod;
-      NSSendTypes = ( "public.url" );
-    }
-  );
-
-  CFBundleURLTypes = (
-    {
-      CFBundleTypeRole = Viewer;
-      CFBundleURLIconFile = "";
-      CFBundleURLName = Kod;
-      CFBundleURLSchemes = ( kod );
-    },
-    {
-      CFBundleURLName = "Web site URL";
-      CFBundleURLSchemes = ( http, https );
-    },
-    {
-      CFBundleURLName = "Local file URL";
-      CFBundleURLSchemes = ( file );
-    }
-  );
-
-  CFBundleDocumentTypes = (
-    { CFBundleTypeName = "ADA source";
-      CFBundleTypeExtensions = (adb, ads);
-      CFBundleTypeRole = Editor;
-      NSDocumentClass = KDocument;
-    },
-    { CFBundleTypeName = "Compiled AppleScript";
-      CFBundleTypeExtensions = (scpt);
-      CFBundleTypeRole = Editor;
-      NSDocumentClass = KDocument;
-    },
-    { CFBundleTypeName = "AppleScript source";
-      CFBundleTypeExtensions = (applescript);
-      CFBundleTypeRole = Editor;
-      NSDocumentClass = KDocument;
-    },
-    { CFBundleTypeName = "ActionScript source";
-      CFBundleTypeExtensions = (as);
-      CFBundleTypeRole = Editor;
-      NSDocumentClass = KDocument;
-    },
-    { CFBundleTypeName = "ASP document";
-      CFBundleTypeExtensions = (asp, asa);
-      CFBundleTypeRole = Editor;
-      NSDocumentClass = KDocument;
-    },
-    { CFBundleTypeName = "ASP.NET document";
-      CFBundleTypeExtensions = (aspx, ascx, asmx, ashx);
-      CFBundleTypeRole = Editor;
-      NSDocumentClass = KDocument;
-    },
-    { CFBundleTypeName = "BibTeX bibliography";
-      CFBundleTypeExtensions = (bib);
-      CFBundleTypeRole = Editor;
-      NSDocumentClass = KDocument;
-    },
-    { CFBundleTypeName = "C source";
-      CFBundleTypeExtensions = (c);
-      CFBundleTypeRole = Editor;
-      NSDocumentClass = KDocument;
-    },
-    { CFBundleTypeName = "C++ source";
-      CFBundleTypeExtensions = (cc, cp, cpp, cxx, "c++");
-      CFBundleTypeRole = Editor;
-      NSDocumentClass = KDocument;
-    },
-    { CFBundleTypeName = "C# source";
-      CFBundleTypeExtensions = (cs);
-      CFBundleTypeRole = Editor;
-      NSDocumentClass = KDocument;
-    },
-    { CFBundleTypeName = "Context Free Design Grammar";
-      CFBundleTypeExtensions = (cfdg);
-      CFBundleTypeRole = Editor;
-      NSDocumentClass = KDocument;
-    },
-    { CFBundleTypeName = "Comma separated values";
-      CFBundleTypeExtensions = (csv);
-      CFBundleTypeRole = Editor;
-      NSDocumentClass = KDocument;
-    },
-    { CFBundleTypeName = "Tab separated values";
-      CFBundleTypeExtensions = (tsv);
-      CFBundleTypeRole = Editor;
-      NSDocumentClass = KDocument;
-    },
-    { CFBundleTypeName = "CGI script";
-      CFBundleTypeExtensions = (cgi, fcgi);
-      CFBundleTypeRole = Editor;
-      NSDocumentClass = KDocument;
-    },
-    { CFBundleTypeName = "Configuration file";
-      CFBundleTypeExtensions = (cfg, conf, config, htaccess);
-      CFBundleTypeRole = Editor;
-      NSDocumentClass = KDocument;
-    },
-    { CFBundleTypeName = "Cascading style sheet";
-      CFBundleTypeExtensions = (css);
-      CFBundleTypeRole = Editor;
-      NSDocumentClass = KDocument;
-    },
-    { CFBundleTypeName = "Differences file";
-      CFBundleTypeExtensions = (diff);
-      CFBundleTypeRole = Editor;
-      NSDocumentClass = KDocument;
-    },
-    { CFBundleTypeName = "Document Type Definition";
-      CFBundleTypeExtensions = (dtd);
-      CFBundleTypeRole = Editor;
-      NSDocumentClass = KDocument;
-    },
-    { CFBundleTypeName = "Dylan source";
-      CFBundleTypeExtensions = (dylan);
-      CFBundleTypeRole = Editor;
-      NSDocumentClass = KDocument;
-    },
-    { CFBundleTypeName = "Erlang source";
-      CFBundleTypeExtensions = (erl, hrl);
-      CFBundleTypeRole = Editor;
-      NSDocumentClass = KDocument;
-    },
-    { CFBundleTypeName = "F-Script source";
-      CFBundleTypeExtensions = (fscript);
-      CFBundleTypeRole = Editor;
-      NSDocumentClass = KDocument;
-    },
-    { CFBundleTypeName = "Fortran source";
-      CFBundleTypeExtensions = (f, for, fpp, f77, f90, f95);
-      CFBundleTypeRole = Editor;
-      NSDocumentClass = KDocument;
-    },
-    { CFBundleTypeName = "Header";
-      CFBundleTypeExtensions = (h, pch);
-      CFBundleTypeRole = Editor;
-      NSDocumentClass = KDocument;
-    },
-    { CFBundleTypeName = "C++ header";
-      CFBundleTypeExtensions = (hh, hpp, hxx, "h++");
-      CFBundleTypeRole = Editor;
-      NSDocumentClass = KDocument;
-    },
-    { CFBundleTypeName = "GTD document";
-      CFBundleTypeExtensions = (gtd, gtdlog);
-      CFBundleTypeRole = Editor;
-      NSDocumentClass = KDocument;
-    },
-    { CFBundleTypeName = "Haskell source";
-      CFBundleTypeExtensions = (hs, lhs);
-      CFBundleTypeRole = Editor;
-      NSDocumentClass = KDocument;
-    },
-    { CFBundleTypeName = "HTML document";
-      CFBundleTypeExtensions = (htm, html, phtml, shtml);
-      CFBundleTypeRole = Editor;
-      NSDocumentClass = KDocument;
-    },
-    { CFBundleTypeName = "Include file";
-      CFBundleTypeExtensions = (inc);
-      CFBundleTypeRole = Editor;
-      NSDocumentClass = KDocument;
-    },
-    { CFBundleTypeName = "iCalendar schedule";
-      CFBundleTypeExtensions = (ics);
-      CFBundleTypeRole = Editor;
-      NSDocumentClass = KDocument;
-    },
-    { CFBundleTypeName = "MS Windows initialization file";
-      CFBundleTypeExtensions = (ini);
-      CFBundleTypeRole = Editor;
-      NSDocumentClass = KDocument;
-    },
-    { CFBundleTypeName = "Io source";
-      CFBundleTypeExtensions = (io);
-      CFBundleTypeRole = Editor;
-      NSDocumentClass = KDocument;
-    },
-    { CFBundleTypeName = "Java source";
-      CFBundleTypeExtensions = (java);
-      CFBundleTypeRole = Editor;
-      NSDocumentClass = KDocument;
-    },
-    { CFBundleTypeName = "BeanShell script";
-      CFBundleTypeExtensions = (bsh);
-      CFBundleTypeRole = Editor;
-      NSDocumentClass = KDocument;
-    },
-    { CFBundleTypeName = "Java properties file";
-      CFBundleTypeExtensions = (properties);
-      CFBundleTypeRole = Editor;
-      NSDocumentClass = KDocument;
-    },
-    { CFBundleTypeName = "JavaScript source";
-      CFBundleTypeExtensions = (js, htc);
-      CFBundleTypeRole = Editor;
-      NSDocumentClass = KDocument;
-    },
-    { CFBundleTypeName = "Java Server Page";
-      CFBundleTypeExtensions = (jsp);
-      CFBundleTypeRole = Editor;
-      NSDocumentClass = KDocument;
-    },
-    { CFBundleTypeName       = "LDAP Data Interchange Format";
-      CFBundleTypeExtensions = (ldif);
-      CFBundleTypeIconFile   = TMDocument;
-      CFBundleTypeRole = Editor;
-      NSDocumentClass = KDocument;
-    },
-    { CFBundleTypeName = "LISP source";
-      CFBundleTypeExtensions = (lisp, cl, l, lsp, mud, el);
-      CFBundleTypeRole = Editor;
-      NSDocumentClass = KDocument;
-    },
-    { CFBundleTypeName = "Log file";
-      CFBundleTypeExtensions = (log);
-      CFBundleTypeRole = Editor;
-      NSDocumentClass = KDocument;
-    },
-    { CFBundleTypeName = "LOGO source";
-      CFBundleTypeExtensions = (logo);
-      CFBundleTypeRole = Editor;
-      NSDocumentClass = KDocument;
-    },
-    { CFBundleTypeName = "LUA source";
-      CFBundleTypeExtensions = (lua);
-      CFBundleTypeRole = Editor;
-      NSDocumentClass = KDocument;
-    },
-    { CFBundleTypeName = "Markdown document";
-      CFBundleTypeExtensions = (md, markdown, mdown, markdn);
-      CFBundleTypeRole = Editor;
-      NSDocumentClass = KDocument;
-    },
-    { CFBundleTypeName = "Mediawiki document";
-      CFBundleTypeExtensions = (wiki, wikipedia, mediawiki);
-      CFBundleTypeRole = Editor;
-      NSDocumentClass = KDocument;
-    },
-    { CFBundleTypeName = "MIPS assembler source";
-      CFBundleTypeExtensions = (s, mips, spim, asm);
-      CFBundleTypeRole = Editor;
-      NSDocumentClass = KDocument;
-    },
-    { CFBundleTypeName = "Modula-3 source";
-      CFBundleTypeExtensions = (m3, cm3);
-      CFBundleTypeRole = Editor;
-      NSDocumentClass = KDocument;
-    },
-    { CFBundleTypeName = "MoinMoin document";
-      CFBundleTypeExtensions = (moinmoin);
-      CFBundleTypeRole = Editor;
-      NSDocumentClass = KDocument;
-    },
-    { CFBundleTypeName = "Objective-C source";
-      CFBundleTypeExtensions = (m);
-      CFBundleTypeRole = Editor;
-      NSDocumentClass = KDocument;
-    },
-    { CFBundleTypeName = "Objective-C++ source";
-      CFBundleTypeExtensions = (mm);
-      CFBundleTypeRole = Editor;
-      NSDocumentClass = KDocument;
-    },
-    { CFBundleTypeName = "OCaml source";
-      CFBundleTypeExtensions = (ml, mli, mll, mly);
-      CFBundleTypeRole = Editor;
-      NSDocumentClass = KDocument;
-    },
-    { CFBundleTypeName = "Pascal source";
-      CFBundleTypeExtensions = (pas, p);
-      CFBundleTypeRole = Editor;
-      NSDocumentClass = KDocument;
-    },
-    { CFBundleTypeName = "Patch file";
-      CFBundleTypeExtensions = (patch);
-      CFBundleTypeRole = Editor;
-      NSDocumentClass = KDocument;
-    },
-    { CFBundleTypeName = "Perl source";
-      CFBundleTypeExtensions = (pl, pod, perl);
-      CFBundleTypeRole = Editor;
-      NSDocumentClass = KDocument;
-    },
-    { CFBundleTypeName = "Perl module";
-      CFBundleTypeExtensions = (pm);
-      CFBundleTypeRole = Editor;
-      NSDocumentClass = KDocument;
-    },
-    { CFBundleTypeName = "PHP source";
-      CFBundleTypeExtensions = (php, php3, php4, php5);
-      CFBundleTypeRole = Editor;
-      NSDocumentClass = KDocument;
-    },
-    { CFBundleTypeName = "PostScript source";
-      CFBundleTypeExtensions = (ps, eps);
-      CFBundleTypeRole = Editor;
-      NSDocumentClass = KDocument;
-    },
-    { CFBundleTypeName = "Property list";
-      CFBundleTypeExtensions = (dict, plist, scriptSuite, scriptTerminology);
-      CFBundleTypeRole = Editor;
-      NSDocumentClass = KDocument;
-    },
-    { CFBundleTypeName = "Python source";
-      CFBundleTypeExtensions = (py, rpy, cpy, python);
-      CFBundleTypeRole = Editor;
-      NSDocumentClass = KDocument;
-    },
-    { CFBundleTypeName = "R source";
-      CFBundleTypeExtensions = (r, s);
-      CFBundleTypeRole = Editor;
-      NSDocumentClass = KDocument;
-    },
-    { CFBundleTypeName = "Remind document";
-      CFBundleTypeExtensions = (rem, remind);
-      CFBundleTypeRole = Editor;
-      NSDocumentClass = KDocument;
-    },
-    { CFBundleTypeName = "reStructuredText document";
-      CFBundleTypeExtensions = (rst, rest);
-      CFBundleTypeRole = Editor;
-      NSDocumentClass = KDocument;
-    },
-    { CFBundleTypeName = "HTML with embedded Ruby";
-      CFBundleTypeExtensions = (rhtml);
-      CFBundleTypeRole = Editor;
-      NSDocumentClass = KDocument;
-    },
-    { CFBundleTypeName = "SQL with embedded Ruby";
-      CFBundleTypeExtensions = (erbsql);
-      CFBundleTypeRole = Editor;
-      NSDocumentClass = KDocument;
-    },
-    { CFBundleTypeName = "Ruby source";
-      CFBundleTypeExtensions = (rb, rbx, rjs, rxml);
-      CFBundleTypeRole = Editor;
-      NSDocumentClass = KDocument;
-    },
-    { CFBundleTypeName = "Scheme source";
-      CFBundleTypeExtensions = (scm, sch);
-      CFBundleTypeRole = Editor;
-      NSDocumentClass = KDocument;
-    },
-    { CFBundleTypeName = "Setext document";
-      CFBundleTypeExtensions = (ext);
-      CFBundleTypeRole = Editor;
-      NSDocumentClass = KDocument;
-    },
-    { CFBundleTypeName = "Shell script";
-      CFBundleTypeExtensions = (sh, ss, bashrc, "bash_profile", "bash_login", profile, "bash_logout");
-      CFBundleTypeRole = Editor;
-      NSDocumentClass = KDocument;
-    },
-    { CFBundleTypeName = "Slate source";
-      CFBundleTypeExtensions = (slate);
-      CFBundleTypeRole = Editor;
-      NSDocumentClass = KDocument;
-    },
-    { CFBundleTypeName = "SQL source";
-      CFBundleTypeExtensions = (sql);
-      CFBundleTypeRole = Editor;
-      NSDocumentClass = KDocument;
-    },
-    { CFBundleTypeName = "Standard ML source";
-      CFBundleTypeExtensions = (sml);
-      CFBundleTypeRole = Editor;
-      NSDocumentClass = KDocument;
-    },
-    { CFBundleTypeName = "Strings document";
-      CFBundleTypeExtensions = (strings);
-      CFBundleTypeRole = Editor;
-      NSDocumentClass = KDocument;
-    },
-    { CFBundleTypeName = "Scalable vector graphics";
-      CFBundleTypeExtensions = (svg);
-      CFBundleTypeRole = Editor;
-      NSDocumentClass = KDocument;
-    },
-    { CFBundleTypeName = "SWIG source";
-      CFBundleTypeExtensions = (i, swg);
-      CFBundleTypeRole = Editor;
-      NSDocumentClass = KDocument;
-    },
-    { CFBundleTypeName = "Tcl source";
-      CFBundleTypeExtensions = (tcl);
-      CFBundleTypeRole = Editor;
-      NSDocumentClass = KDocument;
-    },
-    { CFBundleTypeName = "TeX document";
-      CFBundleTypeExtensions = (tex, sty, cls);
-      CFBundleTypeRole = Editor;
-      NSDocumentClass = KDocument;
-    },
-    { CFBundleTypeName = "Plain text document";
-      CFBundleTypeExtensions = (txt, text, utf8);
-      CFBundleTypeMIMETypes = ("text/plain");
-      CFBundleTypeOSTypes = (TEXT, sEXT, ttro);
-      CFBundleTypeRole = Editor;
-      NSDocumentClass = KDocument;
-    },
-    { CFBundleTypeName = "Textile document";
-      CFBundleTypeExtensions = (textile);
-      CFBundleTypeRole = Editor;
-      NSDocumentClass = KDocument;
-    },
-    { CFBundleTypeName = "XHTML document";
-      CFBundleTypeExtensions = (xhtml);
-      CFBundleTypeRole = Editor;
-      NSDocumentClass = KDocument;
-    },
-    { CFBundleTypeName = "XML document";
-      CFBundleTypeExtensions = (xml, rss, tld, pt, cpt, dtml);
-      CFBundleTypeRole = Editor;
-      NSDocumentClass = KDocument;
-    },
-    { CFBundleTypeName = "XSL stylesheet";
-      CFBundleTypeExtensions = (xsl, xslt);
-      CFBundleTypeRole = Editor;
-      NSDocumentClass = KDocument;
-    },
-    { CFBundleTypeName = "Electronic business card";
-      CFBundleTypeExtensions = (vcf, vcard);
-      CFBundleTypeRole = Editor;
-      NSDocumentClass = KDocument;
-    },
-    { CFBundleTypeName = "Visual Basic source";
-      CFBundleTypeExtensions = (vb);
-      CFBundleTypeRole = Editor;
-      NSDocumentClass = KDocument;
-    },
-    { CFBundleTypeName = "YAML document";
-      CFBundleTypeExtensions = (yaml, yml);
-      CFBundleTypeRole = Editor;
-      NSDocumentClass = KDocument;
-    },
-    { CFBundleTypeExtensions = ( inetloc, webloc );
-      CFBundleTypeName = "Remote resource";
-      CFBundleTypeRole = Viewer;
-    },
-
-    /* generic types */
-    /* generic plain text types */
-    { CFBundleTypeName = "Text document";
-      CFBundleTypeExtensions = (nfo);
-      CFBundleTypeRole = Editor;
-      NSDocumentClass = KDocument;
-    },
-    /* generic source code types */
-    { CFBundleTypeName = "Source";
-      CFBundleTypeExtensions = (
-        g, vss, d, e, gri, inf, mel, build, re,
-        textmate, fxscript, lgt
-      );
-      CFBundleTypeRole = Editor;
-      NSDocumentClass = KDocument;
-    },
-    /* generic document types */
-    { CFBundleTypeName = "Document";
-      CFBundleTypeExtensions = (
-        cfm, cfml, dbm, dbml, dist, dot, ics, ifb, dwt, g,
-        in, l, m4, mp, mtml, orig, pde,
-        rej, servlet, s5, tmp, tpl, tt,
-        xql, yy, "*"
-      );
-      CFBundleTypeRole = Editor;
-      NSDocumentClass = KDocument;
-    },
-    { CFBundleTypeName = Folder;
-      CFBundleTypeRole = Editor;
-      LSItemContentTypes = ( public.directory );
-    },
-    { CFBundleTypeName = "Document";
-      CFBundleTypeOSTypes = ("****");
-      CFBundleTypeRole = Editor;
-      NSDocumentClass = KDocument;
-      LSItemContentTypes = ( public.data );
-    },
-  );
-
+	CFBundleExecutable = "${EXECUTABLE_NAME}";
+	"CFBundleShortVersionString" = "0.0.3";
+	CFBundleVersion = "0.0.3";
+	CFBundleIconFile = "kod.icns";
+	CFBundleIdentifier = "se.hunch.kod";
+	"CFBundleInfoDictionaryVersion" = "6.0";
+	CFBundleName = "${PRODUCT_NAME}";
+	CFBundlePackageType = APPL;
+	CFBundleSignature = Kode;
+	"CFBundleDevelopmentRegion" = English;
+	NSMainNibFile = MainMenu;
+	NSPrincipalClass = NSApplication;
+	"ATSApplicationFontsPath" = "fonts/";
+	"LSArchitecturePriority" = (
+		"x86_64",
+		i386,
+	);
+	"LSMinimumSystemVersion" = "10.6.0";
+	"LSMinimumSystemVersionByArchitecture" = {
+		"x86_64" = "10.6";
+	};
+	SUPublicDSAKeyFile = "dsa_pub.pem";
+	SUShowReleaseNotes = NO;
+	NSServices = (
+		{
+			NSMenuItem = {
+				default = "Kod/Open link in Kod";
+			};
+			NSMessage = openLink;
+			NSPortName = Kod;
+			NSSendTypes = (
+				"public.url",
+			);
+		},
+	);
+	CFBundleURLTypes = (
+		{
+			CFBundleTypeRole = Viewer;
+			CFBundleURLIconFile = "";
+			CFBundleURLName = Kod;
+			CFBundleURLSchemes = (
+				kod,
+			);
+		},
+		{
+			CFBundleURLName = "Web site URL";
+			CFBundleURLSchemes = (
+				http,
+				https,
+			);
+		},
+		{
+			CFBundleURLName = "Local file URL";
+			CFBundleURLSchemes = (
+				file,
+			);
+		},
+	);
+	"CFBundleDocumentTypes" = (
+		{
+			CFBundleTypeName = "ADA source";
+			"CFBundleTypeExtensions" = (
+				adb,
+				ads,
+			);
+			CFBundleTypeRole = Editor;
+			NSDocumentClass = KDocument;
+		},
+		{
+			CFBundleTypeName = "Compiled AppleScript";
+			"CFBundleTypeExtensions" = (
+				scpt,
+			);
+			CFBundleTypeRole = Editor;
+			NSDocumentClass = KDocument;
+		},
+		{
+			CFBundleTypeName = "AppleScript source";
+			"CFBundleTypeExtensions" = (
+				applescript,
+			);
+			CFBundleTypeRole = Editor;
+			NSDocumentClass = KDocument;
+		},
+		{
+			CFBundleTypeName = "ActionScript source";
+			"CFBundleTypeExtensions" = (
+				as,
+			);
+			CFBundleTypeRole = Editor;
+			NSDocumentClass = KDocument;
+		},
+		{
+			CFBundleTypeName = "ASP document";
+			"CFBundleTypeExtensions" = (
+				asp,
+				asa,
+			);
+			CFBundleTypeRole = Editor;
+			NSDocumentClass = KDocument;
+		},
+		{
+			CFBundleTypeName = "ASP.NET document";
+			"CFBundleTypeExtensions" = (
+				aspx,
+				ascx,
+				asmx,
+				ashx,
+			);
+			CFBundleTypeRole = Editor;
+			NSDocumentClass = KDocument;
+		},
+		{
+			CFBundleTypeName = "BibTeX bibliography";
+			"CFBundleTypeExtensions" = (
+				bib,
+			);
+			CFBundleTypeRole = Editor;
+			NSDocumentClass = KDocument;
+		},
+		{
+			CFBundleTypeName = "C source";
+			"CFBundleTypeExtensions" = (
+				c,
+			);
+			CFBundleTypeRole = Editor;
+			NSDocumentClass = KDocument;
+		},
+		{
+			CFBundleTypeName = "C++ source";
+			"CFBundleTypeExtensions" = (
+				cc,
+				cp,
+				cpp,
+				cxx,
+				"c++",
+			);
+			CFBundleTypeRole = Editor;
+			NSDocumentClass = KDocument;
+		},
+		{
+			CFBundleTypeName = "C# source";
+			"CFBundleTypeExtensions" = (
+				cs,
+			);
+			CFBundleTypeRole = Editor;
+			NSDocumentClass = KDocument;
+		},
+		{
+			CFBundleTypeName = "Context Free Design Grammar";
+			"CFBundleTypeExtensions" = (
+				cfdg,
+			);
+			CFBundleTypeRole = Editor;
+			NSDocumentClass = KDocument;
+		},
+		{
+			CFBundleTypeName = "Comma separated values";
+			"CFBundleTypeExtensions" = (
+				csv,
+			);
+			CFBundleTypeRole = Editor;
+			NSDocumentClass = KDocument;
+		},
+		{
+			CFBundleTypeName = "Tab separated values";
+			"CFBundleTypeExtensions" = (
+				tsv,
+			);
+			CFBundleTypeRole = Editor;
+			NSDocumentClass = KDocument;
+		},
+		{
+			CFBundleTypeName = "CGI script";
+			"CFBundleTypeExtensions" = (
+				cgi,
+				fcgi,
+			);
+			CFBundleTypeRole = Editor;
+			NSDocumentClass = KDocument;
+		},
+		{
+			CFBundleTypeName = "Configuration file";
+			"CFBundleTypeExtensions" = (
+				cfg,
+				conf,
+				config,
+				htaccess,
+			);
+			CFBundleTypeRole = Editor;
+			NSDocumentClass = KDocument;
+		},
+		{
+			CFBundleTypeName = "Cascading style sheet";
+			"CFBundleTypeExtensions" = (
+				css,
+			);
+			CFBundleTypeRole = Editor;
+			NSDocumentClass = KDocument;
+		},
+		{
+			CFBundleTypeName = "Differences file";
+			"CFBundleTypeExtensions" = (
+				diff,
+			);
+			CFBundleTypeRole = Editor;
+			NSDocumentClass = KDocument;
+		},
+		{
+			CFBundleTypeName = "Document Type Definition";
+			"CFBundleTypeExtensions" = (
+				dtd,
+			);
+			CFBundleTypeRole = Editor;
+			NSDocumentClass = KDocument;
+		},
+		{
+			CFBundleTypeName = "Dylan source";
+			"CFBundleTypeExtensions" = (
+				dylan,
+			);
+			CFBundleTypeRole = Editor;
+			NSDocumentClass = KDocument;
+		},
+		{
+			CFBundleTypeName = "Erlang source";
+			"CFBundleTypeExtensions" = (
+				erl,
+				hrl,
+			);
+			CFBundleTypeRole = Editor;
+			NSDocumentClass = KDocument;
+		},
+		{
+			CFBundleTypeName = "F-Script source";
+			"CFBundleTypeExtensions" = (
+				fscript,
+			);
+			CFBundleTypeRole = Editor;
+			NSDocumentClass = KDocument;
+		},
+		{
+			CFBundleTypeName = "Fortran source";
+			"CFBundleTypeExtensions" = (
+				f,
+				for,
+				fpp,
+				f77,
+				f90,
+				f95,
+			);
+			CFBundleTypeRole = Editor;
+			NSDocumentClass = KDocument;
+		},
+		{
+			CFBundleTypeName = Header;
+			"CFBundleTypeExtensions" = (
+				h,
+				pch,
+			);
+			CFBundleTypeRole = Editor;
+			NSDocumentClass = KDocument;
+		},
+		{
+			CFBundleTypeName = "C++ header";
+			"CFBundleTypeExtensions" = (
+				hh,
+				hpp,
+				hxx,
+				"h++",
+			);
+			CFBundleTypeRole = Editor;
+			NSDocumentClass = KDocument;
+		},
+		{
+			CFBundleTypeName = "GTD document";
+			"CFBundleTypeExtensions" = (
+				gtd,
+				gtdlog,
+			);
+			CFBundleTypeRole = Editor;
+			NSDocumentClass = KDocument;
+		},
+		{
+			CFBundleTypeName = "Haskell source";
+			"CFBundleTypeExtensions" = (
+				hs,
+				lhs,
+			);
+			CFBundleTypeRole = Editor;
+			NSDocumentClass = KDocument;
+		},
+		{
+			CFBundleTypeName = "HTML document";
+			"CFBundleTypeExtensions" = (
+				htm,
+				html,
+				phtml,
+				shtml,
+			);
+			CFBundleTypeRole = Editor;
+			NSDocumentClass = KDocument;
+		},
+		{
+			CFBundleTypeName = "Include file";
+			"CFBundleTypeExtensions" = (
+				inc,
+			);
+			CFBundleTypeRole = Editor;
+			NSDocumentClass = KDocument;
+		},
+		{
+			CFBundleTypeName = "iCalendar schedule";
+			"CFBundleTypeExtensions" = (
+				ics,
+			);
+			CFBundleTypeRole = Editor;
+			NSDocumentClass = KDocument;
+		},
+		{
+			CFBundleTypeName = "MS Windows initialization file";
+			"CFBundleTypeExtensions" = (
+				ini,
+			);
+			CFBundleTypeRole = Editor;
+			NSDocumentClass = KDocument;
+		},
+		{
+			CFBundleTypeName = "Io source";
+			"CFBundleTypeExtensions" = (
+				io,
+			);
+			CFBundleTypeRole = Editor;
+			NSDocumentClass = KDocument;
+		},
+		{
+			CFBundleTypeName = "Java source";
+			"CFBundleTypeExtensions" = (
+				java,
+			);
+			CFBundleTypeRole = Editor;
+			NSDocumentClass = KDocument;
+		},
+		{
+			CFBundleTypeName = "BeanShell script";
+			"CFBundleTypeExtensions" = (
+				bsh,
+			);
+			CFBundleTypeRole = Editor;
+			NSDocumentClass = KDocument;
+		},
+		{
+			CFBundleTypeName = "Java properties file";
+			"CFBundleTypeExtensions" = (
+				properties,
+			);
+			CFBundleTypeRole = Editor;
+			NSDocumentClass = KDocument;
+		},
+		{
+			CFBundleTypeName = "JavaScript source";
+			"CFBundleTypeExtensions" = (
+				js,
+				htc,
+			);
+			CFBundleTypeRole = Editor;
+			NSDocumentClass = KDocument;
+		},
+		{
+			CFBundleTypeName = "Java Server Page";
+			"CFBundleTypeExtensions" = (
+				jsp,
+			);
+			CFBundleTypeRole = Editor;
+			NSDocumentClass = KDocument;
+		},
+		{
+			CFBundleTypeName = "LDAP Data Interchange Format";
+			"CFBundleTypeExtensions" = (
+				ldif,
+			);
+			CFBundleTypeIconFile = TMDocument;
+			CFBundleTypeRole = Editor;
+			NSDocumentClass = KDocument;
+		},
+		{
+			CFBundleTypeName = "LISP source";
+			"CFBundleTypeExtensions" = (
+				lisp,
+				cl,
+				l,
+				lsp,
+				mud,
+				el,
+			);
+			CFBundleTypeRole = Editor;
+			NSDocumentClass = KDocument;
+		},
+		{
+			CFBundleTypeName = "Log file";
+			"CFBundleTypeExtensions" = (
+				log,
+			);
+			CFBundleTypeRole = Editor;
+			NSDocumentClass = KDocument;
+		},
+		{
+			CFBundleTypeName = "LOGO source";
+			"CFBundleTypeExtensions" = (
+				logo,
+			);
+			CFBundleTypeRole = Editor;
+			NSDocumentClass = KDocument;
+		},
+		{
+			CFBundleTypeName = "LUA source";
+			"CFBundleTypeExtensions" = (
+				lua,
+			);
+			CFBundleTypeRole = Editor;
+			NSDocumentClass = KDocument;
+		},
+		{
+			CFBundleTypeName = "Markdown document";
+			"CFBundleTypeExtensions" = (
+				md,
+				markdown,
+				mdown,
+				markdn,
+			);
+			CFBundleTypeRole = Editor;
+			NSDocumentClass = KDocument;
+		},
+		{
+			CFBundleTypeName = "Mediawiki document";
+			"CFBundleTypeExtensions" = (
+				wiki,
+				wikipedia,
+				mediawiki,
+			);
+			CFBundleTypeRole = Editor;
+			NSDocumentClass = KDocument;
+		},
+		{
+			CFBundleTypeName = "MIPS assembler source";
+			"CFBundleTypeExtensions" = (
+				s,
+				mips,
+				spim,
+				asm,
+			);
+			CFBundleTypeRole = Editor;
+			NSDocumentClass = KDocument;
+		},
+		{
+			CFBundleTypeName = "Modula-3 source";
+			"CFBundleTypeExtensions" = (
+				m3,
+				cm3,
+			);
+			CFBundleTypeRole = Editor;
+			NSDocumentClass = KDocument;
+		},
+		{
+			CFBundleTypeName = "MoinMoin document";
+			"CFBundleTypeExtensions" = (
+				moinmoin,
+			);
+			CFBundleTypeRole = Editor;
+			NSDocumentClass = KDocument;
+		},
+		{
+			CFBundleTypeName = "Objective-C source";
+			"CFBundleTypeExtensions" = (
+				m,
+			);
+			CFBundleTypeRole = Editor;
+			NSDocumentClass = KDocument;
+		},
+		{
+			CFBundleTypeName = "Objective-C++ source";
+			"CFBundleTypeExtensions" = (
+				mm,
+			);
+			CFBundleTypeRole = Editor;
+			NSDocumentClass = KDocument;
+		},
+		{
+			CFBundleTypeName = "OCaml source";
+			"CFBundleTypeExtensions" = (
+				ml,
+				mli,
+				mll,
+				mly,
+			);
+			CFBundleTypeRole = Editor;
+			NSDocumentClass = KDocument;
+		},
+		{
+			CFBundleTypeName = "Pascal source";
+			"CFBundleTypeExtensions" = (
+				pas,
+				p,
+			);
+			CFBundleTypeRole = Editor;
+			NSDocumentClass = KDocument;
+		},
+		{
+			CFBundleTypeName = "Patch file";
+			"CFBundleTypeExtensions" = (
+				patch,
+			);
+			CFBundleTypeRole = Editor;
+			NSDocumentClass = KDocument;
+		},
+		{
+			CFBundleTypeName = "Perl source";
+			"CFBundleTypeExtensions" = (
+				pl,
+				pod,
+				perl,
+			);
+			CFBundleTypeRole = Editor;
+			NSDocumentClass = KDocument;
+		},
+		{
+			CFBundleTypeName = "Perl module";
+			"CFBundleTypeExtensions" = (
+				pm,
+			);
+			CFBundleTypeRole = Editor;
+			NSDocumentClass = KDocument;
+		},
+		{
+			CFBundleTypeName = "PHP source";
+			"CFBundleTypeExtensions" = (
+				php,
+				php3,
+				php4,
+				php5,
+			);
+			CFBundleTypeRole = Editor;
+			NSDocumentClass = KDocument;
+		},
+		{
+			CFBundleTypeName = "PostScript source";
+			"CFBundleTypeExtensions" = (
+				ps,
+				eps,
+			);
+			CFBundleTypeRole = Editor;
+			NSDocumentClass = KDocument;
+		},
+		{
+			CFBundleTypeName = "Property list";
+			"CFBundleTypeExtensions" = (
+				dict,
+				plist,
+				scriptSuite,
+				scriptTerminology,
+			);
+			CFBundleTypeRole = Editor;
+			NSDocumentClass = KDocument;
+		},
+		{
+			CFBundleTypeName = "Python source";
+			"CFBundleTypeExtensions" = (
+				py,
+				rpy,
+				cpy,
+				python,
+			);
+			CFBundleTypeRole = Editor;
+			NSDocumentClass = KDocument;
+		},
+		{
+			CFBundleTypeName = "R source";
+			"CFBundleTypeExtensions" = (
+				r,
+				s,
+			);
+			CFBundleTypeRole = Editor;
+			NSDocumentClass = KDocument;
+		},
+		{
+			CFBundleTypeName = "Remind document";
+			"CFBundleTypeExtensions" = (
+				rem,
+				remind,
+			);
+			CFBundleTypeRole = Editor;
+			NSDocumentClass = KDocument;
+		},
+		{
+			CFBundleTypeName = "reStructuredText document";
+			"CFBundleTypeExtensions" = (
+				rst,
+				rest,
+			);
+			CFBundleTypeRole = Editor;
+			NSDocumentClass = KDocument;
+		},
+		{
+			CFBundleTypeName = "HTML with embedded Ruby";
+			"CFBundleTypeExtensions" = (
+				rhtml,
+			);
+			CFBundleTypeRole = Editor;
+			NSDocumentClass = KDocument;
+		},
+		{
+			CFBundleTypeName = "SQL with embedded Ruby";
+			"CFBundleTypeExtensions" = (
+				erbsql,
+			);
+			CFBundleTypeRole = Editor;
+			NSDocumentClass = KDocument;
+		},
+		{
+			CFBundleTypeName = "Ruby source";
+			"CFBundleTypeExtensions" = (
+				rb,
+				rbx,
+				rjs,
+				rxml,
+			);
+			CFBundleTypeRole = Editor;
+			NSDocumentClass = KDocument;
+		},
+		{
+			CFBundleTypeName = "Scheme source";
+			"CFBundleTypeExtensions" = (
+				scm,
+				sch,
+			);
+			CFBundleTypeRole = Editor;
+			NSDocumentClass = KDocument;
+		},
+		{
+			CFBundleTypeName = "Setext document";
+			"CFBundleTypeExtensions" = (
+				ext,
+			);
+			CFBundleTypeRole = Editor;
+			NSDocumentClass = KDocument;
+		},
+		{
+			CFBundleTypeName = "Shell script";
+			"CFBundleTypeExtensions" = (
+				sh,
+				ss,
+				bashrc,
+				"bash_profile",
+				"bash_login",
+				profile,
+				"bash_logout",
+			);
+			CFBundleTypeRole = Editor;
+			NSDocumentClass = KDocument;
+		},
+		{
+			CFBundleTypeName = "Slate source";
+			"CFBundleTypeExtensions" = (
+				slate,
+			);
+			CFBundleTypeRole = Editor;
+			NSDocumentClass = KDocument;
+		},
+		{
+			CFBundleTypeName = "SQL source";
+			"CFBundleTypeExtensions" = (
+				sql,
+			);
+			CFBundleTypeRole = Editor;
+			NSDocumentClass = KDocument;
+		},
+		{
+			CFBundleTypeName = "Standard ML source";
+			"CFBundleTypeExtensions" = (
+				sml,
+			);
+			CFBundleTypeRole = Editor;
+			NSDocumentClass = KDocument;
+		},
+		{
+			CFBundleTypeName = "Strings document";
+			"CFBundleTypeExtensions" = (
+				strings,
+			);
+			CFBundleTypeRole = Editor;
+			NSDocumentClass = KDocument;
+		},
+		{
+			CFBundleTypeName = "Scalable vector graphics";
+			"CFBundleTypeExtensions" = (
+				svg,
+			);
+			CFBundleTypeRole = Editor;
+			NSDocumentClass = KDocument;
+		},
+		{
+			CFBundleTypeName = "SWIG source";
+			"CFBundleTypeExtensions" = (
+				i,
+				swg,
+			);
+			CFBundleTypeRole = Editor;
+			NSDocumentClass = KDocument;
+		},
+		{
+			CFBundleTypeName = "Tcl source";
+			"CFBundleTypeExtensions" = (
+				tcl,
+			);
+			CFBundleTypeRole = Editor;
+			NSDocumentClass = KDocument;
+		},
+		{
+			CFBundleTypeName = "TeX document";
+			"CFBundleTypeExtensions" = (
+				tex,
+				sty,
+				cls,
+			);
+			CFBundleTypeRole = Editor;
+			NSDocumentClass = KDocument;
+		},
+		{
+			CFBundleTypeName = "Plain text document";
+			"CFBundleTypeExtensions" = (
+				txt,
+				text,
+				utf8,
+			);
+			"CFBundleTypeMIMETypes" = (
+				"text/plain",
+			);
+			CFBundleTypeOSTypes = (
+				TEXT,
+				sEXT,
+				ttro,
+			);
+			CFBundleTypeRole = Editor;
+			NSDocumentClass = KDocument;
+		},
+		{
+			CFBundleTypeName = "Textile document";
+			"CFBundleTypeExtensions" = (
+				textile,
+			);
+			CFBundleTypeRole = Editor;
+			NSDocumentClass = KDocument;
+		},
+		{
+			CFBundleTypeName = "XHTML document";
+			"CFBundleTypeExtensions" = (
+				xhtml,
+			);
+			CFBundleTypeRole = Editor;
+			NSDocumentClass = KDocument;
+		},
+		{
+			CFBundleTypeName = "XML document";
+			"CFBundleTypeExtensions" = (
+				xml,
+				rss,
+				tld,
+				pt,
+				cpt,
+				dtml,
+			);
+			CFBundleTypeRole = Editor;
+			NSDocumentClass = KDocument;
+		},
+		{
+			CFBundleTypeName = "XSL stylesheet";
+			"CFBundleTypeExtensions" = (
+				xsl,
+				xslt,
+			);
+			CFBundleTypeRole = Editor;
+			NSDocumentClass = KDocument;
+		},
+		{
+			CFBundleTypeName = "Electronic business card";
+			"CFBundleTypeExtensions" = (
+				vcf,
+				vcard,
+			);
+			CFBundleTypeRole = Editor;
+			NSDocumentClass = KDocument;
+		},
+		{
+			CFBundleTypeName = "Visual Basic source";
+			"CFBundleTypeExtensions" = (
+				vb,
+			);
+			CFBundleTypeRole = Editor;
+			NSDocumentClass = KDocument;
+		},
+		{
+			CFBundleTypeName = "YAML document";
+			"CFBundleTypeExtensions" = (
+				yaml,
+				yml,
+			);
+			CFBundleTypeRole = Editor;
+			NSDocumentClass = KDocument;
+		},
+		{
+			"CFBundleTypeExtensions" = (
+				inetloc,
+				webloc,
+			);
+			CFBundleTypeName = "Remote resource";
+			CFBundleTypeRole = Viewer;
+		},
+		{
+			CFBundleTypeName = "Text document";
+			"CFBundleTypeExtensions" = (
+				nfo,
+			);
+			CFBundleTypeRole = Editor;
+			NSDocumentClass = KDocument;
+		},
+		{
+			CFBundleTypeName = Source;
+			"CFBundleTypeExtensions" = (
+				g,
+				vss,
+				d,
+				e,
+				gri,
+				inf,
+				mel,
+				build,
+				re,
+				textmate,
+				fxscript,
+				lgt,
+			);
+			CFBundleTypeRole = Editor;
+			NSDocumentClass = KDocument;
+		},
+		{
+			CFBundleTypeName = Document;
+			"CFBundleTypeExtensions" = (
+				cfm,
+				cfml,
+				dbm,
+				dbml,
+				dist,
+				dot,
+				ics,
+				ifb,
+				dwt,
+				g,
+				in,
+				l,
+				m4,
+				mp,
+				mtml,
+				orig,
+				pde,
+				rej,
+				servlet,
+				s5,
+				tmp,
+				tpl,
+				tt,
+				xql,
+				yy,
+				"*",
+			);
+			CFBundleTypeRole = Editor;
+			NSDocumentClass = KDocument;
+		},
+		{
+			CFBundleTypeName = Folder;
+			CFBundleTypeRole = Editor;
+			LSItemContentTypes = (
+				"public.directory",
+			);
+		},
+		{
+			CFBundleTypeName = Document;
+			CFBundleTypeOSTypes = (
+				"****",
+			);
+			CFBundleTypeRole = Editor;
+			NSDocumentClass = KDocument;
+			LSItemContentTypes = (
+				"public.data",
+			);
+		},
+	);
 }
