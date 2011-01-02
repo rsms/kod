@@ -14,7 +14,9 @@ string delim "<" ">"
 regexp = '/[^\n]*/'
 (symbol,regexp) = `(%r)(\{(?:\\\}|#\{[[:alnum:]]+\}|[^}])*\})`
 
-keyword = "alias|begin|BEGIN|break|case|defined|do|else|elsif|end|END|ensure|for|if|in|include|loop|next|raise|redo|rescue|retry|return|super|then|undef|unless|until|when|while|yield|false|nil|self|true|__FILE__|__LINE__|and|not|or|def|class|module|catch|fail|load|throw"
+# need to highlight defined?, but cannot due to ? considered normal
+
+keyword = "alias|begin|BEGIN|break|case|defined|do|else|elsif|end|END|ensure|for|if|in|include|loop|next|raise|redo|rescue|retry|return|super|then|undef|unless|until|when|while|yield|false|nil|self|true|__FILE__|__LINE__|__ENCODING__|__END__|and|not|or|def|class|module|catch|fail|load|throw"
 
 comment delim '(^\=begin)' '^(\=end)' multiline
 
