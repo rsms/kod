@@ -6,7 +6,7 @@ extern NSString * const KStatusBarDidChangeHiddenStateNotification;
 @interface KStatusBarController : NSViewController {
   IBOutlet KSplitView *splitView_;
   IBOutlet NSButton *toggleSplitViewButton_;
-  __weak KDocument *currentContents_;
+  KDocument *currentContents_;
 }
 
 @property(readonly) KStatusBarView *statusBarView;

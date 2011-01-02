@@ -35,20 +35,20 @@
                    withWindowController:(KBrowserWindowController*)windowController
                                priority:(long)priority
          nonExistingFilesAsNewDocuments:(BOOL)newDocForNewURLs
-                               callback:(dispatch_block_t)callback;
+                               callback:(void(^)(NSError*))callback;
 
 // Open |urls| in frontmost window with high priority
 - (void)openDocumentsWithContentsOfURLs:(NSArray*)urls
          nonExistingFilesAsNewDocuments:(BOOL)newDocForNewURLs
-                               callback:(dispatch_block_t)callback;
+                               callback:(void(^)(NSError*))callback;
 
 // Open |urls| in frontmost window with high priority
 - (void)openDocumentsWithContentsOfURLs:(NSArray*)urls
-                               callback:(dispatch_block_t)callback;
+                               callback:(void(^)(NSError*))callback;
 
 // Open |url| in frontmost window with high priority
 - (void)openDocumentsWithContentsOfURL:(NSURL*)url
-                              callback:(dispatch_block_t)callback;
+                              callback:(void(^)(NSError*))callback;
 
 // --------------------------------------------------------------------
 // lower level openers which run in the current thread
@@ -59,9 +59,22 @@
                             display:(BOOL)displayDocument
                               error:(NSError **)outError;
 
+- (KDocument*)openNewDocumentWithData:(NSData*)data
+                               ofType:(NSString *)typeName
+                 withWindowController:(KBrowserWindowController*)windowController
+                    groupWithSiblings:(BOOL)groupWithSiblings
+                              display:(BOOL)display
+                                error:(NSError**)outError;
+
 - (void)finalizeOpenDocument:(KDocument*)tab
         withWindowController:(KBrowserWindowController*)windowController
            groupWithSiblings:(BOOL)groupWithSiblings
                      display:(BOOL)display;
+
+// A "safe" version which guarantees finalizeOpenDocument: is called on main
+- (void)safeFinalizeOpenDocument:(KDocument*)doc
+            withWindowController:(KBrowserWindowController*)windowController
+               groupWithSiblings:(BOOL)groupWithSiblings
+                         display:(BOOL)display;
 
 @end
