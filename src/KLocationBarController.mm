@@ -33,9 +33,9 @@
 
 - (void)recordStateWithContents:(CTTabContents*)contents {
   // Record state so we can restore it later
-  h_objc_xch(&currentContents_, contents);
-  h_objc_xch(&originalAttributedStringValue_,
-             [[textField_ cell] attributedStringValue]);
+  h_casid(&currentContents_, contents);
+  h_casid(&originalAttributedStringValue_,
+          [[textField_ cell] attributedStringValue]);
 }
 
 
