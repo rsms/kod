@@ -167,6 +167,7 @@ static int debugSimulateTextAppendingIteration = 0;
   [paragraphStyle setParagraphStyle:[NSParagraphStyle defaultParagraphStyle]];
   [paragraphStyle setLineBreakMode:NSLineBreakByCharWrapping];
   [textView_ setDefaultParagraphStyle:paragraphStyle];
+  [paragraphStyle release];
 
   // TODO: this defines the attributes to apply to "marked" text, input which is
   // pending, like "¨" waiting for "u" to build the character "ü". Should match
