@@ -1,7 +1,7 @@
 # @title Diff
 # @matchuti public.diff-text
 # @matchext diff, patch
-# @matchfirstline (?x)^(=== modified file|====\s*//.+\s-\s.+\s+ ====|Index: |--- [^%]|\*\*\*.*\d{4}\s*$|\d+(,\d+)*(a|d|c)\d+(,\d+)*$|diff --git )
+# @matchfirstline ^(=== modified file|====\s*//.+\s-\s.+\s+ ====|Index: |--- [^%]|\*\*\*.*\d{4}\s*$|\d+(,\d+)*(a|d|c)\d+(,\d+)*$|diff --git )
 
 # language definition for files created with 'diff'
 
