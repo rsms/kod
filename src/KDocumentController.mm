@@ -6,6 +6,7 @@
 #import "KFileURLHandler.h"
 #import "KHTTPURLHandler.h"
 #import "KKodURLHandler.h"
+#import "HEventEmitter.h"
 #import "kod_node_interface.h"
 
 #import <objc/objc-runtime.h>
@@ -97,17 +98,20 @@
 
 
 - (void)openDocumentsWithContentsOfURLs:(NSArray*)urls
-                   withWindowController:(KBrowserWindowController*)windowController
+                withWindowController:(KBrowserWindowController*)windowController
                                priority:(long)priority
          nonExistingFilesAsNewDocuments:(BOOL)newDocForNewURLs
-                               callback:(dispatch_block_t)callback {
+                               callback:(void(^)(NSError*))callback {
   DLOG("openDocumentsWithContentsOfURLs:%@", urls);
   // countdown
   NSUInteger i = urls ? urls.count : 0;
 
   // check for empty array
   if (i == 0) {
-    if (callback) callback();
+    if (callback) {
+      NSError *error = [NSError kodErrorWithFormat:@"Empty list of URLs"];
+      callback(error);
+    }
     return;
   }
 
@@ -118,8 +122,24 @@
   // callback countdown
   kassert(i < INT32_MAX);
   __block int32_t callbackCountdown = i;
-  if (callback)
+  __block void(^countdown)(NSError*) = nil;
+  if (callback) {
     callback = [callback copy];
+    countdown = [^(NSError *err){
+      //NSLog(@"countdown %@", (id)countdown);
+      if (h_atomic_dec(&callbackCountdown) == 0) {
+        callback(err);
+        [callback release];
+        [countdown release];
+      } else if (err && h_atomic_cas(&callbackCountdown, callbackCountdown, 0)){
+        callback(err);
+        [callback release];
+        [countdown release];
+      }
+      // Note: the callback block will be implicitly retained or copied by
+      // this block, which is released once we are done.
+    } copy];
+  }
 
   // Dispatch opening of each document
   for (NSURL *url in urls) {
@@ -127,55 +147,50 @@
     BOOL directory = NO;
 
     KDocument *alreadyOpenTab = [self _documentForURL:url
-                                          makeKeyIfFound:index==0];
+                                       makeKeyIfFound:index==0];
     if (alreadyOpenTab) {
-      // done?
-      if (callback && OSAtomicDecrement32(&callbackCountdown) == 0) {
-        callback();
-        [callback release];
-      }
-    } else if ([url isFileURL] && [fm fileExistsAtPath:[url path] isDirectory:&directory] && directory) {
+      if (countdown) countdown(nil);
+    } else if ([url isFileURL] &&
+               [fm fileExistsAtPath:[url path] isDirectory:&directory] &&
+               directory) {
+      // Special case: open a directory
       NSError *error = nil;
-      if (![windowController openFileDirectoryAtURL:url error:&error]) {
-        WLOG("failed to read directory %@ -- %@", url, error);
-      }
+      BOOL ok = [windowController openFileDirectoryAtURL:url error:&error];
+      if (countdown) countdown(error);
+      if (!ok) [windowController presentError:error];
     } else if (newDocForNewURLs && [url isFileURL] &&
                ![fm fileExistsAtPath:[url path]]) {
+      // Special case: open a new (non-existing) document
+      NSError *error;
       // create new document
       KDocument *tab =
           [self openUntitledDocumentWithWindowController:windowController
                                                  display:index==0
-                                                   error:nil];
-      // TODO: handle error
-      if (tab) {
-        tab.fileURL = url;
-        // done?
-        if (callback && OSAtomicDecrement32(&callbackCountdown) == 0) {
-          callback();
-          [callback release];
-        }
-      }
+                                                   error:&error];
+      if (tab) tab.url = url;
+      if (countdown) countdown(error);
+      if (!tab) [windowController presentError:error];
     } else {
       dispatch_async(dispatchQueue, ^{
         NSAutoreleasePool *pool = [NSAutoreleasePool new];
         NSError *error = nil;
-        KDocument *tab = [self openDocumentWithContentsOfURL:url
+        KDocument *doc = [self openDocumentWithContentsOfURL:url
                                            withWindowController:windowController
                                               groupWithSiblings:YES
                                                   // display last document opened:
                                                         display:index==0
                                                           error:&error];
-        // fail?
-        if (!tab) {
-          [windowController presentError:error];
+        if (doc && doc.isLoading) {
+          if (countdown) {
+            [doc on:@"load" call:^(KDocument *doc2){
+              countdown(error);
+              return YES; // remove ourselves from listeners
+            }];
+          }
+        } else if (countdown) {
+          countdown(error);
         }
-
-        // done?
-        if (callback && OSAtomicDecrement32(&callbackCountdown) == 0) {
-          callback();
-          [callback release];
-        }
-
+        if (!doc) [windowController presentError:error];
         [pool drain];
       });
     }
@@ -185,7 +200,7 @@
 
 - (void)openDocumentsWithContentsOfURLs:(NSArray*)urls
          nonExistingFilesAsNewDocuments:(BOOL)newDocForNewURLs
-                               callback:(dispatch_block_t)callback {
+                               callback:(void(^)(NSError*))callback {
   // open the documents in the frontmost window controller
   KBrowserWindowController *windowController = (KBrowserWindowController *)
     [KBrowserWindowController mainBrowserWindowController];
@@ -198,7 +213,7 @@
 
 
 - (void)openDocumentsWithContentsOfURLs:(NSArray*)urls
-                               callback:(dispatch_block_t)callback {
+                               callback:(void(^)(NSError*))callback {
   [self openDocumentsWithContentsOfURLs:urls
          nonExistingFilesAsNewDocuments:NO
                                callback:callback];
@@ -206,7 +221,7 @@
 
 
 - (void)openDocumentsWithContentsOfURL:(NSURL*)url
-                              callback:(dispatch_block_t)callback {
+                              callback:(void(^)(NSError*))callback {
   [self openDocumentsWithContentsOfURLs:[NSArray arrayWithObject:url]
                                callback:callback];
 }
@@ -222,22 +237,27 @@
 
 
 - (id)makeUntitledDocumentOfType:(NSString *)typeName error:(NSError **)error {
-  KDocument* tab =
-      [[[KDocument alloc] initWithBaseTabContents:nil] autorelease];
-  assert(tab); // since we don't set error
+  KDocument* doc = [[KDocument alloc] initWithBaseTabContents:nil];
+  assert(doc); // since we don't set error
+
+  // IMPORTANT(rsms): This is a fix which is not completely investigated or
+  // understood. Documents created through the makeUntitledDocumentOfType branch
+  // of calls are retained more time than documents created from the
+  // makeDocumentWithContentsOfURL branch of calls.
+  [doc autorelease];
 
   // Give the new tab a "Untitled #" name
   int32_t number = self.nextUntitledNumber;
   NSString *untitled = NSLocalizedString(@"Untitled", nil);
   if (number == 0) {
     // first tab is "Untitled"
-    tab.title = untitled;
+    doc.title = untitled;
   } else {
     // consecutive tabs are "Untitled #"
-    tab.title = [NSString stringWithFormat:@"%@ %u", untitled, number];
+    doc.title = [NSString stringWithFormat:@"%@ %u", untitled, number];
   }
 
-  return tab;
+  return doc;
 }
 
 
@@ -245,7 +265,7 @@
                                        display:(BOOL)display
                                          error:(NSError **)error {
   KDocument* tab = [self makeUntitledDocumentOfType:[self defaultType]
-                                                 error:error];
+                                              error:error];
   if (tab) {
     assert([NSThread isMainThread]);
     if (!windowController) {
@@ -401,6 +421,26 @@ static double kSiblingAutoGroupEditDistanceThreshold = 0.4;
 }
 
 
+- (void)safeFinalizeOpenDocument:(KDocument*)doc
+            withWindowController:(KBrowserWindowController*)windowController
+               groupWithSiblings:(BOOL)groupWithSiblings
+                         display:(BOOL)display {
+  if (![NSThread isMainThread]) {
+    K_DISPATCH_MAIN_ASYNC(
+      [self finalizeOpenDocument:doc
+            withWindowController:windowController
+               groupWithSiblings:groupWithSiblings
+                         display:display];
+    );
+  } else {
+    [self finalizeOpenDocument:doc
+          withWindowController:windowController
+             groupWithSiblings:groupWithSiblings
+                       display:display];
+  }
+}
+
+
 - (id)openDocumentWithContentsOfURL:(NSURL *)absoluteURL
                             display:(BOOL)display
                               error:(NSError **)error {
@@ -420,16 +460,43 @@ static double kSiblingAutoGroupEditDistanceThreshold = 0.4;
   // Note: This may be called by a background thread
 
   // Dive down into the opening mechanism...
-  KDocument* tab =
-      [[[KDocument alloc] initWithContentsOfURL:url
-                                         ofType:typeName
-                                          error:error] autorelease];
+  KDocument* tab = [[KDocument alloc] initWithContentsOfURL:url
+                                                     ofType:typeName
+                                                      error:error];
   if (!tab && error) {
     // if tab failed to create and we received a pointer to store the error,
     // make sure an error is present
     assert(*error);
   }
   return tab;
+}
+
+
+- (KDocument*)openNewDocumentWithData:(NSData*)data
+                               ofType:(NSString *)typeName
+                 withWindowController:(KBrowserWindowController*)windowController
+                    groupWithSiblings:(BOOL)groupWithSiblings
+                              display:(BOOL)display
+                                error:(NSError**)outError {
+  if (!typeName)
+    typeName = [self defaultType];
+  KDocument *doc = [self makeUntitledDocumentOfType:typeName error:outError];
+  if (doc) {
+    if (![doc readFromData:data ofType:typeName error:outError]) {
+      doc = nil;
+    } else {
+      // default to current "main" window (current key window)
+      if (!windowController) {
+        windowController = (KBrowserWindowController*)
+            [KBrowserWindowController mainBrowserWindowController];
+      }
+      [self safeFinalizeOpenDocument:doc
+                withWindowController:windowController
+                   groupWithSiblings:groupWithSiblings
+                             display:display];
+    }
+  }
+  return doc;
 }
 
 
@@ -450,20 +517,10 @@ static double kSiblingAutoGroupEditDistanceThreshold = 0.4;
                                      ofType:typeName
                                       error:error];
   if (tab) {
-    // add the tab to |browser|
-    if (![NSThread isMainThread]) {
-      K_DISPATCH_MAIN_ASYNC(
-        [self finalizeOpenDocument:tab
+    [self safeFinalizeOpenDocument:tab
               withWindowController:windowController
                  groupWithSiblings:groupWithSiblings
                            display:display];
-      );
-    } else {
-      [self finalizeOpenDocument:tab
-            withWindowController:windowController
-               groupWithSiblings:groupWithSiblings
-                         display:display];
-    }
   }
   return tab;
 }

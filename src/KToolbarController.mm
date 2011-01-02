@@ -155,18 +155,14 @@ static const CGFloat kLeftMarginWhenNoSidebar = 4.0;
                       ofObject:(id)object
                         change:(NSDictionary*)change
                        context:(void*)context {
-  DLOG(">>>>>>>> observeValueForKeyPath:%@ --> %@", keyPath, change);
+  //DLOG(">>>>>>>> observeValueForKeyPath:%@ --> %@", keyPath, change);
   if ([keyPath isEqual:@"fileURL"]) {
     [self updateURLFromCurrentContents];
   } else if ([keyPath isEqual:@"title"]) {
     DLOG("received change of title %@", change);
   }
   // be sure to call the super implementation
-  // if the superclass implements it
-  /*[super observeValueForKeyPath:keyPath
-                       ofObject:object
-                         change:change
-                        context:context];*/
+  // if the superclass implements it (which it currently doesn't)
 }
 
 

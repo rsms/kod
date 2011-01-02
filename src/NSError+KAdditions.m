@@ -50,4 +50,16 @@ static NSString *KErrorDomain = nil; // TODO: centralize this
   return [NSError errorWithDomain:NSURLErrorDomain code:status userInfo:info];
 }
 
++ (NSError*)kodErrorWithException:(NSException*)exc {
+  NSMutableString *userInfoStr = [NSMutableString string];
+  NSDictionary *userInfo = [exc userInfo];
+  if (userInfo && [userInfo count]) {
+    [userInfo enumerateKeysAndObjectsUsingBlock:^(id key, id val, BOOL *_) {
+      [userInfoStr appendFormat:@"\n  %@: %@", key, val];
+    }];
+  }
+  return [self kodErrorWithFormat:@"%@: %@%@", [exc name], [exc reason],
+          userInfoStr];
+}
+
 @end
