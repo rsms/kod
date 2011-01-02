@@ -43,13 +43,9 @@
 		3A366A8412CB873D00257AE6 /* KObjectProxy.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A366A8112CB873D00257AE6 /* KObjectProxy.mm */; };
 		3A366A8512CB873D00257AE6 /* node_kod.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A366A8312CB873D00257AE6 /* node_kod.mm */; };
 		3A40F92F12AFF21A007B5879 /* main.js in Resources */ = {isa = PBXBuildFile; fileRef = 3A40F92E12AFF21A007B5879 /* main.js */; };
-		3A40FA6612B02FD0007B5879 /* NSObject+SBJSON.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A40FA5D12B02FD0007B5879 /* NSObject+SBJSON.m */; };
-		3A40FA6712B02FD0007B5879 /* NSString+SBJSON.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A40FA5F12B02FD0007B5879 /* NSString+SBJSON.m */; };
-		3A40FA6912B02FD0007B5879 /* SBJsonParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A40FA6312B02FD0007B5879 /* SBJsonParser.m */; };
-		3A40FA6A12B02FD0007B5879 /* SBJsonWriter.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A40FA6512B02FD0007B5879 /* SBJsonWriter.m */; };
 		3A4CB3E112B1872300B45858 /* NSString-data.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A4CB3E012B1872300B45858 /* NSString-data.m */; };
-		3A4CB3FD12B1897B00B45858 /* SBJsonStreamWriter.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A4CB3FB12B1897B00B45858 /* SBJsonStreamWriter.m */; };
 		3A4D50ED1282E40300B06EEB /* NSString-utf8-range-conv.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A4D50EC1282E40300B06EEB /* NSString-utf8-range-conv.m */; };
+		3A4F478512CFA83900301464 /* KWordDictionary.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A4F478412CFA83900301464 /* KWordDictionary.mm */; };
 		3A5107CB12C1233900AAC1D5 /* KMachService.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A5107CA12C1233900AAC1D5 /* KMachService.m */; };
 		3A51081712C139B800AAC1D5 /* kod_helper.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A5107EB12C1351500AAC1D5 /* kod_helper.m */; };
 		3A51083612C13AF900AAC1D5 /* common.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A51083412C13AF900AAC1D5 /* common.m */; };
@@ -141,7 +137,7 @@
 		3ABF4C6D12A48E7D0020233C /* NSData-kod.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3ABF4C6C12A48E7D0020233C /* NSData-kod.mm */; };
 		3ABF4F3E12A55AFC0020233C /* NSString-editdistance.m in Sources */ = {isa = PBXBuildFile; fileRef = 3ABF4F3D12A55AFC0020233C /* NSString-editdistance.m */; };
 		3ABF539612A5D52F0020233C /* KSplitView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3ABF539512A5D52F0020233C /* KSplitView.m */; };
-		3ABF541012A5DB1D0020233C /* KTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3ABF540F12A5DB1D0020233C /* KTextView.m */; };
+		3ABF541012A5DB1D0020233C /* KTextView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3ABF540F12A5DB1D0020233C /* KTextView.mm */; };
 		3ABF541F12A5DC6F0020233C /* KClipView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3ABF541E12A5DC6F0020233C /* KClipView.m */; };
 		3AC2D3FD1298C40A0066B586 /* KSourceHighlightState.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3AC2D3FC1298C40A0066B586 /* KSourceHighlightState.mm */; };
 		3AC2D4A71298D8050066B586 /* KTextStorage.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3AC2D4A61298D8050066B586 /* KTextStorage.mm */; };
@@ -296,22 +292,12 @@
 		3A366A8212CB873D00257AE6 /* node_kod.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = node_kod.h; path = "node-module/node_kod.h"; sourceTree = "<group>"; };
 		3A366A8312CB873D00257AE6 /* node_kod.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = node_kod.mm; path = "node-module/node_kod.mm"; sourceTree = "<group>"; };
 		3A40F92E12AFF21A007B5879 /* main.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = main.js; sourceTree = "<group>"; };
-		3A40FA5B12B02FD0007B5879 /* JSON.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSON.h; sourceTree = "<group>"; };
-		3A40FA5C12B02FD0007B5879 /* NSObject+SBJSON.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSObject+SBJSON.h"; sourceTree = "<group>"; };
-		3A40FA5D12B02FD0007B5879 /* NSObject+SBJSON.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSObject+SBJSON.m"; sourceTree = "<group>"; };
-		3A40FA5E12B02FD0007B5879 /* NSString+SBJSON.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+SBJSON.h"; sourceTree = "<group>"; };
-		3A40FA5F12B02FD0007B5879 /* NSString+SBJSON.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+SBJSON.m"; sourceTree = "<group>"; };
-		3A40FA6212B02FD0007B5879 /* SBJsonParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SBJsonParser.h; sourceTree = "<group>"; };
-		3A40FA6312B02FD0007B5879 /* SBJsonParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SBJsonParser.m; sourceTree = "<group>"; };
-		3A40FA6412B02FD0007B5879 /* SBJsonWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SBJsonWriter.h; sourceTree = "<group>"; };
-		3A40FA6512B02FD0007B5879 /* SBJsonWriter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SBJsonWriter.m; sourceTree = "<group>"; };
 		3A4CB3DF12B1872300B45858 /* NSString-data.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString-data.h"; sourceTree = "<group>"; };
 		3A4CB3E012B1872300B45858 /* NSString-data.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString-data.m"; sourceTree = "<group>"; };
-		3A4CB3FA12B1897B00B45858 /* SBJsonStreamWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SBJsonStreamWriter.h; sourceTree = "<group>"; };
-		3A4CB3FB12B1897B00B45858 /* SBJsonStreamWriter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SBJsonStreamWriter.m; sourceTree = "<group>"; };
-		3A4CB3FC12B1897B00B45858 /* SBProxyForJson.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SBProxyForJson.h; sourceTree = "<group>"; };
 		3A4D50EB1282E40300B06EEB /* NSString-utf8-range-conv.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString-utf8-range-conv.h"; sourceTree = "<group>"; };
 		3A4D50EC1282E40300B06EEB /* NSString-utf8-range-conv.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString-utf8-range-conv.m"; sourceTree = "<group>"; };
+		3A4F478312CFA83900301464 /* KWordDictionary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KWordDictionary.h; sourceTree = "<group>"; };
+		3A4F478412CFA83900301464 /* KWordDictionary.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KWordDictionary.mm; sourceTree = "<group>"; };
 		3A5107C912C1233900AAC1D5 /* KMachService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KMachService.h; sourceTree = "<group>"; };
 		3A5107CA12C1233900AAC1D5 /* KMachService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KMachService.m; sourceTree = "<group>"; };
 		3A5107D312C1245400AAC1D5 /* KMachServiceProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KMachServiceProtocol.h; sourceTree = "<group>"; };
@@ -487,7 +473,7 @@
 		3ABF539412A5D52F0020233C /* KSplitView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSplitView.h; sourceTree = "<group>"; };
 		3ABF539512A5D52F0020233C /* KSplitView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KSplitView.m; sourceTree = "<group>"; };
 		3ABF540E12A5DB1D0020233C /* KTextView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KTextView.h; sourceTree = "<group>"; };
-		3ABF540F12A5DB1D0020233C /* KTextView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KTextView.m; sourceTree = "<group>"; };
+		3ABF540F12A5DB1D0020233C /* KTextView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KTextView.mm; sourceTree = "<group>"; };
 		3ABF541D12A5DC6F0020233C /* KClipView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KClipView.h; sourceTree = "<group>"; };
 		3ABF541E12A5DC6F0020233C /* KClipView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KClipView.m; sourceTree = "<group>"; };
 		3AC2D3FB1298C40A0066B586 /* KSourceHighlightState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSourceHighlightState.h; sourceTree = "<group>"; };
@@ -590,25 +576,14 @@
 			name = Node;
 			sourceTree = "<group>";
 		};
-		3A40FA5A12B02FD0007B5879 /* JSON */ = {
+		3A4F478212CFA81800301464 /* Text */ = {
 			isa = PBXGroup;
 			children = (
-				3A40FA5B12B02FD0007B5879 /* JSON.h */,
-				3A40FA5C12B02FD0007B5879 /* NSObject+SBJSON.h */,
-				3A40FA5D12B02FD0007B5879 /* NSObject+SBJSON.m */,
-				3A40FA5E12B02FD0007B5879 /* NSString+SBJSON.h */,
-				3A40FA5F12B02FD0007B5879 /* NSString+SBJSON.m */,
-				3A40FA6212B02FD0007B5879 /* SBJsonParser.h */,
-				3A40FA6312B02FD0007B5879 /* SBJsonParser.m */,
-				3A40FA6412B02FD0007B5879 /* SBJsonWriter.h */,
-				3A40FA6512B02FD0007B5879 /* SBJsonWriter.m */,
-				3A4CB3FA12B1897B00B45858 /* SBJsonStreamWriter.h */,
-				3A4CB3FB12B1897B00B45858 /* SBJsonStreamWriter.m */,
-				3A4CB3FC12B1897B00B45858 /* SBProxyForJson.h */,
+				3A4F478312CFA83900301464 /* KWordDictionary.h */,
+				3A4F478412CFA83900301464 /* KWordDictionary.mm */,
 			);
-			name = JSON;
-			path = "deps/json-framework/Classes";
-			sourceTree = SOURCE_ROOT;
+			name = Text;
+			sourceTree = "<group>";
 		};
 		3A5107C812C1231700AAC1D5 /* kod helper */ = {
 			isa = PBXGroup;
@@ -714,7 +689,6 @@
 			children = (
 				3AE5E8D112916F3300B17C4F /* Base */,
 				3AE5E8D212916F4100B17C4F /* NS categories */,
-				3A40FA5A12B02FD0007B5879 /* JSON */,
 				3A811A5812AE7DC400BC08AE /* hunch-cocoa */,
 				3AB97D3F12B298FB00F4ADB2 /* BWToolkit */,
 				3A928C16122714E800DA7E43 /* main.m */,
@@ -737,6 +711,7 @@
 				3A5107C812C1231700AAC1D5 /* kod helper */,
 				3A40F8C312AFE5D7007B5879 /* Node */,
 				3ABF539712A5D5360020233C /* Main views */,
+				3A4F478212CFA81800301464 /* Text */,
 				3A158AD3128A09D300339E6E /* ICU */,
 				3ABF56AE12A69F9D0020233C /* Style */,
 				3A7E717D1286F41C00D85E4C /* Syntax highlighting */,
@@ -1020,7 +995,7 @@
 				3ABF541D12A5DC6F0020233C /* KClipView.h */,
 				3ABF541E12A5DC6F0020233C /* KClipView.m */,
 				3ABF540E12A5DB1D0020233C /* KTextView.h */,
-				3ABF540F12A5DB1D0020233C /* KTextView.m */,
+				3ABF540F12A5DB1D0020233C /* KTextView.mm */,
 				3AEC6C8B12BC12FB00F769DB /* KLineNumberMarker.h */,
 				3AEC6C8C12BC12FB00F769DB /* KLineNumberMarker.m */,
 				3AEC6C8D12BC12FB00F769DB /* KMetaRulerView.h */,
@@ -1286,7 +1261,7 @@
 				3ABF4C6D12A48E7D0020233C /* NSData-kod.mm in Sources */,
 				3ABF4F3E12A55AFC0020233C /* NSString-editdistance.m in Sources */,
 				3ABF539612A5D52F0020233C /* KSplitView.m in Sources */,
-				3ABF541012A5DB1D0020233C /* KTextView.m in Sources */,
+				3ABF541012A5DB1D0020233C /* KTextView.mm in Sources */,
 				3ABF541F12A5DC6F0020233C /* KClipView.m in Sources */,
 				3A811A6E12AE7DE600BC08AE /* HDProcess.m in Sources */,
 				3A811A6F12AE7DE600BC08AE /* HDSemaphore.m in Sources */,
@@ -1295,12 +1270,7 @@
 				3A811A7212AE7DE600BC08AE /* HRefcountLogger.m in Sources */,
 				3A811A7312AE7DE600BC08AE /* NSThread-condensedStackTrace.m in Sources */,
 				3A811A7D12AE813800BC08AE /* KModeTextFieldDecoration.mm in Sources */,
-				3A40FA6612B02FD0007B5879 /* NSObject+SBJSON.m in Sources */,
-				3A40FA6712B02FD0007B5879 /* NSString+SBJSON.m in Sources */,
-				3A40FA6912B02FD0007B5879 /* SBJsonParser.m in Sources */,
-				3A40FA6A12B02FD0007B5879 /* SBJsonWriter.m in Sources */,
 				3A4CB3E112B1872300B45858 /* NSString-data.m in Sources */,
-				3A4CB3FD12B1897B00B45858 /* SBJsonStreamWriter.m in Sources */,
 				3AB97BD612B2836800F4ADB2 /* KStatusBarView.m in Sources */,
 				3AB97C3612B2893C00F4ADB2 /* KStatusBarController.mm in Sources */,
 				3AB97D4512B2990500F4ADB2 /* BWSplitView.m in Sources */,
@@ -1338,6 +1308,7 @@
 				3AB5823612CAD15300E528B1 /* k_objc_prop.m in Sources */,
 				3A366A8412CB873D00257AE6 /* KObjectProxy.mm in Sources */,
 				3A366A8512CB873D00257AE6 /* node_kod.mm in Sources */,
+				3A4F478512CFA83900301464 /* KWordDictionary.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -1,5 +1,9 @@
 #import "kconf.h"
+#import "HEventEmitter.h"
 #import "NSColor-web.h"
+
+NSString * const KConfValueDidChangeNotification =
+    @"KConfValueDidChangeNotification";
 
 static inline NSURL *_relurl(NSURL *baseurl, NSString *relpath) {
   return relpath ? [baseurl URLByAppendingPathComponent:relpath] : baseurl;
@@ -13,6 +17,13 @@ NSURL* kconf_res_url(NSString* relpath) {
 
 NSURL* kconf_support_url(NSString* relpath) {
   return _relurl([kconf_bundle() sharedSupportURL], relpath);
+}
+
+
+void kconf_notify_change(NSString *key) {
+  [kconf_defaults() post:KConfValueDidChangeNotification
+              userObject:key
+                  forKey:@"key"];
 }
 
 

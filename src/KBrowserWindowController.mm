@@ -48,14 +48,14 @@
   splitView_.position = kconf_double(@"editor/splitView/position", 180.0);
   splitView_.isCollapsed = YES; //kconf_bool(@"editor/splitView/collapsed", YES);
   // register for split view resize notification so we can store conf value
-  
+
   [self observe:NSSplitViewDidResizeSubviewsNotification
          source:splitView_
         handler:@selector(splitViewDidResize:)];
   [self observe:KSplitViewDidChangeCollapseStateNotification
          source:splitView_
         handler:@selector(splitViewDidChangeCollapseState:)];
-  
+
   // set splitView of toolbarController_
   if (toolbarController_) {
     ((KToolbarController*)toolbarController_).splitView = splitView_;
@@ -79,6 +79,14 @@
   return [self initWithBrowser:[KBrowser browser]];
 }
 
+
+- (void)dealloc {
+  [self stopObserving];
+  [[self window] setDelegate:nil];
+  if (toolbarController_)
+    [toolbarController_ removeObserver:self forKeyPath:@"directoryURL"];
+  [super dealloc];
+}
 
 /*- (id)retain {
   fprintf(stderr, ">>>>> %s retain %lu\n", [[self description] UTF8String], [self retainCount]);
@@ -154,7 +162,7 @@
   goToLinePopUp_ = [KPopUp popupWithSize:NSMakeSize(120.0, 55.0)
                         centeredInWindow:self.window];
   goToLinePopUp_.onClose = ^(KPopUp *popup){ goToLinePopUp_ = nil; };
-  
+
   // Add label "Go to line:"
   NSTextField *label = [[[NSTextField alloc] initWithFrame:
       NSMakeRect(10.0, 30.0, 100.0, 20.0)] autorelease];
@@ -166,7 +174,7 @@
   NSTextFieldCell *tfcell = [label cell];
   [tfcell setAlignment:NSCenterTextAlignment];
   [goToLinePopUp_.contentView addSubview:label];
-  
+
   // Add a text field for inputing line number
   NSTextField *textField = [[[NSTextField alloc] initWithFrame:
       NSMakeRect(10.0, 10.0, 100.0, 20.0)] autorelease];
@@ -179,7 +187,7 @@
   if (goToLineLastValue_ > 0)
     [textField setIntegerValue:goToLineLastValue_];
   [goToLinePopUp_.contentView addSubview:textField];
-  
+
   [goToLinePopUp_ makeKeyWindow];
   [textField becomeFirstResponder];
 }
@@ -190,7 +198,7 @@
     return;
   NSTextField *textField = (NSTextField*)sender;
   if (goToLinePopUp_) [goToLinePopUp_ close];
-  
+
   goToLineLastValue_ = [textField.cell integerValue];
   if (goToLineLastValue_ < 1)
     return; // 0 if the text field was empty or non-number
@@ -345,7 +353,7 @@ willPositionSheet:(NSWindow *)sheet
   splitViewFrame.origin.x = 0.0;
   splitViewFrame.origin.y = newFrame.origin.y;
   [splitView_ setFrame:splitViewFrame];
-  
+
   [super layoutTabContentArea:newFrame];
 }
 
@@ -368,7 +376,7 @@ willPositionSheet:(NSWindow *)sheet
 
 - (NSMethodSignature *)methodSignatureForSelector:(SEL)selector {
   NSMethodSignature* sig = [super methodSignatureForSelector:selector];
-	if (!sig) {
+  if (!sig) {
     KDocument* tab = (KDocument*)[browser_ selectedTabContents];
     if (tab)
       sig = [tab methodSignatureForSelector:selector];
@@ -377,7 +385,7 @@ willPositionSheet:(NSWindow *)sheet
 }
 
 - (BOOL)respondsToSelector:(SEL)selector {
-	BOOL y = [super respondsToSelector:selector];
+  BOOL y = [super respondsToSelector:selector];
   if (!y) {
     KDocument* tab = (KDocument*)[browser_ selectedTabContents];
     y = !!tab && [tab respondsToSelector:selector];

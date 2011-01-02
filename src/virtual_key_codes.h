@@ -1,7 +1,7 @@
 /*
  *  Summary:
  *    Virtual keycodes
- *  
+ *
  *  Discussion:
  *    These constants are the virtual keycodes defined originally in
  *    Inside Mac Volume V, pg. V-191. They identify physical keys on a

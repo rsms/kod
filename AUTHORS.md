@@ -5,3 +5,5 @@
 - Kushal Pisavadia <kushi.p@gmail.com>
 - August Joki <august.joki@gmail.com>
 - Swizec Teller <swizec@swizec.com>
+- Cody Krieger <cody@codykrieger.com>
+- Steve Johnson <steve.johnson.public@gmail.com>

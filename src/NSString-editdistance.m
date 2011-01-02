@@ -40,7 +40,7 @@ typedef struct editdist_ctx {
   // furthest along the given diagonal in the backward search of the edit
   // matrix.
   int *bdiag;
-  
+
   #ifdef USE_HEURISTIC
   // This corresponds to the diff -H flag.  With this heuristic, for vectors
   // with a constant small density of changes, the algorithm is linear in the
@@ -115,15 +115,15 @@ static void diag(int xoff, int xlim, int yoff, int ylim,
   int c;                     /* Cost. */
   bool odd = (fmid - bmid) & 1; /* True if southeast corner is on an odd
                                  diagonal with respect to the northwest. */
-  
+
   fd[fmid] = xoff;
   bd[bmid] = xlim;
-  
+
   for (c = 1;; ++c)
   {
     int d;                 /* Active diagonal. */
     bool big_snake = false;
-    
+
     /* Extend the top-down search by an edit step in each diagonal. */
     if (fmin > dmin)
       fd[--fmin - 1] = -1;
@@ -140,7 +140,7 @@ static void diag(int xoff, int xlim, int yoff, int ylim,
       int tlo = fd[d - 1];
       int thi = fd[d + 1];
       int x0 = tlo < thi ? thi : tlo + 1;
-      
+
       for (x = x0, y = x0 - d;
            x < xlim && y < ylim && (xv[x] == yv[y]);
            x++, y++)
@@ -156,7 +156,7 @@ static void diag(int xoff, int xlim, int yoff, int ylim,
         return;
       }
     }
-    
+
     /* Similarly extend the bottom-up search.  */
     if (bmin > dmin)
       bd[--bmin - 1] = INT_MAX;
@@ -173,7 +173,7 @@ static void diag(int xoff, int xlim, int yoff, int ylim,
       int tlo = bd[d - 1];
       int thi = bd[d + 1];
       int x0 = tlo < thi ? tlo : thi - 1;
-      
+
       for (x = x0, y = x0 - d;
            xoff < x && yoff < y && (xv[x - 1] == yv[y - 1]);
            x--, y--)
@@ -189,30 +189,30 @@ static void diag(int xoff, int xlim, int yoff, int ylim,
         return;
       }
     }
-    
+
     if (find_minimal)
       continue;
-    
+
 #ifdef USE_HEURISTIC
     /* Heuristic: check occasionally for a diagonal that has made lots
      of progress compared with the edit distance.  If we have any
      such, find the one that has made the most progress and return it
      as if it had succeeded.
-     
+
      With this heuristic, for vectors with a constant small density
      of changes, the algorithm is linear in the vector size.  */
-    
+
     if (200 < c && big_snake && ctxt->heuristic)
     {
       int best = 0;
-      
+
       for (d = fmax; d >= fmin; d -= 2)
       {
         int dd = d - fmid;
         int x = fd[d];
         int y = x - d;
         int v = (x - xoff) * 2 - dd;
-        
+
         if (v > 12 * (c + (dd < 0 ? -dd : dd)))
         {
           if (v > best
@@ -222,7 +222,7 @@ static void diag(int xoff, int xlim, int yoff, int ylim,
             /* We have a good enough best diagonal; now insist
              that it end with a significant snake.  */
             int k;
-            
+
             for (k = 1; (xv[x - k] == yv[y - k]); k++)
               if (k == SNAKE_LIMIT)
               {
@@ -240,7 +240,7 @@ static void diag(int xoff, int xlim, int yoff, int ylim,
         part->hi_minimal = false;
         return;
       }
-      
+
       best = 0;
       for (d = bmax; d >= bmin; d -= 2)
       {
@@ -248,7 +248,7 @@ static void diag(int xoff, int xlim, int yoff, int ylim,
         int x = bd[d];
         int y = x - d;
         int v = (xlim - x) * 2 + dd;
-        
+
         if (v > 12 * (c + (dd < 0 ? -dd : dd)))
         {
           if (v > best
@@ -258,7 +258,7 @@ static void diag(int xoff, int xlim, int yoff, int ylim,
             /* We have a good enough best diagonal; now insist
              that it end with a significant snake.  */
             int k;
-            
+
             for (k = 0; (xv[x + k] == yv[y + k]); k++)
               if (k == SNAKE_LIMIT - 1)
               {
@@ -278,7 +278,7 @@ static void diag(int xoff, int xlim, int yoff, int ylim,
       }
     }
 #endif /* USE_HEURISTIC */
-    
+
     /* Heuristic: if we've gone well beyond the call of duty, give up
      and report halfway between our best results so far.  */
     if (c >= ctxt->too_expensive)
@@ -287,7 +287,7 @@ static void diag(int xoff, int xlim, int yoff, int ylim,
       int fxbest;
       int bxybest;
       int bxbest;
-      
+
       /* Find forward diagonal that maximizes X + Y.  */
       fxybest = -1;
       for (d = fmax; d >= fmin; d -= 2)
@@ -305,7 +305,7 @@ static void diag(int xoff, int xlim, int yoff, int ylim,
           fxbest = x;
         }
       }
-      
+
       /* Find backward diagonal that minimizes X + Y.  */
       bxybest = INT_MAX;
       for (d = bmax; d >= bmin; d -= 2)
@@ -323,7 +323,7 @@ static void diag(int xoff, int xlim, int yoff, int ylim,
           bxbest = x;
         }
       }
-      
+
       /* Use the better of the two diagonals.  */
       if ((xlim + ylim) - bxybest < fxybest - (xoff + yoff))
       {
@@ -348,34 +348,34 @@ static void diag(int xoff, int xlim, int yoff, int ylim,
 /*
  Compare in detail contiguous subsequences of the two vectors
  which are known, as a whole, to match each other.
- 
+
  The subsequence of vector 0 is [XOFF, XLIM) and likewise for vector 1.
- 
+
  Note that XLIM, YLIM are exclusive bounds.  All indices into the vectors
  are origin-0.
- 
+
  If FIND_MINIMAL, find a minimal difference no matter how
  expensive it is.
- 
+
  The results are recorded by invoking NOTE_DELETE and NOTE_INSERT.
 */
 static void compareseq (int xoff, int xlim, int yoff, int ylim,
                         bool find_minimal, editdist_ctx_t *ctxt) {
   unichar const *xv = ctxt->xvec; /* Help the compiler.  */
   unichar const *yv = ctxt->yvec;
-  
+
   /* Slide down the bottom initial diagonal.  */
   while (xoff < xlim && yoff < ylim && (xv[xoff] == yv[yoff])) {
     xoff++;
     yoff++;
   }
-  
+
   /* Slide up the top initial diagonal. */
   while (xoff < xlim && yoff < ylim && (xv[xlim - 1] == yv[ylim - 1])) {
     xlim--;
     ylim--;
   }
-  
+
   /* Handle simple cases. */
   if (xoff == xlim) {
     while (yoff < ylim) {
@@ -389,10 +389,10 @@ static void compareseq (int xoff, int xlim, int yoff, int ylim,
     }
   } else {
     struct partition part;
-    
+
     /* Find a point of correspondence in the middle of the vectors.  */
     diag (xoff, xlim, yoff, ylim, find_minimal, &part, ctxt);
-    
+
     /* Use the partitions to split this problem into subproblems.  */
     compareseq (xoff, part.xmid, yoff, part.ymid, part.lo_minimal, ctxt);
     compareseq (part.xmid, xlim, part.ymid, ylim, part.hi_minimal, ctxt);
@@ -493,10 +493,10 @@ double editdist_cmp(const unichar *string1, int string1len,
   [otherString getCharacters:string2 range:NSMakeRange(0, string2len)];
 
   double distance = editdist_cmp(string1, string1len, string2, string2len);
-  
+
   CFAllocatorDeallocate(kCFAllocatorDefault, string1);
   CFAllocatorDeallocate(kCFAllocatorDefault, string2);
-  
+
   return distance;
 }
 

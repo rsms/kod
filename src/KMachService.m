@@ -29,7 +29,7 @@ static KMachService *gSharedInstance = nil;
   } else {
     DLOG("%@ opened", self);
   }
-  
+
   return self;
 }
 

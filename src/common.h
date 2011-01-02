@@ -56,7 +56,7 @@
     // trace "<ObjCClass: 0xAddress> selector"
     #define DLOG_TRACE_M() \
       _LOG('T', "%@ %@", self, NSStringFromSelector(_cmd));
-    
+
     NSString *VTPG_DDToStringFromTypeAndValue(const char *tc, void *v);
     #define DLOG_EXPR(_X_) do{\
       __typeof__(_X_) _Y_ = (_X_);\
@@ -108,10 +108,18 @@ const char *k_strrstr(const char *string, const char *find);
 
 
 #define DLOG_RANGE(r, str) do { \
+  if ((r).location == NSNotFound && (r).length == NSNotFound) { \
+    DLOG( #r " {NSNotFound, NSNotFound} (null)"); \
+  } else if ((r).location == NSNotFound) { \
+    DLOG( #r " {NSNotFound, %lu} (null)", (r).length); \
+  } else if ((r).length == NSNotFound) { \
+    DLOG( #r " {%lu, NSNotFound} (null)", (r).location); \
+  } else { \
     NSString *s = @"<index out of bounds>"; \
     @try{ s = [str substringWithRange:(r)]; }@catch(id e){} \
     DLOG( #r " %@ \"%@\"", NSStringFromRange(r), s); \
-  } while (0)
+  } \
+} while(0)
 
 
 #ifdef __OBJC__

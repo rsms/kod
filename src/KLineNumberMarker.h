@@ -13,7 +13,7 @@
 // copies of the Software, and to permit persons to whom the
 // Software is furnished to do so, subject to the following
 // conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be
 // included in all copies or substantial portions of the Software.
 //
@@ -31,13 +31,13 @@
 
 /*
  Marker for NoodleLineNumberView.
- 
+
  For more details, see the related blog post at:  http://www.noodlesoft.com/blog/2008/10/05/displaying-line-numbers-with-nstextview/
  */
 
 @interface KLineNumberMarker : NSRulerMarker
 {
-	NSUInteger		_lineNumber;
+  NSUInteger    _lineNumber;
 }
 
 - (id)initWithRulerView:(NSRulerView *)aRulerView lineNumber:(CGFloat)line image:(NSImage *)anImage imageOrigin:(NSPoint)imageOrigin;

@@ -15,7 +15,7 @@ NSColor *KScrollerKnobSlotColorHover;
 
 + (void)load {
   NSAutoreleasePool *pool = [NSAutoreleasePool new];
-  
+
   KScrollerKnobColorNormal =
     [[NSColor colorWithCalibratedWhite:1.0 alpha:0.4] retain];
   KScrollerKnobColorHover =
@@ -25,17 +25,17 @@ NSColor *KScrollerKnobSlotColorHover;
     [[NSColor colorWithCalibratedWhite:1.0 alpha:0.06] retain];
   KScrollerKnobSlotColorHover =
     [[NSColor colorWithCalibratedWhite:1.0 alpha:0.2] retain];
-  
+
   [pool drain];
 }
 
 
 + (CGFloat)scrollerWidth {
-	return 16.0;
+  return 16.0;
 }
 
 + (CGFloat)scrollerWidthForControlSize:(NSControlSize)controlSize {
-	return 16.0;
+  return 16.0;
 }
 
 
@@ -49,18 +49,18 @@ NSColor *KScrollerKnobSlotColorHover;
 
 
 - (id)initWithFrame:(NSRect)frameRect {
-	if (self = [super initWithFrame:frameRect]) {
-		[self _init];
-	}
-	return self;
+  if (self = [super initWithFrame:frameRect]) {
+    [self _init];
+  }
+  return self;
 }
 
 
 - (id)initWithCoder:(NSCoder *)decoder {
-	if (self = [super initWithCoder:decoder]) {
-		[self _init];
-	}
-	return self;
+  if (self = [super initWithCoder:decoder]) {
+    [self _init];
+  }
+  return self;
 }
 
 
@@ -114,7 +114,7 @@ NSColor *KScrollerKnobSlotColorHover;
                                     userInfo:nil];
       [self addTrackingArea:trackingArea_];
     }
-    
+
     // bubble
     if (vertical_) {
       slotRect.size.width = 9.0;

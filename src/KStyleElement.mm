@@ -52,7 +52,7 @@ void KStyleElement::setStyle(CSSStyle *style, KStyle *parent) {
   if (!color || [color alphaComponent] == 0.0)
     color = kconf_color(@"defaultTextColor", [NSColor whiteColor]);
   setForegroundColor(color);
-  
+
   // background color
   if ((color = style.backgroundColor) && [color alphaComponent] != 0.0)
     setBackgroundColor(color);
@@ -62,7 +62,7 @@ void KStyleElement::setStyle(CSSStyle *style, KStyle *parent) {
   NSNumber *obliqueness = nil;
   NSNumber *underlined = nil;
   NSNumber *strikethrough = nil;
-  
+
   // font style
   switch (style.fontStyle) {
     case CSS_FONT_STYLE_ITALIC:
@@ -72,11 +72,11 @@ void KStyleElement::setStyle(CSSStyle *style, KStyle *parent) {
       obliqueness = [NSNumber numberWithFloat:0.16];
       break;
   }
-  
+
   // font variant
   if (style.fontVariant == CSS_FONT_VARIANT_SMALL_CAPS)
     fontTraitMask |= NSSmallCapsFontMask;
-  
+
   // font weight (currently only "bold" is supported)
   switch (style.fontWeight) {
     case CSS_FONT_WEIGHT_BOLD:
@@ -84,7 +84,7 @@ void KStyleElement::setStyle(CSSStyle *style, KStyle *parent) {
       fontTraitMask |= NSBoldFontMask;
       break;
   }
-  
+
   // text decoration
   switch (style.textDecoration) {
     case CSS_TEXT_DECORATION_UNDERLINE:
@@ -94,7 +94,7 @@ void KStyleElement::setStyle(CSSStyle *style, KStyle *parent) {
       strikethrough = [NSNumber numberWithInt:NSUnderlineStyleSingle];
       break;
   }
-  
+
   // derive new font with traits
   if (parent) {
     NSFont *font = parent.baseFont;
@@ -108,14 +108,14 @@ void KStyleElement::setStyle(CSSStyle *style, KStyle *parent) {
                                              size:[font pointSize]];
       if (font2) font = font2;
     }
-    
+
     // font
     [textAttributes_ setObject:font forKey:NSFontAttributeName];
   }
-  
+
   // cursor
   NSCursor *cursor = style.cursor;
-  
+
   // set or clear attributes
   setAttribute(NSObliquenessAttributeName, obliqueness);
   setAttribute(NSUnderlineStyleAttributeName, underlined);

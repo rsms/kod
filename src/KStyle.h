@@ -13,7 +13,7 @@ extern NSString const *KStyleDidChangeNotification;
  */
 @interface KStyle : NSObject {
   CSSContext* cssContext_;
-  
+
   // Style for default element ("body") used to create other elements
   CSSStyle *defaultStyle_;
   OSSpinLock styleSpinLock_;
@@ -21,7 +21,7 @@ extern NSString const *KStyleDidChangeNotification;
   /// Contains KStyleElement mapped by their string symbols.
   HUnorderedMapSharedPtr<NSString const*, KStyleElement> elements_;
   OSSpinLock elementsSpinLock_;
-  
+
   // Font
   NSFont* baseFont_;
 }

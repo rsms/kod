@@ -16,21 +16,21 @@ static const CGFloat kArrowHeight = 6.0;
 
   // draw small "menu arrow"
   kArrowImage = [[NSImage alloc] init];
-	[kArrowImage setSize:NSMakeSize(kArrowWidth, kArrowHeight)];
-	//[kArrowImage setFlipped:YES];
-	[kArrowImage lockFocus];
+  [kArrowImage setSize:NSMakeSize(kArrowWidth, kArrowHeight)];
+  //[kArrowImage setFlipped:YES];
+  [kArrowImage lockFocus];
 
-	NSPoint p1 = NSMakePoint(0,0);
-	NSPoint p2 = NSMakePoint(kArrowWidth, 0);
-	NSPoint p3 = NSMakePoint(kArrowWidth / 2, kArrowHeight - 1);
-	NSBezierPath *triangle = [NSBezierPath bezierPath];
-	[triangle moveToPoint:p1];
-	[triangle lineToPoint:p2];
-	[triangle lineToPoint:p3];
-	[triangle lineToPoint:p1];
+  NSPoint p1 = NSMakePoint(0,0);
+  NSPoint p2 = NSMakePoint(kArrowWidth, 0);
+  NSPoint p3 = NSMakePoint(kArrowWidth / 2, kArrowHeight - 1);
+  NSBezierPath *triangle = [NSBezierPath bezierPath];
+  [triangle moveToPoint:p1];
+  [triangle lineToPoint:p2];
+  [triangle lineToPoint:p3];
+  [triangle lineToPoint:p1];
   [[NSColor blackColor] set];
   [triangle fill];
-  
+
   [kArrowImage unlockFocus];
 
   [pool drain];
@@ -56,7 +56,7 @@ static const CGFloat kArrowHeight = 6.0;
 
 - (void)setName:(NSString*)name {
   h_swapid(&name_, name);
-  
+
   if (name_ == nil) {
     h_swapid(&icon_, [[NSImage imageNamed:@"icon.pdf"] retain]);
     return;
@@ -65,9 +65,9 @@ static const CGFloat kArrowHeight = 6.0;
   // create icon
   NSRect iconBounds = NSMakeRect(0.0, 0.0, kIconWidth, kIconHeight);
   NSImage *icon = [[NSImage alloc] init];
-	[icon setSize:iconBounds.size];
-	[icon lockFocusFlipped:NO];
-  
+  [icon setSize:iconBounds.size];
+  [icon lockFocusFlipped:NO];
+
   NSStringDrawingOptions options = NSStringDrawingOneShot|
                                    NSStringDrawingUsesLineFragmentOrigin;
   NSAttributedString *astr;
@@ -85,14 +85,14 @@ static const CGFloat kArrowHeight = 6.0;
     NSLog(@"strRect: %@   dstRect: %@",
           NSStringFromRect(strRect),
           NSStringFromRect(iconBounds));
-    
+
     if (strRect.size.width <= iconBounds.size.width &&
         strRect.size.height <= iconBounds.size.height)
       break;
     size -= 1.0;
     [astr release];
   }
-  
+
   [astr drawWithRect:iconBounds options:options];
 
   [icon unlockFocus];
@@ -149,7 +149,7 @@ static const CGFloat kArrowHeight = 6.0;
   NSPoint arrowOrigin = dstRect.origin;
   arrowOrigin.x += frame.size.width - kArrowWidth;
   arrowOrigin.y += dstRect.size.height - kArrowHeight;
-  
+
   [kArrowImage drawAtPoint:arrowOrigin
                   fromRect:NSZeroRect
                  operation:NSCompositeSourceOver

@@ -8,20 +8,20 @@
 
 #import <Cocoa/Cocoa.h>
 
-@interface BWSplitView : NSSplitView 
+@interface BWSplitView : NSSplitView
 {
-	NSColor *color;
-	BOOL colorIsEnabled, checkboxIsEnabled, dividerCanCollapse, collapsibleSubviewCollapsed;
-	id secondaryDelegate;
-	NSMutableDictionary *minValues, *maxValues, *minUnits, *maxUnits;
-	NSMutableDictionary *resizableSubviewPreferredProportion, *nonresizableSubviewPreferredSize;
-	NSArray *stateForLastPreferredCalculations;
-	int collapsiblePopupSelection;
-	float uncollapsedSize;
-	
-	// Collapse button
-	NSButton *toggleCollapseButton;
-	BOOL isAnimating;
+  NSColor *color;
+  BOOL colorIsEnabled, checkboxIsEnabled, dividerCanCollapse, collapsibleSubviewCollapsed;
+  id secondaryDelegate;
+  NSMutableDictionary *minValues, *maxValues, *minUnits, *maxUnits;
+  NSMutableDictionary *resizableSubviewPreferredProportion, *nonresizableSubviewPreferredSize;
+  NSArray *stateForLastPreferredCalculations;
+  int collapsiblePopupSelection;
+  float uncollapsedSize;
+
+  // Collapse button
+  NSButton *toggleCollapseButton;
+  BOOL isAnimating;
 }
 
 @property (nonatomic, retain) NSMutableDictionary *minValues, *maxValues, *minUnits, *maxUnits;

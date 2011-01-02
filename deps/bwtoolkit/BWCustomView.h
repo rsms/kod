@@ -9,9 +9,9 @@
 #import <Cocoa/Cocoa.h>
 #import "NSCustomView.h"
 
-@interface BWCustomView : NSCustomView 
+@interface BWCustomView : NSCustomView
 {
-	BOOL isOnItsOwn;
+  BOOL isOnItsOwn;
 }
 
 @end

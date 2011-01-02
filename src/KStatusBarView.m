@@ -30,7 +30,7 @@ static CGFloat kSplitViewMarkerWidth = 3.0;
   NSAutoreleasePool* pool = [NSAutoreleasePool new];
   kGradientWhenIsKey = _mkGradient(NO);
   kGradientWhenNotKey = _mkGradient(YES);
-  
+
   kColorStrokeHighlightWhenIsKey =
     [[NSColor colorWithCalibratedWhite:1.0 alpha:0.7] retain];
   kColorStrokeHighlightWhenNotKey =
@@ -43,7 +43,7 @@ static CGFloat kSplitViewMarkerWidth = 3.0;
 
   kColorDivider =
     [[NSColor colorWithCalibratedWhite:0.06 alpha:1.0] retain];
-  
+
   [pool drain];
 }
 
@@ -54,7 +54,7 @@ static CGFloat kSplitViewMarkerWidth = 3.0;
   rightViewGroupFrame.origin.x += splitViewPositionForLayout_;
   rightViewGroupFrame.size.width -= splitViewPositionForLayout_;
   [rightViewGroup_ setFrame:rightViewGroupFrame];
-  
+
   //[self setNeedsDisplayInRect:dirtyRect];
   [self setNeedsDisplay:YES];
 }
@@ -62,7 +62,7 @@ static CGFloat kSplitViewMarkerWidth = 3.0;
 
 - (void)_updateSplitViewMarkerFrame {
   NSRect frame = NSZeroRect;
-  
+
   if (splitView_) {
     CGFloat xpos = splitViewPositionForLayout_;
     if (xpos > 0.0) {
@@ -71,7 +71,7 @@ static CGFloat kSplitViewMarkerWidth = 3.0;
                          kSplitViewMarkerWidth, bounds.size.height);
     }
   }
-  
+
   if (!NSEqualRects(frame, splitViewMarkerFrame_)) {
     NSRect dirtyRect;
     if (NSIsEmptyRect(frame)) {
@@ -126,7 +126,7 @@ static CGFloat kSplitViewMarkerWidth = 3.0;
 - (void)drawSplitViewMarker {
   BOOL isKey = [[self window] isKeyWindow];
   //[[NSColor redColor] drawSwatchInRect:splitViewMarkerFrame_];
-  
+
   CGFloat dividerXPos = splitViewMarkerFrame_.origin.x +
                         ceil(splitViewMarkerFrame_.size.width/2.0);
   [self _drawVerticalDividerAt:dividerXPos isKey:isKey];
@@ -138,7 +138,7 @@ static CGFloat kSplitViewMarkerWidth = 3.0;
   NSRect bounds = [self bounds];
   dirtyRect.origin.y = bounds.origin.y;
   dirtyRect.size.height = bounds.size.height;
-  
+
   // draw gradient
   BOOL isKey = [[self window] isKeyWindow];
   NSGradient *gradient = isKey ? kGradientWhenIsKey : kGradientWhenNotKey;
@@ -151,13 +151,13 @@ static CGFloat kSplitViewMarkerWidth = 3.0;
   borderRect.origin.y += borderRect.size.height - thickness;
   borderRect.size.height = thickness;
   NSRectFillUsingOperation(borderRect, NSCompositeSourceOver);
-  
+
   [(isKey ? kColorStrokeHighlightWhenIsKey : kColorStrokeHighlightWhenNotKey) set];
   thickness = 1.0;
   borderRect.origin.y -= thickness;
   borderRect.size.height = thickness;
   NSRectFillUsingOperation(borderRect, NSCompositeSourceOver);
-  
+
   // draw splitView position
   if (NSIntersectsRect(splitViewMarkerFrame_, dirtyRect)) {
     [self drawSplitViewMarker];

@@ -3,6 +3,7 @@
 #import "common.h"
 #import "KSourceHighlighter.h"
 #import "HSemaphore.h"
+#import "HSpinLock.h"
 
 @class KBrowser, KStyle, KBrowserWindowController, KScrollView, KMetaRulerView;
 @class KTextView, KClipView, KURLHandler;
@@ -18,26 +19,27 @@ typedef std::deque<KHighlightQueueEntry> KHighlightQueue;
   __weak NSUndoManager *undoManager_; // Owned by textView_
   BOOL isDirty_;
   NSStringEncoding textEncoding_;
-  
+
   KSourceHighlighterPtr sourceHighlighter_;
   BOOL highlightingEnabled_;
   HSemaphore highlightSem_;
-  
+
   // Current language
   NSString const *langId_;
-  
+
   // Mapped line breaks. Provides number of lines and a mapping from line number
   // to actual character offset. The location of each range denotes the start
   // of a linebreak and the length denotes how many characters are included in
   // that linebreak (normally 1 or 2: LF, CR or CRLF).
   std::vector<NSRange> lineToRangeVec_;
-  
+  HSpinLock lineToRangeSpinLock_;
+
   // Meta ruler (nil if not shown)
   __weak KMetaRulerView *metaRulerView_;
-  
-  // Timestamp of last edit
-  NSTimeInterval lastEditTimestamp_;
-  
+
+  // Timestamp of last edit (in microseconds). 0 if never edited.
+  uint64_t lastEditTimestamp_;
+
   // Internal state
   hatomic_flags_t stateFlags_;
   NSRange lastEditedHighlightStateRange_;
@@ -65,7 +67,10 @@ typedef std::deque<KHighlightQueueEntry> KHighlightQueue;
 // Tab identifier
 @property(readonly, nonatomic) NSUInteger identifier;
 
-@property(assign) NSURL *fileURL;
+// Text contents
+@property(assign) NSString *text;
+
+@property(assign) NSURL *url; // alias of fileURL
 
 
 + (NSFont*)defaultFont;
@@ -92,8 +97,6 @@ typedef std::deque<KHighlightQueueEntry> KHighlightQueue;
 - (void)styleDidChange:(NSNotification*)notification;
 - (void)textStorageDidProcessEditing:(NSNotification*)notification;
 
-- (void)maintainIndentation;
-
 // Retrieve line number (first line is 1) for character |location|
 - (NSUInteger)lineNumberForLocation:(NSUInteger)location;
 
@@ -106,9 +109,11 @@ typedef std::deque<KHighlightQueueEntry> KHighlightQueue;
 // Range of line at |lineNumber| including line terminator (first line is 1)
 - (NSRange)rangeOfLineAtLineNumber:(NSUInteger)lineNumber;
 
-// Location of line at |lineNumber| 
-- (NSRange)locationOfLineAtLineNumber:(NSUInteger)lineNumber;
-
+/*!
+ * Returns the range of characters representing the line or lines containing the
+ * current selection.
+ */
+- (NSRange)lineRangeForCurrentSelection;
 
 - (BOOL)isNewLine:(NSUInteger)lineNumber;
 

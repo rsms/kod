@@ -8,7 +8,7 @@
   IBOutlet KStatusBarController *statusBarController_;
   IBOutlet KSplitView *splitView_;
   KFileTreeController *fileTreeController_;
-  
+
   NSInteger goToLineLastValue_;
   KPopUp *goToLinePopUp_; // non-nil while active
 }

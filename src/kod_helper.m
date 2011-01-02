@@ -70,9 +70,9 @@ static void parseOptions(int argc, char *argv[]) {
     {0, 0, 0, 0}
   };
   static const char *short_options = "ah";
-  
+
   int c;
-  
+
   while (1) {
     int option_index = 0;
     c = getopt_long(argc, argv, short_options, long_options, &option_index);
@@ -99,7 +99,7 @@ static void parseOptions(int argc, char *argv[]) {
         printUsage(123);
     }
   }
-  
+
   // remaining arguments are paths or URLs
   if (optind < argc) {
     gURLsToOpen = [NSMutableArray arrayWithCapacity:argc-optind];
@@ -124,7 +124,7 @@ static NSRunningApplication *findKodAppAndStartIfNeeded(BOOL asyncLaunch) {
     if (!gKodAppURL)
       errx(1, "Unable to find Kod.app -- have you installed Kod?");
   }
-  
+
   // launch kod
   NSWorkspaceLaunchOptions launchOptions = 0;
   if (asyncLaunch)
@@ -148,10 +148,10 @@ static NSRunningApplication *findKodAppAndStartIfNeeded(BOOL asyncLaunch) {
 
 int main(int argc, char *argv[]) {
   NSAutoreleasePool *pool = [NSAutoreleasePool new];
-  
+
   // parse command line arguments
   parseOptions(argc, argv);
-  
+
   // make sure kod is launched, or launch kod and block until launched
   NSRunningApplication *kodApp = findKodAppAndStartIfNeeded(NO);
 
@@ -160,7 +160,7 @@ int main(int argc, char *argv[]) {
   while (!(sendPort = openSharedKodMachPort())) {
     usleep(50000); // 50 ms
   }
-  
+
   // create connection and proxy object
   id kodService = setupConnectionAndProxyObject(sendPort);
   if (!kodService) {
@@ -168,15 +168,15 @@ int main(int argc, char *argv[]) {
     exit(1);
   }
   DLOG("connected to %@ through %@", sendPort, kodService);
-  
+
   // ask Kod.app to open any URLs passed on the command line
   if (gURLsToOpen)
     [kodService openURLs:gURLsToOpen];
-  
+
   // close connection
   [gConnection invalidate];
   [gConnection release];
   gConnection = nil;
-  
+
   _exit(0);
 }

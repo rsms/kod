@@ -16,7 +16,7 @@ NSString * const KStatusBarDidChangeHiddenStateNotification =
     label = @"0, 0";
   } else {
     NSRange selection = [currentContents_.textView selectedRange];
-    
+
     // line
     NSString *line;
     NSUInteger lineno =
@@ -36,7 +36,7 @@ NSString * const KStatusBarDidChangeHiddenStateNotification =
     } else {
       line = [NSString stringWithFormat:@"%lu", lineno];
     }
-    
+
     // column
     NSString *column;
     NSUInteger colno = selection.location - lineRange.location;
@@ -45,7 +45,7 @@ NSString * const KStatusBarDidChangeHiddenStateNotification =
     } else {
       column = [NSString stringWithFormat:@"%lu:%lu", colno, selection.length];
     }
-    
+
   #if 0  // include character offset
     // offset
     NSString *offset;
@@ -127,7 +127,7 @@ NSString * const KStatusBarDidChangeHiddenStateNotification =
   if (self.isHidden != hidden) {
     [self.statusBarView setHidden:hidden];
     [self post:KStatusBarDidChangeHiddenStateNotification];
-    
+
     // trigger an update since updates are suspended while hidden
     if (!hidden) {
       [self _updateCursorPosition];

@@ -18,26 +18,26 @@
 - (id)initWithCoder:(NSCoder *)decoder;
 {
     if ((self = [super initWithCoder:decoder]) != nil)
-	{
-		if ([BWAnchoredButtonBar wasBorderedBar])
-			topAndLeftInset = NSMakePoint(0, 0);
-		else
-			topAndLeftInset = NSMakePoint(1, 1);
-	}
-	return self;
+  {
+    if ([BWAnchoredButtonBar wasBorderedBar])
+      topAndLeftInset = NSMakePoint(0, 0);
+    else
+      topAndLeftInset = NSMakePoint(1, 1);
+  }
+  return self;
 }
 
 - (void)mouseDown:(NSEvent *)theEvent
 {
-	[self bwBringToFront];
-	[super mouseDown:theEvent];
+  [self bwBringToFront];
+  [super mouseDown:theEvent];
 }
 
 - (NSRect)frame
 {
-	NSRect frame = [super frame];
-	frame.size.height = 24;
-	return frame;
+  NSRect frame = [super frame];
+  frame.size.height = 24;
+  return frame;
 }
 
 @end

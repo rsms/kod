@@ -30,7 +30,7 @@
     ssize_t readsz;
     static size_t bufsize = 512;
     char *buf = (char*)malloc(sizeof(char)*bufsize);
-    
+
     key = "com.apple.TextEncoding";
     // The value is a string "utf-8;134217984" where the last part (if
     // present) is a CFStringEncoding encoded in base-10.
@@ -66,7 +66,7 @@
       //     (int)textEncoding_,
       //     [NSString localizedNameOfStringEncoding:textEncoding_]);
     }
-    
+
     key = "se.hunch.kod.selection";
     if ((readsz = fgetxattr(fd, key, (void*)buf, bufsize, 0, 0)) < 0) {
       DLOG("failed to read xattr '%s' from '%@'", key, path);
@@ -78,7 +78,7 @@
       *selectedRange = NSRangeFromString(s);
       DLOG("loaded selection from xattr: %@", s);
     }
-    
+
     free(buf); buf = NULL;
     close(fd);
   }
@@ -92,7 +92,7 @@
   // utilize mmap to load a file
   NSString *path = [absoluteURL path];
   NSData *data = [NSData dataWithContentsOfMappedFile:path];
-  
+
   // if we failed to read the file, set outError with info
   if (!data) {
     if ([absoluteURL checkResourceIsReachableAndReturnError:outError]) {
@@ -109,7 +109,7 @@
     }
     return nil;
   }
-  
+
   // read xattrs
   NSStringEncoding textEncoding = -1;
   [self _readXAttrsAtPath:path
@@ -126,7 +126,7 @@
     return nil;
   }
   tab.fileModificationDate = mtime;
-  
+
   return data;
 }
 
@@ -213,7 +213,7 @@ successCallback:nil];
     WLOG("failed to open(\"%@\", O_RDONLY)", path);
   } else {
     const char *key, *utf8pch;
-    
+
     key = "com.apple.TextEncoding";
     // The value is a string "utf-8;134217984" where the last part (if
     // present) is a CFStringEncoding encoded in base-10.
@@ -225,13 +225,13 @@ successCallback:nil];
     if (fsetxattr(fd, key, (void*)utf8pch, strlen(utf8pch), 0, 0) != 0) {
       WLOG("failed to write xattr '%s' to '%@'", key, path);
     }
-    
+
     key = "se.hunch.kod.selection";
     utf8pch = [NSStringFromRange([textView selectedRange]) UTF8String];
     if (fsetxattr(fd, key, (void*)utf8pch, strlen(utf8pch), 0, 0) != 0) {
       WLOG("failed to write xattr '%s' to '%@'", key, path);
     }
-    
+
     close(fd);
   }
 }
@@ -245,14 +245,14 @@ successCallback:nil];
       originalURL:(NSURL*)absoluteOriginalContentsURL
          callback:(void(^)(NSError *err, NSDate *mtime))callback {
   // Note: This is normally called on the main thread
-  
+
   // this method should never be called unless canWriteURL: was called and
   // returned YES
   kassert([absoluteURL isFileURL]);
-  
+
   // we use an absolute path
   NSString *path = [absoluteURL path];
-  
+
   // writer
   void(^performWrite)(void) = ^{
     NSAutoreleasePool *pool = [NSAutoreleasePool new];
@@ -267,21 +267,21 @@ successCallback:nil];
         callback(error, nil);
       return;
     }
-    
+
     // write xattrs
     [self _writeXAttrsToPath:path forTab:tab];
-    
+
     // retrieve mtime
     NSDate *mtime = [[[NSFileManager defaultManager] attributesOfItemAtPath:
         path error:nil] objectForKey:NSFileModificationDate];
-    
+
     // callback
     if (callback)
       callback(nil, mtime);
-    
+
     [pool drain];
   };
-  
+
   // write asynchronously or not
   if (kconf_bool(@"KFileURLHandler/write/async", YES)) {
     dispatch_async(dispatch_get_global_queue(0,0), performWrite);

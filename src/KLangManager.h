@@ -14,6 +14,6 @@ class KLangManager {
   static srchilite::LangElems *readLangElems(const char *dirname,
                                              const char *basename);
 
-  /// 
+  ///
   //static NSString *langIdentifierForFilename(NSString *filename);
 };

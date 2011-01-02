@@ -10,6 +10,32 @@
  * [FIXED] XML content (e.g. XML property lists) detected by scanning first line
    for "<?xml". Ticket 54
 
+ * [NEW] Increasing and decreasing indentation level of a line or block of lines
+   as well as a basic implementation which retains the indentation level when a
+   new line is added using the ENTER key. Ticket 43, ticket 70 and ticket 94
+
+ * [FIXED] Crash when performing actions on a document which moved between
+   window. Ticket 23 and ticket 79
+
+ * [FIXED] Attempting to place the cursor at the very end of a document caused
+   an exception which caused a somewhat broken UI. Ticket 106
+
+ * [NEW] The CLI helper can now open directories and non-existing files.
+   Ticket 34 and ticket 110
+
+ * [CHANGED] Closing a "dirty" (modified but not saved) document prompts the
+   user to cancel, discard or save the document. Ticket 36
+
+ * [FIXED] Resizing the window while the sidebar is hidden caused the sidebar
+   layout break when later shown. Ticket 4
+
+ * [NEW] Auto-completion (or "suggestion"). When placing the cursor in front of
+   of a partial word and hitting the ESC button, a list of suggested complete
+   word appear and the most probable word is inserted. Ticket 84
+
+ * See http://hunch.lighthouseapp.com/projects/66522/milestones/96486 for more
+   details.
+
 
 2010-12-24  0.0.2  (Rasmus Andersson <rasmus@notion.se>)
 

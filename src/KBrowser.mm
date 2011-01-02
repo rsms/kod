@@ -45,6 +45,36 @@
 }
 
 
+// Overriding CTBrowser's -closeTab in order to check if the document is
+// dirty or not before closing.
+- (void)closeTab {
+  KDocument *doc = (KDocument *)[self tabContentsAtIndex:[self selectedTabIndex]];
+
+  if ([doc isDirty]) {
+    [doc canCloseDocumentWithDelegate:self shouldCloseSelector:@selector(document:shouldClose:contextInfo:) contextInfo:nil];
+  } else {
+    shouldCloseTab = YES;
+    [super closeTab];
+  }
+
+}
+
+
+// canCloseDocumentWithDelegate callback
+- (void)document:(NSDocument *)tab
+     shouldClose:(BOOL)shouldClose
+     contextInfo:(void*)contextInfo {
+  shouldCloseTab = shouldClose;
+  [super closeTab];
+}
+
+
+// Overriding CTBrowser's implementation, which always returns YES
+- (BOOL)canCloseTab {
+  return shouldCloseTab;
+}
+
+
 /*-(void)updateTabStateForContent:(CTTabContents*)contents {
   DLOG("updateTabStateForContent:%@", contents);
   int index = tabStripModel_->GetIndexOfTabContents(contents);

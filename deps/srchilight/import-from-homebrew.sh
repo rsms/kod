@@ -6,7 +6,9 @@
 #
 # Any dependencies to |LIB| will also be imported and processed.
 #
-LIB=/usr/local/lib/libsource-highlight.dylib
+CELLAR=`brew --cellar`
+VERSION=`brew info source-highlight | grep "^source-highlight" | sed "s/.* \([0-9.]*\)$/\1/"`
+LIB=$CELLAR/source-highlight/$VERSION/lib/libsource-highlight.dylib
 #
 # -----------------------------------------------------------------------------
 #
@@ -45,7 +47,7 @@ resolvedeps "$LIB"
 
 mkdir -vp include
 rm -rf include/srchilite
-cp -vpr /usr/local/include/srchilite include/srchilite
+cp -vpr $CELLAR/source-highlight/$VERSION/include/srchilite include/srchilite
 sed 's/ branches build/ \/*branches build/g' \
   include/srchilite/highlightstatebuilder.h \
   > include/srchilite/highlightstatebuilder.h.2 || exit $?

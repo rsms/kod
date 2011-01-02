@@ -12,29 +12,29 @@ static NSString *KErrorDomain = nil; // TODO: centralize this
   NSDictionary *info = [NSDictionary dictionaryWithObject:msg
       forKey:NSLocalizedDescriptionKey];
   NSLog(@"KOD ERROR: %@", msg);
-	return [NSError errorWithDomain:KErrorDomain code:code userInfo:info];
+  return [NSError errorWithDomain:KErrorDomain code:code userInfo:info];
 }
 
 + (NSError *)kodErrorWithDescription:(NSString *)msg {
-	return [NSError kodErrorWithDescription:msg code:0];
+  return [NSError kodErrorWithDescription:msg code:0];
 }
 
 + (NSError *)kodErrorWithCode:(NSInteger)code format:(NSString *)format, ... {
-	va_list src, dest;
-	va_start(src, format);
-	va_copy(dest, src);
-	va_end(src);
-	NSString *msg = [[NSString alloc] initWithFormat:format arguments:dest];
-	return [NSError kodErrorWithDescription:msg code:code];
+  va_list src, dest;
+  va_start(src, format);
+  va_copy(dest, src);
+  va_end(src);
+  NSString *msg = [[NSString alloc] initWithFormat:format arguments:dest];
+  return [NSError kodErrorWithDescription:msg code:code];
 }
 
 + (NSError *)kodErrorWithFormat:(NSString *)format, ... {
-	va_list src, dest;
-	va_start(src, format);
-	va_copy(dest, src);
-	va_end(src);
-	NSString *msg = [[NSString alloc] initWithFormat:format arguments:dest];
-	return [NSError kodErrorWithDescription:msg code:0];
+  va_list src, dest;
+  va_start(src, format);
+  va_copy(dest, src);
+  va_end(src);
+  NSString *msg = [[NSString alloc] initWithFormat:format arguments:dest];
+  return [NSError kodErrorWithDescription:msg code:0];
 }
 
 + (NSError*)kodErrorWithOSStatus:(OSStatus)status {

@@ -25,12 +25,12 @@
 
 - (id)init {
   if (!(self = [super init])) return nil;
-  
+
   commandToFileResource_ = [[NSDictionary alloc] initWithObjectsAndKeys:
       @"about.md", @"about",
       @"changelog", @"changelog",
       nil];
-  
+
   return self;
 }
 
@@ -56,12 +56,12 @@
       (KFileURLHandler*)[documentController urlHandlerForURL:fileURL];
   kassert(fileURLHandler != nil);
   [tab.textView setEditable:NO];
-  
+
   // guess langId
   tab.langId = [[KLangMap sharedLangMap] langIdForSourceURL:fileURL
                                                     withUTI:nil
                                        consideringFirstLine:nil];
-  
+
   // delegate reading to the file url handler
   [fileURLHandler readURL:fileURL
                    ofType:nil
@@ -72,13 +72,13 @@
     str = [str stringByReplacingOccurrencesOfString:@"$VERSION"
                                          withString:@K_VERSION_STR];
     [tab.textView setString:str];
-    
+
     // set cursor to 0,0 (has the side-effect of hiding it)
     [tab.textView setSelectedRange:NSMakeRange(0, 0)];
 
     // Clear change count
     [tab updateChangeCount:NSChangeCleared];
-    
+
     // set the icon to the app icon
     tab.icon = [NSImage imageNamed:@"kod.icns"];
   }];

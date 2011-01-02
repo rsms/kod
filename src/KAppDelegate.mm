@@ -77,10 +77,10 @@
   // Create our document controller. We need to be the first who creates a
   // NSDocumentController type, since it's somewhat singleton.
   [[KDocumentController alloc] init];
-  
+
   // Register ourselves as service provider
   [NSApp setServicesProvider:self];
-  
+
   // Start loading default style
   NSURL *builtinURL = kconf_res_url(@"style/default.css");
   NSURL *url = kconf_url(@"style/current/url", builtinURL);
@@ -89,10 +89,10 @@
       if (error) [NSApp presentError:error];
     }];
   }
-  
+
   // Register URL handler
   NSAppleEventManager *aem = [NSAppleEventManager sharedAppleEventManager];
-	[aem setEventHandler:self
+  [aem setEventHandler:self
            andSelector:@selector(openUrl:withReplyEvent:)
          forEventClass:kInternetEventClass
             andEventID:kAEGetURL];
@@ -101,11 +101,11 @@
   #if K_WITH_F_SCRIPT
   [[NSApp mainMenu] addItem:[[FScriptMenuItem alloc] init]];
   #endif
-  
+
   // Start node.js
   KNodeThread *nodeThread = [[KNodeThread alloc] init];
   [nodeThread start];
-  
+
   // Start Mach service
   [KMachService sharedService];
 }
@@ -113,8 +113,8 @@
 
 - (void)openUrl:(NSAppleEventDescriptor*)event
  withReplyEvent:(NSAppleEventDescriptor*)replyEvent {
-	NSString *urlstr = [[event paramDescriptorForKeyword:keyDirectObject] stringValue];
-	NSURL* url = [NSURL URLWithString:urlstr];
+  NSString *urlstr = [[event paramDescriptorForKeyword:keyDirectObject] stringValue];
+  NSURL* url = [NSURL URLWithString:urlstr];
   if (url) {
     [[KDocumentController kodController] openDocumentsWithContentsOfURL:url
                                                                callback:nil];
@@ -132,7 +132,7 @@
     // Offer to enable the kod helper
     [self displayTerminalUsage:self];
   }
-  
+
   // Did we just launch a new version? (happens after upgrade)
   NSString *lastLaunchedVersion = kconf_string(@"lastLaunchedVersion", nil);
   NSString *currentVersion =
@@ -150,7 +150,7 @@
        openDocumentsWithContentsOfURL:changelogURL callback:nil];
     }
   }
-  
+
   #if K_WITH_CRASH_REPORT_COLLECTOR
   // Find & process any crash reports and offer the user to submit any newfound
   // reports. Note: This will block (switch runloop mode into modal) if there
@@ -245,7 +245,7 @@
         userData:(NSString*)userData
            error:(NSString**)error {
   DLOG("openLink:%@ userData:%@", pboard, userData);
-  
+
   // Read all URLs in |pboard|
   NSArray *classes = [NSArray arrayWithObject:[NSURL class]];
   NSArray *urls = [pboard readObjectsForClasses:classes options:nil];
@@ -267,10 +267,10 @@
       }
     }
   }
-  
+
   //DLOG("urls => %@", urls);
   if (urls.count == 0) return;
-  
+
   // separate files from remote's since we apply special handling of files
   // in application:openFiles: to deal with directories.
   NSMutableArray *filenames = [NSMutableArray array];
@@ -282,17 +282,17 @@
       [urls2 addObject:url];
     }
   }
-  
+
   if (filenames.count != 0)
     [self application:NSApp openFiles:filenames];
-  
+
   if (urls2.count != 0) {
     KDocumentController *documentController =
       (KDocumentController*)[NSDocumentController sharedDocumentController];
     [documentController openDocumentsWithContentsOfURLs:urls2
                                                callback:nil];
   }
-  
+
   //[pboard clearContents];
 }
 

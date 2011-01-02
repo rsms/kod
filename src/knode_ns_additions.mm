@@ -20,11 +20,11 @@ static Local<Value> _NodeEval(v8::Handle<String> source,
 class BuildContext {
  public:
   static Persistent<Function> indexOf;
-  
+
   Persistent<Array> values;
   int depth;
   std::vector<NSObject*> objects;
-  
+
   BuildContext() : depth(0) {
     HandleScope scope;
     if (indexOf.IsEmpty()) {
@@ -35,12 +35,12 @@ class BuildContext {
     }
     values = Persistent<Array>::New(Array::New());
   }
-  
+
   ~BuildContext() {
     values.Dispose();
     values.Clear();
   }
-  
+
   class Scope {
     BuildContext *bctx_;
    public:
@@ -51,7 +51,7 @@ class BuildContext {
     }
     ~Scope() { --bctx_->depth; }
   };
-  
+
   NSObject *ObjectForValue(Local<Value> value) {
     HandleScope scope;
     Local<Value> v = indexOf->Call(values, 1, &value);
@@ -62,7 +62,7 @@ class BuildContext {
     }
     return nil;
   }
-  
+
   void SetObjectForValue(NSObject* object, Local<Value> value) {
     HandleScope scope;
     values->Set(values->Length(), value);
@@ -95,7 +95,7 @@ Persistent<Function> BuildContext::indexOf;
     double ms = Local<Date>::Cast(v)->NumberValue();
     return [NSDate dateWithTimeIntervalSince1970:ms/1000.0];
   }
-  
+
   // Array --> NSArray
   if (v->IsArray()) {
     NSObject *obj = bctx->ObjectForValue(v);
@@ -110,7 +110,7 @@ Persistent<Function> BuildContext::indexOf;
     }
     return array;
   }
-  
+
   // node::Buffer --> NSData
   if (v->IsObject() && node::Buffer::HasInstance(v)) {
     NSObject *obj = bctx->ObjectForValue(v);
@@ -142,7 +142,7 @@ Persistent<Function> BuildContext::indexOf;
     }
     return dict;
   }
-  
+
   return nil;
 }
 
@@ -267,7 +267,7 @@ Persistent<Function> BuildContext::indexOf;
 @implementation NSData (node)
 - (Local<Value>)v8Value {
   HandleScope scope;
-  
+
   // Note: The following _might_ cause a race condition if called at the same
   // time by two node threads and might cause unknown magic spooky stuff if
   // called by one node thread and later used by another.
@@ -280,14 +280,14 @@ Persistent<Function> BuildContext::indexOf;
     BufferConstructor = Persistent<Function>::New(
         tmplscope.Close(Local<Function>::Cast(Buffer_v)));
   }
-  
+
   Local<Value> argv[] = {Integer::New([self length])};
   Local<Value> buf = BufferConstructor->NewInstance(1, argv);
-  
+
   char *dataptr = node::Buffer::Data(Local<Object>::Cast(buf));
   assert(dataptr != NULL);
   [self getBytes:dataptr length:[self length]];
-  
+
   return scope.Close(buf);
 }
 @end
@@ -348,11 +348,11 @@ NSString * const KNodeErrorDomain = @"node.js";
 }
 
 + (NSError *)nodeErrorWithFormat:(NSString *)format, ... {
-	va_list src, dest;
-	va_start(src, format);
-	va_copy(dest, src);
-	va_end(src);
-	NSString *msg = [[NSString alloc] initWithFormat:format arguments:dest];
+  va_list src, dest;
+  va_start(src, format);
+  va_copy(dest, src);
+  va_end(src);
+  NSString *msg = [[NSString alloc] initWithFormat:format arguments:dest];
   return [NSError errorWithDomain:KNodeErrorDomain code:0 userInfo:
       [NSDictionary dictionaryWithObject:msg forKey:NSLocalizedDescriptionKey]];
 }

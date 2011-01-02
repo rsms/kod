@@ -8,26 +8,26 @@ static lwc_string *kBodyLWCString;
 
 // CSS select handler functions
 static css_error css_node_name(void *pw, void *n, lwc_string **name) {
-	lwc_string *node = (lwc_string *)n;
-	*name = lwc_string_ref(node);
-	return CSS_OK;
+  lwc_string *node = (lwc_string *)n;
+  *name = lwc_string_ref(node);
+  return CSS_OK;
 }
 
 static css_error css_node_has_name(void *pw, void *n, lwc_string *name,
                                    bool *match) {
-	lwc_string *node = (lwc_string *)n;
-	assert(lwc_string_caseless_isequal(node, name, match) == lwc_error_ok);
+  lwc_string *node = (lwc_string *)n;
+  assert(lwc_string_caseless_isequal(node, name, match) == lwc_error_ok);
   //DLOG("css_node_has_name(pw, '%@', '%@') -> %@",
   //     [NSString stringWithLWCString:node],
   //     [NSString stringWithLWCString:name],
   //     match ? @"YES" : @"NO");
-	return CSS_OK;
+  return CSS_OK;
 }
 
 static css_error css_node_has_class(void *pw, void *n, lwc_string *name,
                                     bool *match) {
-	*match = false;
-	return CSS_OK;
+  *match = false;
+  return CSS_OK;
 }
 
 static css_error css_parent_node(void *pw, void *n, void **parent) {
@@ -41,33 +41,33 @@ static css_error css_parent_node(void *pw, void *n, void **parent) {
   } else {
     *parent = NULL;
   }
-	return CSS_OK;
+  return CSS_OK;
 }
 
 static css_error ua_default_for_property(void *pw, uint32_t property,
                                          css_hint *hint) {
-	if (property == CSS_PROP_COLOR) {
-		hint->data.color = 0x111111ff;
-		hint->status = CSS_BACKGROUND_COLOR_COLOR;
-		//hint->status = CSS_COLOR_INHERIT;
-	} else if (property == CSS_PROP_BACKGROUND_COLOR) {
-		hint->data.color = 0xeeeeeeff;
-		hint->status = CSS_COLOR_COLOR;
-		//hint->status = CSS_COLOR_INHERIT;
-	} else if (property == CSS_PROP_FONT_FAMILY) {
-		hint->data.strings = NULL;
-		hint->status = CSS_FONT_FAMILY_MONOSPACE;
+  if (property == CSS_PROP_COLOR) {
+    hint->data.color = 0x111111ff;
+    hint->status = CSS_BACKGROUND_COLOR_COLOR;
+    //hint->status = CSS_COLOR_INHERIT;
+  } else if (property == CSS_PROP_BACKGROUND_COLOR) {
+    hint->data.color = 0xeeeeeeff;
+    hint->status = CSS_COLOR_COLOR;
+    //hint->status = CSS_COLOR_INHERIT;
+  } else if (property == CSS_PROP_FONT_FAMILY) {
+    hint->data.strings = NULL;
+    hint->status = CSS_FONT_FAMILY_MONOSPACE;
     //hint->status = CSS_FONT_FAMILY_INHERIT;
-	} else if (property == CSS_PROP_QUOTES) {
-		hint->data.strings = NULL;
-		hint->status = CSS_QUOTES_NONE;
-	} else if (property == CSS_PROP_VOICE_FAMILY) {
-		hint->data.strings = NULL;
-		hint->status = 0;
-	} else {
-		return CSS_INVALID;
-	}
-	return CSS_OK;
+  } else if (property == CSS_PROP_QUOTES) {
+    hint->data.strings = NULL;
+    hint->status = CSS_QUOTES_NONE;
+  } else if (property == CSS_PROP_VOICE_FAMILY) {
+    hint->data.strings = NULL;
+    hint->status = 0;
+  } else {
+    return CSS_INVALID;
+  }
+  return CSS_OK;
 }
 
 
@@ -87,7 +87,7 @@ static NSString const *gDefaultElementSymbol;
 
 + (void)load {
   NSAutoreleasePool *pool = [NSAutoreleasePool new];
-  
+
   // shared lwc_strings
   lwc_intern_string("body", 4, &kBodyLWCString);
 
@@ -107,10 +107,10 @@ static NSString const *gDefaultElementSymbol;
 
   // The shared style is empty by default
   gSharedStyle_ = [[KStyle alloc] init];
-  
+
   // Note: Loading of the default stylesheet is done by KAppDelegate in main()
   //       branch.
-  
+
   [pool drain];
 }
 
@@ -227,7 +227,7 @@ static NSString const *gDefaultElementSymbol;
       }
       return;
     }
-    
+
     // Setup a new CSS context
     // Is the baseStylesheet really needed?
     CSSContext* cssContext =
@@ -235,7 +235,7 @@ static NSString const *gDefaultElementSymbol;
     [cssContext addStylesheet:stylesheet];
     kassert(cssContext);
     [stylesheet release]; // our local reference
-    
+
     // Replace or set our cssContext_
     h_casid(&cssContext_, cssContext);
     [cssContext release]; // our local reference
@@ -262,7 +262,7 @@ static NSString const *gDefaultElementSymbol;
       }
     });
   }];
-  
+
   // URL connection failed to start?
   if (!started) {
     [stylesheet release];
@@ -278,7 +278,7 @@ static NSString const *gDefaultElementSymbol;
   // retain the callback
   if (callback)
     callback = [callback copy];
-  
+
   // Defer loading to background
   //
   // Note: We do this in order to avoid many lingering threads just running
@@ -325,7 +325,7 @@ static NSString const *gDefaultElementSymbol;
 - (CSSStyle*)styleForElementName:(NSString*)elementNameStr {
   // this might happen when empty
   if (!cssContext_) return nil;
-  
+
   OSSpinLockLock(&styleSpinLock_);
 
   // assure the default element is loaded before continuing
@@ -344,7 +344,7 @@ static NSString const *gDefaultElementSymbol;
                                      media:CSS_MEDIA_SCREEN
                                inlineStyle:nil
                               usingHandler:&gCSSHandler];
-    
+
     if (elementNameStr == gDefaultElementSymbol) {
       // save CSSStyle for default element ("body")
       if (h_casptr(&defaultStyle_, nil, style))
@@ -359,9 +359,9 @@ static NSString const *gDefaultElementSymbol;
     DLOG("cssContext_ => %@", cssContext_);
     DLOG("elementName => %@", elementNameStr);
   }
-  
+
   OSSpinLockUnlock(&styleSpinLock_);
-  
+
   if (elementName)
     lwc_string_unref(elementName);
 
@@ -412,14 +412,14 @@ static NSString const *gDefaultElementSymbol;
                    options:opts
                 usingBlock:^(id value, NSRange range, BOOL *stop) {
     NSString const *symbol = value;
-    
+
     // clear any formatter attributes (so we can perform "add" later, without
     // disrupting other attributes)
     KStyleElement::clearAttributes(self, range);
-    
+
     // find current formatter for |elem|
     KStyleElement* formatter = [style styleElementForSymbol:symbol];
-    
+
     // apply the formatters' style to |range|
     if (formatter)
       formatter->applyAttributes(self, range);

@@ -6,6 +6,7 @@
 #import "KFileURLHandler.h"
 #import "KHTTPURLHandler.h"
 #import "KKodURLHandler.h"
+#import "kod_node_interface.h"
 
 #import <objc/objc-runtime.h>
 
@@ -103,28 +104,28 @@
   DLOG("openDocumentsWithContentsOfURLs:%@", urls);
   // countdown
   NSUInteger i = urls ? urls.count : 0;
-  
+
   // check for empty array
   if (i == 0) {
     if (callback) callback();
     return;
   }
-  
+
   // dispatch queue to open the documents in
   dispatch_queue_t dispatchQueue = dispatch_get_global_queue(priority, 0);
   NSFileManager *fm = [NSFileManager defaultManager];
-  
+
   // callback countdown
   kassert(i < INT32_MAX);
   __block int32_t callbackCountdown = i;
   if (callback)
     callback = [callback copy];
-  
+
   // Dispatch opening of each document
   for (NSURL *url in urls) {
     int index = --i; // so it gets properly copied into the dispatched block
     BOOL directory = NO;
-    
+
     KDocument *alreadyOpenTab = [self _documentForURL:url
                                           makeKeyIfFound:index==0];
     if (alreadyOpenTab) {
@@ -168,13 +169,13 @@
         if (!tab) {
           [windowController presentError:error];
         }
-        
+
         // done?
         if (callback && OSAtomicDecrement32(&callbackCountdown) == 0) {
           callback();
           [callback release];
         }
-        
+
         [pool drain];
       });
     }
@@ -214,16 +215,17 @@
 - (IBAction)openDocument:(id)sender {
   // Run open panel in modal state and continue with a list of URLs
   NSArray *urls = [self URLsFromRunningOpenPanel];
-  
+
   // Open urls in frontmost window with high priority
   [self openDocumentsWithContentsOfURLs:urls callback:nil];
 }
 
 
 - (id)makeUntitledDocumentOfType:(NSString *)typeName error:(NSError **)error {
-  KDocument* tab = [[KDocument alloc] initWithBaseTabContents:nil];
+  KDocument* tab =
+      [[[KDocument alloc] initWithBaseTabContents:nil] autorelease];
   assert(tab); // since we don't set error
-  
+
   // Give the new tab a "Untitled #" name
   int32_t number = self.nextUntitledNumber;
   NSString *untitled = NSLocalizedString(@"Untitled", nil);
@@ -295,19 +297,19 @@ static double kSiblingAutoGroupEditDistanceThreshold = 0.4;
       return;
     }
   }
-  
+
   // Move to a position beside the most natural sibling
   kassert([NSThread isMainThread]);
-  
+
   // index to insert the new tab. -1 means "after the current tab"
   int insertIndex = -1;
-  
+
   if (groupWithSiblings) {
     KDocument *otherTab;
     double bestSiblingDistance = 1.0;
     int i = 0, tabCount = [browser tabCount];
     NSString *tabExt = [tab.title pathExtension];
-    
+
     for (; i<tabCount; ++i) {
       otherTab = (KDocument*)[browser tabContentsAtIndex:i];
       if (otherTab) {
@@ -344,7 +346,7 @@ static double kSiblingAutoGroupEditDistanceThreshold = 0.4;
         }
       }
     }
-    
+
     if (insertIndex != -1) {
       otherTab = (KDocument*)[browser tabContentsAtIndex:insertIndex];
       NSString *otherExt = [otherTab.title pathExtension];
@@ -355,9 +357,9 @@ static double kSiblingAutoGroupEditDistanceThreshold = 0.4;
       //DLOG("insert '%@' at %d (sibling: '%@')", tab.title, insertIndex,
       //     otherTab);
     }
-    
+
   }
-  
+
   // Append a new tab after the currently selected tab
   [browser addTabContents:tab atIndex:insertIndex inForeground:foreground];
 }
@@ -381,6 +383,8 @@ static double kSiblingAutoGroupEditDistanceThreshold = 0.4;
           [[KBrowserWindowController browserWindowController] retain];
     }
   }
+
+  KNodeEmitEvent("openDocument", tab, nil);
 
   [self addTabContents:tab
   withWindowController:windowController
@@ -416,9 +420,10 @@ static double kSiblingAutoGroupEditDistanceThreshold = 0.4;
   // Note: This may be called by a background thread
 
   // Dive down into the opening mechanism...
-  KDocument* tab = [[KDocument alloc] initWithContentsOfURL:url
-                                                           ofType:typeName
-                                                            error:error];
+  KDocument* tab =
+      [[[KDocument alloc] initWithContentsOfURL:url
+                                         ofType:typeName
+                                          error:error] autorelease];
   if (!tab && error) {
     // if tab failed to create and we received a pointer to store the error,
     // make sure an error is present
@@ -438,7 +443,7 @@ static double kSiblingAutoGroupEditDistanceThreshold = 0.4;
   // have changed.
   KDocument *tab = [self _documentForURL:absoluteURL makeKeyIfFound:display];
   if (tab) return tab;
-  
+
   // make a document from |absoluteURL|
   NSString *typeName = [self typeForContentsOfURL:absoluteURL error:nil];
   tab = [self makeDocumentWithContentsOfURL:absoluteURL
@@ -529,7 +534,7 @@ static double kSiblingAutoGroupEditDistanceThreshold = 0.4;
     // Query next tab in the list
     KDocument* tab = [closeCycleContext_->documents objectAtIndex:count-1];
     [closeCycleContext_->documents removeObjectAtIndex:count-1];
-    
+
     //NSWindow* window = [tab.browser.windowController window];
     //[window makeKeyAndOrderFront:self];
     [tab canCloseDocumentWithDelegate:self
@@ -647,7 +652,7 @@ static int _closeCycleSheetDebugRefCount = 0;
     [tab close];
   }
   if (wasCleanClose) {
-    // This happens when the closed document was 
+    // This happens when the closed document was
     // schedule next call in the runloop to avoid blowing the stack
     [self performSelectorOnMainThread:@selector(closeNextDocumentInCloseCycle)
                            withObject:nil

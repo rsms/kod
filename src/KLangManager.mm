@@ -13,15 +13,15 @@ using namespace srchilite;
 HighlightStatePtr KLangManager::buildHighlightState(const char *dirname,
                                                     const char *basename) {
   HighlightStatePtr highlightState(new HighlightState);
-  
+
   // parse the contents of the langdef file
   LangElems *elems = readLangElems(dirname, basename);
-  
+
   // build the highlight state corresponding to the language definition file
   KLangRegexRuleFactory ruleFactory;
   HighlightStateBuilder builder(&ruleFactory);
   builder.build(elems, highlightState);
-  
+
   delete elems;
   return highlightState;
 }

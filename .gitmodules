@@ -4,9 +4,6 @@
 [submodule "deps/libcss"]
 	path = deps/libcss
 	url = https://github.com/rsms/libcss-osx.git
-[submodule "deps/json-framework"]
-	path = deps/json-framework
-	url = https://github.com/stig/json-framework.git
 [submodule "deps/hunch-cocoa"]
 	path = deps/hunch-cocoa
 	url = https://github.com/rsms/hunch-cocoa.git

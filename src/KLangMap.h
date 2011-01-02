@@ -24,7 +24,7 @@
   // Maps langId to URL (e.g. @"makefile" => KLangInfo<...>)
   NSMutableDictionary *langIdToInfo_;
   HSpinLock langIdToInfoLock_;
-  
+
   // Maps UTI to langId (e.g. "public.c-header" => @"cpp")
   // TODO: langId should be a UTI in the future
   NSMutableDictionary *UTIToLangIdMap_;
@@ -42,7 +42,7 @@
   // Maps filename to langId (e.g. "Makefile" => @"makefile")
   NSMutableDictionary *nameToLangIdMap_;
   HSpinLock nameToLangIdMapLock_;
-  
+
   // Maps extension to langId (e.g. "cc" => @"cpp")
   NSMutableDictionary *extToLangIdMap_;
   HSpinLock extToLangIdMapLock_;
