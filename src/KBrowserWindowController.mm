@@ -80,6 +80,14 @@
 }
 
 
+- (void)dealloc {
+  [self stopObserving];
+  [[self window] setDelegate:nil];
+  if (toolbarController_)
+    [toolbarController_ removeObserver:self forKeyPath:@"directoryURL"];
+  [super dealloc];
+}
+
 /*- (id)retain {
   fprintf(stderr, ">>>>> %s retain %lu\n", [[self description] UTF8String], [self retainCount]);
   return [super retain];

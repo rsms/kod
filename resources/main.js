@@ -5,6 +5,8 @@
 // install last line of defence for exceptions to avoid nodejs killing Kod.app
 process.on('uncaughtException', global._kod.handleUncaughtException);
 
+// TODO: alter behavior of process.exit
+
 // add our built-in module path to the front of require.paths
 require.paths.unshift(require.paths.pop());
 
@@ -16,6 +18,12 @@ try { userModule = require(process.env.HOME + '/.kod'); } catch (e) {}
 // ----------------------------------------------------------------------------
 // Things below this line is only used for development and debugging and not
 // really meant to be in this file
+
+/*if (typeof gc === 'function') {
+  // if we are running with --expose_gc, force collection at a steady interval.
+  // Note: this is a serious performance killer and only used for debugging
+  setInterval(gc, 10000);
+}*/
 
 // debug
 var util = require('util');
@@ -32,10 +40,35 @@ kod.exposedFunctions.foo = function(callback) {
     callback(null, {"bar":[1,2,3.4,"mos"],"grek en":"hoppär"});
 }
 
-// example event listener for the "tabDidBecomeSelected" event, emitted when a
+kod.on('openDocument', function(document) {
+  //console.log('openDocument: '+ util.inspect(document, 0, 4));
+  console.log('openDocument: '+document.identifier+' '+document.url);
+});
+
+// example event listener for the "activateDocument" event, emitted when a
 // document becomes selected (when the selection changes)
-kod.on('tabDidBecomeSelected', function(document) {
-  console.log('tabDidBecomeSelected: '+util.inspect(document));
+kod.on('activateDocument', function(document) {
+  // Dump document -- includes things like the word dictionary. Massive output.
+  //console.log('activateDocument: '+util.inspect(document, 0, 4));
+  console.log('activateDocument: '+document.identifier+' '+document.url);
+
+  // As document objects are persistent, we can add properties to it which will
+  // survive as long as the document is open
+  var timeNow = (new Date()).getTime();
+  if (document.lastSeenByNode) {
+    console.log('I saw this document '+
+                ((timeNow - document.lastSeenByNode)/1000)+
+                ' seconds ago');
+  }
+  document.lastSeenByNode = timeNow;
+
+  // Replace the contents of the document:
+  //document.text = "Text\nreplaced\nby main.js";
+});
+
+kod.on('closeDocument', function(document, docId) {
+  //console.log('closeDocument: ['+docId+'] '+ util.inspect(document, 0, 4));
+  console.log('closeDocument: '+document.identifier+' '+document.url);
 });
 
 // dump kod.allDocuments every 10 sec

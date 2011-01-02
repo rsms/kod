@@ -1,4 +1,5 @@
 @class KDocument;
+@class KWordDictionary;
 
 @interface KTextView : NSTextView {
   BOOL automaticallyKeepsIndentation_;
@@ -9,10 +10,16 @@
 
   // kconf value "editor/text/indentation" (defaults to 2xSP)
   NSString *indentationString_;
+
+  // Frequency counts of all words (e.g. used for autocomplete)
+  KWordDictionary *wordDictionary_;
 }
 
 // The parent document
 @property(readonly) KDocument *document;
+
+#pragma mark -
+#pragma mark Indentation
 
 /*!
  * If enabled and when creating a new line; that line will be indented to the
@@ -37,5 +44,14 @@
 
 // Decrease the indentation level for the currently selected text
 - (void)decreaseIndentation;
+
+#pragma mark -
+#pragma mark Words
+
+@property(readonly) KWordDictionary *wordDictionary;
+
+// (Re)scan entire document and records all unique words while counting
+// their frequency
+- (void)rescanWords;
 
 @end

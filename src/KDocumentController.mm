@@ -6,6 +6,7 @@
 #import "KFileURLHandler.h"
 #import "KHTTPURLHandler.h"
 #import "KKodURLHandler.h"
+#import "kod_node_interface.h"
 
 #import <objc/objc-runtime.h>
 
@@ -221,7 +222,8 @@
 
 
 - (id)makeUntitledDocumentOfType:(NSString *)typeName error:(NSError **)error {
-  KDocument* tab = [[KDocument alloc] initWithBaseTabContents:nil];
+  KDocument* tab =
+      [[[KDocument alloc] initWithBaseTabContents:nil] autorelease];
   assert(tab); // since we don't set error
 
   // Give the new tab a "Untitled #" name
@@ -382,6 +384,8 @@ static double kSiblingAutoGroupEditDistanceThreshold = 0.4;
     }
   }
 
+  KNodeEmitEvent("openDocument", tab, nil);
+
   [self addTabContents:tab
   withWindowController:windowController
           inForeground:display
@@ -416,9 +420,10 @@ static double kSiblingAutoGroupEditDistanceThreshold = 0.4;
   // Note: This may be called by a background thread
 
   // Dive down into the opening mechanism...
-  KDocument* tab = [[KDocument alloc] initWithContentsOfURL:url
-                                                           ofType:typeName
-                                                            error:error];
+  KDocument* tab =
+      [[[KDocument alloc] initWithContentsOfURL:url
+                                         ofType:typeName
+                                          error:error] autorelease];
   if (!tab && error) {
     // if tab failed to create and we received a pointer to store the error,
     // make sure an error is present

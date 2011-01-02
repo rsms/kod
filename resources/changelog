@@ -29,6 +29,10 @@
  * [FIXED] Resizing the window while the sidebar is hidden caused the sidebar
    layout break when later shown. Ticket 4
 
+ * [NEW] Auto-completion (or "suggestion"). When placing the cursor in front of
+   of a partial word and hitting the ESC button, a list of suggested complete
+   word appear and the most probable word is inserted. Ticket 84
+
  * See http://hunch.lighthouseapp.com/projects/66522/milestones/96486 for more
    details.
 

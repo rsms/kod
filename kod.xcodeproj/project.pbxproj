@@ -45,6 +45,7 @@
 		3A40F92F12AFF21A007B5879 /* main.js in Resources */ = {isa = PBXBuildFile; fileRef = 3A40F92E12AFF21A007B5879 /* main.js */; };
 		3A4CB3E112B1872300B45858 /* NSString-data.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A4CB3E012B1872300B45858 /* NSString-data.m */; };
 		3A4D50ED1282E40300B06EEB /* NSString-utf8-range-conv.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A4D50EC1282E40300B06EEB /* NSString-utf8-range-conv.m */; };
+		3A4F478512CFA83900301464 /* KWordDictionary.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A4F478412CFA83900301464 /* KWordDictionary.mm */; };
 		3A5107CB12C1233900AAC1D5 /* KMachService.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A5107CA12C1233900AAC1D5 /* KMachService.m */; };
 		3A51081712C139B800AAC1D5 /* kod_helper.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A5107EB12C1351500AAC1D5 /* kod_helper.m */; };
 		3A51083612C13AF900AAC1D5 /* common.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A51083412C13AF900AAC1D5 /* common.m */; };
@@ -295,6 +296,8 @@
 		3A4CB3E012B1872300B45858 /* NSString-data.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString-data.m"; sourceTree = "<group>"; };
 		3A4D50EB1282E40300B06EEB /* NSString-utf8-range-conv.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString-utf8-range-conv.h"; sourceTree = "<group>"; };
 		3A4D50EC1282E40300B06EEB /* NSString-utf8-range-conv.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString-utf8-range-conv.m"; sourceTree = "<group>"; };
+		3A4F478312CFA83900301464 /* KWordDictionary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KWordDictionary.h; sourceTree = "<group>"; };
+		3A4F478412CFA83900301464 /* KWordDictionary.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KWordDictionary.mm; sourceTree = "<group>"; };
 		3A5107C912C1233900AAC1D5 /* KMachService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KMachService.h; sourceTree = "<group>"; };
 		3A5107CA12C1233900AAC1D5 /* KMachService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KMachService.m; sourceTree = "<group>"; };
 		3A5107D312C1245400AAC1D5 /* KMachServiceProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KMachServiceProtocol.h; sourceTree = "<group>"; };
@@ -573,6 +576,15 @@
 			name = Node;
 			sourceTree = "<group>";
 		};
+		3A4F478212CFA81800301464 /* Text */ = {
+			isa = PBXGroup;
+			children = (
+				3A4F478312CFA83900301464 /* KWordDictionary.h */,
+				3A4F478412CFA83900301464 /* KWordDictionary.mm */,
+			);
+			name = Text;
+			sourceTree = "<group>";
+		};
 		3A5107C812C1231700AAC1D5 /* kod helper */ = {
 			isa = PBXGroup;
 			children = (
@@ -699,6 +711,7 @@
 				3A5107C812C1231700AAC1D5 /* kod helper */,
 				3A40F8C312AFE5D7007B5879 /* Node */,
 				3ABF539712A5D5360020233C /* Main views */,
+				3A4F478212CFA81800301464 /* Text */,
 				3A158AD3128A09D300339E6E /* ICU */,
 				3ABF56AE12A69F9D0020233C /* Style */,
 				3A7E717D1286F41C00D85E4C /* Syntax highlighting */,
@@ -1295,6 +1308,7 @@
 				3AB5823612CAD15300E528B1 /* k_objc_prop.m in Sources */,
 				3A366A8412CB873D00257AE6 /* KObjectProxy.mm in Sources */,
 				3A366A8512CB873D00257AE6 /* node_kod.mm in Sources */,
+				3A4F478512CFA83900301464 /* KWordDictionary.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

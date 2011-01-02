@@ -48,13 +48,14 @@ void node_kod_init(v8::Handle<v8::Object> target) {
   NODE_SET_METHOD(target, "handleUncaughtException", HandleUncaughtException);
 
   // Object prototypes
+  KObjectProxy::Initialize(target, String::NewSymbol("KSplitView"));
+  KObjectProxy::Initialize(target, String::NewSymbol("KBrowserWindowController"));
   KObjectProxy::Initialize(target, String::NewSymbol("KDocument"));
   KObjectProxy::Initialize(target, String::NewSymbol("KScrollView"));
-  KObjectProxy::Initialize(target, String::NewSymbol("KTextView"));
-  //KObjectProxy::Initialize(target, String::NewSymbol("KSplitView"));
   KObjectProxy::Initialize(target, String::NewSymbol("KClipView"));
-  KObjectProxy::Initialize(target, String::NewSymbol("KBrowserWindowController"));
-  KObjectProxy::Initialize(target, String::NewSymbol("NSParagraphStyle"));
+  KObjectProxy::Initialize(target, String::NewSymbol("KTextView"));
+  KObjectProxy::Initialize(target, String::NewSymbol("KWordDictionary"));
+  //KObjectProxy::Initialize(target, String::NewSymbol("NSParagraphStyle"));
 
   // init Kod-Node interface
   KNodeInitNode(target);

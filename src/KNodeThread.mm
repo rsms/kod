@@ -44,10 +44,17 @@ static void _KPrepareNode(EV_P_ ev_prepare *watcher, int revents) {
   NSAutoreleasePool *pool = [NSAutoreleasePool new];
 
   // args
-  int argc = 2;
-  char *argv[] = {NULL,NULL};
-  argv[0] = (char*)[[kconf_bundle() executablePath] UTF8String];
-  argv[1] = (char*)[[kconf_res_url(@"main.js") path] UTF8String];
+  const char *argv[] = {NULL,"","",NULL};
+  argv[0] = [[kconf_bundle() executablePath] UTF8String];
+  #if !NDEBUG
+  argv[1] = "--expose-gc";
+  argv[2] = "--trace-gc";
+  static const int argc = 4;
+  #else
+  static const int argc = 2;
+  #endif
+  argv[argc-1] = [[kconf_res_url(@"main.js") path] UTF8String];
+  
 
   // NODE_PATH
   NSString *nodelibPath = [kconf_bundle() sharedSupportPath];
@@ -71,14 +78,37 @@ static void _KPrepareNode(EV_P_ ev_prepare *watcher, int revents) {
   ev_prepare_init(&gPrepareNodeWatcher, _KPrepareNode);
   // set max priority so _KPrepareNode gets called before main.js is executed
   ev_set_priority(&gPrepareNodeWatcher, EV_MAXPRI);
-  ev_prepare_start(EV_DEFAULT_UC_ &gPrepareNodeWatcher);
-  // Note: We do NOT ev_unref here since we want to keep node alive for as long
-  // as we are not canceled.
+  
+  while (![self isCancelled]) {
 
-  // start
-  DLOG("[node] starting in %@", self);
-  int exitStatus = node::Start(argc, argv);
-  DLOG("[node] exited with status %d in %@", exitStatus, self);
+    ev_prepare_start(EV_DEFAULT_UC_ &gPrepareNodeWatcher);
+    // Note: We do NOT ev_unref here since we want to keep node alive for as long
+    // as we are not canceled.
+
+    // start
+    DLOG("[node] starting in %@", self);
+    int exitStatus = node::Start(argc, (char**)argv);
+    DLOG("[node] exited with status %d in %@", exitStatus, self);
+
+    // show an alert if node "crashed"
+    if (![self isCancelled]) {
+      WLOG("forcing program termination due to Node.js unexpectedly exiting");
+      /*NSAlert *alert =
+      [NSAlert alertWithMessageText:@"Node.js terminated prematurely"
+                      defaultButton:@"Try to restart"
+                    alternateButton:@"Terminate Kod"
+                        otherButton:nil
+          informativeTextWithFormat:@"Node.js exited due to an internal error"
+                                     " and is vital to Kod, thus Node.js need"
+                                     " to be restarted or Kod be terminated to"
+                                     " avoid crashing."];
+      [alert setAlertStyle:NSCriticalAlertStyle];
+      NSInteger buttonPressed = [alert runModal];
+      if (buttonPressed == NSAlertAlternateReturn) {*/
+        [self cancel];
+      //}
+    }
+  }
 
   // clean up
   if (!gKodNodeModule.IsEmpty()) {
@@ -87,6 +117,7 @@ static void _KPrepareNode(EV_P_ ev_prepare *watcher, int revents) {
     // program termination
   }
 
+  [NSApp terminate:nil];
   [pool drain];
 }
 

@@ -3,6 +3,7 @@
 #import "KScroller.h"
 #import "KDocument.h"
 #import "HEventEmitter.h"
+#import "KWordDictionary.h"
 #import "virtual_key_codes.h"
 #import "kconf.h"
 #import "common.h"
@@ -17,6 +18,7 @@ static CGFloat kTextContainerYOffset = 0.0;
 @implementation KTextView
 
 @dynamic automaticallyKeepsIndentation, tabControlsIndentationLevel;
+@synthesize wordDictionary = wordDictionary_;
 
 
 - (id)initWithFrame:(NSRect)frame {
@@ -28,7 +30,6 @@ static CGFloat kTextContainerYOffset = 0.0;
   [self setAutomaticQuoteSubstitutionEnabled:NO];
   [self setAllowsDocumentBackgroundColorChange:NO];
   [self setAllowsImageEditing:NO];
-  [self setRichText:NO];
   [self setImportsGraphics:NO];
   //[self turnOffKerning:self]; // we are monospace (robot voice)
   [self setAutoresizingMask:NSViewWidthSizable];
@@ -36,6 +37,9 @@ static CGFloat kTextContainerYOffset = 0.0;
   [self setTextContainerInset:NSMakeSize(2.0, 4.0)];
   [self setVerticallyResizable:YES];
   [self setMaxSize:NSMakeSize(FLT_MAX, FLT_MAX)];
+
+  // this bastard causes sporadical crashes when run in other than main
+  K_DISPATCH_MAIN_ASYNC( [self setRichText:NO]; );
 
   // TODO: the following settings should follow the current style
   [self setBackgroundColor:
@@ -57,6 +61,9 @@ static CGFloat kTextContainerYOffset = 0.0;
   indentationString_ =
       [kconf_string(@"editor/text/indentation", @"  ") retain];
 
+  // word dictionary
+  wordDictionary_ = [KWordDictionary new];
+
   // observe configuration changes so we can update cached reps
   [self observe:KConfValueDidChangeNotification
          source:kconf_defaults()
@@ -70,6 +77,7 @@ static CGFloat kTextContainerYOffset = 0.0;
   [self stopObserving];
   [newlineString_ release];
   [indentationString_ release];
+  [wordDictionary_ release];
   [super dealloc];
 }
 
@@ -101,6 +109,12 @@ static CGFloat kTextContainerYOffset = 0.0;
   KDocument *document = (KDocument*)self.textStorage.delegate;
   kassert([document isKindOfClass:[KDocument class]]);
   return document;
+}
+
+
+- (void)setString:(NSString*)string {
+  [super setString:string];
+  [self rescanWords];
 }
 
 
@@ -571,5 +585,78 @@ static CGFloat kTextContainerYOffset = 0.0;
 - (void)cursorUpdate:(NSEvent*)event {
   DLOG("cursorUpdate:%@", event);
 }*/
+
+
+#pragma mark -
+#pragma mark Words
+
+
+- (void)scanWordsInString:(NSString *)string {
+  [wordDictionary_ scanString:string];
+}
+
+
+- (void)rescanWords {
+  [wordDictionary_ reset];
+  [wordDictionary_ scanString:[self string]];
+}
+
+
+// overload of super
+- (BOOL)shouldChangeTextInRange:(NSRange)affectedRange
+              replacementString:(NSString *)replacementString {
+  if ([super shouldChangeTextInRange:affectedRange
+                   replacementString:replacementString]) {
+    // update word dictionary
+    [wordDictionary_ rescanUpdatedText:[self string]
+                              forRange:affectedRange
+                 withReplacementString:replacementString];
+    return YES;
+  }
+  return NO;
+}
+
+
+#pragma mark -
+#pragma mark Autocomplete
+
+
+// Override default NSTextView behavior to not autocomplete if not at a word
+// boundary
+- (void)complete:(id)sender {
+  NSRange selectedRange = [self selectedRange];
+  NSCharacterSet *irrelevantChars = wordDictionary_.wordSeparatorCharacterSet;
+  NSString *text = [self string];
+  NSUInteger cursorLocation = selectedRange.location;
+  if (selectedRange.length == 0 &&
+      cursorLocation > 0 &&
+      cursorLocation < [text length]-1 ) {
+    NSString *surrounding =
+        [text substringWithRange:NSMakeRange(cursorLocation-1, 2)];
+    unichar charLeftOfCursor = [text characterAtIndex:cursorLocation-1];
+    unichar charAtCursor = [text characterAtIndex:cursorLocation];
+    if ([irrelevantChars characterIsMember:charLeftOfCursor] ==
+        [irrelevantChars characterIsMember:charAtCursor]) {
+      return;
+    }
+  }
+  [super complete:sender];
+}
+
+
+// TODO(irskep): allow plugins to override default autocomplete results
+- (NSArray*)completionsForPartialWordRange:(NSRange)charRange
+                       indexOfSelectedItem:(NSInteger*)index {
+  // ignore completions to the start of the document
+  if (charRange.location == 0 && charRange.length == 0)
+    return nil;
+
+  NSString *text = [self string];
+  NSString *prefix = [text substringWithRange:charRange];
+  return [wordDictionary_ completionsForPrefix:prefix
+                                    atPosition:charRange.location
+                                        inText:text
+                                    countLimit:100];
+}
 
 @end

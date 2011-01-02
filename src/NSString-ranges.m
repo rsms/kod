@@ -62,16 +62,24 @@
 
 - (NSRange)rangeOfWhitespaceStringAtBeginningOfLineForRange:(NSRange)range
                                                substring:(NSString**)outString {
-  return [self rangeOfCharactersFromSet:[NSCharacterSet whitespaceCharacterSet]
-                          afterLocation:[self lineStartForRange:range]
-                              substring:outString];
+  NSCharacterSet *whitespace = [NSCharacterSet whitespaceCharacterSet];
+  NSUInteger lineStart = [self lineStartForRange:range];
+  if (lineStart != NSNotFound && lineStart < self.length) {
+    unichar firstCharOfLine = [self characterAtIndex:lineStart];
+    if ([whitespace characterIsMember:firstCharOfLine]) {
+      // first char is whitespace, so let's find the full range
+      return [self rangeOfCharactersFromSet:whitespace
+                              afterLocation:lineStart
+                                  substring:outString];
+    }
+  }
+  return NSMakeRange(NSNotFound, 0);
 }
 
 
 - (NSRange)rangeOfWhitespaceStringAtBeginningOfLineForRange:(NSRange)range {
-  return [self rangeOfCharactersFromSet:[NSCharacterSet whitespaceCharacterSet]
-                          afterLocation:[self lineStartForRange:range]
-                              substring:nil];
+  return [self rangeOfWhitespaceStringAtBeginningOfLineForRange:range
+                                                      substring:nil];
 }
 
 
@@ -120,6 +128,14 @@
     // begin new line
     lineRange.location = i;
   }
+}
+
+
+- (BOOL)hasPrefix:(NSString*)prefix options:(NSStringCompareOptions)options {
+  NSRange range = NSMakeRange(0, prefix.length);
+  if (self.length < range.length)
+    return NO;
+  return [self compare:prefix options:options range:range] == NSOrderedSame;
 }
 
 
