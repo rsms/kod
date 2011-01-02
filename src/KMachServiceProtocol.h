@@ -3,4 +3,5 @@
 
 @protocol KMachServiceProtocol
 - (void)openURLs:(NSArray*)absoluteURLStrings;
+- (void)openWithDataFromFileHandle:(NSFileHandle*)fileHandle;
 @end

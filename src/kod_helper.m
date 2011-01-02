@@ -169,9 +169,27 @@ int main(int argc, char *argv[]) {
   }
   DLOG("connected to %@ through %@", sendPort, kodService);
 
-  // ask Kod.app to open any URLs passed on the command line
-  if (gURLsToOpen)
+  // ask Kod.app to open any URLs passed on the command line or any data passed
+  // to stdin.
+  if (gURLsToOpen) {
     [kodService openURLs:gURLsToOpen];
+  } else {
+    fd_set readfs;
+    struct timeval tv;
+    tv.tv_sec = 0;
+    tv.tv_usec = 500000;
+
+    FD_ZERO(&readfs);
+    FD_SET(STDIN_FILENO, &readfs);
+
+    int status = select(FD_SETSIZE, &readfs, NULL, NULL, &tv);
+    if (status < 0) {
+      WLOG("failed to select on stdin and stderr");
+    } else if (FD_ISSET(STDIN_FILENO, &readfs)) {
+      NSFileHandle *stdinHandle = [NSFileHandle fileHandleWithStandardInput];
+      [kodService openWithDataFromFileHandle:stdinHandle];
+    }
+  }    
 
   // close connection
   [gConnection invalidate];
