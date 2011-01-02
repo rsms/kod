@@ -1,7 +1,7 @@
 #import "node_kod.h"
 
 #define KN_OBJC_CLASS_ADDITIONS_BEGIN(name) \
-  @interface name##_node_ {} @end @implementation name##_node_
+  @interface name##_node_ : NSObject {} @end @implementation name##_node_
 
 class KObjectProxy : public node::EventEmitter {
  public:
@@ -14,7 +14,7 @@ class KObjectProxy : public node::EventEmitter {
   virtual ~KObjectProxy();
 
   static v8::Handle<v8::Value> New(const v8::Arguments& args);
-  static v8::Local<v8::Value> New(id representedObject);
+  static v8::Local<v8::Object> New(id representedObject);
 
   id representedObject_;
 };

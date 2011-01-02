@@ -5,6 +5,8 @@
 // install last line of defence for exceptions to avoid nodejs killing Kod.app
 process.on('uncaughtException', global._kod.handleUncaughtException);
 
+// TODO: alter behavior of process.exit
+
 // add our built-in module path to the front of require.paths
 require.paths.unshift(require.paths.pop());
 
@@ -16,6 +18,11 @@ try { userModule = require(process.env.HOME + '/.kod'); } catch (e) {}
 // ----------------------------------------------------------------------------
 // Things below this line is only used for development and debugging and not
 // really meant to be in this file
+
+if (typeof gc === 'function') {
+  // if we are running with --expose_gc, force collection every second
+  setInterval(gc, 1000);
+}
 
 // debug
 var util = require('util');
@@ -35,7 +42,21 @@ kod.exposedFunctions.foo = function(callback) {
 // example event listener for the "tabDidBecomeSelected" event, emitted when a
 // document becomes selected (when the selection changes)
 kod.on('tabDidBecomeSelected', function(document) {
-  //console.log('tabDidBecomeSelected: '+util.inspect(document));
+  // Dump document. Set inspectionDepth to 4 in order to dump things like the
+  // word dictionary.
+  var inspectionDepth = 1;
+  console.log('tabDidBecomeSelected: '+
+              util.inspect(document, false, inspectionDepth));
+
+  // As document objects are persistent, we can add properties to it which will
+  // survive as long as the document is open
+  var timeNow = (new Date()).getTime();
+  if (document.lastSeenByNode) {
+    console.log('I saw this document '+
+                ((timeNow - document.lastSeenByNode)/1000)+
+                ' seconds ago');
+  }
+  document.lastSeenByNode = timeNow;
 
   // Replace the contents of the document:
   //document.text = "Text\nreplaced\nby main.js";

@@ -18,25 +18,6 @@ void DummyFunction() { }
 #define cxx_offsetof(type, member) \
   (((char *) &((type *) KnownAddress)->member) - KnownAddress)
 
-static inline v8::Persistent<v8::Object>* pobj_create(
-    const v8::Local<v8::Value> &v) {
-  v8::Persistent<v8::Object> *pobj = new v8::Persistent<v8::Object>();
-  *pobj = v8::Persistent<v8::Object>::New(v8::Local<v8::Object>::Cast(v));
-  return pobj;
-}
-
-static inline v8::Persistent<v8::Object>* pobj_unwrap(void *data) {
-  v8::Persistent<v8::Object> *pobj =
-    reinterpret_cast<v8::Persistent<v8::Object>*>(data);
-  assert((*pobj)->IsObject());
-  return pobj;
-}
-
-static inline void pobj_destroy(v8::Persistent<v8::Object> *pobj) {
-  pobj->Dispose();
-  delete pobj;
-}
-
 // ----------------------
 
 // queue with entries of type KNodeIOEntry*
@@ -236,7 +217,7 @@ void KNodeInitNode(v8::Handle<Object> kodModule) {
   // get reference to method-name-to-js-func dict
   v8::Local<Value> exposedFunctions =
       kodModule->Get(String::New("exposedFunctions"))->ToObject();
-  kExposedFunctions = pobj_create(exposedFunctions);
+  kExposedFunctions = KNodePersistentObjectCreate(exposedFunctions);
 
   // setup notifier
   KNodeIOInputQueueNotifier.data = NULL;
@@ -263,6 +244,82 @@ void KNodePerformInNode(KNodePerformBlock block) {
 
 // ---------------------------------------------------------------------------
 
+KNodeInvocationIOEntry::KNodeInvocationIOEntry(v8::Handle<Object> target,
+                                               const char *funcName,
+                                               int argc, id *argv) {
+  v8::HandleScope scope;
+  target_ = Persistent<Object>::New(target);
+  funcName_ = strdup(funcName);
+  argc_ = argc;
+  if (argc_ == 0) {
+    argv_ = NULL;
+  } else {
+    argv_ = new Persistent<Value>[argc_];
+    for (int i = 0; i<argc_; ++i) {
+      argv_[i] = Persistent<Value>::New([argv[i] v8Value]);
+    }
+  }
+}
+
+
+KNodeInvocationIOEntry::KNodeInvocationIOEntry(v8::Handle<Object> target,
+                                               const char *funcName,
+                                               int argc,
+                                               v8::Handle<Value> argv[]) {
+  v8::HandleScope scope;
+  target_ = Persistent<Object>::New(target);
+  funcName_ = strdup(funcName);
+  argc_ = argc;
+  if (argc_ == 0) {
+    argv_ = NULL;
+  } else {
+    argv_ = new Persistent<Value>[argc_];
+    for (int i = 0; i<argc_; ++i) {
+      argv_[i] = Persistent<Value>::New(argv[i]);
+    }
+  }
+}
+
+
+KNodeInvocationIOEntry::~KNodeInvocationIOEntry() {
+  if (!target_.IsEmpty()) {
+    target_.Dispose();
+    target_.Clear();
+  }
+  if (argv_) {
+    for (int i=0; i<argc_; ++i) {
+      v8::Persistent<v8::Value> v = argv_[i];
+      if (v.IsEmpty()) continue;
+      v.Dispose();
+      v.Clear();
+    }
+    delete argv_;
+    argv_ = NULL;
+  }
+  if (funcName_) {
+    free(funcName_);
+  }
+}
+
+
+void KNodeInvocationIOEntry::perform() {
+  v8::HandleScope scope;
+  DLOG("KNodeInvocationIOEntry::perform()");
+  if (!target_.IsEmpty()) {
+    Local<Value> v = target_->Get(String::New(funcName_));
+    if (v->IsFunction()) {
+      DLOG("KNodeInvocationIOEntry::perform() invoke '%s' with %d arguments",
+           funcName_, argc_);
+      Local<Function> fun = Local<Function>::Cast(v);
+      Local<Value> ret = fun->Call(target_, argc_, argv_);
+    }
+  }
+  KNodeIOEntry::perform();
+}
+
+
+// ---------------------------------------------------------------------------
+
 KNodeEventIOEntry::KNodeEventIOEntry(const char *name, int argc, id *argv) {
   v8::HandleScope scope;
   argc_ = argc + 1;
@@ -280,8 +337,8 @@ KNodeEventIOEntry::~KNodeEventIOEntry() {
     for (int i=0; i<argc_; ++i) {
       v8::Persistent<v8::Value> v = argv_[i];
       if (v.IsEmpty()) continue;
-      v.Clear();
       v.Dispose();
+      v.Clear();
     }
     delete argv_;
     argv_ = NULL;
@@ -302,3 +359,5 @@ void KNodeEventIOEntry::perform() {
   KNodeIOEntry::perform();
 }
 
+
+//v8::Persistent<v8::Object> obj_;

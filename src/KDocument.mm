@@ -237,25 +237,17 @@ static int debugSimulateTextAppendingIteration = 0;
 
 
 - (void)dealloc {
-  DLOG("--- DEALLOC %@ ---", self);
-  fprintf(stderr, ">>>>> %s dealloc\n", [[self description] UTF8String]);
-  fflush(stderr);
-  KStyle *style = [KStyle sharedStyle];
-  NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
-  [nc removeObserver:self
-                name:KStyleDidChangeNotification
-              object:style];
+  //DLOG("--- DEALLOC %@ ---", self);
+  [self stopObserving];
   if (sourceHighlighter_.get())
     sourceHighlighter_->cancel();
   [super dealloc];
 }
 
 
-
 /*- (id)retain {
   DLOG("\n%@ retain (%lu) %@\n", self, [self retainCount],
-       //@""//
-       [NSThread callStackSymbols]
+       @""//[NSThread callStackSymbols]
        );
    fflush(stderr); fsync(STDERR_FILENO);
   return [super retain];
@@ -263,17 +255,16 @@ static int debugSimulateTextAppendingIteration = 0;
 - (void)release {
   //DLOG("%@ release %@", self, [NSThread callStackSymbols]);
   DLOG("\n%@ release (%lu) %@\n", self, [self retainCount],
-       //@""//
-       [NSThread callStackSymbols]
+       @""//[NSThread callStackSymbols]
        );
   fflush(stderr); fsync(STDERR_FILENO);
   [super release];
 }
 - (id)autorelease {
-  DLOG("%@ autorelease %@", self,
-       //@""//
-       [NSThread callStackSymbols]
+  DLOG("\n%@ autorelease %@\n", self,
+       @""//[NSThread callStackSymbols]
        );
+  fflush(stderr); fsync(STDERR_FILENO);
   return [super autorelease];
 }*/
 
@@ -661,9 +652,9 @@ static int debugSimulateTextAppendingIteration = 0;
 
 
 // wrappers for KDocuments should be persistent
-/*- (BOOL)nodeWrapperIsPersistent {
+- (BOOL)nodeWrapperIsPersistent {
   return YES;
-}*/
+}
 
 
 #pragma mark -

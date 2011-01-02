@@ -83,7 +83,8 @@ class KNodeTransactionalIOEntry : public KNodeIOEntry {
 
   void perform() {
     performBlock_(^(KNodeCallbackBlock callback, NSError *err, NSArray *args) {
-      KNodePerformInKod(callback, err, args, returnDispatchQueue_);
+      if (callback)
+        KNodePerformInKod(callback, err, args, returnDispatchQueue_);
     });
     KNodeIOEntry::perform();
   }
@@ -92,6 +93,24 @@ class KNodeTransactionalIOEntry : public KNodeIOEntry {
  protected:
   KNodePerformBlock performBlock_;
   dispatch_queue_t returnDispatchQueue_;
+};
+
+
+// Invokes funcName on target passing arguments
+class KNodeInvocationIOEntry : public KNodeIOEntry {
+ public:
+  KNodeInvocationIOEntry(v8::Handle<v8::Object> target, const char *funcName,
+                         int argc=0, id *argv=NULL);
+  KNodeInvocationIOEntry(v8::Handle<v8::Object> target,
+                         const char *funcName,
+                         int argc, v8::Handle<v8::Value> argv[]);
+  virtual ~KNodeInvocationIOEntry();
+  void perform();
+ protected:
+  char *funcName_;
+  v8::Persistent<v8::Object> target_;
+  int argc_;
+  v8::Persistent<v8::Value> *argv_;
 };
 
 
@@ -118,4 +137,25 @@ class KNodeBlockFun {
   inline v8::Local<v8::Value> function() { return *fun_; }
   static v8::Handle<v8::Value> InvocationProxy(const v8::Arguments& args);
 };
+
+// -------------------
+
+static inline v8::Persistent<v8::Object>* KNodePersistentObjectCreate(
+    const v8::Local<v8::Value> &v) {
+  v8::Persistent<v8::Object> *pobj = new v8::Persistent<v8::Object>();
+  *pobj = v8::Persistent<v8::Object>::New(v8::Local<v8::Object>::Cast(v));
+  return pobj;
+}
+
+static inline v8::Persistent<v8::Object>* KNodePersistentObjectUnwrap(void *data) {
+  v8::Persistent<v8::Object> *pobj =
+    reinterpret_cast<v8::Persistent<v8::Object>*>(data);
+  assert((*pobj)->IsObject());
+  return pobj;
+}
+
+static inline void KNodePersistentObjectDestroy(v8::Persistent<v8::Object> *pobj) {
+  pobj->Dispose();
+  delete pobj;
+}
 
