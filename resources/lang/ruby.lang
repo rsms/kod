@@ -2,6 +2,7 @@
 # @matchuti public.ruby-script
 # @matchext rb, rbw
 # @matchprogram ruby
+# @matchname Rakefile
 
 preproc = "require"
 
