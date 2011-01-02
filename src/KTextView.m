@@ -92,10 +92,52 @@ static CGFloat kTextContainerYOffset = 0.0;
 }
 
 
-/*- (void)keyDown:(NSEvent*)event {
-  DLOG("keyDown %@ %ld", event, [[event characters] characterAtIndex:0]);
-}*/
+- (void)keyDown:(NSEvent*)event {
+	//DLOG("keyDown %@ %ld", event, event.keyCode);
+	if (event.keyCode == 48) {
+		NSInteger charIndex = [self selectedRange].location;
+		NSInteger lineNumber = [self.textStorage.delegate lineNumberForLocation:charIndex];
+		
+		if (([event modifierFlags] & (NSShiftKeyMask | NSAlphaShiftKeyMask)) != 0) {
+			[self unindentLine:lineNumber];
+		} else {
+			[self indentLine:lineNumber];
+		}
+	} else {
+		[super keyDown:event];
+		
+		// TODO: this way of maintaining indentation is a workaround
+		// I kept getting EXC_BAD_ACCESS otherwise and couldn't figure out why
+		if (event.keyCode == 36) {
+			[self.textStorage.delegate maintainIndentation];
+		}
+	}
+}
 
+- (void)unindentLine:(NSUInteger)lineNumber {
+	NSRange oldSelected = [self selectedRange];
+	NSInteger lineStart = [self.textStorage.delegate locationOfLineAtLineNumber:lineNumber];
+	int delta = 0;
+	NSRange indent = NSMakeRange(lineStart, 4);
+	
+	if ([[self.textStorage.string substringWithRange:indent] isEqualToString:@"    "]) {
+		[self setSelectedRange:indent];
+		[self insertText:@""];
+		delta = -4;
+	}
+	
+	[self setSelectedRange:NSMakeRange(oldSelected.location+delta, 0)];
+}
+
+- (void)indentLine:(NSUInteger)lineNumber {
+	NSRange oldSelected = [self selectedRange];
+	NSInteger lineStart = [self.textStorage.delegate locationOfLineAtLineNumber:lineNumber];
+	
+	[self setSelectedRange:NSMakeRange(lineStart, 0)];
+	[self insertText:@"    "];
+	
+	[self setSelectedRange:NSMakeRange(oldSelected.location+4, 0)];
+}
 
 - (void)mouseMoved:(NSEvent*)event {
   NSPoint loc = [event locationInWindow]; // window coords

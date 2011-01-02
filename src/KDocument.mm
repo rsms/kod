@@ -601,7 +601,6 @@ static int debugSimulateTextAppendingIteration = 0;
   }
 }
 
-
 #pragma mark -
 #pragma mark Line info
 
@@ -648,6 +647,18 @@ static int debugSimulateTextAppendingIteration = 0;
   }
 }
 
+- (NSRange)rangeOfLineIndentationAtLineNumber:(NSUInteger)lineNumber {
+	NSRange line = [self rangeOfLineAtLineNumber:lineNumber];
+	NSString *lineString = [textView_.textStorage.string substringWithRange:line];
+	
+	int indentLen = 0;
+	int length = [lineString length];
+	while ([lineString characterAtIndex:indentLen] == ' ' && indentLen < length) {
+		indentLen++;
+	}
+	return NSMakeRange(line.location, indentLen);
+}
+
 
 - (NSRange)rangeOfLineAtLineNumber:(NSUInteger)lineNumber {
   NSRange lineRange = [self rangeOfLineTerminatorAtLineNumber:lineNumber];
@@ -670,6 +681,12 @@ static int debugSimulateTextAppendingIteration = 0;
   return lineRange;
 }
 
+// this function is needed because otherwise we keep getting
+// EXC_BAD_ACCESS errors when attempting to get this information
+// from KTextView via the self.textStorage.delegate
+- (NSUInteger)locationOfLineAtLineNumber:(NSUInteger)lineNumber {
+	return [self rangeOfLineAtLineNumber:lineNumber].location;
+}
 
 - (NSUInteger)lineNumberForLocation:(NSUInteger)location {
   kassert([NSThread isMainThread]); // since lineToRangeVec_ is not thread safe
@@ -688,6 +705,12 @@ static int debugSimulateTextAppendingIteration = 0;
   return lineno + 1;
 }
 
+- (BOOL) isNewLine:(NSUInteger)lineNumber {
+	if ([self rangeOfLineAtLineNumber:lineNumber].length <= [self rangeOfLineTerminatorAtLineNumber:lineNumber].length) {
+		return YES;
+	}
+	return NO;
+}
 
 #pragma mark -
 #pragma mark NSTextViewDelegate implementation
@@ -1452,17 +1475,17 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
     return;
   }
   kassert([NSThread isMainThread]);
-  
-  // range that was affected by the edit
+	
+	// range that was affected by the edit
 	NSRange	editedRange = [textStorage editedRange];
-  
-  // length delta of the edit (i.e. negative for deletions)
+	
+	// length delta of the edit (i.e. negative for deletions)
 	int	changeInLength = [textStorage changeInLength];
-
-  // update lineToRangeVec_
-  [self _updateLinesToRangesInfoForTextStorage:textStorage
-                                       inRange:editedRange
-                                   changeDelta:changeInLength];
+	
+	// update lineToRangeVec_
+	[self _updateLinesToRangesInfoForTextStorage:textStorage
+										 inRange:editedRange
+									 changeDelta:changeInLength];
 
   // Update edit timestamp
   lastEditTimestamp_ = [NSDate timeIntervalSinceReferenceDate];
@@ -1505,6 +1528,18 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
   [textView_ breakUndoCoalescing];
 }
 
+- (void)maintainIndentation {
+	NSInteger caret = [textView_ selectedRange].location;
+	NSUInteger lineNumber = [self lineNumberForLocation:caret];
+	
+	if ([self isNewLine:lineNumber]) {
+		NSRange indent = [self rangeOfLineIndentationAtLineNumber:lineNumber-1];
+		
+		DLOG("INDENT %@", NSStringFromRange(indent));
+		
+		[textView_ insertText:[textView_.textStorage.string substringWithRange:indent]];
+	}
+}
 
 - (void)guessLanguageBasedOnUTI:(NSString*)uti textContent:(NSString*)text {
   KLangMap *langMap = [KLangMap sharedLangMap];
