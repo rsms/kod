@@ -55,6 +55,7 @@ extern NSString *const KDocumentDidLoadDataNotification;
 @property(assign, nonatomic) BOOL highlightingEnabled;
 @property BOOL hasMetaRuler;
 @property(readonly) BOOL canSaveDocument;
+@property(readonly) BOOL canQuietlySaveDocument;
 @property(readonly) BOOL hasRemoteSource;
 @property(assign, nonatomic) NSStringEncoding textEncoding;
 @property(readonly) KBrowserWindowController* windowController;

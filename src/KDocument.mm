@@ -1902,6 +1902,14 @@ finishedReadingURL:(NSURL*)url
   return ( (urlHandler && [urlHandler canWriteURL:url]) || !url );
 }
 
+// Returns true to indicate a saveDocument: message is allowed, saving the
+// document to it's current URL without showing a save dialog
+- (BOOL)canQuietlySaveDocument {
+  NSURL *url = self.fileURL;
+  KURLHandler *urlHandler =
+  [[KDocumentController kodController] urlHandlerForURL:url];
+  return ( (urlHandler && [urlHandler canWriteURL:url]));
+}
 
 // Generate data from text
 - (NSData*)dataOfType:(NSString*)typeName error:(NSError **)outError {

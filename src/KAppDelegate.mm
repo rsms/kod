@@ -206,6 +206,29 @@
   }
 }
 
+// Save files if Kod loses focus
+- (void) applicationDidResignActive: (NSNotification *) aNotification
+{
+  DLOG("Became inactive");
+  BOOL saveOnLostFocus = kconf_bool(@"editor/saveOnLostFocus", NO);
+  if(saveOnLostFocus) {
+    KDocumentController *documentController =
+    (KDocumentController*)[NSDocumentController sharedDocumentController];
+    if ([documentController hasEditedDocuments]) {
+      NSArray *documents = (NSArray *) [documentController documents];
+      int count = [documents count];
+      DLOG("Trying to save %d files",count);
+      for(int i = 0;i < count;i++){
+        KDocument *document = (KDocument*) [documents objectAtIndex:i];
+        if([document canQuietlySaveDocument]) {
+          [document saveDocument: nil]; 
+        }
+      }
+      
+    }
+  }
+}
+
 
 /*- (NSApplicationTerminateReply)applicationShouldTerminate:
     (NSApplication*)sender {

@@ -22,6 +22,7 @@
 - (IBAction)focusLocationBar:(id)sender;
 - (IBAction)toggleStatusBarVisibility:(id)sender;
 - (IBAction)toggleSplitView:(id)sender;
+- (IBAction)toggleSaveOnLostFocus:(id)sender;
 - (IBAction)reloadStyle:(id)sender;
 - (IBAction)goToLine:(id)sender;
 

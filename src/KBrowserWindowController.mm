@@ -146,6 +146,17 @@
     [statusBarController_ toggleStatusBarVisibility:sender];
 }
 
+- (IBAction)toggleSaveOnLostFocus:(id) sender {
+  NSMenuItem *menuItem = (NSMenuItem*) sender;
+  DLOG("editor/saveOnLostFocus");
+  if([menuItem state] == NSOnState) { 
+    kconf_set_bool(@"editor/saveOnLostFocus", NO);
+    [menuItem setState:NSOnState]; 
+  } else {
+    kconf_set_bool(@"editor/saveOnLostFocus", YES);
+    [menuItem setState:NSOffState]; 
+  }
+}
 
 - (IBAction)toggleSplitView:(id)sender {
   [splitView_ toggleCollapse:sender];
@@ -244,6 +255,9 @@
       [item setState:!statusBarController_.isHidden];
       return YES;
     }
+  } else if (item.action == @selector(toggleSaveOnLostFocus:)) {
+    [item setState:kconf_bool(@"editor/saveOnLostFocus", NO)];
+    return YES;
   } else {
     y = [super validateMenuItem:item];
     #if 0
