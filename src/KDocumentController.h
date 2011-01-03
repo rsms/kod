@@ -2,6 +2,20 @@
 
 @class KDocument, KCloseCycleContext, KBrowserWindowController, KURLHandler;
 
+// Block type used to finalize a deferred document "open" action.
+//
+// - To abort, pass nil for both arguments (you are responsible for releasing
+//   the document in this case).
+//
+// - To abort with error, pass an error as the first argument and optionally
+//   nil for the second argument. If you instead pass a document as the second
+//   argument, the document will be released.
+//
+// - To proceed, pass a nil error and a valid document as the second argument.
+//
+typedef void (^KDocumentOpenClosure)(NSError*,KDocument*);
+
+
 @interface KDocumentController : NSDocumentController {
   KCloseCycleContext *closeCycleContext_;
   NSMutableDictionary *urlHandlers_;
@@ -58,6 +72,11 @@ withWindowController:(KBrowserWindowController*)windowController
                   groupWithSiblings:(BOOL)groupWithSiblings
                             display:(BOOL)displayDocument
                               error:(NSError **)outError;
+
+- (KDocument*)openNewDocumentWithBlock:(void(^)(KDocument*,KDocumentOpenClosure))block
+                  withWindowController:(NSWindowController*)windowController
+                               display:(BOOL)display
+                                 error:(NSError**)error;
 
 - (KDocument*)openNewDocumentWithData:(NSData*)data
                                ofType:(NSString *)typeName

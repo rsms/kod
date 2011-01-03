@@ -163,14 +163,19 @@
                ![fm fileExistsAtPath:[url path]]) {
       // Special case: open a new (non-existing) document
       NSError *error = nil;
+
       // create new document
-      KDocument *tab =
-          [self openUntitledDocumentWithWindowController:windowController
-                                                 display:index==0
-                                                   error:&error];
-      if (tab) tab.url = url;
+      KDocument *doc = [self openNewDocumentWithBlock:
+        ^(KDocument *doc, KDocumentOpenClosure closure) {
+          // set URL
+          doc.url = url;
+          // continue opening the document
+          closure(nil, doc);
+        } withWindowController:windowController display:index==0 error:&error];
+
+      if (doc) doc.url = url;
       if (countdown) countdown(error);
-      if (!tab) [windowController presentError:error];
+      if (!doc) [windowController presentError:error];
     } else {
       dispatch_async(dispatchQueue, ^{
         NSAutoreleasePool *pool = [NSAutoreleasePool new];
@@ -178,7 +183,7 @@
         KDocument *doc = [self openDocumentWithContentsOfURL:url
                                            withWindowController:windowController
                                               groupWithSiblings:YES
-                                                  // display last document opened:
+                                                // display last document opened:
                                                         display:index==0
                                                           error:&error];
         if (doc && doc.isLoading) {
@@ -262,28 +267,66 @@
 }
 
 
-- (id)openUntitledDocumentWithWindowController:(NSWindowController*)windowController
-                                       display:(BOOL)display
-                                         error:(NSError **)error {
-  KDocument* tab = [self makeUntitledDocumentOfType:[self defaultType]
+- (KDocument*)openNewDocumentWithBlock:(void(^)(KDocument*,KDocumentOpenClosure))block
+                  withWindowController:(NSWindowController*)windowController
+                               display:(BOOL)display
+                                 error:(NSError**)error {
+  BOOL groupWithSiblings = NO;
+
+  // Create a new buffer document
+  KDocument* doc = [self makeUntitledDocumentOfType:[self defaultType]
                                               error:error];
-  if (tab) {
-    assert([NSThread isMainThread]);
+
+  if (doc) {
+    // Unless we got an explicit window controller, get the current main one
     if (!windowController) {
       windowController = [KBrowserWindowController mainBrowserWindowController];
+    } else {
+      kassert(
+          [windowController isKindOfClass:[KBrowserWindowController class]]);
     }
-    [self finalizeOpenDocument:tab
-          withWindowController:(KBrowserWindowController*)windowController
-             groupWithSiblings:NO
-                       display:display];
+
+    // Use custom initializer block?
+    if (block) {
+      KDocumentOpenClosure closure = ^(NSError *err, KDocument *doc) {
+        if (err) {
+          if (doc) [doc release];
+          K_DISPATCH_MAIN_ASYNC({ [windowController presentError:err]; });
+        } else if (doc) {
+          [self safeFinalizeOpenDocument:doc
+                withWindowController:(KBrowserWindowController*)windowController
+                       groupWithSiblings:groupWithSiblings
+                                 display:display];
+        } // else do nothing. i.e. opening was aborted
+      };
+      block(doc, closure);
+    } else {
+      // Finalize opening of the document, causing it to be inserted and presented
+      [self safeFinalizeOpenDocument:doc
+                withWindowController:(KBrowserWindowController*)windowController
+                   groupWithSiblings:NO
+                             display:display];
+    }
   } else {
     assert(!error || *error);
   }
-  return tab;
+  return doc;
 }
 
 
-- (id)openUntitledDocumentAndDisplay:(BOOL)display error:(NSError **)error {
+// overload of NSDocumentController impl
+- (id)openUntitledDocumentWithWindowController:(NSWindowController*)windowController
+                                       display:(BOOL)display
+                                         error:(NSError**)error {
+  return [self openNewDocumentWithBlock:nil
+                   withWindowController:windowController
+                                display:display
+                                  error:error];
+}
+
+
+// overload of NSDocumentController impl
+- (id)openUntitledDocumentAndDisplay:(BOOL)display error:(NSError**)error {
   return [self openUntitledDocumentWithWindowController:nil
                                                 display:display
                                                   error:error];
