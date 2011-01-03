@@ -576,6 +576,11 @@ static int debugSimulateTextAppendingIteration = 0;
 }
 
 
+- (BOOL)isVirgin {
+  return ![self isDocumentEdited] && ![self fileURL];
+}
+
+
 #pragma mark -
 #pragma mark Notifications
 

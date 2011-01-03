@@ -79,6 +79,9 @@ extern NSString *const KDocumentDidLoadDataNotification;
 // Makes the document editable (default) or read-only
 @property(assign) BOOL isEditable;
 
+// True if the document is a new, untouched buffer without a url
+@property(readonly) BOOL isVirgin;
+
 
 + (NSFont*)defaultFont;
 - (void)setIconBasedOnContents;

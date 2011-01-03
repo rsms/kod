@@ -7,6 +7,7 @@
 #import "KHTTPURLHandler.h"
 #import "KKodURLHandler.h"
 #import "HEventEmitter.h"
+#import "kconf.h"
 #import "kod_node_interface.h"
 
 #import <objc/objc-runtime.h>
@@ -161,15 +162,20 @@
     } else if (newDocForNewURLs && [url isFileURL] &&
                ![fm fileExistsAtPath:[url path]]) {
       // Special case: open a new (non-existing) document
-      NSError *error;
+      NSError *error = nil;
+
       // create new document
-      KDocument *tab =
-          [self openUntitledDocumentWithWindowController:windowController
-                                                 display:index==0
-                                                   error:&error];
-      if (tab) tab.url = url;
+      KDocument *doc = [self openNewDocumentWithBlock:
+        ^(KDocument *doc, KDocumentOpenClosure closure) {
+          // set URL
+          doc.url = url;
+          // continue opening the document
+          closure(nil, doc);
+        } withWindowController:windowController display:index==0 error:&error];
+
+      if (doc) doc.url = url;
       if (countdown) countdown(error);
-      if (!tab) [windowController presentError:error];
+      if (!doc) [windowController presentError:error];
     } else {
       dispatch_async(dispatchQueue, ^{
         NSAutoreleasePool *pool = [NSAutoreleasePool new];
@@ -177,7 +183,7 @@
         KDocument *doc = [self openDocumentWithContentsOfURL:url
                                            withWindowController:windowController
                                               groupWithSiblings:YES
-                                                  // display last document opened:
+                                                // display last document opened:
                                                         display:index==0
                                                           error:&error];
         if (doc && doc.isLoading) {
@@ -261,28 +267,66 @@
 }
 
 
-- (id)openUntitledDocumentWithWindowController:(NSWindowController*)windowController
-                                       display:(BOOL)display
-                                         error:(NSError **)error {
-  KDocument* tab = [self makeUntitledDocumentOfType:[self defaultType]
+- (KDocument*)openNewDocumentWithBlock:(void(^)(KDocument*,KDocumentOpenClosure))block
+                  withWindowController:(NSWindowController*)windowController
+                               display:(BOOL)display
+                                 error:(NSError**)error {
+  BOOL groupWithSiblings = NO;
+
+  // Create a new buffer document
+  KDocument* doc = [self makeUntitledDocumentOfType:[self defaultType]
                                               error:error];
-  if (tab) {
-    assert([NSThread isMainThread]);
+
+  if (doc) {
+    // Unless we got an explicit window controller, get the current main one
     if (!windowController) {
       windowController = [KBrowserWindowController mainBrowserWindowController];
+    } else {
+      kassert(
+          [windowController isKindOfClass:[KBrowserWindowController class]]);
     }
-    [self finalizeOpenDocument:tab
-          withWindowController:(KBrowserWindowController*)windowController
-             groupWithSiblings:NO
-                       display:display];
+
+    // Use custom initializer block?
+    if (block) {
+      KDocumentOpenClosure closure = ^(NSError *err, KDocument *doc) {
+        if (err) {
+          if (doc) [doc release];
+          K_DISPATCH_MAIN_ASYNC({ [windowController presentError:err]; });
+        } else if (doc) {
+          [self safeFinalizeOpenDocument:doc
+                withWindowController:(KBrowserWindowController*)windowController
+                       groupWithSiblings:groupWithSiblings
+                                 display:display];
+        } // else do nothing. i.e. opening was aborted
+      };
+      block(doc, closure);
+    } else {
+      // Finalize opening of the document, causing it to be inserted and presented
+      [self safeFinalizeOpenDocument:doc
+                withWindowController:(KBrowserWindowController*)windowController
+                   groupWithSiblings:NO
+                             display:display];
+    }
   } else {
     assert(!error || *error);
   }
-  return tab;
+  return doc;
 }
 
 
-- (id)openUntitledDocumentAndDisplay:(BOOL)display error:(NSError **)error {
+// overload of NSDocumentController impl
+- (id)openUntitledDocumentWithWindowController:(NSWindowController*)windowController
+                                       display:(BOOL)display
+                                         error:(NSError**)error {
+  return [self openNewDocumentWithBlock:nil
+                   withWindowController:windowController
+                                display:display
+                                  error:error];
+}
+
+
+// overload of NSDocumentController impl
+- (id)openUntitledDocumentAndDisplay:(BOOL)display error:(NSError**)error {
   return [self openUntitledDocumentWithWindowController:nil
                                                 display:display
                                                   error:error];
@@ -294,10 +338,10 @@
 static double kSiblingAutoGroupEditDistanceThreshold = 0.4;
 
 
-- (void)addTabContents:(KDocument*)tab
-  withWindowController:(KBrowserWindowController*)windowController
-          inForeground:(BOOL)foreground
-     groupWithSiblings:(BOOL)groupWithSiblings {
+- (void)addDocument:(KDocument*)doc
+withWindowController:(KBrowserWindowController*)windowController
+       inForeground:(BOOL)foreground
+  groupWithSiblings:(BOOL)groupWithSiblings {
   // NOTE: if we want to add a tab in the background, we should not use this
   // helper function (addTabContents:inBrowser:)
 
@@ -307,13 +351,10 @@ static double kSiblingAutoGroupEditDistanceThreshold = 0.4;
   // and then Open... one or more files.
   KBrowser* browser = (KBrowser*)windowController.browser;
   if ([browser tabCount] == 1) {
-    KDocument* tab0 = (KDocument*)[browser tabContentsAtIndex:0];
-    kassert(tab0);
-    // TODO: DRY this up and move into KDocument
-    BOOL existingTabIsVirgin = ![tab0 isDocumentEdited] && ![tab0 fileURL];
-    BOOL newTabIsVirgin = ![tab isDocumentEdited] && ![tab fileURL];
-    if (existingTabIsVirgin && !newTabIsVirgin) {
-      [browser replaceTabContentsAtIndex:0 withTabContents:tab];
+    KDocument *firstDocument = (KDocument*)[browser tabContentsAtIndex:0];
+    kassert(firstDocument != nil);
+    if (firstDocument.isVirgin && !doc.isVirgin) {
+      [browser replaceTabContentsAtIndex:0 withTabContents:doc];
       return;
     }
   }
@@ -324,16 +365,17 @@ static double kSiblingAutoGroupEditDistanceThreshold = 0.4;
   // index to insert the new tab. -1 means "after the current tab"
   int insertIndex = -1;
 
-  if (groupWithSiblings) {
+  if (groupWithSiblings && kconf_bool(@"groupNewDocuments/enabled", YES)) {
+    BOOL useEditDistance = kconf_bool(@"groupNewDocuments/byEditDistance", YES);
     KDocument *otherTab;
     double bestSiblingDistance = 1.0;
     int i = 0, tabCount = [browser tabCount];
-    NSString *tabExt = [tab.title pathExtension];
+    NSString *tabExt = [doc.title pathExtension];
 
     for (; i<tabCount; ++i) {
       otherTab = (KDocument*)[browser tabContentsAtIndex:i];
       if (otherTab) {
-        NSString *tabName = [tab.title stringByDeletingPathExtension];
+        NSString *tabName = [doc.title stringByDeletingPathExtension];
         NSString *otherName = [otherTab.title stringByDeletingPathExtension];
         // test simple case-insensitive compare as this is a common use-case
         // (this is an optimization for i.e. "foo.c", "Foo.h")
@@ -345,18 +387,18 @@ static double kSiblingAutoGroupEditDistanceThreshold = 0.4;
             otherTab = (KDocument*)[browser tabContentsAtIndex:insertIndex];
             NSString *otherExt = [otherTab.title pathExtension];
             if ([tabExt caseInsensitiveCompare:otherExt] == NSOrderedDescending) {
-              // tabExt = z, otherExt = a -- use this tab instead of previously
-              // found tab
+              // tabExt = z, otherExt = a -- use this doc instead of previously
+              // found doc
               insertIndex = i;
             }
           } else {
             bestSiblingDistance = 0.0;
             insertIndex = i;
           }
-        } else if (bestSiblingDistance != 0.0) {
+        } else if (bestSiblingDistance != 0.0 && useEditDistance) {
           // test levenstein distance
-          double editDistance = [tab.title editDistanceToString:otherTab.title];
-          //DLOG("editDistance('%@' > '%@') -> %f", tab.title, otherTab.title,
+          double editDistance = [doc.title editDistanceToString:otherTab.title];
+          //DLOG("editDistance('%@' > '%@') -> %f", doc.title, otherTab.title,
           //     editDistance);
           if (editDistance <= kSiblingAutoGroupEditDistanceThreshold &&
               editDistance < bestSiblingDistance) {
@@ -374,14 +416,14 @@ static double kSiblingAutoGroupEditDistanceThreshold = 0.4;
         // insert after
         insertIndex++;
       }
-      //DLOG("insert '%@' at %d (sibling: '%@')", tab.title, insertIndex,
+      //DLOG("insert '%@' at %d (sibling: '%@')", doc.title, insertIndex,
       //     otherTab);
     }
 
   }
 
   // Append a new tab after the currently selected tab
-  [browser addTabContents:tab atIndex:insertIndex inForeground:foreground];
+  [browser addTabContents:doc atIndex:insertIndex inForeground:foreground];
 }
 
 
@@ -406,10 +448,9 @@ static double kSiblingAutoGroupEditDistanceThreshold = 0.4;
 
   KNodeEmitEvent("openDocument", tab, nil);
 
-  [self addTabContents:tab
-  withWindowController:windowController
-          inForeground:display
-     groupWithSiblings:groupWithSiblings];
+  [self addDocument:tab withWindowController:windowController
+       inForeground:display
+  groupWithSiblings:groupWithSiblings];
 
   if (display && !windowController.window.isVisible) {
     [windowController showWindow:self];
