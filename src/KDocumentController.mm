@@ -161,7 +161,7 @@
     } else if (newDocForNewURLs && [url isFileURL] &&
                ![fm fileExistsAtPath:[url path]]) {
       // Special case: open a new (non-existing) document
-      NSError *error;
+      NSError *error = nil;
       // create new document
       KDocument *tab =
           [self openUntitledDocumentWithWindowController:windowController
