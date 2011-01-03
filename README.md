@@ -4,13 +4,14 @@ A modern and open universal text editor for programmers on Mac OS X.
 
 If you want to use Kod, simply download the latest "stable" version from [http://kodapp.com/download/](http://kodapp.com/download/)
 
-- General info: [http://kodapp.com/](http://kodapp.com/)
-- Discussion forum: [http://groups.google.com/group/kod-app](http://groups.google.com/group/kod-app)
-- Issue tracking and bug reporting: [http://kodapp.com/support/](http://kodapp.com/support/)
-- Mainline source code: [https://github.com/rsms/kod](https://github.com/rsms/kod)
+- General info: <http://kodapp.com/>
+- Discussion forum: <http://groups.google.com/group/kod-app>
+- Issue tracking and bug reporting: <http://kodapp.com/support/>
+- Mainline source code: <https://github.com/rsms/kod>
 - Twitter: [@kod_app](http://twitter.com/kod_app)
 - IRC: [irc://irc.freenode.net/#kod](irc://irc.freenode.net/#kod)
-- Developer documentation: [https://github.com/rsms/kod/wiki](https://github.com/rsms/kod/wiki)
+- Developer documentation: <https://github.com/rsms/kod/wiki>
+- Daily development builds: <http://kod.sivel.net/daily/>
 
 ## Development
 
