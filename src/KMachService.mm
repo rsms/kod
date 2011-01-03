@@ -21,7 +21,7 @@ static KMachService *gSharedInstance = nil;
 
 
 - (id)initWithMachPortName:(NSString*)portName {
-  self = [super init];
+  if (!(self = [super init])) return nil;
 
   connection_ = [[NSConnection serviceConnectionWithName:portName
                                               rootObject:self] retain];
