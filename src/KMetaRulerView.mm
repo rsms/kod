@@ -13,6 +13,9 @@
 @implementation KMetaRulerView
 
 
+@synthesize tabContents = tabContents_;
+
+
 - (void)_checkAndUpdateThickness {
   // broaden the view if needed
   CGFloat oldThickness = [self ruleThickness];
@@ -77,7 +80,7 @@
 
 
 - (CGFloat)requiredThickness {
-  NSUInteger lineCount = [tabContents_ lineCount];
+  NSUInteger lineCount = tabContents_ ? [tabContents_ lineCount] : 1;
   NSUInteger digits = (NSUInteger)log10(lineCount) + 1;
   static NSString * const digitsStr = @"88888888888888888888888888888888";
   NSSize stringSize = [[digitsStr substringToIndex:digits]
@@ -100,6 +103,9 @@
 
 
 - (void)drawHashMarksAndLabelsInRect:(NSRect)dirtyRect {
+  if (!tabContents_)
+    return;
+
   KTextView *textView = tabContents_.textView;
   NSLayoutManager  *layoutManager = textView.layoutManager;
   NSTextContainer *textContainer = textView.textContainer;
