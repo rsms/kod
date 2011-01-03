@@ -3,6 +3,7 @@
 @interface KMachService : NSObject <KMachServiceProtocol,
                                     NSConnectionDelegate> {
   NSConnection *connection_;
+  NSMutableDictionary *fileHandleWaitQueue_;
 }
 
 + (KMachService*)sharedService;

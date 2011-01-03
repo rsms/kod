@@ -7,4 +7,5 @@
 + (NSError *)kodErrorWithFormat:(NSString *)format, ...;
 + (NSError*)kodErrorWithOSStatus:(OSStatus)status;
 + (NSError*)kodErrorWithHTTPStatusCode:(int)status;
++ (NSError*)kodErrorWithException:(NSException*)exc;
 @end

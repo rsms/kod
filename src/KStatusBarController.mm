@@ -10,6 +10,13 @@ NSString * const KStatusBarDidChangeHiddenStateNotification =
 @implementation KStatusBarController
 
 
+- (void)dealloc {
+  [currentContents_ release];
+  [super dealloc];
+}
+
+
+
 - (void)_updateCursorPosition {
   NSString *label;
   if (!currentContents_) {
@@ -66,15 +73,23 @@ NSString * const KStatusBarDidChangeHiddenStateNotification =
 
 - (void)updateWithContents:(KDocument*)contents {
   NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
-  if (currentContents_) {
+  
+  id oldContents = currentContents_;
+  if (!h_atomic_cas(&currentContents_, oldContents, contents))
+    return;
+
+  if (oldContents) {
     [self stopObservingObject:currentContents_.textView];
+    [oldContents release];
   }
-  currentContents_ = contents;
+
   if (currentContents_) {
+    [currentContents_ retain];
     [self observe:NSTextViewDidChangeSelectionNotification
            source:currentContents_.textView
           handler:@selector(contentsTextViewDidChangeSelection:)];
   }
+
   [self _updateCursorPosition];
 }
 

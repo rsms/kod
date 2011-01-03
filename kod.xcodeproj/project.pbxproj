@@ -46,7 +46,7 @@
 		3A4CB3E112B1872300B45858 /* NSString-data.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A4CB3E012B1872300B45858 /* NSString-data.m */; };
 		3A4D50ED1282E40300B06EEB /* NSString-utf8-range-conv.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A4D50EC1282E40300B06EEB /* NSString-utf8-range-conv.m */; };
 		3A4F478512CFA83900301464 /* KWordDictionary.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A4F478412CFA83900301464 /* KWordDictionary.mm */; };
-		3A5107CB12C1233900AAC1D5 /* KMachService.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A5107CA12C1233900AAC1D5 /* KMachService.m */; };
+		3A5107CB12C1233900AAC1D5 /* KMachService.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A5107CA12C1233900AAC1D5 /* KMachService.mm */; };
 		3A51081712C139B800AAC1D5 /* kod_helper.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A5107EB12C1351500AAC1D5 /* kod_helper.m */; };
 		3A51083612C13AF900AAC1D5 /* common.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A51083412C13AF900AAC1D5 /* common.m */; };
 		3A51084D12C13C9E00AAC1D5 /* common.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A51083412C13AF900AAC1D5 /* common.m */; };
@@ -122,6 +122,8 @@
 		3AB57E0612CA634C00E528B1 /* kod_node_interface.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3AB57E0512CA634C00E528B1 /* kod_node_interface.mm */; };
 		3AB57EAD12CA725A00E528B1 /* knode_ns_additions.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3AB57EAC12CA725A00E528B1 /* knode_ns_additions.mm */; };
 		3AB5823612CAD15300E528B1 /* k_objc_prop.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AB5823512CAD15300E528B1 /* k_objc_prop.m */; };
+		3AB6968812D0FE1400330F3A /* NSError+KAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A9293661229E49A00DA7E43 /* NSError+KAdditions.m */; };
+		3AB6974B12D1085700330F3A /* KMachService-NSInvocation.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AB6974A12D1085700330F3A /* KMachService-NSInvocation.m */; };
 		3AB97BD612B2836800F4ADB2 /* KStatusBarView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AB97BD512B2836800F4ADB2 /* KStatusBarView.m */; };
 		3AB97C3612B2893C00F4ADB2 /* KStatusBarController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3AB97C3512B2893C00F4ADB2 /* KStatusBarController.mm */; };
 		3AB97D4512B2990500F4ADB2 /* BWSplitView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AB97D4412B2990500F4ADB2 /* BWSplitView.m */; };
@@ -299,7 +301,7 @@
 		3A4F478312CFA83900301464 /* KWordDictionary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KWordDictionary.h; sourceTree = "<group>"; };
 		3A4F478412CFA83900301464 /* KWordDictionary.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KWordDictionary.mm; sourceTree = "<group>"; };
 		3A5107C912C1233900AAC1D5 /* KMachService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KMachService.h; sourceTree = "<group>"; };
-		3A5107CA12C1233900AAC1D5 /* KMachService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KMachService.m; sourceTree = "<group>"; };
+		3A5107CA12C1233900AAC1D5 /* KMachService.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KMachService.mm; sourceTree = "<group>"; };
 		3A5107D312C1245400AAC1D5 /* KMachServiceProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KMachServiceProtocol.h; sourceTree = "<group>"; };
 		3A5107EB12C1351500AAC1D5 /* kod_helper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = kod_helper.m; sourceTree = "<group>"; };
 		3A5107F812C135A200AAC1D5 /* kod */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = kod; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -398,6 +400,7 @@
 		3A9293CB1229ED4C00DA7E43 /* KDocumentController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KDocumentController.mm; sourceTree = "<group>"; };
 		3A93AB82129ADA5500185857 /* hatomic_flags.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = hatomic_flags.h; sourceTree = "<group>"; };
 		3A93B4E5129B67CB00185857 /* KRUsage.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = KRUsage.hh; sourceTree = "<group>"; };
+		3A99B8E712D0DD060058D554 /* kod_helper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = kod_helper.h; sourceTree = "<group>"; };
 		3AA8124412C2BDFC0085F086 /* SecurityFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SecurityFoundation.framework; path = System/Library/Frameworks/SecurityFoundation.framework; sourceTree = SDKROOT; };
 		3AA8135312C36EE70085F086 /* KURLHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KURLHandler.h; sourceTree = "<group>"; };
 		3AA8135412C36EE70085F086 /* KURLHandler.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KURLHandler.mm; sourceTree = "<group>"; };
@@ -439,6 +442,8 @@
 		3AB57EAC12CA725A00E528B1 /* knode_ns_additions.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = knode_ns_additions.mm; sourceTree = "<group>"; };
 		3AB5823412CAD15300E528B1 /* k_objc_prop.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = k_objc_prop.h; sourceTree = "<group>"; };
 		3AB5823512CAD15300E528B1 /* k_objc_prop.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = k_objc_prop.m; sourceTree = "<group>"; };
+		3AB6974912D1085700330F3A /* KMachService-NSInvocation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "KMachService-NSInvocation.h"; sourceTree = "<group>"; };
+		3AB6974A12D1085700330F3A /* KMachService-NSInvocation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "KMachService-NSInvocation.m"; sourceTree = "<group>"; };
 		3AB97BD412B2836800F4ADB2 /* KStatusBarView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KStatusBarView.h; sourceTree = "<group>"; };
 		3AB97BD512B2836800F4ADB2 /* KStatusBarView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KStatusBarView.m; sourceTree = "<group>"; };
 		3AB97C3412B2893C00F4ADB2 /* KStatusBarController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KStatusBarController.h; sourceTree = "<group>"; };
@@ -590,7 +595,10 @@
 			children = (
 				3A5107D312C1245400AAC1D5 /* KMachServiceProtocol.h */,
 				3A5107C912C1233900AAC1D5 /* KMachService.h */,
-				3A5107CA12C1233900AAC1D5 /* KMachService.m */,
+				3A5107CA12C1233900AAC1D5 /* KMachService.mm */,
+				3AB6974912D1085700330F3A /* KMachService-NSInvocation.h */,
+				3AB6974A12D1085700330F3A /* KMachService-NSInvocation.m */,
+				3A99B8E712D0DD060058D554 /* kod_helper.h */,
 				3A5107EB12C1351500AAC1D5 /* kod_helper.m */,
 				3A510B3D12C26F1200AAC1D5 /* KTerminalUsageWindowController.h */,
 				3A510B3E12C26F1200AAC1D5 /* KTerminalUsageWindowController.m */,
@@ -1203,6 +1211,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				3A51084D12C13C9E00AAC1D5 /* common.m in Sources */,
+				3AB6968812D0FE1400330F3A /* NSError+KAdditions.m in Sources */,
 				3A51081712C139B800AAC1D5 /* kod_helper.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1289,7 +1298,7 @@
 				3AF39DB212BE9C8A00FC534A /* KPopUp.m in Sources */,
 				3AF39DE212BEC15E00FC534A /* KPopUpContentView.m in Sources */,
 				3AF3A0A512BF7F6400FC534A /* KAnimation.m in Sources */,
-				3A5107CB12C1233900AAC1D5 /* KMachService.m in Sources */,
+				3A5107CB12C1233900AAC1D5 /* KMachService.mm in Sources */,
 				3A51083612C13AF900AAC1D5 /* common.m in Sources */,
 				3A510B3F12C26F1200AAC1D5 /* KTerminalUsageWindowController.m in Sources */,
 				3A510BE612C2926000AAC1D5 /* KSudo.m in Sources */,
@@ -1309,6 +1318,7 @@
 				3A366A8412CB873D00257AE6 /* KObjectProxy.mm in Sources */,
 				3A366A8512CB873D00257AE6 /* node_kod.mm in Sources */,
 				3A4F478512CFA83900301464 /* KWordDictionary.mm in Sources */,
+				3AB6974B12D1085700330F3A /* KMachService-NSInvocation.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

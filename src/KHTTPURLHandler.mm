@@ -17,7 +17,7 @@
   tab.isWaitingForResponse = YES;
 
   // set text view to be read-only
-  [tab.textView setEditable:NO];
+  tab.isEditable = NO;
 
   // set type (might change when we receive a response)
   tab.fileType = typeName;
@@ -94,7 +94,7 @@
              callback:^(NSError *err) {
         if (!err) {
           // done -- enable editing
-          [tab.textView setEditable:YES];
+          tab.isEditable = YES;
         }
       }];
     }

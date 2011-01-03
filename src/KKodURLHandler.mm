@@ -55,7 +55,7 @@
   KFileURLHandler *fileURLHandler =
       (KFileURLHandler*)[documentController urlHandlerForURL:fileURL];
   kassert(fileURLHandler != nil);
-  [tab.textView setEditable:NO];
+  tab.isEditable = NO;
 
   // guess langId
   tab.langId = [[KLangMap sharedLangMap] langIdForSourceURL:fileURL

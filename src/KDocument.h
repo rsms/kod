@@ -11,10 +11,13 @@
 typedef std::pair<std::pair<NSRange,NSRange>, HObjCPtr> KHighlightQueueEntry;
 typedef std::deque<KHighlightQueueEntry> KHighlightQueue;
 
+// notifications
+extern NSString *const KDocumentDidLoadDataNotification;
+
 // This class represents a tab. In this example application a tab contains a
 // simple scrollable text area.
 @interface KDocument : CTTabContents <NSTextViewDelegate,
-                                         NSTextStorageDelegate> {
+                                      NSTextStorageDelegate> {
   KTextView* textView_; // Owned by NSScrollView which is our view_
   __weak NSUndoManager *undoManager_; // Owned by textView_
   BOOL isDirty_;
@@ -68,9 +71,13 @@ typedef std::deque<KHighlightQueueEntry> KHighlightQueue;
 @property(readonly, nonatomic) NSUInteger identifier;
 
 // Text contents
-@property(assign) NSString *text;
+@property(copy) NSString *text;
 
-@property(assign) NSURL *url; // alias of fileURL
+// alias of fileURL
+@property(retain) NSURL *url;
+
+// Makes the document editable (default) or read-only
+@property(assign) BOOL isEditable;
 
 
 + (NSFont*)defaultFont;
