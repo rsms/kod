@@ -7,6 +7,7 @@
 #import "KHTTPURLHandler.h"
 #import "KKodURLHandler.h"
 #import "HEventEmitter.h"
+#import "kconf.h"
 #import "kod_node_interface.h"
 
 #import <objc/objc-runtime.h>
@@ -294,10 +295,10 @@
 static double kSiblingAutoGroupEditDistanceThreshold = 0.4;
 
 
-- (void)addTabContents:(KDocument*)tab
-  withWindowController:(KBrowserWindowController*)windowController
-          inForeground:(BOOL)foreground
-     groupWithSiblings:(BOOL)groupWithSiblings {
+- (void)addDocument:(KDocument*)doc
+withWindowController:(KBrowserWindowController*)windowController
+       inForeground:(BOOL)foreground
+  groupWithSiblings:(BOOL)groupWithSiblings {
   // NOTE: if we want to add a tab in the background, we should not use this
   // helper function (addTabContents:inBrowser:)
 
@@ -307,13 +308,10 @@ static double kSiblingAutoGroupEditDistanceThreshold = 0.4;
   // and then Open... one or more files.
   KBrowser* browser = (KBrowser*)windowController.browser;
   if ([browser tabCount] == 1) {
-    KDocument* tab0 = (KDocument*)[browser tabContentsAtIndex:0];
-    kassert(tab0);
-    // TODO: DRY this up and move into KDocument
-    BOOL existingTabIsVirgin = ![tab0 isDocumentEdited] && ![tab0 fileURL];
-    BOOL newTabIsVirgin = ![tab isDocumentEdited] && ![tab fileURL];
-    if (existingTabIsVirgin && !newTabIsVirgin) {
-      [browser replaceTabContentsAtIndex:0 withTabContents:tab];
+    KDocument *firstDocument = (KDocument*)[browser tabContentsAtIndex:0];
+    kassert(firstDocument != nil);
+    if (firstDocument.isVirgin && !doc.isVirgin) {
+      [browser replaceTabContentsAtIndex:0 withTabContents:doc];
       return;
     }
   }
@@ -324,16 +322,17 @@ static double kSiblingAutoGroupEditDistanceThreshold = 0.4;
   // index to insert the new tab. -1 means "after the current tab"
   int insertIndex = -1;
 
-  if (groupWithSiblings) {
+  if (groupWithSiblings && kconf_bool(@"groupNewDocuments/enabled", YES)) {
+    BOOL useEditDistance = kconf_bool(@"groupNewDocuments/byEditDistance", YES);
     KDocument *otherTab;
     double bestSiblingDistance = 1.0;
     int i = 0, tabCount = [browser tabCount];
-    NSString *tabExt = [tab.title pathExtension];
+    NSString *tabExt = [doc.title pathExtension];
 
     for (; i<tabCount; ++i) {
       otherTab = (KDocument*)[browser tabContentsAtIndex:i];
       if (otherTab) {
-        NSString *tabName = [tab.title stringByDeletingPathExtension];
+        NSString *tabName = [doc.title stringByDeletingPathExtension];
         NSString *otherName = [otherTab.title stringByDeletingPathExtension];
         // test simple case-insensitive compare as this is a common use-case
         // (this is an optimization for i.e. "foo.c", "Foo.h")
@@ -345,18 +344,18 @@ static double kSiblingAutoGroupEditDistanceThreshold = 0.4;
             otherTab = (KDocument*)[browser tabContentsAtIndex:insertIndex];
             NSString *otherExt = [otherTab.title pathExtension];
             if ([tabExt caseInsensitiveCompare:otherExt] == NSOrderedDescending) {
-              // tabExt = z, otherExt = a -- use this tab instead of previously
-              // found tab
+              // tabExt = z, otherExt = a -- use this doc instead of previously
+              // found doc
               insertIndex = i;
             }
           } else {
             bestSiblingDistance = 0.0;
             insertIndex = i;
           }
-        } else if (bestSiblingDistance != 0.0) {
+        } else if (bestSiblingDistance != 0.0 && useEditDistance) {
           // test levenstein distance
-          double editDistance = [tab.title editDistanceToString:otherTab.title];
-          //DLOG("editDistance('%@' > '%@') -> %f", tab.title, otherTab.title,
+          double editDistance = [doc.title editDistanceToString:otherTab.title];
+          //DLOG("editDistance('%@' > '%@') -> %f", doc.title, otherTab.title,
           //     editDistance);
           if (editDistance <= kSiblingAutoGroupEditDistanceThreshold &&
               editDistance < bestSiblingDistance) {
@@ -374,14 +373,14 @@ static double kSiblingAutoGroupEditDistanceThreshold = 0.4;
         // insert after
         insertIndex++;
       }
-      //DLOG("insert '%@' at %d (sibling: '%@')", tab.title, insertIndex,
+      //DLOG("insert '%@' at %d (sibling: '%@')", doc.title, insertIndex,
       //     otherTab);
     }
 
   }
 
   // Append a new tab after the currently selected tab
-  [browser addTabContents:tab atIndex:insertIndex inForeground:foreground];
+  [browser addTabContents:doc atIndex:insertIndex inForeground:foreground];
 }
 
 
@@ -406,10 +405,9 @@ static double kSiblingAutoGroupEditDistanceThreshold = 0.4;
 
   KNodeEmitEvent("openDocument", tab, nil);
 
-  [self addTabContents:tab
-  withWindowController:windowController
-          inForeground:display
-     groupWithSiblings:groupWithSiblings];
+  [self addDocument:tab withWindowController:windowController
+       inForeground:display
+  groupWithSiblings:groupWithSiblings];
 
   if (display && !windowController.window.isVisible) {
     [windowController showWindow:self];

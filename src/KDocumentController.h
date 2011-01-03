@@ -18,10 +18,10 @@
 // Returns a set (unique) of all windows used by |documents|
 - (NSSet*)windows;
 
-- (void)addTabContents:(KDocument*)tab
-  withWindowController:(KBrowserWindowController*)windowController
-          inForeground:(BOOL)foreground
-     groupWithSiblings:(BOOL)groupWithSiblings;
+- (void)addDocument:(KDocument*)document
+withWindowController:(KBrowserWindowController*)windowController
+       inForeground:(BOOL)foreground
+  groupWithSiblings:(BOOL)groupWithSiblings;
 
 - (KURLHandler*)urlHandlerForURL:(NSURL*)url;
 
