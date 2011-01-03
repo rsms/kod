@@ -38,8 +38,7 @@
 
 @class KLineNumberMarker, KDocument;
 
-@interface KMetaRulerView : NSRulerView
-{
+@interface KMetaRulerView : NSRulerView {
   __weak KDocument *tabContents_; // owns us
   NSDictionary *textAttributes_;
   NSColor *backgroundColor_;
@@ -47,6 +46,8 @@
   CGFloat dividerWidth_;
   NSMutableDictionary  *markers_;
 }
+
+@property(assign) KDocument *tabContents;
 
 - (id)initWithScrollView:(NSScrollView *)aScrollView
              tabContents:(KDocument*)tabContents;

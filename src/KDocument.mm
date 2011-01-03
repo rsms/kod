@@ -242,6 +242,13 @@ static int debugSimulateTextAppendingIteration = 0;
 - (void)dealloc {
   //DLOG("--- DEALLOC %@ ---", self);
   [self stopObserving];
+  if (metaRulerView_) {
+    // Okay, so this is the deal: We own the ruler, so the ruler shouldn't
+    // retain us. But, the ruler might be retained by our owning KScrollView,
+    // which could case access to us after we are dead. This little thing clear
+    // our weak ref in the ruler:
+    metaRulerView_.tabContents = nil;
+  }
   if (sourceHighlighter_.get())
     sourceHighlighter_->cancel();
   [super dealloc];
