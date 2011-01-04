@@ -1,10 +1,11 @@
 # @title Gherkin
 # @matchext feature
 
+# Based on:
 # https://github.com/aslakhellesoy/gherkin-shjs/raw/master/cucumber.lang
 
 comment start "#"
-comment start "@"
+comment start '^[[:blank:]]*@'
 
 keyword start "Scenario:"
 keyword start "Feature:"
