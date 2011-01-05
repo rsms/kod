@@ -24,20 +24,6 @@ If you want to use Kod, simply download the latest "stable" version from [http:/
     deps/node-build.sh
     deps/libcss/build.sh
 
-**Setup Source Highlight:**
-
-This currently requires [MacPorts](http://www.macports.org/) or [Homebrew](http://mxcl.github.com/homebrew/).
-
-Via MacPorts:
-
-    port install source-highlight +universal
-    deps/srchilight/import-from-macports.sh
-
-Via Homebrew:
-
-    brew install source-highlight
-    deps/srchilight/import-from-homebrew.sh
-
 **Start hacking:**
 
     open kod.xcodeproj

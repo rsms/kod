@@ -1,15 +1,10 @@
 #import <ChromiumTabs/ChromiumTabs.h>
 
 #import "common.h"
-#import "KSourceHighlighter.h"
-#import "HSemaphore.h"
 #import "HSpinLock.h"
 
 @class KBrowser, KStyle, KBrowserWindowController, KScrollView, KMetaRulerView;
 @class KTextView, KClipView, KURLHandler;
-
-typedef std::pair<std::pair<NSRange,NSRange>, HObjCPtr> KHighlightQueueEntry;
-typedef std::deque<KHighlightQueueEntry> KHighlightQueue;
 
 // notifications
 extern NSString *const KDocumentDidLoadDataNotification;
@@ -22,10 +17,6 @@ extern NSString *const KDocumentDidLoadDataNotification;
   __weak NSUndoManager *undoManager_; // Owned by textView_
   BOOL isDirty_;
   NSStringEncoding textEncoding_;
-
-  KSourceHighlighterPtr sourceHighlighter_;
-  BOOL highlightingEnabled_;
-  HSemaphore highlightSem_;
 
   // Current language
   NSString const *langId_;
@@ -46,13 +37,10 @@ extern NSString *const KDocumentDidLoadDataNotification;
   // Internal state
   hatomic_flags_t stateFlags_;
   NSRange lastEditedHighlightStateRange_;
-  __weak KSourceHighlightState *lastEditedHighlightState_;
-  int64_t highlightWaitBackOffNSec_; // nanoseconds
   NSNumber *activeNodeTextEditedInvocationRTag_;
 }
 
 @property(assign, nonatomic) BOOL isDirty;
-@property(assign, nonatomic) BOOL highlightingEnabled;
 @property BOOL hasMetaRuler;
 @property(readonly) BOOL canSaveDocument;
 @property(readonly) BOOL hasRemoteSource;
@@ -94,14 +82,6 @@ extern NSString *const KDocumentDidLoadDataNotification;
 - (IBAction)selectPreviousElement:(id)sender;
 - (IBAction)toggleMetaRuler:(id)sender;
 
-- (BOOL)setNeedsHighlightingOfCompleteDocument;
-- (BOOL)highlightCompleteDocumentInBackgroundIfQueued;
-- (BOOL)highlightCompleteDocumentInBackground;
-
-- (BOOL)deferHighlightTextStorage:(NSTextStorage*)textStorage
-                          inRange:(NSRange)range;
-
-- (void)clearHighlighting;
 - (void)refreshStyle;
 
 - (void)styleDidChange:(NSNotification*)notification;
@@ -124,10 +104,6 @@ extern NSString *const KDocumentDidLoadDataNotification;
  * current selection.
  */
 - (NSRange)lineRangeForCurrentSelection;
-
-- (BOOL)isNewLine:(NSUInteger)lineNumber;
-
-
 
 // These are called by readFromURL:ofType:error:
 
