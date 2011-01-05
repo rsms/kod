@@ -1990,12 +1990,11 @@ finishedReadingURL:(NSURL*)url
       // Guess syntax
       if (highlightingEnabled_) {
         // TODO: typeName might have changed during reading
-
         // Turn typeName (php) back into UTI (public.php-script)
-
         NSString *uti = nil;
-        [absoluteURL getResourceValue:&uti forKey:NSURLTypeIdentifierKey error:nil];
-
+        [absoluteURL getResourceValue:&uti
+                               forKey:NSURLTypeIdentifierKey
+                                error:nil];
         [self guessLanguageBasedOnUTI:uti
                           textContent:self.textView.string];        
       }
