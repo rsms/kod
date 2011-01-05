@@ -50,6 +50,7 @@
     // register built-in URL handlers
     [urlHandlers_ setObject:[KFileURLHandler handler] forKey:@"file"];
     [urlHandlers_ setObject:[KHTTPURLHandler handler] forKey:@"http"];
+	[urlHandlers_ setObject:[KHTTPURLHandler handler] forKey:@"https"];
     [urlHandlers_ setObject:[KKodURLHandler handler] forKey:@"kod"];
   }
   return self;
