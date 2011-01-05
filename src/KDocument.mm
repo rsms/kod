@@ -1996,7 +1996,7 @@ finishedReadingURL:(NSURL*)url
                                forKey:NSURLTypeIdentifierKey
                                 error:nil];
         [self guessLanguageBasedOnUTI:uti
-                          textContent:self.textView.string];        
+                          textContent:self.textView.string];
       }
     }
 
