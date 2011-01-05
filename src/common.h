@@ -43,7 +43,7 @@
 #define ELOG(...) _LOG('E', __VA_ARGS__)
 
 // Debug/development utilities
-#if !defined(NDEBUG)
+#if !NDEBUG
   #ifndef _DEBUG
     #define _DEBUG 1
   #endif
