@@ -8,6 +8,8 @@ comment start "#"
 comment start '^[[:blank:]]*@'
 
 keyword start "Scenario:"
+keyword start "Scenario Outline:"
+keyword start "Examples:"
 keyword start "Feature:"
 
 variable start "In order to"
