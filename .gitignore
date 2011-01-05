@@ -17,8 +17,6 @@ xcuserdata
 *.moved-aside
 
 # Dependencies
-/deps/srchilight/include
-/deps/srchilight/upstream-lang
 /deps/bwtoolkit/build
 
 # Kod Specific
