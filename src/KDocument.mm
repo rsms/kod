@@ -84,9 +84,9 @@ static NSFont* _kDefaultFont = nil;
 
 + (NSFont*)defaultFont {
   if (!_kDefaultFont) {
-    _kDefaultFont = [[NSFont fontWithName:@"M+ 1m light" size:11.0] retain];
+    _kDefaultFont = [[[KStyle sharedStyle] baseFont] retain];
     if (!_kDefaultFont) {
-      WLOG("unable to find default font \"M+\" -- using system default");
+      WLOG("unable to find default font from CSS -- using system default");
       _kDefaultFont = [[NSFont userFixedPitchFontOfSize:11.0] retain];
     }
   }
