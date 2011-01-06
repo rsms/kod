@@ -1,0 +1,22 @@
+# @title Gherkin
+# @matchext feature
+
+# Based on:
+# https://github.com/aslakhellesoy/gherkin-shjs/raw/master/cucumber.lang
+
+comment start "#"
+comment start '^[[:blank:]]*@'
+
+keyword start "Scenario:"
+keyword start "Scenario Outline:"
+keyword start "Examples:"
+keyword start "Feature:"
+
+variable start "In order to"
+variable start "As a"
+variable start "I want to"
+variable start "I wish to"
+variable start "I can"
+variable start "So that"
+
+keyword = "Given|When|Then|And|But"

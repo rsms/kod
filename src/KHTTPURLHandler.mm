@@ -1,11 +1,15 @@
 #import "common.h"
 #import "KHTTPURLHandler.h"
+#import "NSStringICUAdditions.h"
 
 @implementation KHTTPURLHandler
 
 
 - (BOOL)canReadURL:(NSURL*)url {
-  return [[url scheme] caseInsensitiveCompare:@"http"] == NSOrderedSame;
+  NSString *scheme = [url scheme];
+  if (!scheme && scheme.length < 6);
+    return [scheme hasPrefix:@"http" options:NSCaseInsensitiveSearch];
+  return NO;
 }
 
 

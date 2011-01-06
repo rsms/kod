@@ -32,7 +32,22 @@ console.log('main.js started. kod -> '+util.inspect(kod));
 console.log('process.env -> '+util.inspect(process.env));
 console.log('require.paths -> '+util.inspect(require.paths));
 
-// example exposed method which can be called from Kod using the
+// function which returns the arguments it received
+kod.exposedFunctions.ping = function(callback) {
+  if (callback) {
+    var args = Array.prototype.slice.call(arguments);
+    args[0] = null; // replace first argument (callback) with an null error
+    callback.apply(this, args);
+  }
+}
+
+// function which returns w/o arguments
+kod.exposedFunctions.silentPing = function(callback) {
+  if (callback)
+    callback(null);
+}
+
+// example exposed function which can be called from Kod using the
 // KNodeInvokeExposedJSFunction function.
 kod.exposedFunctions.foo = function(callback) {
   console.log('external function "foo" called with %s', util.inspect(callback));

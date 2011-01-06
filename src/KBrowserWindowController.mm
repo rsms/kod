@@ -45,8 +45,8 @@
 
   // setup split view
   kassert(splitView_ != nil); // should get a ref from unarchived NIB
-  splitView_.position = kconf_double(@"editor/splitView/position", 180.0);
-  splitView_.isCollapsed = YES; //kconf_bool(@"editor/splitView/collapsed", YES);
+  splitView_.position = kconf_double(@"window/splitView/position", 180.0);
+  splitView_.isCollapsed = YES; //kconf_bool(@"window/splitView/collapsed", YES);
   // register for split view resize notification so we can store conf value
 
   [self observe:NSSplitViewDidResizeSubviewsNotification
@@ -67,7 +67,7 @@
     [self observe:KStatusBarDidChangeHiddenStateNotification
            source:statusBarController_
           handler:@selector(statusBarDidChangeHiddenState:)];
-    statusBarController_.isHidden = kconf_bool(@"editor/statusBar/hidden", NO);
+    statusBarController_.isHidden = kconf_bool(@"window/statusBar/hidden", NO);
   }
 
   return self;
@@ -266,17 +266,17 @@
 
 - (void)splitViewDidResize:(NSNotification*)notification {
   if (!splitView_.isCollapsed)
-    kconf_set_double(@"editor/splitView/position", splitView_.position);
+    kconf_set_double(@"window/splitView/position", splitView_.position);
 }
 
 
 - (void)splitViewDidChangeCollapseState:(NSNotification*)notification {
-  kconf_set_bool(@"editor/splitView/collapsed", splitView_.isCollapsed);
+  kconf_set_bool(@"window/splitView/collapsed", splitView_.isCollapsed);
 }
 
 
 - (void)statusBarDidChangeHiddenState:(NSNotification*)notification {
-  kconf_set_bool(@"editor/statusBar/hidden", statusBarController_.isHidden);
+  kconf_set_bool(@"window/statusBar/hidden", statusBarController_.isHidden);
   [self layoutSubviews];
   [self.window display];
 }

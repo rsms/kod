@@ -20,15 +20,6 @@ extern void KNodePerformInNode(KNodePerformBlock block);
 extern void KNodePerformInNode(KNodeIOEntry *entry);
 
 // Invoke a named exported function in node
-bool KNodeInvokeExposedJSFunction(const char *name,
-                                  int argc,
-                                  v8::Handle<v8::Value> argv[]);
-
-bool KNodeInvokeExposedJSFunction(const char *functionName,
-                                  int argc,
-                                  v8::Handle<v8::Value> argv[],
-                                  KNodeCallbackBlock callback);
-
 bool KNodeInvokeExposedJSFunction(const char *functionName,
                                   NSArray *args,
                                   KNodeCallbackBlock callback);
@@ -121,8 +112,9 @@ class KNodeEventIOEntry : public KNodeIOEntry {
   virtual ~KNodeEventIOEntry();
   void perform();
  protected:
+  char *name_;
   int argc_;
-  v8::Persistent<v8::Value> *argv_;
+  id *argv_;
 };
 
 

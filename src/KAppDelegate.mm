@@ -83,7 +83,9 @@
 
   // Start loading default style
   NSURL *builtinURL = kconf_res_url(@"style/default.css");
-  NSURL *url = kconf_url(@"style/current/url", builtinURL);
+  // Note: This setting is deprecated and should be removed in a future version:
+  builtinURL = kconf_url(@"style/current/url", builtinURL);
+  NSURL *url = kconf_url(@"style/url", builtinURL);
   if (url) {
     [[KStyle sharedStyle] loadFromURL:url withCallback:^(NSError *error) {
       if (error) [NSApp presentError:error];

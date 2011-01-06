@@ -33,6 +33,8 @@
    of a partial word and hitting the ESC button, a list of suggested complete
    word appear and the most probable word is inserted. Ticket 84
 
+ * [NEW] Added support for Gherkin syntax (use by e.g. Cucumber).
+
  * See http://hunch.lighthouseapp.com/projects/66522/milestones/96486 for more
    details.
 
