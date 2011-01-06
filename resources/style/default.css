@@ -10,6 +10,10 @@ caret {
   color: #ff3319;
 }
 
+selected {
+  background-color: #1f2e43;
+}
+
 /* the color for context lines (when specified with line ranges) */
 metaruler {
   color: #666;
