@@ -112,8 +112,9 @@ class KNodeEventIOEntry : public KNodeIOEntry {
   virtual ~KNodeEventIOEntry();
   void perform();
  protected:
+  char *name_;
   int argc_;
-  v8::Persistent<v8::Value> *argv_;
+  id *argv_;
 };
 
 
