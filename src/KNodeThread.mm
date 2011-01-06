@@ -46,7 +46,7 @@ static void _KPrepareNode(EV_P_ ev_prepare *watcher, int revents) {
   // args
   const char *argv[] = {NULL,"","",NULL};
   argv[0] = [[kconf_bundle() executablePath] UTF8String];
-  static const int argc = 2;
+  int argc = 2;
   #if !NDEBUG || K_DEBUG_V8_EXPOSE_GC
     argv[1] = "--expose-gc";
     argc++;
