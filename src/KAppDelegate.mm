@@ -36,6 +36,8 @@
 #pragma mark Actions
 
 - (IBAction)newWindow:(id)sender {
+  // Note: This method is called when there are no active windows. There might
+  // still exist windows which are minimized to the Dock.
   KBrowserWindowController* windowController = (KBrowserWindowController*)
       [[KBrowserWindowController browserWindowController] retain];
   [windowController newDocument:sender];
@@ -56,7 +58,7 @@
   if (!terminalUsageWindowController_) {
     terminalUsageWindowController_ =
         [[KTerminalUsageWindowController alloc] initWithWindowNibName:
-        @"terminal-usage"];
+         @"terminal-usage"];
   }
   [terminalUsageWindowController_ showWindow:sender];
 }

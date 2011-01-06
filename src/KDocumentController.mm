@@ -252,6 +252,9 @@
   doc.title = [NSString stringWithFormat:NSLocalizedString(@"Untitled %@", nil),
                [NSNumber numberWithUnsignedLongLong:doc.identifier]];
 
+  // set type
+  doc.type = typeName;
+
   return doc;
 }
 
@@ -622,7 +625,7 @@ withWindowController:(KBrowserWindowController*)windowController
     // ignore documents w/o a URL
     return;
   } else if ([url isFileURL]) {
-    DLOG("recording new recent document %@", [NSThread callStackSymbols]);
+    DLOG("recording recent document %@", doc);
     // let the super implementation handle this
     [super noteNewRecentDocument:doc];
   }

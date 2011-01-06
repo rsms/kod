@@ -58,7 +58,8 @@ kod.exposedFunctions.foo = function(callback) {
 
 kod.on('openDocument', function(document) {
   //console.log('openDocument: '+ util.inspect(document, 0, 4));
-  console.log('openDocument: '+document.identifier+' '+document.url);
+  console.log('openDocument: #'+document.identifier+' '+document.type+
+              ' '+(document.url || '*new*'));
 });
 
 // example event listener for the "activateDocument" event, emitted when a
@@ -66,7 +67,8 @@ kod.on('openDocument', function(document) {
 kod.on('activateDocument', function(document) {
   // Dump document -- includes things like the word dictionary. Massive output.
   //console.log('activateDocument: '+util.inspect(document, 0, 4));
-  console.log('activateDocument: '+document.identifier+' '+document.url);
+  console.log('activateDocument: #'+document.identifier+' '+document.type+
+              ' '+(document.url || '*new*'));
 
   // As document objects are persistent, we can add properties to it which will
   // survive as long as the document is open
@@ -82,9 +84,10 @@ kod.on('activateDocument', function(document) {
   //document.text = "Text\nreplaced\nby main.js";
 });
 
-kod.on('closeDocument', function(document, docId) {
+kod.on('closeDocument', function(document, identifier) {
   //console.log('closeDocument: ['+docId+'] '+ util.inspect(document, 0, 4));
-  console.log('closeDocument: '+document.identifier+' '+document.url);
+  console.log('closeDocument: #'+identifier+' '+document.type+
+              ' '+(document.url || '*new*'));
 });
 
 // dump kod.allDocuments every 10 sec

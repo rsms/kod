@@ -290,23 +290,23 @@ static NSFont* _kDefaultFont = nil;
 }
 
 
-- (NSString*)typeIdentifier {
+- (NSString*)type {
   return [self fileType];
 }
 
-- (void)setTypeIdentifier:(NSString*)typeName {
+- (void)setType:(NSString*)typeName {
   [self setFileType:typeName];
 }
 
-- (void)setTypeIdentifierFromPathExtension:(NSString*)typeTag {
-  self.typeIdentifier = (NSString*)
+- (void)setTypeFromPathExtension:(NSString*)typeTag {
+  self.type = (NSString*)
       UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension,
                                             (CFStringRef)typeTag,
                                             NULL /* no conform restraints */ );
 }
 
-- (void)setTypeIdentifierFromMIMEType:(NSString*)typeTag {
-  self.typeIdentifier = (NSString*)
+- (void)setTypeFromMIMEType:(NSString*)typeTag {
+  self.type = (NSString*)
       UTTypeCreatePreferredIdentifierForTag(kUTTagClassMIMEType,
                                             (CFStringRef)typeTag,
                                             NULL /* no conform restraints */ );
@@ -1608,6 +1608,7 @@ finishedReadingURL:(NSURL*)url
       [absoluteURL getResourceValue:&uti
                              forKey:NSURLTypeIdentifierKey
                               error:nil];
+      self.type = uti;
 
       // TODO(rsms): guess syntax/language
     }

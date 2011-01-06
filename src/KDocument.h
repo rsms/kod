@@ -61,9 +61,9 @@ extern NSString *const KDocumentDidLoadDataNotification;
 
 
 // A Uniform Type Identifier for the current contents
-@property(retain) NSString *typeIdentifier;
-- (void)setTypeIdentifierFromPathExtension:(NSString*)pathExtension;
-- (void)setTypeIdentifierFromMIMEType:(NSString*)mimeType;
+@property(retain) NSString *type;
+- (void)setTypeFromPathExtension:(NSString*)pathExtension;
+- (void)setTypeFromMIMEType:(NSString*)mimeType;
 
 
 // Text contents (returns a reference when read, and makes a copy when written)
