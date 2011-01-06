@@ -10,7 +10,8 @@ process.on('uncaughtException', global._kod.handleUncaughtException);
 // add our built-in module path to the front of require.paths
 require.paths.unshift(require.paths.pop());
 
-// load any user bootstrap script
+// load any user bootstrap script. Note that we are guaranteed to have a correct
+// HOME in the env (it's explicitly set by Kod just as nodejs start).
 var userModule = null;
 try { userModule = require(process.env.HOME + '/.kod'); } catch (e) {}
 

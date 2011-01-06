@@ -74,8 +74,6 @@ extern NSString *const KDocumentDidLoadDataNotification;
 + (NSFont*)defaultFont;
 - (void)setIconBasedOnContents;
 
-- (void)guessLanguageBasedOnUTI:(NSString*)uti textContent:(NSString*)text;
-
 // actions
 - (IBAction)debugDumpAttributesAtCursor:(id)sender;
 - (IBAction)selectNextElement:(id)sender;

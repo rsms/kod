@@ -1344,31 +1344,6 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
 }
 
 
-- (void)guessLanguageBasedOnUTI:(NSString*)uti textContent:(NSString*)text {
-  /*KLangMap *langMap = [KLangMap sharedLangMap];
-  NSString *firstLine = nil;
-
-  // find first line
-  if (text) {
-    NSUInteger stopIndex = MIN(512, text.length);
-    firstLine = [text substringToIndex:stopIndex];
-    firstLine = [firstLine stringByTrimmingCharactersInSet:
-        [NSCharacterSet whitespaceAndNewlineCharacterSet]];
-    NSRange firstNewlineRange = [firstLine rangeOfCharacterFromSet:
-        [NSCharacterSet newlineCharacterSet]];
-    if (firstNewlineRange.location != NSNotFound) {
-      firstLine = [text substringToIndex:firstNewlineRange.location];
-    } else {
-      firstLine = text;
-    }
-  }
-
-  self.langId = [langMap langIdForSourceURL:self.fileURL
-                                    withUTI:uti
-                       consideringFirstLine:firstLine];*/
-}
-
-
 #pragma mark -
 #pragma mark Loading contents
 
@@ -1544,10 +1519,7 @@ finishedReadingURL:(NSURL*)url
       [self post:KDocumentDidLoadDataNotification];
       [self emitEvent:@"load" argument:nil];
       // TODO(rsms): emit event in nodejs on our v8 wrapper object
-
-      // guess language if no language has been set
-      if (!langId_)
-        [self guessLanguageBasedOnUTI:typeName textContent:text];
+      // TODO(rsms): guess language if no language has been set
 
       if (callback) callback();
 
@@ -1667,8 +1639,7 @@ finishedReadingURL:(NSURL*)url
                              forKey:NSURLTypeIdentifierKey
                               error:nil];
 
-      // Guess syntax
-      [self guessLanguageBasedOnUTI:uti textContent:self.textView.string];
+      // TODO(rsms): guess syntax/language
     }
 
     // unfreeze tab

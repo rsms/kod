@@ -1,6 +1,6 @@
-var util = require('util');
 var events = require('events');
 
+// set the "kod" module to the object created by kod-core (_kod)
 module.exports = exports = global._kod;
 
 // inherit from EventEmitter
