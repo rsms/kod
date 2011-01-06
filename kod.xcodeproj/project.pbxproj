@@ -423,7 +423,7 @@
 		3AB5823512CAD15300E528B1 /* k_objc_prop.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = k_objc_prop.m; sourceTree = "<group>"; };
 		3AB6974912D1085700330F3A /* KMachService-NSInvocation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "KMachService-NSInvocation.h"; sourceTree = "<group>"; };
 		3AB6974A12D1085700330F3A /* KMachService-NSInvocation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "KMachService-NSInvocation.m"; sourceTree = "<group>"; };
-		3AB6A0AA12D5447D00330F3A /* kod_ExternalUTF16String.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = kod_ExternalUTF16String.h; sourceTree = "<group>"; };
+		3AB6A0DD12D5467400330F3A /* kod_ExternalUTF16String.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = kod_ExternalUTF16String.h; sourceTree = "<group>"; };
 		3AB97BD412B2836800F4ADB2 /* KStatusBarView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KStatusBarView.h; sourceTree = "<group>"; };
 		3AB97BD512B2836800F4ADB2 /* KStatusBarView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KStatusBarView.m; sourceTree = "<group>"; };
 		3AB97C3412B2893C00F4ADB2 /* KStatusBarController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KStatusBarController.h; sourceTree = "<group>"; };
@@ -544,7 +544,7 @@
 				3AB57E0512CA634C00E528B1 /* kod_node_interface.mm */,
 				3AB57EAB12CA725A00E528B1 /* knode_ns_additions.h */,
 				3AB57EAC12CA725A00E528B1 /* knode_ns_additions.mm */,
-				3AB6A0AA12D5447D00330F3A /* kod_ExternalUTF16String.h */,
+				3AB6A0DD12D5467400330F3A /* kod_ExternalUTF16String.h */,
 				3AA91F2112CA43DE00132A25 /* KNodeThread.h */,
 				3AA91F2212CA43DE00132A25 /* KNodeThread.mm */,
 				3A366A6F12CB86CA00257AE6 /* kod module */,

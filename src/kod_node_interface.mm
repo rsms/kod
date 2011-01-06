@@ -309,28 +309,22 @@ void KNodeInvocationIOEntry::perform() {
 // ---------------------------------------------------------------------------
 
 KNodeEventIOEntry::KNodeEventIOEntry(const char *name, int argc, id *argv) {
-  v8::HandleScope scope;
-  argc_ = argc + 1;
-  argv_ = new Persistent<Value>[argc];
-  argv_[0] = Persistent<Value>::New(String::NewSymbol(name));
-  for (int i = 1; i<argc_; ++i) {
-    //DLOG("argv[%d] => %@", i, argv[i-1]);
-    argv_[i] = Persistent<Value>::New([argv[i-1] v8Value]);
+  kassert(name != NULL);
+  name_ = strdup(name);
+  argc_ = argc;
+  argv_ = new id[argc];
+  for (int i = 0; i<argc_; ++i) {
+    argv_[i] = [argv[i] retain];
   }
 }
 
 
 KNodeEventIOEntry::~KNodeEventIOEntry() {
-  if (argv_) {
-    for (int i=0; i<argc_; ++i) {
-      v8::Persistent<v8::Value> v = argv_[i];
-      if (v.IsEmpty()) continue;
-      v.Dispose();
-      v.Clear();
-    }
-    delete argv_;
-    argv_ = NULL;
+  for (int i = 0; i<argc_; ++i) {
+    [argv_[i] release];
   }
+  delete argv_; argv_ = NULL;
+  free(name_); name_ = NULL;
 }
 
 
@@ -340,8 +334,20 @@ void KNodeEventIOEntry::perform() {
   if (!gKodNodeModule.IsEmpty()) {
     Local<Value> v = gKodNodeModule->Get(String::New("emit"));
     if (v->IsFunction()) {
+      int argc = argc_ + 1;
+      Local<Value> argv[argc];// = new Local<Value>[];
+      argv[0] = Local<Value>::New(String::NewSymbol(name_));
+      for (int i = 1; i<argc; ++i) {
+        id arg = argv_[i-1];
+        if (arg) {
+          Local<Value> v = Local<Value>::New([arg v8Value]);
+          argv[i] = v;
+        } else {
+          argv[i] = *v8::Null();
+        }
+      }
       Local<Function> fun = Local<Function>::Cast(v);
-      Local<Value> ret = fun->Call(gKodNodeModule, argc_, argv_);
+      Local<Value> ret = fun->Call(gKodNodeModule, argc, argv);
     }
   }
   KNodeIOEntry::perform();
