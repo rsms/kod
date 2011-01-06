@@ -250,8 +250,7 @@ static int debugSimulateTextAppendingIteration = 0;
 
 /*- (id)retain {
   DLOG("\n%@ retain (%lu) %@\n", self, [self retainCount],
-       //@""//
-       [NSThread callStackSymbols]
+       @""//[NSThread callStackSymbols]
        );
    fflush(stderr); fsync(STDERR_FILENO);
   usleep(5000);
@@ -260,8 +259,7 @@ static int debugSimulateTextAppendingIteration = 0;
 - (void)release {
   //DLOG("%@ release %@", self, [NSThread callStackSymbols]);
   DLOG("\n%@ release (%lu) %@\n", self, [self retainCount],
-       //@""//
-       [NSThread callStackSymbols]
+       @""//[NSThread callStackSymbols]
        );
   fflush(stderr); fsync(STDERR_FILENO);
   usleep(5000);
@@ -269,8 +267,7 @@ static int debugSimulateTextAppendingIteration = 0;
 }
 - (id)autorelease {
   DLOG("\n%@ autorelease %@\n", self,
-       //@""//
-       [NSThread callStackSymbols]
+       @""//[NSThread callStackSymbols]
        );
   fflush(stderr); fsync(STDERR_FILENO);
   return [super autorelease];
