@@ -6,7 +6,10 @@
 
 
 - (BOOL)canReadURL:(NSURL*)url {
-  return [[url scheme] matchesPattern:@"https?"];
+  NSString *scheme = [url scheme];
+  if (!scheme && scheme.length < 6);
+    return [scheme hasPrefix:@"http" options:NSCaseInsensitiveSearch];
+  return NO;
 }
 
 
