@@ -7,6 +7,7 @@
 #import "virtual_key_codes.h"
 #import "kconf.h"
 #import "common.h"
+#import "KStyle.h"
 
 
 // text container rect adjustments
@@ -41,10 +42,9 @@ static CGFloat kTextContainerYOffset = 0.0;
   // this bastard causes sporadical crashes when run in other than main
   K_DISPATCH_MAIN_ASYNC( [self setRichText:NO]; );
 
-  // TODO: the following settings should follow the current style
-  [self setBackgroundColor:
-      [NSColor colorWithCalibratedWhite:0.1 alpha:1.0]];
-  [self setTextColor:[NSColor whiteColor]];
+  CSSStyle *bodyStyle = [[KStyle sharedStyle] styleForElementName: @"body"];
+  [self setBackgroundColor: [bodyStyle backgroundColor]];
+  [self setTextColor: [bodyStyle color]];
   [self setInsertionPointColor:
       [NSColor colorWithCalibratedRed:1.0 green:0.2 blue:0.1 alpha:1.0]];
   [self setSelectedTextAttributes:[NSDictionary dictionaryWithObject:
