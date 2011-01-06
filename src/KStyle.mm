@@ -197,11 +197,10 @@ static NSString const *gDefaultElementSymbol;
 
 - (NSFont*)baseFont {
   if (!baseFont_) {
-    NSFontManager *fontManager = [NSFontManager sharedFontManager];
-    NSFont *font =
-        [fontManager fontWithFamily:@"M+ 1m" traits:0 weight:0 size:11.0];
+    CSSStyle *bodyStyle = [self styleForElementName: gDefaultElementSymbol];
+    NSFont *font = [bodyStyle font];
     if (!font) {
-      WLOG("unable to find default font \"M+\" -- using system default");
+      WLOG("unable to find any of the specified fonts -- using system default");
       font = [NSFont userFixedPitchFontOfSize:11.0];
     }
     baseFont_ = [font retain];
