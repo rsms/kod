@@ -44,7 +44,6 @@
 
 - (id)init {
   if ((self = [super init])) {
-    untitledNumberCounter_ = -1; // so we start at 0
     urlHandlers_ = [NSMutableDictionary new];
 
     // register built-in URL handlers
@@ -54,11 +53,6 @@
     [urlHandlers_ setObject:[KKodURLHandler handler] forKey:@"kod"];
   }
   return self;
-}
-
-
-- (int32_t)nextUntitledNumber {
-  return OSAtomicIncrement32(&untitledNumberCounter_);
 }
 
 
@@ -244,25 +238,19 @@
 
 
 - (id)makeUntitledDocumentOfType:(NSString *)typeName error:(NSError **)error {
-  KDocument* doc = [[KDocument alloc] initWithBaseTabContents:nil];
+  KDocument *doc = [[KDocument alloc] initWithBaseTabContents:nil];
   assert(doc); // since we don't set error
 
   // IMPORTANT(rsms): This is a fix which is not completely investigated or
   // understood. Documents created through the makeUntitledDocumentOfType branch
   // of calls are retained more time than documents created from the
   // makeDocumentWithContentsOfURL branch of calls.
+  // The NSDocument system is rather complex.
   [doc autorelease];
 
   // Give the new tab a "Untitled #" name
-  int32_t number = self.nextUntitledNumber;
-  NSString *untitled = NSLocalizedString(@"Untitled", nil);
-  if (number == 0) {
-    // first tab is "Untitled"
-    doc.title = untitled;
-  } else {
-    // consecutive tabs are "Untitled #"
-    doc.title = [NSString stringWithFormat:@"%@ %u", untitled, number];
-  }
+  doc.title = [NSString stringWithFormat:NSLocalizedString(@"Untitled %@", nil),
+               [NSNumber numberWithUnsignedLongLong:doc.identifier]];
 
   return doc;
 }
@@ -328,6 +316,9 @@
 
 // overload of NSDocumentController impl
 - (id)openUntitledDocumentAndDisplay:(BOOL)display error:(NSError**)error {
+  // Note: When starting the application, AppKit will invoke this method in
+  // order to have a new window and document be opened.
+
   return [self openUntitledDocumentWithWindowController:nil
                                                 display:display
                                                   error:error];
@@ -428,7 +419,7 @@ withWindowController:(KBrowserWindowController*)windowController
 }
 
 
-- (void)finalizeOpenDocument:(KDocument*)tab
+- (void)finalizeOpenDocument:(KDocument*)doc
         withWindowController:(KBrowserWindowController*)windowController
            groupWithSiblings:(BOOL)groupWithSiblings
                      display:(BOOL)display {
@@ -447,9 +438,9 @@ withWindowController:(KBrowserWindowController*)windowController
     }
   }
 
-  KNodeEmitEvent("openDocument", tab, nil);
+  KNodeEmitEvent("openDocument", doc, nil);
 
-  [self addDocument:tab withWindowController:windowController
+  [self addDocument:doc withWindowController:windowController
        inForeground:display
   groupWithSiblings:groupWithSiblings];
 
@@ -457,9 +448,9 @@ withWindowController:(KBrowserWindowController*)windowController
     [windowController showWindow:self];
   }
 
-  // Make sure the new tab gets focus
-  if (display && tab.isVisible)
-    [tab becomeFirstResponder];
+  // Make sure the new document gets focus
+  if (display && doc.isVisible)
+    [doc becomeFirstResponder];
 }
 
 
@@ -608,7 +599,34 @@ withWindowController:(KBrowserWindowController*)windowController
 
 
 #pragma mark -
-#pragma mark User interface
+#pragma mark Tracking recent documents
+
+
+// Returns the maximum number of items that may be presented in the standard
+// "Open Recent" menu
+- (NSUInteger)maximumRecentDocumentCount {
+  NSUInteger count = kconf_uint(@"recentDocuments/count", 50);
+  // Sanity check -- e.g. if someone stored "-1"
+  return MIN(count, 10000);
+}
+
+
+// This method is called by NSDocument objects at "appropriate times"(?) for
+// managing the recent-documents list.
+//
+// Note: The NSDocument system only supports file URLs.
+// TODO(rsms): Implement a "Recent documents" system which supports any URI.
+- (void)noteNewRecentDocument:(NSDocument*)doc {
+  NSURL *url = ((KDocument*)doc).url;
+  if (!url) {
+    // ignore documents w/o a URL
+    return;
+  } else if ([url isFileURL]) {
+    DLOG("recording new recent document %@", [NSThread callStackSymbols]);
+    // let the super implementation handle this
+    [super noteNewRecentDocument:doc];
+  }
+}
 
 
 /*- (BOOL)validateUserInterfaceItem:(id < NSValidatedUserInterfaceItem >)item {

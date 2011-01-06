@@ -60,6 +60,13 @@ static NSString *_NSStringFromRangeArray(std::vector<NSRange> &lineToRangeVec,
 }
 
 
+// Document identifier
+static volatile uint64_t _identifierNext = 0;
+static uint64_t KDocumentNextIdentifier() {
+  return h_atomic_inc(&_identifierNext);
+}
+
+
 @interface KDocument (Private)
 - (void)undoManagerCheckpoint:(NSNotification*)notification;
 - (BOOL)_updateLastEditTimestamp;
@@ -83,6 +90,8 @@ static NSString* _kDefaultTitle = @"Untitled";
 static NSFont* _kDefaultFont = nil;
 
 + (NSFont*)defaultFont {
+  // TODO(rsms) FIXME(rsms): Move this to KTextView or KStyle* -- it doesn't
+  // belong here.
   if (!_kDefaultFont) {
     _kDefaultFont = [[[KStyle sharedStyle] baseFont] retain];
     if (!_kDefaultFont) {
@@ -93,54 +102,15 @@ static NSFont* _kDefaultFont = nil;
   return _kDefaultFont;
 }
 
-// DEBUG: intercepts and dumps selector queries
-/*- (BOOL)respondsToSelector:(SEL)selector {
-  BOOL y = [super respondsToSelector:selector];
-  DLOG("respondsToSelector %@ -> %@", NSStringFromSelector(selector), y?@"YES":@"NO");
-  return y;
-}*/
-
-
-// XXX DEBUG
-static int debugSimulateTextAppendingIteration = 0;
-- (void)debugSimulateTextAppending:(id)x {
-  #if 0
-  [textView_ insertText:@"void foo(int arg) {\n  return 5;\n}\n"
-                        @"/* multi\nline\ncomment */ bool bar;\n"
-                        @"string s = \"this is a \\\"string\\\" yes\";\n"];
-  return;
-  #endif
-  switch (debugSimulateTextAppendingIteration) {
-    case 0:
-      [textView_ insertText:@"void foo(int arg) {\n  return 5;\n}\n"];
-      break;
-    case 1:
-      [textView_ insertText:@"/* multi\nline"];
-      break;
-    case 2:
-      [textView_ insertText:@"\ncomment */ bool bar;\n"];
-      break;
-    case 3:
-      [textView_ insertText:@"string s = \"this is a \\\"string\\\" yes\";\n"];
-      break;
-  }
-  if (++debugSimulateTextAppendingIteration < 4) {
-    [self performSelector:@selector(debugSimulateTextAppending:)
-               withObject:self
-               afterDelay:0.1];
-  } else {
-    [self performSelector:@selector(debugSimulateSwitchStyle:)
-               withObject:self
-               afterDelay:2.0];
-  }
-}
-
 
 // This is the main initialization method
 - (id)initWithBaseTabContents:(CTTabContents*)baseContents {
   // Note: This might be called from a background thread and must thus be
   // thread-safe.
   if (!(self = [super init])) return nil;
+
+  // Assign a new identifier
+  identifier_ = KDocumentNextIdentifier();
 
   // Default title and icon
   self.title = _kDefaultTitle;
@@ -320,24 +290,26 @@ static int debugSimulateTextAppendingIteration = 0;
 }
 
 
-- (NSString*)langId {
-  return langId_;
+- (NSString*)typeIdentifier {
+  return [self fileType];
 }
 
-- (void)setLangId:(NSString*)langId {
-  if (langId_ != langId) {
-    langId_ = [langId retain];
-    DLOG("%@ changed langId to '%@'", self, langId_);
-    // TODO: langId should be a UTI in the future
-    try {
-      self.fileType = langId;
-    } catch (std::exception &e) {
-      self.fileType = @"public.text";
-      [self presentError:[NSError kodErrorWithFormat:
-          @"Failed to parse language definition file for type '%@'", langId_]];
-    }
-    //[self setNeedsHighlightingOfCompleteDocument];
-  }
+- (void)setTypeIdentifier:(NSString*)typeName {
+  [self setFileType:typeName];
+}
+
+- (void)setTypeIdentifierFromPathExtension:(NSString*)typeTag {
+  self.typeIdentifier = (NSString*)
+      UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension,
+                                            (CFStringRef)typeTag,
+                                            NULL /* no conform restraints */ );
+}
+
+- (void)setTypeIdentifierFromMIMEType:(NSString*)typeTag {
+  self.typeIdentifier = (NSString*)
+      UTTypeCreatePreferredIdentifierForTag(kUTTagClassMIMEType,
+                                            (CFStringRef)typeTag,
+                                            NULL /* no conform restraints */ );
 }
 
 
@@ -519,8 +491,8 @@ static int debugSimulateTextAppendingIteration = 0;
 }
 
 
-- (NSUInteger)identifier {
-  return [self hash]; // FIXME
+- (uint64_t)identifier {
+  return identifier_;
 }
 
 
@@ -824,8 +796,6 @@ static int debugSimulateTextAppendingIteration = 0;
   [super _updateForDocumentEdited:documentEdited];
 }
 
-
-//- (void)setFileType:(NSString*)typeName { [super setFileType:typeName]; }
 
 #pragma mark -
 #pragma mark UI actions

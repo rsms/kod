@@ -13,13 +13,12 @@ extern NSString *const KDocumentDidLoadDataNotification;
 // simple scrollable text area.
 @interface KDocument : CTTabContents <NSTextViewDelegate,
                                       NSTextStorageDelegate> {
+  uint64_t identifier_;
+
   KTextView* textView_; // Owned by NSScrollView which is our view_
   __weak NSUndoManager *undoManager_; // Owned by textView_
   BOOL isDirty_;
   NSStringEncoding textEncoding_;
-
-  // Current language
-  NSString const *langId_;
 
   // Mapped line breaks. Provides number of lines and a mapping from line number
   // to actual character offset. The location of each range denotes the start
@@ -44,21 +43,30 @@ extern NSString *const KDocumentDidLoadDataNotification;
 @property BOOL hasMetaRuler;
 @property(readonly) BOOL canSaveDocument;
 @property(readonly) BOOL hasRemoteSource;
-@property(assign, nonatomic) NSStringEncoding textEncoding;
+@property(assign) NSStringEncoding textEncoding;
 @property(readonly) KBrowserWindowController* windowController;
 @property(readonly) NSMutableParagraphStyle *paragraphStyle; // compound
-@property(retain, nonatomic) NSString *langId;
-@property(readonly, nonatomic) KTextView* textView;
-@property(readonly, nonatomic) KScrollView* scrollView;
-@property(readonly, nonatomic) KClipView* clipView;
 
-@property(readonly, nonatomic) NSUInteger lineCount;
-@property(readonly, nonatomic) NSUInteger charCountOfLastLine;
+@property(readonly) KTextView* textView;
+@property(readonly) KScrollView* scrollView;
+@property(readonly) KClipView* clipView;
 
-// Tab identifier
-@property(readonly, nonatomic) NSUInteger identifier;
+@property(readonly) NSUInteger lineCount;
+@property(readonly) NSUInteger charCountOfLastLine;
 
-// Text contents
+
+// An opaque value which identifies this document. It's guaranteed to be unique
+// during a session (between starting and terminating Kod.app).
+@property(readonly) uint64_t identifier;
+
+
+// A Uniform Type Identifier for the current contents
+@property(retain) NSString *typeIdentifier;
+- (void)setTypeIdentifierFromPathExtension:(NSString*)pathExtension;
+- (void)setTypeIdentifierFromMIMEType:(NSString*)mimeType;
+
+
+// Text contents (returns a reference when read, and makes a copy when written)
 @property(copy) NSString *text;
 
 // alias of fileURL
