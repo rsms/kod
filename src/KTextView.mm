@@ -45,8 +45,8 @@ static CGFloat kTextContainerYOffset = 0.0;
   CSSStyle *bodyStyle = [[KStyle sharedStyle] styleForElementName: @"body"];
   [self setBackgroundColor: [bodyStyle backgroundColor]];
   [self setTextColor: [bodyStyle color]];
-  [self setInsertionPointColor:
-      [NSColor colorWithCalibratedRed:1.0 green:0.2 blue:0.1 alpha:1.0]];
+  CSSStyle *caretStyle = [[KStyle sharedStyle] styleForElementName: @"caret"];
+  [self setInsertionPointColor: [caretStyle color]];
   [self setSelectedTextAttributes:[NSDictionary dictionaryWithObject:
       [NSColor colorWithCalibratedRed:0.12 green:0.18 blue:0.27 alpha:1.0]
       forKey:NSBackgroundColorAttributeName]];

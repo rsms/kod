@@ -6,6 +6,10 @@ body {
   color: #eee;
 }
 
+caret {
+  color: #ff3319;
+}
+
 /* the color for context lines (when specified with line ranges) */
 metaruler {
   color: #666;
