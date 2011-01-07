@@ -23,13 +23,7 @@
   SUPublicDSAKeyFile = "dsa_pub.pem";
   SUShowReleaseNotes = NO;
 
-  BreakpadProduct = "${EXECUTABLE_NAME}";
-  BreakpadProductDisplay = "${PRODUCT_NAME}";
-  BreakpadVendor = "the developers of Kod";
-  BreakpadReportInterval = 60;
-  BreakpadRequestEmail = YES;
-  BreakpadRequestComments = YES;
-
+  NSSupportsSuddenTermination = YES;
   NSServices = (
     {
       NSMenuItem = { default = "Kod/Open link in Kod"; };
