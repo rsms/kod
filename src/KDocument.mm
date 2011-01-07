@@ -884,17 +884,6 @@ static int debugSimulateTextAppendingIteration = 0;
 
 // private method of NSDocument which is triggered when "dirty state" changes
 - (void)_updateForDocumentEdited:(BOOL)isDirty {
-  BOOL wasDirty = self.isDirty;
-  if (wasDirty == isDirty) {
-    return; // no-op
-  } else if (wasDirty && !isDirty) {
-    // decrement the "don't allow SIGKILL" counter as we are no longer dirty
-    KSuddenTerminationDisallowDecr();
-  } else {
-    // increment the "don't allow SIGKILL" counter as we no have uncommited
-    // user input in memory
-    KSuddenTerminationDisallowIncr();
-  }
   self.isDirty = isDirty;
   [super _updateForDocumentEdited:isDirty];
 }
