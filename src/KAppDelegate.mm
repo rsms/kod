@@ -193,11 +193,11 @@
     KBrowserWindowController *windowController = (KBrowserWindowController *)
         [KBrowserWindowController mainBrowserWindowController];
 
-		// if windowController is nil, open a new window
-		if (!windowController) {
-			windowController = (KBrowserWindowController *)
-					[KBrowserWindowController browserWindowController];
-		}
+    // if windowController is nil, open a new window
+    if (!windowController) {
+      windowController = (KBrowserWindowController *)
+          [KBrowserWindowController browserWindowController];
+    }
 
     NSURL *dirURL = [NSURL fileURLWithPath:[dirPaths objectAtIndex:0]
                                isDirectory:YES];
