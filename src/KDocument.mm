@@ -1273,18 +1273,30 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
   kod::ExternalUTF16String *exportedText =
       new kod::ExternalUTF16String(textStorage.string);
 
+  #if 1
+  NSTimeInterval textTime = [NSDate timeIntervalSinceReferenceDate];
+  fprintf(stderr, "[timer] copy text: %.4f ms\n", (textTime-startTime)*1000.0);
+  #endif
+
   fprintf(stderr, "[main -> nodejs] parse()\n");
+
   KNodePerformInNode(^(KNodeReturnBlock returnCallback){
     // we are now in the nodejs thread
     v8::HandleScope scope;
+
+    #if 1
+    NSTimeInterval callTime = [NSDate timeIntervalSinceReferenceDate];
+    fprintf(stderr, "[timer] kod->node call overhead: %.4f ms\n",
+            (callTime-textTime)*1000.0);
+    #endif
 
     // get the v8 KDocument
     v8::Local<v8::Object> doc = [self v8Value]->ToObject();
 
     // find the parse function
     v8::Local<v8::Value> parseV = doc->Get(v8::String::New("parse"));
-    kassert(!parseV.IsEmpty());
-    if (parseV->IsFunction()) {
+    //kassert(!parseV.IsEmpty());
+    if (!parseV.IsEmpty() && parseV->IsFunction()) {
       // build arguments
       // Note that we convert ints to v8::Number with doubles since v8::Integer
       // is limited to 32-bit integers.
@@ -1319,8 +1331,8 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
       // calculate real time taken
       #if 1
       NSTimeInterval realTime =
-          [NSDate timeIntervalSinceReferenceDate] - startTime;
-      fprintf(stderr, "real: %.4f ms\n", realTime*1000.0);
+          [NSDate timeIntervalSinceReferenceDate] - callTime;
+      fprintf(stderr, "[timer] parse: %.4f ms\n", realTime*1000.0);
       #endif
 
     } else DLOG("no parse() function available for document");
