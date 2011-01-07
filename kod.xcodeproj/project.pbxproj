@@ -153,7 +153,7 @@
 			isa = PBXContainerItemProxy;
 			containerPortal = 3A928BEF1227143800DA7E43 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 3A44552012D786AC00036EF0 /* nodejs */;
+			remoteGlobalIDString = 3A44552012D786AC00036EF0;
 			remoteInfo = nodejs;
 		};
 		3A510B3112C26C3E00AAC1D5 /* PBXContainerItemProxy */ = {
