@@ -360,13 +360,13 @@ static v8::Handle<Value> NamedGetter(Local<String> property,
   HandleScope scope;
   ARPoolScope poolScope;
 
-  // First, try a lookup on the regular table of symbols
-  Local<Value> jsval = info.This()->GetRealNamedProperty(property);
+  // Seems as this isn't needed...
+  /*Local<Value> jsval = info.This()->GetRealNamedProperty(property);
   if (!jsval.IsEmpty()) {
     String::Utf8Value utf8pch(jsval->ToString());
     KN_DLOG("found %s", *utf8pch);
     return scope.Close(jsval);
-  }
+  }*/
 
   KObjectProxy *p = ObjectWrap::Unwrap<KObjectProxy>(info.This());
   String::Utf8Value _name(property); const char *name = *_name;
@@ -379,7 +379,7 @@ static v8::Handle<Value> NamedGetter(Local<String> property,
     name = "nodeInspect";
   }
 
-  KN_DLOG("%s '%s'", __FUNCTION__, name);
+  //KN_DLOG("%s '%s'", __FUNCTION__, name);
 
   objc_property_t prop = class_getProperty([p->representedObject_ class], name);
   if (prop) {
@@ -414,7 +414,7 @@ static v8::Handle<Value> NamedSetter(Local<String> property,
 
   KObjectProxy *p = ObjectWrap::Unwrap<KObjectProxy>(info.This());
   String::Utf8Value _name(property); const char *name = *_name;
-  KN_DLOG("%s '%s'", __FUNCTION__, name);
+  //KN_DLOG("%s '%s'", __FUNCTION__, name);
 
   objc_property_t prop = class_getProperty([p->representedObject_ class], name);
   if (prop) {

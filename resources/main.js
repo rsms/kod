@@ -1,6 +1,10 @@
 //
 // Entry point for the main Kod nodejs thread
 //
+var kod = require('kod');
+
+// Require and thus initialize the text parser
+require('kod/textparser');
 
 // install last line of defence for exceptions to avoid nodejs killing Kod.app
 process.on('uncaughtException', global._kod.handleUncaughtException);
@@ -28,7 +32,6 @@ try { userModule = require(process.env.HOME + '/.kod'); } catch (e) {}
 
 // debug
 var util = require('util');
-var kod = require('kod');
 console.log('main.js started. kod -> '+util.inspect(kod));
 console.log('process.env -> '+util.inspect(process.env));
 console.log('require.paths -> '+util.inspect(require.paths));

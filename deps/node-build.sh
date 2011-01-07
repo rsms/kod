@@ -6,6 +6,8 @@ cd "$(dirname $0)/node"
 # use, which is why do do this "trick"
 export PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin
 
+rm -rf build
+
 make clean
 ./configure --dest-cpu=ia32 --without-snapshot
 make staticlib

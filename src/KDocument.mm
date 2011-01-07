@@ -18,6 +18,7 @@
 #import "HEventEmitter.h"
 #import "kod_node_interface.h"
 #import "knode_ns_additions.h"
+#import "kod_ExternalUTF16String.h"
 
 #import "NSImage-kod.h"
 #import "CIImage-kod.h"
@@ -816,7 +817,7 @@ static NSFont* _kDefaultFont = nil;
 
 
 - (IBAction)selectNextElement:(id)sender {
-  NSMutableAttributedString *mastr = textView_.textStorage;
+/*  NSMutableAttributedString *mastr = textView_.textStorage;
   NSString *text = mastr.string;
   NSCharacterSet *cs = [NSCharacterSet whitespaceAndNewlineCharacterSet];
   NSRange selectedRange = [textView_ selectedRange];
@@ -863,12 +864,12 @@ longestEffectiveRange:&range
     [textView_ setSelectedRange:range];
     //[textView_ showFindIndicatorForRange:range];
     return;
-  }
+  }*/
 }
 
 
 - (IBAction)selectPreviousElement:(id)sender {
-  NSMutableAttributedString *mastr = textView_.textStorage;
+/*  NSMutableAttributedString *mastr = textView_.textStorage;
   NSString *text = mastr.string;
   NSCharacterSet *cs = [NSCharacterSet whitespaceAndNewlineCharacterSet];
   NSRange selectedRange = [textView_ selectedRange];
@@ -931,7 +932,7 @@ longestEffectiveRange:&range
     [textView_ setSelectedRange:range];
     //[textView_ showFindIndicatorForRange:range];
     return;
-  }
+  }*/
 }
 
 
@@ -941,7 +942,7 @@ longestEffectiveRange:&range
 
 
 #pragma mark -
-#pragma mark Text changes
+#pragma mark Style
 // TODO(rsms): Most of these things should probably move to the KTextView and
 // its components.
 
@@ -987,6 +988,10 @@ longestEffectiveRange:&range
     [window setViewsNeedDisplay:YES];
   }
 }
+
+
+#pragma mark -
+#pragma mark Tracking line count
 
 
 // Edits arrive in singles. This method is only called for used edits, not
@@ -1244,13 +1249,86 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
 }
 
 
+#pragma mark -
+#pragma mark Responding to text edits
+
+
 // invoked after an editing occured, but before it's been committed
 // Has the nasty side effect of losing the selection when applying attributes
-//- (void)textStorageWillProcessEditing:(NSNotification *)notification {}
+- (void)textStorageWillProcessEditing:(NSNotification *)notification {
+  NSTextStorage *textStorage = [notification object];
+
+  if (!(textStorage.editedMask & NSTextStorageEditedCharacters))
+    return;
+
+  // Record the real time
+  NSTimeInterval startTime = [NSDate timeIntervalSinceReferenceDate];
+
+  // Record change properties
+  NSRange editedRange = [textStorage editedRange];
+  int changeDelta = [textStorage changeInLength];
+  
+  // Export a copy of our current text state into V8 which will be governed by
+  // the V8 GC.
+  kod::ExternalUTF16String *exportedText =
+      new kod::ExternalUTF16String(textStorage.string);
+
+  fprintf(stderr, "[main -> nodejs] parse()\n");
+  KNodePerformInNode(^(KNodeReturnBlock returnCallback){
+    // we are now in the nodejs thread
+    v8::HandleScope scope;
+
+    // get the v8 KDocument
+    v8::Local<v8::Object> doc = [self v8Value]->ToObject();
+
+    // find the parse function
+    v8::Local<v8::Value> parseV = doc->Get(v8::String::New("parse"));
+    kassert(!parseV.IsEmpty());
+    if (parseV->IsFunction()) {
+      // build arguments
+      // Note that we convert ints to v8::Number with doubles since v8::Integer
+      // is limited to 32-bit integers.
+      v8::Local<v8::Value> argv[] = {
+        v8::String::NewExternal(exportedText),
+        v8::Number::New((double)editedRange.location),
+        v8::Number::New((double)changeDelta)
+      };
+      static const int argc = sizeof(argv) / sizeof(argv[0]);
+
+      v8::TryCatch tryCatch;
+
+      // call function
+      v8::Local<v8::Function>::Cast(parseV)->Call(doc, argc, argv);
+
+      // check for error
+      NSError *error = nil;
+      if (tryCatch.HasCaught()) {
+        v8::String::Utf8Value trace(tryCatch.StackTrace());
+        const char *msg = NULL;
+        if (trace.length() > 0) {
+          msg = *trace;
+        } else {
+          msg = "(Unspecified exception)";
+        }
+        NSAutoreleasePool *pool = [NSAutoreleasePool new];
+        h_atomic_barrier();
+        WLOG("Error while executing parser for %@: %s", self, msg);
+        [pool drain];
+      }
+
+      // calculate real time taken
+      #if 1
+      NSTimeInterval realTime =
+          [NSDate timeIntervalSinceReferenceDate] - startTime;
+      fprintf(stderr, "real: %.4f ms\n", realTime*1000.0);
+      #endif
+
+    } else DLOG("no parse() function available for document");
+  });
+}
+
 
 // invoked after an editing occured which has just been committed
-//- (void)textStorageDidProcessEditing:(NSNotification *)notification {}
-
 - (void)textStorageDidProcessEditing:(NSNotification *)notification {
   // Note: this might be called on different threads
 
@@ -1296,7 +1374,7 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
        NSStringFromRange(editedRange), changeInLength,
        wasInUndoRedo ? @"YES":@"NO", textStorage.editedMask);
 
-  //#if 0
+  #if 0
   NSTimeInterval startTime = [NSDate timeIntervalSinceReferenceDate];
   NSArray *args = [NSArray arrayWithObject:textStorage.string];
   KNodeInvokeExposedJSFunction("silentPing", args, ^(NSError *err, NSArray *args){
@@ -1306,7 +1384,7 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
          err, args, (endTime - startTime)*1000.0);*/
     fprintf(stderr, "real: %.4f ms\n", (endTime - startTime)*1000.0);
   });
-  //#endif
+  #endif
 
   // this makes the edit an undoable entry
   // TODO(rsms): Make this configurable through kconf "editor/undo/granularity"
