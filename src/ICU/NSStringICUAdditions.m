@@ -52,9 +52,11 @@ typedef struct URegularExpression URegularExpression;
 }
 
 +(NSString *)stringWithICUString:(void *)utf16EncodedString {
-  return [[NSString alloc] initWithBytes:utf16EncodedString
-                   length:u_strlen(utf16EncodedString)*sizeof(UChar)
-                   encoding:[self nativeUTF16Encoding]];
+  NSUInteger length = u_strlen(utf16EncodedString)*sizeof(UChar);
+  return [[[NSString alloc] initWithBytes:utf16EncodedString
+                                   length:length
+                                 encoding:[self nativeUTF16Encoding]]
+          autorelease];
 }
 
 +(NSStringEncoding)nativeUTF16Encoding {
