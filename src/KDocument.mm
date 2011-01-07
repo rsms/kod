@@ -1429,8 +1429,12 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
 
 - (void)_updateLinesToRangesInfoForTextStorage:(NSTextStorage*)textStorage
                                        inRange:(NSRange)editedRange
-                                       changeDelta:(NSInteger)changeInLength {
-	[self _updateLinesToRangesInfoForTextStorage:textStorage inRange:editedRange changeDelta:changeInLength recursed:NO];
+                                   changeDelta:(NSInteger)changeInLength {
+  
+  [self _updateLinesToRangesInfoForTextStorage:textStorage 
+                                       inRange:editedRange 
+                                   changeDelta:changeInLength 
+                                      recursed:NO];
 }
 
 - (void)_updateLinesToRangesInfoForTextStorage:(NSTextStorage*)textStorage
@@ -1540,7 +1544,7 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
 
     offsetRangesStart = i;
 
-  }	else if (changeInLength < 0) {
+  } else if (changeInLength < 0) {
     // edit action was "deletion"
 
     if (didAffectLines) {
@@ -1592,10 +1596,10 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
   // the idea being that the first time 'round we took care of vanishing text
   // and on the second go we take care of the newly added text
   if (changeInLength < 1 && recursed == NO) {
-	[self _updateLinesToRangesInfoForTextStorage:textStorage
-										 inRange:editedRange
-									 changeDelta:editedRange.length
-										recursed:YES];
+    [self _updateLinesToRangesInfoForTextStorage:textStorage
+                                         inRange:editedRange
+                                     changeDelta:editedRange.length
+                                        recursed:YES];
   }
 }
 
