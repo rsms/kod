@@ -1434,6 +1434,9 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
   // lock before we call linesDidChangeWithLineCountDelta: at the end
   lineToRangeSpinLock_.lock();
 
+	
+	
+	DLOG("meow line numbers!");
   // update linebreaks mapping
   NSString *string = textStorage.string;
 
@@ -1457,6 +1460,8 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
          editSpansToEndOfDocument?@"YES":@"NO");
     #endif
   }
+	
+	DLOG("len1: %d, len2: %d, affLines: %d", changeInLength, editedRange.length, didAffectLines);
 
   if (changeInLength == 1 && editedRange.length == 1) {
     // simple use-case: inserted a single character at the end of a line
@@ -1530,14 +1535,15 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
 
     offsetRangesStart = i;
 
-  } else if (changeInLength < 0) {
+  }	else if (changeInLength < 0) {
     // edit action was "deletion"
 
     // BUG(rsms): There's a bug in here somewhere which "removes" more lines
     // than actually removed
+	  
+	  	  DLOG("change less than a char!");
 
     if (didAffectLines) {
-
       NSRange deletedRange = editedRange;
       deletedRange.length = -changeInLength;
       //DLOG("deletedRange -> %@", NSStringFromRange(deletedRange));
@@ -1565,7 +1571,7 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
       }
     }
   }
-
+	
   // offset affected ranges
   if (didAffectLines) {
     //DLOG("_lb_offset_ranges(%lu, %ld)", offsetRangesStart, changeInLength);
@@ -1577,10 +1583,19 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
   // otherwise cause a deadlock.
   lineToRangeSpinLock_.unlock();
 
+	DLOG("lineCountDelta: %d", lineCountDelta);
+	
   if (changeInLength != 0 &&
       (lineToRangeVec_.size() != 0 || lineCountDelta != 0)) {
     [self linesDidChangeWithLineCountDelta:lineCountDelta];
   }
+	
+	if (changeInLength < 0 && editedRange.length == 1) {
+		DLOG("recursing!");
+		[self _updateLinesToRangesInfoForTextStorage:textStorage
+											 inRange:editedRange
+										 changeDelta:1];
+	}
 }
 
 
