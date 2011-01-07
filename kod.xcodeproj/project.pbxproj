@@ -990,7 +990,7 @@
 			buildPhases = (
 			);
 			buildToolPath = "../node-build.sh";
-			buildWorkingDirectory = /Users/rasmus/src/kod/deps/node;
+			buildWorkingDirectory = "$(SRCROOT)/deps/node";
 			dependencies = (
 			);
 			name = nodejs;
