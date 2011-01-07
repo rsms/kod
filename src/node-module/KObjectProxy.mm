@@ -10,8 +10,6 @@
 using namespace v8;
 using namespace node;
 
-Persistent<FunctionTemplate> KObjectProxy::constructor_template;
-
 // ----------------------------------------------------------------------------
 
 class ARPoolScope {
@@ -77,8 +75,8 @@ static char kPersistentWrapperKey = 'a';
   }
 }*/
 
-static BOOL KNodeEnableProxyForObjCClass(const char *name,
-                                         const char *srcName) {
+static Class KNodeEnableProxyForObjCClass(const char *name,
+                                          const char *srcName) {
   static const char *suffix = "_node_";
   Class srcCls;
 
@@ -93,10 +91,10 @@ static BOOL KNodeEnableProxyForObjCClass(const char *name,
   } else {
     srcCls = (Class)objc_getClass(srcName);
   }
-  if (!srcCls) return NO;
+  if (!srcCls) return nil;
 
   Class dstCls = (Class)objc_getClass(name);
-  if (!dstCls) return NO;
+  if (!dstCls) return nil;
 
   // copy all methods
   unsigned int methodsCount = 0;
@@ -122,7 +120,7 @@ static BOOL KNodeEnableProxyForObjCClass(const char *name,
                       method_getTypeEncoding(newm))) {
     //DLOG("added new -dealloc for class '%s'", name);
     // we added @dealloc with impl from @_KObjectProxy_dealloc_associations
-    Class superCls = class_getSuperclass(dstCls); 
+    Class superCls = class_getSuperclass(dstCls);
     Method m = class_getInstanceMethod(superCls, origsel);
     class_replaceMethod(dstCls, newsel, method_getImplementation(m),
                         method_getTypeEncoding(m));
@@ -135,11 +133,13 @@ static BOOL KNodeEnableProxyForObjCClass(const char *name,
     method_exchangeImplementations(origm, newm);
   }
 
-  return YES;
+  return dstCls;
 }
 
 // ----------------------------------------------------------------------------
 // KObjectProxy implementation
+
+KObjectProxy::PtrToFunctionTemplateMap KObjectProxy::constructorMap_;
 
 KObjectProxy::KObjectProxy(id representedObject) : node::EventEmitter() {
   representedObject_ = representedObject ? [representedObject retain] : NULL;
@@ -152,12 +152,30 @@ KObjectProxy::~KObjectProxy() {
   [representedObject_ release];
 }
 
-v8::Local<Object> KObjectProxy::New(id representedObject) {
-  Local<Object> instance =
-      constructor_template->GetFunction()->NewInstance(0, NULL);
+v8::Local<Object> KObjectProxy::New(v8::Handle<FunctionTemplate> constructor_t,
+                                    id representedObject) {
+  HandleScope scope;
+  Local<Object> instance = constructor_t->GetFunction()->NewInstance(0, NULL);
   KObjectProxy *p = ObjectWrap::Unwrap<KObjectProxy>(instance);
   p->representedObject_ = representedObject ? [representedObject retain] : NULL;
-  return instance;
+  return scope.Close(instance);
+}
+
+v8::Local<Object> KObjectProxy::New(id representedObject) {
+  HandleScope scope;
+  Class repCls = [representedObject class];
+  Persistent<FunctionTemplate> constructor_t = constructorMap_[repCls];
+  if (constructor_t.IsEmpty()) {
+    //KN_DLOG("did NOT find constructor for %s",
+    //        object_getClassName(representedObject));
+    Local<Value> v = *Undefined();
+    return Local<Object>::Cast(v);
+  } else {
+    //KN_DLOG("found constructor for %s",
+    //        object_getClassName(representedObject));
+    Local<Object> obj = KObjectProxy::New(constructor_t, representedObject);
+    return scope.Close(obj);
+  }
 }
 
 v8::Handle<Value> KObjectProxy::New(const Arguments& args) {
@@ -342,6 +360,14 @@ static v8::Handle<Value> NamedGetter(Local<String> property,
   HandleScope scope;
   ARPoolScope poolScope;
 
+  // First, try a lookup on the regular table of symbols
+  Local<Value> jsval = info.This()->GetRealNamedProperty(property);
+  if (!jsval.IsEmpty()) {
+    String::Utf8Value utf8pch(jsval->ToString());
+    KN_DLOG("found %s", *utf8pch);
+    return scope.Close(jsval);
+  }
+
   KObjectProxy *p = ObjectWrap::Unwrap<KObjectProxy>(info.This());
   String::Utf8Value _name(property); const char *name = *_name;
   Local<Value> returnValue;
@@ -353,7 +379,7 @@ static v8::Handle<Value> NamedGetter(Local<String> property,
     name = "nodeInspect";
   }
 
-  //KN_DLOG("%s '%s'", __FUNCTION__, name);
+  KN_DLOG("%s '%s'", __FUNCTION__, name);
 
   objc_property_t prop = class_getProperty([p->representedObject_ class], name);
   if (prop) {
@@ -388,7 +414,7 @@ static v8::Handle<Value> NamedSetter(Local<String> property,
 
   KObjectProxy *p = ObjectWrap::Unwrap<KObjectProxy>(info.This());
   String::Utf8Value _name(property); const char *name = *_name;
-  //KN_DLOG("%s '%s'", __FUNCTION__, name);
+  KN_DLOG("%s '%s'", __FUNCTION__, name);
 
   objc_property_t prop = class_getProperty([p->representedObject_ class], name);
   if (prop) {
@@ -504,20 +530,26 @@ static v8::Handle<Value> OnProxyTargetDeleted(const Arguments& args) {
 }
 
 
-
-void KObjectProxy::Initialize(v8::Handle<Object> target,
-                              v8::Handle<v8::String> className,
-                              const char *srcObjCClassName) {
+Persistent<FunctionTemplate>
+KObjectProxy::Initialize(v8::Handle<Object> target,
+                         v8::Handle<v8::String> className,
+                         const char *srcObjCClassName) {
   HandleScope scope;
-  Local<FunctionTemplate> t = FunctionTemplate::New(New);
-  constructor_template = Persistent<FunctionTemplate>::New(t);
-  constructor_template->SetClassName(className);
-  constructor_template->Inherit(EventEmitter::constructor_template);
-  
-  NODE_SET_PROTOTYPE_METHOD(constructor_template, "onProxyTargetDeleted",
-                            OnProxyTargetDeleted);
 
-  Local<ObjectTemplate> instance_t = constructor_template->InstanceTemplate();
+  // Constructor template
+  Local<FunctionTemplate> t = FunctionTemplate::New(KObjectProxy::New);
+  Persistent<FunctionTemplate> constructor_t
+      = Persistent<FunctionTemplate>::New(t);
+  constructor_t->SetClassName(className);
+  constructor_t->Inherit(EventEmitter::constructor_template);
+
+  // Prototype template
+  Local<ObjectTemplate> proto_t = constructor_t->PrototypeTemplate();
+  proto_t->Set("onProxyTargetDeleted",
+               v8::FunctionTemplate::New(OnProxyTargetDeleted));
+
+  // Instance template
+  Local<ObjectTemplate> instance_t = constructor_t->InstanceTemplate();
   instance_t->SetInternalFieldCount(1);
 
   /**
@@ -543,18 +575,23 @@ void KObjectProxy::Initialize(v8::Handle<Object> target,
                                       //Handle<Value> data = Handle<Value>()
                                       );
 
-  target->Set(className, constructor_template->GetFunction());
+  target->Set(className, constructor_t->GetFunction());
 
 
   // Curry Objective-C class
   if (!srcObjCClassName)
     srcObjCClassName = "NSObject_node_";
   String::Utf8Value utf8name(className);
-  if (KNodeEnableProxyForObjCClass(*utf8name, srcObjCClassName)) {
+  Class curriedCls = KNodeEnableProxyForObjCClass(*utf8name, srcObjCClassName);
+  if (curriedCls) {
     KN_DLOG("curried objc class '%s' from '%s'", *utf8name, srcObjCClassName);
+    // register constructor
+    constructorMap_[curriedCls] = constructor_t;
   } else {
     WLOG("failed to curry objc class '%s'", *utf8name);
   }
+
+  return constructor_t;
 }
 
 
@@ -578,11 +615,13 @@ KN_OBJC_CLASS_ADDITIONS_BEGIN(NSObject)
     NSValue *v = objc_getAssociatedObject(self, &kPersistentWrapperKey);
     if (!v) {
       Local<Object> obj = KObjectProxy::New(self);
-      Persistent<Object> *pobj = KNodePersistentObjectCreate(obj);
-      v = [NSValue valueWithPointer:pobj];
-      objc_setAssociatedObject(self, &kPersistentWrapperKey, v,
-                               OBJC_ASSOCIATION_RETAIN);
-      [self autorelease]; // to avoid referencing ourselves
+      if (!obj.IsEmpty() && obj->IsObject()) {
+        Persistent<Object> *pobj = KNodePersistentObjectCreate(obj);
+        v = [NSValue valueWithPointer:pobj];
+        objc_setAssociatedObject(self, &kPersistentWrapperKey, v,
+                                 OBJC_ASSOCIATION_RETAIN);
+        [self autorelease]; // to avoid referencing ourselves
+      }
       return scope.Close(obj);
     } else {
       //DLOG("return cached persistent");
