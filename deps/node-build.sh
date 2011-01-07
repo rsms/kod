@@ -6,12 +6,14 @@ cd "$(dirname $0)/node"
 # use, which is why do do this "trick"
 export PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin
 
+rm -rf build
 make clean
 ./configure --dest-cpu=ia32 --without-snapshot
 make staticlib
 mv build/default/libnode.a build/default/libnode-ia32.a
 mv build/default/libv8.a build/default/libv8-ia32.a
 
+rm -rf build
 make clean
 ./configure --dest-cpu=x64 --without-snapshot
 make staticlib
