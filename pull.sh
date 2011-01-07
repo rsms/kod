@@ -1,13 +1,11 @@
 #!/bin/sh
-git fetch upstream && git submodule update --init
-=======
 
 if [[ $1 && $1 == upstream ]]; then
-	echo "Pulling from upstream (https://github.com/rsms/kod.git)..."
-	git pull https://github.com/rsms/kod.git 
+	echo "Fetching from upstream (https://github.com/rsms/kod.git)..."
+	git fetch https://github.com/rsms/kod.git 
 else
-	echo "Pulling from origin..."
-	git pull
+	echo "Fetching from origin..."
+	git fetch origin
 fi
 
 echo "Updating submodules..."
