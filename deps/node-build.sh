@@ -18,6 +18,7 @@ fi
 mkdir -p "$NODE_BUILD_DIR"
 
 # check if a build product exists and is up-to-date
+# TODO: check each product based on ARCHS
 if [ .git/HEAD -nt "${NODE_LIBNODE_PRODUCT}" ] \
 || [ .git/HEAD -nt "${NODE_LIBV8_PRODUCT}" ]
 then
@@ -51,8 +52,8 @@ else
   echo "info: Building release for architectures $ARCHS"
   LAST_BUILT_ARCH=
   BUILT_ARCHS_COUNT=0
-  NODE_LIBNODE_LIPO_ARGS=
-  NODE_LIBV8_LIPO_ARGS=
+  NODE_LIBNODE_PRODUCTS=
+  NODE_LIBV8_PRODUCTS=
 
   for arch in $ARCHS; do
     if [ "$arch" = "x86_64" ]; then arch=x64
@@ -65,8 +66,8 @@ else
     $WAF --without-snapshot "--blddir=${NODE_ARCH_BUILD_DIR}" \
          --dest-cpu=${arch} configure
     $WAF_MAKE
-    NODE_LIBNODE_PRODUCTS="${NODE_LIBNODE_LIPO_ARGS} ${NODE_ARCH_BUILD_DIR}/default/libnode.a"
-    NODE_LIBV8_PRODUCTS="${NODE_LIBV8_LIPO_ARGS} ${NODE_ARCH_BUILD_DIR}/default/libv8.a"
+    NODE_LIBNODE_PRODUCTS="${NODE_LIBNODE_PRODUCTS} ${NODE_ARCH_BUILD_DIR}/default/libnode.a"
+    NODE_LIBV8_PRODUCTS="${NODE_LIBV8_PRODUCTS} ${NODE_ARCH_BUILD_DIR}/default/libv8.a"
     LAST_BUILT_ARCH="$arch"
     BUILT_ARCHS_COUNT=$(expr $BUILT_ARCHS_COUNT + 1)
   done  # for each arch: make
