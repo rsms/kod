@@ -21,7 +21,6 @@
 
 @implementation KAppDelegate
 
-
 - (void)awakeFromNib {
   // Sparkle configuration
   [sparkleUpdater_ setAutomaticallyChecksForUpdates:YES];

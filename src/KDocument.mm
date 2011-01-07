@@ -791,9 +791,9 @@ static NSFont* _kDefaultFont = nil;
 }*/
 
 // private method of NSDocument which is triggered when "dirty state" changes
-- (void)_updateForDocumentEdited:(BOOL)documentEdited {
-  self.isDirty = documentEdited;
-  [super _updateForDocumentEdited:documentEdited];
+- (void)_updateForDocumentEdited:(BOOL)isDirty {
+  self.isDirty = isDirty;
+  [super _updateForDocumentEdited:isDirty];
 }
 
 

@@ -191,6 +191,7 @@ static inline const char *debug_bits32(int32_t a) {
 #ifdef __OBJC__
 #import "hobjc.h"
 #import "kexceptions.h"
+#import "core/sudden_termination.h"
 
 // NS categories
 #import "NSString-utf8-range-conv.h"
