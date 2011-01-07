@@ -1430,13 +1430,18 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
 - (void)_updateLinesToRangesInfoForTextStorage:(NSTextStorage*)textStorage
                                        inRange:(NSRange)editedRange
                                        changeDelta:(NSInteger)changeInLength {
+	[self _updateLinesToRangesInfoForTextStorage:textStorage inRange:editedRange changeDelta:changeInLength recursed:NO];
+}
+
+- (void)_updateLinesToRangesInfoForTextStorage:(NSTextStorage*)textStorage
+                                       inRange:(NSRange)editedRange
+								   changeDelta:(NSInteger)changeInLength
+									  recursed:(BOOL)recursed{
   // Note: We can't use a HSpinLock::Scope here since we need to release the
   // lock before we call linesDidChangeWithLineCountDelta: at the end
   lineToRangeSpinLock_.lock();
 
 	
-	
-	DLOG("meow line numbers!");
   // update linebreaks mapping
   NSString *string = textStorage.string;
 
@@ -1538,11 +1543,6 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
   }	else if (changeInLength < 0) {
     // edit action was "deletion"
 
-    // BUG(rsms): There's a bug in here somewhere which "removes" more lines
-    // than actually removed
-	  
-	  	  DLOG("change less than a char!");
-
     if (didAffectLines) {
       NSRange deletedRange = editedRange;
       deletedRange.length = -changeInLength;
@@ -1583,19 +1583,20 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
   // otherwise cause a deadlock.
   lineToRangeSpinLock_.unlock();
 
-	DLOG("lineCountDelta: %d", lineCountDelta);
-	
   if (changeInLength != 0 &&
       (lineToRangeVec_.size() != 0 || lineCountDelta != 0)) {
     [self linesDidChangeWithLineCountDelta:lineCountDelta];
   }
 	
-	if (changeInLength < 0 && editedRange.length == 1) {
-		DLOG("recursing!");
-		[self _updateLinesToRangesInfoForTextStorage:textStorage
-											 inRange:editedRange
-										 changeDelta:1];
-	}
+  // performing recursion like this solves problems with line numbering
+  // the idea being that the first time 'round we took care of vanishing text
+  // and on the second go we take care of the newly added text
+  if (changeInLength < 1 && recursed == NO) {
+	[self _updateLinesToRangesInfoForTextStorage:textStorage
+										 inRange:editedRange
+									 changeDelta:editedRange.length
+										recursed:YES];
+  }
 }
 
 
