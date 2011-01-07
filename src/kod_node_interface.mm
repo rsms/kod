@@ -115,6 +115,41 @@ static bool _invokeExposedJSFunction(const char *name,
 }
 
 
+v8::Handle<v8::Value> KNodeCallFunction(v8::Handle<Object> target,
+                                        v8::Handle<Function> fun,
+                                        int argc, id *objc_argv,
+                                        v8::Local<Value> *arg0/*=NULL*/) {
+  v8::HandleScope scope;
+
+  // increment arg count if we got a firstArgAsString
+  if (arg0)
+    ++argc;
+
+  // allocate list of arguments
+  Local<Value> argv[argc];// = new Local<Value>[];
+
+  // add firstArgAsString
+  if (arg0)
+    argv[0] = *arg0;
+
+  // add all objc args
+  int i = arg0 ? 1 : 0, L = argc;
+  for (; i<L; ++i) {
+    id arg = objc_argv[i-(arg0 ? 1 : 0)];
+    if (arg) {
+      argv[i] = Local<Value>::New([arg v8Value]);
+    } else {
+      argv[i] = *v8::Null();
+    }
+  }
+
+  // invoke function
+  Local<Value> ret = fun->Call(target, argc, argv);
+
+  return scope.Close(ret);
+}
+
+
 bool KNodeInvokeExposedJSFunction(const char *functionName,
                                   NSArray *args,
                                   KNodeCallbackBlock callback) {
@@ -334,20 +369,9 @@ void KNodeEventIOEntry::perform() {
   if (!gKodNodeModule.IsEmpty()) {
     Local<Value> v = gKodNodeModule->Get(String::New("emit"));
     if (v->IsFunction()) {
-      int argc = argc_ + 1;
-      Local<Value> argv[argc];// = new Local<Value>[];
-      argv[0] = Local<Value>::New(String::NewSymbol(name_));
-      for (int i = 1; i<argc; ++i) {
-        id arg = argv_[i-1];
-        if (arg) {
-          Local<Value> v = Local<Value>::New([arg v8Value]);
-          argv[i] = v;
-        } else {
-          argv[i] = *v8::Null();
-        }
-      }
-      Local<Function> fun = Local<Function>::Cast(v);
-      Local<Value> ret = fun->Call(gKodNodeModule, argc, argv);
+      Local<Value> eventName = Local<Value>::New(String::NewSymbol(name_));
+      KNodeCallFunction(gKodNodeModule, Local<Function>::Cast(v),
+                        argc_, argv_, &eventName);
     }
   }
   KNodeIOEntry::perform();
