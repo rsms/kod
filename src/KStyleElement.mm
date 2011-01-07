@@ -4,7 +4,6 @@
 #import "NSString-intern.h"
 #import "kconf.h"
 #import "KStyle.h"
-#import <srchilite/formatterparams.h>
 #import <CSS/CSS.h>
 
 

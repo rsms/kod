@@ -149,6 +149,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		3A4455C912D7B16900036EF0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 3A928BEF1227143800DA7E43 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 3A44552012D786AC00036EF0 /* nodejs */;
+			remoteInfo = nodejs;
+		};
 		3A510B3112C26C3E00AAC1D5 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 3A928BEF1227143800DA7E43 /* Project object */;
@@ -975,6 +982,23 @@
 		};
 /* End PBXGroup section */
 
+/* Begin PBXLegacyTarget section */
+		3A44552012D786AC00036EF0 /* nodejs */ = {
+			isa = PBXLegacyTarget;
+			buildArgumentsString = "$(ACTION)";
+			buildConfigurationList = 3A44552612D786E200036EF0 /* Build configuration list for PBXLegacyTarget "nodejs" */;
+			buildPhases = (
+			);
+			buildToolPath = "../node-build.sh";
+			buildWorkingDirectory = /Users/rasmus/src/kod/deps/node;
+			dependencies = (
+			);
+			name = nodejs;
+			passBuildSettingsInEnvironment = 1;
+			productName = nodejs;
+		};
+/* End PBXLegacyTarget section */
+
 /* Begin PBXNativeTarget section */
 		3A5107F712C135A200AAC1D5 /* kod_helper */ = {
 			isa = PBXNativeTarget;
@@ -1011,6 +1035,7 @@
 				3AE5E8B712915AC600B17C4F /* PBXTargetDependency */,
 				3A510B3212C26C3E00AAC1D5 /* PBXTargetDependency */,
 				3AC6ECD612C8E09A00C8DBFC /* PBXTargetDependency */,
+				3A4455CA12D7B16900036EF0 /* PBXTargetDependency */,
 			);
 			name = Kod;
 			productName = Kod;
@@ -1048,8 +1073,9 @@
 			projectRoot = "";
 			targets = (
 				3A928C1F1227151800DA7E43 /* Kod */,
-				3AAA9FB312BFC8890079F079 /* Distribute */,
 				3A5107F712C135A200AAC1D5 /* kod_helper */,
+				3A44552012D786AC00036EF0 /* nodejs */,
+				3AAA9FB312BFC8890079F079 /* Distribute */,
 			);
 		};
 /* End PBXProject section */
@@ -1267,6 +1293,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		3A4455CA12D7B16900036EF0 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 3A44552012D786AC00036EF0 /* nodejs */;
+			targetProxy = 3A4455C912D7B16900036EF0 /* PBXContainerItemProxy */;
+		};
 		3A510B3212C26C3E00AAC1D5 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 3A5107F712C135A200AAC1D5 /* kod_helper */;
@@ -1290,6 +1321,20 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		3A44552112D786AC00036EF0 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = nodejs;
+			};
+			name = Debug;
+		};
+		3A44552212D786AC00036EF0 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = nodejs;
+			};
+			name = Release;
+		};
 		3A5107FA12C135A200AAC1D5 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -1400,6 +1445,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		3A44552612D786E200036EF0 /* Build configuration list for PBXLegacyTarget "nodejs" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3A44552112D786AC00036EF0 /* Debug */,
+				3A44552212D786AC00036EF0 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		3A51080212C135C800AAC1D5 /* Build configuration list for PBXNativeTarget "kod_helper" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

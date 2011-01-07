@@ -19,9 +19,10 @@ If you want to use Kod, simply download the latest "stable" version from [http:/
 
     git clone --recursive https://github.com/rsms/kod.git
 
-**Build dependencies:**
+**Checkout and build libcss:**
 
-    deps/node-build.sh
+This step isn't entirely necessary, but the first time you run this it will check out a bunch of subversion repositories which might take a few minutes.
+
     deps/libcss/build.sh
 
 **Start hacking:**
