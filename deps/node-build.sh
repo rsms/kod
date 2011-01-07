@@ -7,18 +7,16 @@ cd "$(dirname $0)/node"
 export PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin
 
 rm -rf build
-make clean
 ./configure --dest-cpu=ia32 --without-snapshot
 make staticlib
-mv build/default/libnode.a build/default/libnode-ia32.a
-mv build/default/libv8.a build/default/libv8-ia32.a
+mv -vf build/default/libnode.a build/default/libnode-ia32.a
+mv -vf build/default/libv8.a build/default/libv8-ia32.a
 
-rm -rf build
-make clean
+rm -rf build/default/obj build/default/src build/default/deps
 ./configure --dest-cpu=x64 --without-snapshot
 make staticlib
-mv build/default/libnode.a build/default/libnode-x64.a
-mv build/default/libv8.a build/default/libv8-x64.a
+mv -vf build/default/libnode.a build/default/libnode-x64.a
+mv -vf build/default/libv8.a build/default/libv8-x64.a
 
 lipo -create build/default/libnode-ia32.a build/default/libnode-x64.a \
      -output build/default/libnode.a
