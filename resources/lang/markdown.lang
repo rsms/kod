@@ -21,6 +21,10 @@ include "_html_basic.lang"
 h1 = '^.*^(={3,})(?=[ \t]*$)'
 h2 = '^(-{3,})(?=[ \t]*$)'
 
+# Link definitions
+(normal, cbracket, variable, cbracket, specialchar, normal, url) =
+`(^[ ]{0,3})(\[)([^\]]+)(\])(:)(\s+)(.*$)`
+
 state ul delim '^[ ]{0,3}([*+-])(?=\s)' '^(?=\S)' multiline begin
   include "_markdown_inlines.lang"
   normal = '^(?=\S)'
