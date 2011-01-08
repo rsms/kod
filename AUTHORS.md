@@ -8,3 +8,4 @@
 - Cody Krieger <cody@codykrieger.com>
 - Luc Heinrich <luc@honk-honk.com>
 - Steve Johnson <steve.johnson.public@gmail.com>
+- Agostino Carandente <aragost+kod@gmail.com>
