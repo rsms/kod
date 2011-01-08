@@ -1,5 +1,7 @@
 bold = '\*\*[^\*]+\*\*'
+bold = '__[^_]+__'
 italics = '\*[^\*]+\*'
+italics = '_[^_]+_'
 
 # Inline links
 state symbol delim '\[(?=.*\]\()' '\)' begin
