@@ -11,10 +11,10 @@ state cbracket delim '\[(?=.*\]\()' '\)' begin
 end
 
 # Reference links for images
-(specialchar,cbracket,string,cbracket,normal,cbracket,variable,cbracket) =
+(symbol,symbol,string,symbol,normal,symbol,variable,symbol) =
 `(!)(\[)([^\]]+)(\])([ ]{0,1})(\[)([^\]]*)(\])`
 
 
 # Reference links
-(cbracket,string,cbracket,normal,cbracket,variable,cbracket) =
+(symbol,string,symbol,normal,symbol,variable,symbol) =
 `(\[)([^\]]+)(\])([ ]{0,1})(\[)([^\]]*)(\])`
