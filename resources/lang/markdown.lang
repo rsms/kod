@@ -14,3 +14,18 @@ h4 start '^####'
 h5 start '^#####'
 h6 start '^######'
 
+include "_html_basic.lang"
+
+h1 = '^.*^(={3,})(?=[ \t]*$)'
+h2 = '^(-{3,})(?=[ \t]*$)'
+
+bold = '\*\*[^\*]*\*\*'
+italics = '\*[^\*]*\*'
+
+ul delim '^[ ]{0,3}([*+-])(?=\s)' '^(?=\S)' multiline
+
+ol delim '^[ ]{0,3}([0-9]+\.)(?=\s)' '^(?=\S)' multiline
+
+state cbracket delim '\[' '\]' begin
+ variable = '[^\]]'
+end
