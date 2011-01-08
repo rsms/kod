@@ -36,11 +36,11 @@ NSString * const ICUPatternException = @"ICUPatternException";
 @implementation ICUPattern
 
 +(ICUPattern *)patternWithString:(NSString *)aPattern flags:(unsigned)flags {
-  return [[self alloc] initWithString:aPattern flags:flags];
+  return [[[self alloc] initWithString:aPattern flags:flags] autorelease];
 }
 
 +(ICUPattern *)patternWithString:(NSString *)aPattern {
-  return [[self alloc] initWithString:aPattern flags:0];
+  return [[[self alloc] initWithString:aPattern flags:0] autorelease];
 }
 
 -(id)initWithString:(NSString *)aPattern flags:(unsigned)f {

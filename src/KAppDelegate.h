@@ -12,7 +12,4 @@
 - (IBAction)displayTerminalUsage:(id)sender;
 - (IBAction)displayAbout:(id)sender;
 
-/*-(void)openDocumentInWindow:(KBrowserWindowController*)windowController
-                     sender:(id)sender;*/
-
 @end

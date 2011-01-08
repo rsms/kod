@@ -883,9 +883,9 @@ static int debugSimulateTextAppendingIteration = 0;
 }*/
 
 // private method of NSDocument which is triggered when "dirty state" changes
-- (void)_updateForDocumentEdited:(BOOL)documentEdited {
-  self.isDirty = documentEdited;
-  [super _updateForDocumentEdited:documentEdited];
+- (void)_updateForDocumentEdited:(BOOL)isDirty {
+  self.isDirty = isDirty;
+  [super _updateForDocumentEdited:isDirty];
 }
 
 
@@ -1429,11 +1429,13 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
 
 - (void)_updateLinesToRangesInfoForTextStorage:(NSTextStorage*)textStorage
                                        inRange:(NSRange)editedRange
-                                       changeDelta:(NSInteger)changeInLength {
+                                   changeDelta:(NSInteger)changeInLength
+                                      recursed:(BOOL)recursed {
   // Note: We can't use a HSpinLock::Scope here since we need to release the
   // lock before we call linesDidChangeWithLineCountDelta: at the end
   lineToRangeSpinLock_.lock();
 
+  
   // update linebreaks mapping
   NSString *string = textStorage.string;
 
@@ -1533,11 +1535,7 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
   } else if (changeInLength < 0) {
     // edit action was "deletion"
 
-    // BUG(rsms): There's a bug in here somewhere which "removes" more lines
-    // than actually removed
-
     if (didAffectLines) {
-
       NSRange deletedRange = editedRange;
       deletedRange.length = -changeInLength;
       //DLOG("deletedRange -> %@", NSStringFromRange(deletedRange));
@@ -1565,7 +1563,7 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
       }
     }
   }
-
+  
   // offset affected ranges
   if (didAffectLines) {
     //DLOG("_lb_offset_ranges(%lu, %ld)", offsetRangesStart, changeInLength);
@@ -1580,6 +1578,16 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
   if (changeInLength != 0 &&
       (lineToRangeVec_.size() != 0 || lineCountDelta != 0)) {
     [self linesDidChangeWithLineCountDelta:lineCountDelta];
+  }
+  
+  // performing recursion like this solves problems with line numbering
+  // the idea being that the first time 'round we took care of vanishing text
+  // and on the second go we take care of the newly added text
+  if (changeInLength < 1 && recursed == NO) {
+  [self _updateLinesToRangesInfoForTextStorage:textStorage
+                     inRange:editedRange
+                   changeDelta:editedRange.length
+                    recursed:YES];
   }
 }
 
@@ -1611,12 +1619,14 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
   if ([NSThread isMainThread]) {
     [self _updateLinesToRangesInfoForTextStorage:textStorage
                                          inRange:editedRange
-                                     changeDelta:changeInLength];
+                                     changeDelta:changeInLength
+                                        recursed:NO];
   } else {
     K_DISPATCH_MAIN_ASYNC({
       [self _updateLinesToRangesInfoForTextStorage:textStorage
                                            inRange:editedRange
-                                       changeDelta:changeInLength];
+                                       changeDelta:changeInLength
+                                          recursed:NO];
     });
   }
 
