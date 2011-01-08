@@ -21,11 +21,6 @@ include "_html_basic.lang"
 h1 = '^.*^(={3,})(?=[ \t]*$)'
 h2 = '^(-{3,})(?=[ \t]*$)'
 
-vardef bold = '\*\*[^\*]+\*\*'
-bold = $bold
-
-vardef italics = '\*[^\*]+\*'
-italics = $italics
 
 # Inline links
 state cbracket delim '\[(?=.*\]\()' '\)' begin
@@ -37,13 +32,11 @@ state cbracket delim '\[(?=.*\]\()' '\)' begin
 end
 
 state ul delim '^[ ]{0,3}([*+-])(?=\s)' '^(?=\S)' multiline begin
-  bold = $bold
-  italics = $italics
+  include "_markdown_inlines.lang"
   normal = '^(?=\S)'
 end
 
 state ol delim '^[ ]{0,3}([0-9]+\.)(?=\s)' '^(?=\S)' multiline begin
-  bold = $bold
-  italics = $italics
+  include "_markdown_inlines.lang"
   normal = '^(?=\S)'
 end
