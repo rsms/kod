@@ -9,3 +9,12 @@ state cbracket delim '\[(?=.*\]\()' '\)' begin
  include "_url.lang"
  include "_c_string.lang"
 end
+
+# Reference links for images
+(specialchar,cbracket,string,cbracket, normal, cbracket, type, cbracket) =
+`(!)(\[)([^\]]+)(\])([ ]{0,1})(\[)([^\]]*)(\])`
+
+
+# Reference links
+(cbracket,string,cbracket, normal, cbracket, type, cbracket) =
+`(\[)([^\]]+)(\])([ ]{0,1})(\[)([^\]]*)(\])`
