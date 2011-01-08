@@ -19,12 +19,22 @@ include "_html_basic.lang"
 h1 = '^.*^(={3,})(?=[ \t]*$)'
 h2 = '^(-{3,})(?=[ \t]*$)'
 
-bold = '\*\*[^\*]*\*\*'
-italics = '\*[^\*]*\*'
+vardef bold = '\*\*[^\*]+\*\*'
+bold = $bold
+vardef italics = '\*[^\*]+\*'
+italics = $italics
 
-ul delim '^[ ]{0,3}([*+-])(?=\s)' '^(?=\S)' multiline
+state ul delim '^[ ]{0,3}([*+-])(?=\s)' '^(?=\S)' multiline begin
+  bold = $bold
+  italics = $italics
+  normal = '^(?=\S)'
+end
 
-ol delim '^[ ]{0,3}([0-9]+\.)(?=\s)' '^(?=\S)' multiline
+state ol delim '^[ ]{0,3}([0-9]+\.)(?=\s)' '^(?=\S)' multiline begin
+  bold = $bold
+  italics = $italics
+  normal = '^(?=\S)'
+end
 
 state cbracket delim '\[' '\]' begin
  variable = '[^\]]'
