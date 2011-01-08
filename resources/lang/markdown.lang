@@ -4,6 +4,8 @@
 
 include "_url.lang"
 
+include "_markdown_inlines.lang"
+
 # preformatted text block starts with at least 4 spaces or 1 tab
 fixed start '^([ ]{4,}|\t)'
 
