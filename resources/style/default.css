@@ -52,6 +52,7 @@ argument, optionalargument { color: #9194BB; }
 math { color: orange; }
 bibtex { color: #8D86EE; }
 h1,h2,h3,h4,h5,h6 { color: lightsalmon; }
+ul, ol { color: #0080FF; } 
 
 /* for diffs */
 oldfile { color: #f7bfb6; background-color:#42201C; }
