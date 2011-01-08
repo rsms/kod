@@ -1,27 +1,26 @@
-/*
- *  KRUsage.hh
- *  kod
- *
- *  Created by Rasmus Andersson on 2010-11-23.
- *  Copyright 2010 __MyCompanyName__. All rights reserved.
- *
- */
+#ifndef K_RUSAGE_H_
+#define K_RUSAGE_H_
 
+#include <deque>
+
+/*!
+ * Record resource usage using getrusage(2)
+ */
 class KRUsage {
  public:
   typedef std::pair<struct rusage, std::string> sample_t;
   typedef std::deque<sample_t> samples_t;
   samples_t samples;
 
-  KRUsage() {
-    sample("start");
-  }
+  explicit KRUsage(std::string label) { sample(label); }
+  KRUsage() { sample("start"); }
   ~KRUsage() {}
 
-  void reset() {
+  void reset(std::string label) {
     samples.clear();
-    sample("start");
+    sample(label);
   }
+  void reset() { reset("start"); }
 
   void sample(std::string label) {
     sample_t sample;
@@ -45,16 +44,27 @@ class KRUsage {
       double prev_utime = oldest_utime;
       double prev_stime = oldest_stime;
 
+      dst.append("user/system/combined (since start)\n");
+
       while (++it != end) {
         sample_t &sample = *it;
         char buf[1024];
         double utime = tvToMs(sample.first.ru_utime);
         double stime = tvToMs(sample.first.ru_stime);
 
-        snprintf(buf, 1024, "%s -> %s: %.4f ms / %.4f ms / %.4f ms (start ->: %.4f ms / %.4f ms / %.4f ms)\n",
-                 prev_sample.second.c_str(), sample.second.c_str(),
-                 utime - prev_utime, stime - prev_stime, (utime - prev_utime)+(stime - prev_stime),
-                 utime - oldest_utime, stime - oldest_stime, (utime - oldest_utime)+(stime - oldest_stime));
+        snprintf(buf, 1024, "  %s -> %s: %.4f/%.4f/%.4f "
+                            "(->| %.4f/%.4f/%.4f) ms\n",
+                 prev_sample.second.c_str(),
+                 sample.second.c_str(),
+
+                 utime - prev_utime,
+                 stime - prev_stime,
+                 (utime - prev_utime) + (stime - prev_stime),
+
+                 utime - oldest_utime,
+                 stime - oldest_stime,
+                 (utime - oldest_utime) + (stime - oldest_stime));
+
         dst.append(buf);
 
         prev_sample = sample;
@@ -64,3 +74,5 @@ class KRUsage {
     }
   }
 };
+
+#endif  // K_RUSAGE_H_
