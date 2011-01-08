@@ -1585,9 +1585,9 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
   // and on the second go we take care of the newly added text
   if (changeInLength < 1 && recursed == NO) {
   [self _updateLinesToRangesInfoForTextStorage:textStorage
-                     inRange:editedRange
-                   changeDelta:editedRange.length
-                    recursed:YES];
+                                       inRange:editedRange
+                                   changeDelta:editedRange.length
+                                      recursed:YES];
   }
 }
 
