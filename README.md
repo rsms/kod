@@ -15,9 +15,17 @@ If you want to use Kod, simply download the latest "stable" version from [http:/
 
 ## Development
 
-**Get the source:**
+**Get the source (for building):**
 
     git clone --recursive https://github.com/rsms/kod.git
+    git remote add upstream https://github.com/rsms/kod.git
+
+**Get the source (for contributing):**
+
+If you want to contribute to the project you will have to [make a fork](http://help.github.com/forking/). Then do this:
+
+    git clone --recursive git@github.com:MyUsername/kod.git
+    git remote add upstream https://github.com/rsms/kod.git
 
 **Build dependencies:**
 
@@ -45,10 +53,17 @@ Via Homebrew:
 
 ### Refreshing your clone
 
-Since Kod is made up of a main repository as well as a few sub-repositories (git submodules) a simple `git pull` is not sufficient to update your source tree clone. Use the `pull.sh` shell script for this:
+Since Kod is made up of a main repository as well as a few sub-repositories (git submodules) a simple `git pull` is not sufficient to update your source tree clone. Use the `update.sh` shell script for this:
 
-    ./pull.sh
+    ./update.sh
 
+It will fetch updates from the upstream repository (rsms/kod). Then you should merge the branches you want to use, for example something like so:
+
+    git merge upstream/master
+
+You can use it to update from your own repository by calling it like this:
+
+    ./update.sh origin
 
 ### Contributing
 
