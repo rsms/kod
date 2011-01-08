@@ -2,10 +2,10 @@ bold = '\*\*[^\*]+\*\*'
 italics = '\*[^\*]+\*'
 
 # Inline links
-state cbracket delim '\[(?=.*\]\()' '\)' begin
+state symbol delim '\[(?=.*\]\()' '\)' begin
  usertype = '[^\]]+(?=\])'
- cbracket = '\]'
- cbracket = '\('
+ symbol = '\]'
+ symbol = '\('
  include "_url.lang"
  include "_c_string.lang"
 end
