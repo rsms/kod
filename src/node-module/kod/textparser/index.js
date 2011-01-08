@@ -4,7 +4,6 @@ var util = require('util');
 // maps UTI -> list of parsers
 var parsers = {};
 
-
 // register a parser
 function registerParser(parser) {
   if (!Array.isArray(parser.utis))
@@ -63,7 +62,7 @@ kod.KDocument.prototype.textParser = function() {
 
 kod.KDocument.prototype.parse =
     function (source, modificationIndex, changeDelta) {
-  console.log('kod.KDocument.prototype.parse');
+  //console.log('kod.KDocument.prototype.parse');
   /*var parser, parsers = parsersForUTI(this.type);
   if (!parsers || !(parser = parsers[0])) {
     console.warn('[document.parse] no matching parser found for '+this);
@@ -74,7 +73,7 @@ kod.KDocument.prototype.parse =
   var parseTask = new ParseTask(this, source, modificationIndex, changeDelta);
   var ast = parser.parse(parseTask);
   //console.log(util.inspect(ast, 0, 10));
-  console.log('ast.children.length -> '+ast.children.length);
+  //console.log('ast.children.length -> '+ast.children.length);
   return ast;
 }
 
@@ -103,153 +102,25 @@ function Parser(name, utis) {
 }
 exports.Parser = Parser;
 
+
+Parser.prototype.parse = function (parseTask) {
+  throw new Error('not implemented');
+}
+
 // String representation
 Parser.prototype.toString = function() {
   return '<'+this.constructor.name+
          ' "'+this.name+'" ['+this.utis.join(', ')+']>';
 };
 
-// ----------------------------------------------------------------------------
-// An very rudimentary "fallback" parser which divides a document into
-// paragraphs and words.
-
-function PlainTextParser() {
-  Parser.call(this, 'Plain text', ['public.text']);
-}
-util.inherits(PlainTextParser, Parser);
-exports.registerParser(new PlainTextParser);
-
-
-// -------------------------------------------------------------
-// tmp
-
-function array_to_hash(a) {
-  var ret = {};
-  for (var i = 0; i < a.length; ++i)
-    ret[a[i]] = true;
-  return ret;
-};
-
-function HOP(obj, prop) {
-  return Object.prototype.hasOwnProperty.call(obj, prop);
-};
-
-var WHITESPACE_CHARS = array_to_hash(" \n\r\t.,".split(''));
-var EX_EOF = {};
-
-/**
- * Parse a document
- */
-PlainTextParser.prototype.parse = function (parseTask) {
-  console.log(this+'.parse');
-
-  // this is a stupid parser
-  var astRoot = {kind:'root', children:[]};
-
-  // split on words
-  var source = parseTask.source,
-      pos = 0, endPos = source.length, line = 0, col = 0,
-      ch, tok = {}, newline_before;
-
-  function peek() { return source.charAt(pos); };
-
-  function is_digit(ch) { ch = ch.charCodeAt(0); return ch >= 48 && ch <= 57; }
-  
-  function is_word_char(ch) {
-    return !HOP(WHITESPACE_CHARS, ch);
-  };
-
-  function skip_whitespace() {
-    while (HOP(WHITESPACE_CHARS, peek())) next();
-  }
-  
-  function start_token() {
-    tok.line = line;
-    tok.col = col;
-    tok.pos = pos;
-  }
-  
-  function token(kind, value) {
-    if (value) {
-      return {kind:kind, range:[pos, value.length]/*, value:value*/};
-    } else {
-      return {kind:kind};
-    }
-  }
-  
-  function next_token() {
-    skip_whitespace();
-    start_token();
-    var ch = peek();
-    if (!ch) return token("eof");
-    return read_word();
-    //parse_error("Unexpected character '" + ch + "'");
-  }
-  
-  function next(signal_eof) {
-    var ch = source.charAt(pos++);
-    if (signal_eof && (!ch || pos === endPos))
-      throw EX_EOF;
-    if (ch == "\n") {
-      newline_before = true;
-      ++line;
-      col = 0;
-    } else {
-      ++col;
-    }
-    return ch;
-  }
-  
-  function read_while(pred) {
-    var ret = "", ch = peek(), i = 0;
-    while (ch && pred(ch, i++)) {
-      ret += next();
-      ch = peek();
-    }
-    return ret;
-  }
-  
-  function read_word() {
-    var word = read_while(is_word_char);
-    return token("text.word", word)
-  }
-  
-  while (1) {
-    var t = next_token();
-    if (!t || t.kind === 'eof')
-      break;
-    astRoot.children.push(t);
-  }
-  
-  /*
-  var pattern = new RegExp(/[\w]+/g);
-  while (match = pattern.exec(parseTask.source)) {
-    //console.log(match);
-    astRoot.children.push({
-      kind: 'text.word',
-      range: [match.index, match[0].length]
-    });
-  }*/
-  
-  return astRoot;
-};
 
 // Helper function which can be used for testing during development of parsers
-function simulateParsing(typeName, source, modificationIndex, changeDelta) {
+function simulate(typeName, source, modificationIndex, changeDelta) {
   var doc = new kod.KDocument;
   doc.type = typeName;
   var ast = doc.parse(source, modificationIndex, changeDelta);
   return ast;
 }
+Parser.simulate = simulate;
 
-// Run a sample of the plain text parser when this module is run directly
-if (module.id == '.') {
-  var source = 'hello from the\ninternets';
-  source = require('fs').readFileSync(
-      '/Users/rasmus/src/kod/resources/about.md', 'utf8');
-  var time = new Date;
-  var ast = simulateParsing('public.text', source, 0, source.length);
-  time = (new Date)-time;
-  console.log('Real time spent: '+time+'ms');
-  //console.log(util.inspect(ast, 0, 10));
-}
+require('./plaintext');
