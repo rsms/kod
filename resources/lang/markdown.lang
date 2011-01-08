@@ -21,6 +21,7 @@ h2 = '^(-{3,})(?=[ \t]*$)'
 
 vardef bold = '\*\*[^\*]+\*\*'
 bold = $bold
+
 vardef italics = '\*[^\*]+\*'
 italics = $italics
 
