@@ -25,6 +25,15 @@ bold = $bold
 vardef italics = '\*[^\*]+\*'
 italics = $italics
 
+# Inline links
+state cbracket delim '\[(?=.*\]\()' '\)' begin
+ usertype = '[^\]]+(?=\])'
+ cbracket = '\]'
+ cbracket = '\('
+ include "_url.lang"
+ include "_c_string.lang"
+end
+
 state ul delim '^[ ]{0,3}([*+-])(?=\s)' '^(?=\S)' multiline begin
   bold = $bold
   italics = $italics
@@ -35,8 +44,4 @@ state ol delim '^[ ]{0,3}([0-9]+\.)(?=\s)' '^(?=\S)' multiline begin
   bold = $bold
   italics = $italics
   normal = '^(?=\S)'
-end
-
-state cbracket delim '\[' '\]' begin
- variable = '[^\]]'
 end
