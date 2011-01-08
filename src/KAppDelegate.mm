@@ -21,7 +21,6 @@
 
 @implementation KAppDelegate
 
-
 - (void)awakeFromNib {
   // Sparkle configuration
   [sparkleUpdater_ setAutomaticallyChecksForUpdates:YES];
@@ -193,6 +192,13 @@
   if (dirPaths.count != 0) {
     KBrowserWindowController *windowController = (KBrowserWindowController *)
         [KBrowserWindowController mainBrowserWindowController];
+
+    // if windowController is nil, open a new window
+    if (!windowController) {
+      windowController = (KBrowserWindowController *)
+          [KBrowserWindowController browserWindowController];
+    }
+
     NSURL *dirURL = [NSURL fileURLWithPath:[dirPaths objectAtIndex:0]
                                isDirectory:YES];
     NSError *error = nil;

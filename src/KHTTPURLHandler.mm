@@ -7,8 +7,13 @@
 
 - (BOOL)canReadURL:(NSURL*)url {
   NSString *scheme = [url scheme];
-  if (!scheme && scheme.length < 6);
-    return [scheme hasPrefix:@"http" options:NSCaseInsensitiveSearch];
+  if (scheme) {
+    if (scheme.length == 5) {
+      return [scheme caseInsensitiveCompare:@"https"] == NSOrderedSame;
+    } else if (scheme.length == 4) {
+      return [scheme caseInsensitiveCompare:@"http"] == NSOrderedSame;
+    }
+  }
   return NO;
 }
 

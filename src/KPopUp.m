@@ -62,7 +62,10 @@
 + (KPopUp*)popupWithSize:(NSSize)size centeredInWindow:(NSWindow*)parentWindow {
   KPopUp *popup = [[self alloc] initWithSize:size
                             centeredInWindow:parentWindow];
-  [popup retain]; // ref we hold on to until closed
+  // Note: The clang static analyzer will warn about a potential leak here,
+  // which is NOT the case. We hold on to the ref retained from the following
+  // call until the popup is closed.
+  [popup retain];
   [popup setReleasedWhenClosed:YES];
   return [popup autorelease];
 }
