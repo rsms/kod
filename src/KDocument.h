@@ -23,7 +23,7 @@ extern NSString *const KDocumentDidLoadDataNotification;
   NSStringEncoding textEncoding_;
 
   // Abstract Syntax Tree
-  kod::AST ast_;
+  kod::ASTPtr ast_;
 
   // Mapped line breaks. Provides number of lines and a mapping from line number
   // to actual character offset. The location of each range denotes the start
@@ -80,6 +80,10 @@ extern NSString *const KDocumentDidLoadDataNotification;
 @property(readonly) uint64_t version;
 
 
+@property(readonly, assign) kod::ASTPtr ast;
+@property(readonly, assign) kod::ASTNodePtr astRootNode;
+
+
 // A Uniform Type Identifier for the current contents
 @property(retain) NSString *type;
 - (void)setTypeFromPathExtension:(NSString*)pathExtension;
@@ -104,6 +108,7 @@ extern NSString *const KDocumentDidLoadDataNotification;
 
 // actions
 - (IBAction)debugDumpAttributesAtCursor:(id)sender;
+- (IBAction)debugUpdateASTViewer:(id)sender;
 - (IBAction)selectNextElement:(id)sender;
 - (IBAction)selectPreviousElement:(id)sender;
 - (IBAction)toggleMetaRuler:(id)sender;

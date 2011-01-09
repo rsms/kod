@@ -20,7 +20,7 @@ ASTNodeWrapper::~ASTNodeWrapper() {
 }
 
 
-ASTNodePtr ASTNodeWrapper::UnwrapNode(Handle<Object> obj) {
+ASTNodePtr ASTNodeWrapper::UnwrapNode(v8::Handle<Object> obj) {
   if (obj->InternalFieldCount() > 0) {
     ASTNodeWrapper *nodeWrapper =
         static_cast<ASTNodeWrapper*>(obj->GetPointerFromInternalField(0));
@@ -32,7 +32,7 @@ ASTNodePtr ASTNodeWrapper::UnwrapNode(Handle<Object> obj) {
 }
 
 
-Handle<Value> ASTNodeWrapper::New(const Arguments& args) {
+v8::Handle<Value> ASTNodeWrapper::New(const Arguments& args) {
   HandleScope scope;
   ASTNodeWrapper *p = new ASTNodeWrapper();
   (p)->Wrap(args.This());
@@ -52,9 +52,9 @@ Handle<Value> ASTNodeWrapper::New(const Arguments& args) {
 
     // sourceLocation and sourceLength
     if (args.Length() > 1)
-      p->node_->sourceLocation() = args[1]->Uint32Value();
+      p->node_->sourceRange().location = args[1]->IntegerValue();
     if (args.Length() > 2)
-      p->node_->sourceLength() = args[2]->Uint32Value();
+      p->node_->sourceRange().length = args[2]->IntegerValue();
 
     if (args.Length() > 3 && args[3]->IsObject()) {
       // parentNode
@@ -69,16 +69,7 @@ Handle<Value> ASTNodeWrapper::New(const Arguments& args) {
 }
 
 
-static Handle<Value> GetParentNode(Local<String> property,
-                                   const AccessorInfo& info) {
-  HandleScope scope;
-  ASTNodeWrapper *self = ASTNodeWrapper::Unwrap<ASTNodeWrapper>(info.This());
-  // TODO implementation
-  return Undefined();
-}
-
-
-Handle<Value> ASTNodeWrapper::PushChild(const Arguments& args) {
+v8::Handle<Value> ASTNodeWrapper::PushChild(const Arguments& args) {
   HandleScope scope;
 
   if (args.Length() != 1 || !args[0]->IsObject())
@@ -95,7 +86,38 @@ Handle<Value> ASTNodeWrapper::PushChild(const Arguments& args) {
 }
 
 
-void ASTNodeWrapper::Initialize(Handle<Object> target) {
+static v8::Handle<Value> GetParentNode(Local<String> property,
+                                       const AccessorInfo& info) {
+  HandleScope scope;
+  ASTNodeWrapper *self = ASTNodeWrapper::Unwrap<ASTNodeWrapper>(info.This());
+  // TODO implementation
+  return Undefined();
+}
+
+
+v8::Handle<Value> ASTNodeWrapper::GetSourceLength(Local<String> property,
+                                                  const AccessorInfo& info) {
+  HandleScope scope;
+  ASTNodeWrapper *self = ASTNodeWrapper::Unwrap<ASTNodeWrapper>(info.This());
+  if (self->node_.get()) {
+    return scope.Close(Integer::New(self->node_->sourceRange().length));
+  }
+  return Undefined();
+}
+
+
+void ASTNodeWrapper::SetSourceLength(Local<String> property,
+                                     Local<Value> value,
+                                     const AccessorInfo& info) {
+  HandleScope scope;
+  ASTNodeWrapper *self = ASTNodeWrapper::Unwrap<ASTNodeWrapper>(info.This());
+  if (self->node_.get()) {
+    self->node_->sourceRange().length = value->IntegerValue();
+  }
+}
+
+
+void ASTNodeWrapper::Initialize(v8::Handle<Object> target) {
   HandleScope scope;
 
   Local<String> className = String::NewSymbol("ASTNode");
@@ -109,6 +131,8 @@ void ASTNodeWrapper::Initialize(Handle<Object> target) {
   Local<ObjectTemplate> instance_t = constructor_template->InstanceTemplate();
   instance_t->SetInternalFieldCount(1);
   instance_t->SetAccessor(String::New("parentNode"), GetParentNode);
+  instance_t->SetAccessor(String::New("sourceLength"), GetSourceLength,
+                          SetSourceLength);
 
   target->Set(className, constructor_template->GetFunction());
 }

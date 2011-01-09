@@ -27,7 +27,7 @@ function HOP(obj, prop) {
   return Object.prototype.hasOwnProperty.call(obj, prop);
 };
 
-var WHITESPACE_CHARS = array_to_hash(" \n\r\t.,".split(''));
+var NON_WORD_CHARS = array_to_hash(" \n\r\t.,|—–[]{}()\"\"#".split(''));
 var EX_EOF = {};
 
 PlainTextParser.prototype.tokenizer = function (source, startOffset, length) {
@@ -45,11 +45,11 @@ PlainTextParser.prototype.tokenizer = function (source, startOffset, length) {
   function is_digit(ch) { ch = ch.charCodeAt(0); return ch >= 48 && ch <= 57; }
   
   function is_word_char(ch) {
-    return !HOP(WHITESPACE_CHARS, ch);
+    return !HOP(NON_WORD_CHARS, ch);
   };
 
   function skip_whitespace() {
-    while (HOP(WHITESPACE_CHARS, peek())) next();
+    while (HOP(NON_WORD_CHARS, peek())) next();
   }
   
   function start_token() {
@@ -157,6 +157,10 @@ PlainTextParser.prototype.parse = function (parseTask) {
   
   // create an AST node
   function astnode (kind) {
+    if (kind === 'root') {
+      // the root should not have source range info
+      return new kod.ASTNode('root');
+    }
     return new kod.ASTNode(kind,
       /* sourceLocation*/  token.location - parentSourceLocation,
        /* sourceLength */  token.length,

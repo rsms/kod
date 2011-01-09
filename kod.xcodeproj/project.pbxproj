@@ -37,7 +37,12 @@
 		3A34A7CF12D8C5A9009D17BA /* ChromiumTabs.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 3AC6ECC412C8E05B00C8DBFC /* ChromiumTabs.framework */; };
 		3A366A8412CB873D00257AE6 /* KObjectProxy.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A366A8112CB873D00257AE6 /* KObjectProxy.mm */; };
 		3A366A8512CB873D00257AE6 /* node_kod.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A366A8312CB873D00257AE6 /* node_kod.mm */; };
-		3A37B0E612D9508B00ED811C /* ASTNodeWrapper.cc in Sources */ = {isa = PBXBuildFile; fileRef = 3A37B0E412D9508B00ED811C /* ASTNodeWrapper.cc */; };
+		3A37B0E612D9508B00ED811C /* ASTNodeWrapper.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A37B0E412D9508B00ED811C /* ASTNodeWrapper.mm */; };
+		3A37B39412DA2A4200ED811C /* ast-viewer.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3A37B39312DA2A4200ED811C /* ast-viewer.xib */; };
+		3A37B39812DA2AB600ED811C /* KASTViewerController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A37B39712DA2AB600ED811C /* KASTViewerController.mm */; };
+		3A37B39D12DA2C5000ED811C /* KASTViewerWindowController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A37B39C12DA2C5000ED811C /* KASTViewerWindowController.mm */; };
+		3A37B4A812DA416E00ED811C /* ASTNode.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A37B4A712DA416E00ED811C /* ASTNode.mm */; };
+		3A37B54712DA48E500ED811C /* KASTOutlineView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A37B54612DA48E500ED811C /* KASTOutlineView.m */; };
 		3A40F92F12AFF21A007B5879 /* main.js in Resources */ = {isa = PBXBuildFile; fileRef = 3A40F92E12AFF21A007B5879 /* main.js */; };
 		3A4CB3E112B1872300B45858 /* NSString-data.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A4CB3E012B1872300B45858 /* NSString-data.m */; };
 		3A4D50ED1282E40300B06EEB /* NSString-utf8-range-conv.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A4D50EC1282E40300B06EEB /* NSString-utf8-range-conv.m */; };
@@ -284,10 +289,18 @@
 		3A366A8112CB873D00257AE6 /* KObjectProxy.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = KObjectProxy.mm; path = "node-module/KObjectProxy.mm"; sourceTree = "<group>"; };
 		3A366A8212CB873D00257AE6 /* node_kod.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = node_kod.h; path = "node-module/node_kod.h"; sourceTree = "<group>"; };
 		3A366A8312CB873D00257AE6 /* node_kod.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = node_kod.mm; path = "node-module/node_kod.mm"; sourceTree = "<group>"; };
-		3A37B0E412D9508B00ED811C /* ASTNodeWrapper.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ASTNodeWrapper.cc; path = "node-module/ASTNodeWrapper.cc"; sourceTree = "<group>"; };
+		3A37B0E412D9508B00ED811C /* ASTNodeWrapper.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = ASTNodeWrapper.mm; path = "node-module/ASTNodeWrapper.mm"; sourceTree = "<group>"; };
 		3A37B0E512D9508B00ED811C /* ASTNodeWrapper.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; fileEncoding = 4; name = ASTNodeWrapper.h; path = "node-module/ASTNodeWrapper.h"; sourceTree = "<group>"; };
 		3A37B10F12D9592900ED811C /* ASTNode.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; fileEncoding = 4; path = ASTNode.h; sourceTree = "<group>"; };
 		3A37B2AD12D9895600ED811C /* AST.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; fileEncoding = 4; path = AST.h; sourceTree = "<group>"; };
+		3A37B39312DA2A4200ED811C /* ast-viewer.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "ast-viewer.xib"; path = "resources/ast-viewer.xib"; sourceTree = SOURCE_ROOT; };
+		3A37B39612DA2AB600ED811C /* KASTViewerController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KASTViewerController.h; sourceTree = "<group>"; };
+		3A37B39712DA2AB600ED811C /* KASTViewerController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KASTViewerController.mm; sourceTree = "<group>"; };
+		3A37B39B12DA2C5000ED811C /* KASTViewerWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KASTViewerWindowController.h; sourceTree = "<group>"; };
+		3A37B39C12DA2C5000ED811C /* KASTViewerWindowController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KASTViewerWindowController.mm; sourceTree = "<group>"; };
+		3A37B4A712DA416E00ED811C /* ASTNode.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ASTNode.mm; sourceTree = "<group>"; };
+		3A37B54512DA48E500ED811C /* KASTOutlineView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KASTOutlineView.h; sourceTree = "<group>"; };
+		3A37B54612DA48E500ED811C /* KASTOutlineView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KASTOutlineView.m; sourceTree = "<group>"; };
 		3A40F92E12AFF21A007B5879 /* main.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = main.js; sourceTree = "<group>"; };
 		3A4450C512D68E4800036EF0 /* sudden_termination.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = sudden_termination.h; path = core/sudden_termination.h; sourceTree = "<group>"; };
 		3A4CB3DF12B1872300B45858 /* NSString-data.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString-data.h"; sourceTree = "<group>"; };
@@ -545,7 +558,7 @@
 				3A366A8212CB873D00257AE6 /* node_kod.h */,
 				3A366A8312CB873D00257AE6 /* node_kod.mm */,
 				3A37B0E512D9508B00ED811C /* ASTNodeWrapper.h */,
-				3A37B0E412D9508B00ED811C /* ASTNodeWrapper.cc */,
+				3A37B0E412D9508B00ED811C /* ASTNodeWrapper.mm */,
 				3A366A8012CB873D00257AE6 /* KObjectProxy.h */,
 				3A366A8112CB873D00257AE6 /* KObjectProxy.mm */,
 			);
@@ -611,6 +624,20 @@
 			name = "Shared globals";
 			sourceTree = "<group>";
 		};
+		3A37B39212DA29F000ED811C /* AST viewer */ = {
+			isa = PBXGroup;
+			children = (
+				3A37B54512DA48E500ED811C /* KASTOutlineView.h */,
+				3A37B54612DA48E500ED811C /* KASTOutlineView.m */,
+				3A37B39B12DA2C5000ED811C /* KASTViewerWindowController.h */,
+				3A37B39C12DA2C5000ED811C /* KASTViewerWindowController.mm */,
+				3A37B39612DA2AB600ED811C /* KASTViewerController.h */,
+				3A37B39712DA2AB600ED811C /* KASTViewerController.mm */,
+				3A37B39312DA2A4200ED811C /* ast-viewer.xib */,
+			);
+			name = "AST viewer";
+			sourceTree = "<group>";
+		};
 		3A40F8C312AFE5D7007B5879 /* Node */ = {
 			isa = PBXGroup;
 			children = (
@@ -628,8 +655,10 @@
 		3A4F478212CFA81800301464 /* Text */ = {
 			isa = PBXGroup;
 			children = (
+				3A37B39212DA29F000ED811C /* AST viewer */,
 				3A37B2AD12D9895600ED811C /* AST.h */,
 				3A37B10F12D9592900ED811C /* ASTNode.h */,
+				3A37B4A712DA416E00ED811C /* ASTNode.mm */,
 				3A4F478312CFA83900301464 /* KWordDictionary.h */,
 				3A4F478412CFA83900301464 /* KWordDictionary.mm */,
 			);
@@ -1162,6 +1191,7 @@
 				3AA8142712C390CE0085F086 /* about.md in Resources */,
 				3AA817FF12C4A6CC0085F086 /* fonts in Resources */,
 				3AA818D412C4DD330085F086 /* changelog in Resources */,
+				3A37B39412DA2A4200ED811C /* ast-viewer.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1320,7 +1350,11 @@
 				3A366A8512CB873D00257AE6 /* node_kod.mm in Sources */,
 				3A4F478512CFA83900301464 /* KWordDictionary.mm in Sources */,
 				3AB6974B12D1085700330F3A /* KMachService-NSInvocation.m in Sources */,
-				3A37B0E612D9508B00ED811C /* ASTNodeWrapper.cc in Sources */,
+				3A37B0E612D9508B00ED811C /* ASTNodeWrapper.mm in Sources */,
+				3A37B39812DA2AB600ED811C /* KASTViewerController.mm in Sources */,
+				3A37B39D12DA2C5000ED811C /* KASTViewerWindowController.mm in Sources */,
+				3A37B4A812DA416E00ED811C /* ASTNode.mm in Sources */,
+				3A37B54712DA48E500ED811C /* KASTOutlineView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -20,6 +20,8 @@
 #import "knode_ns_additions.h"
 #import "ExternalUTF16String.h"
 #import "node-module/ASTNodeWrapper.h"
+#import "KASTViewerWindowController.h"
+#import "KASTViewerController.h"
 
 #import "NSImage-kod.h"
 #import "CIImage-kod.h"
@@ -81,7 +83,8 @@ static uint64_t KDocumentNextIdentifier() {
 @implementation KDocument
 
 @synthesize textEncoding = textEncoding_,
-            textView = textView_;
+            textView = textView_,
+            ast = ast_;
 
 static NSImage* _kDefaultIcon = nil;
 static NSString* _kDefaultTitle = @"Untitled";
@@ -117,6 +120,9 @@ static NSFont* _kDefaultFont = nil;
 
   // Assign a new identifier
   identifier_ = KDocumentNextIdentifier();
+
+  // Initialize ast_
+  ast_.reset(new kod::AST);
 
   // Default title and icon
   self.title = _kDefaultTitle;
@@ -517,6 +523,12 @@ static NSFont* _kDefaultFont = nil;
 }
 
 
+- (kod::ASTNodePtr)astRootNode {
+  kassert(ast_.get() != NULL);
+  return ast_->rootNode();
+}
+
+
 #pragma mark -
 #pragma mark Notifications
 
@@ -572,6 +584,9 @@ static NSFont* _kDefaultFont = nil;
   K_DISPATCH_MAIN_ASYNC({
     self.clipView.allowsScrolling = YES;
   });
+
+  // XXX FIXME TEMP DEBUG ...
+  [self debugUpdateASTViewer:self];
 
   KNodeEmitEvent("activateDocument", self, nil);
 }
@@ -807,6 +822,17 @@ static NSFont* _kDefaultFont = nil;
   fprintf(stderr, "ATTRS%s => %s\n",
           [NSStringFromRange(selectedRange) UTF8String],
           [[attrs description] UTF8String]);
+}
+
+
+- (IBAction)debugUpdateASTViewer:(id)sender {
+  KASTViewerWindowController *astViewerWindowController =
+      [KASTViewerWindowController sharedInstance];
+  kassert(astViewerWindowController);
+  KASTViewerController *astViewerController =
+    astViewerWindowController.outlineViewController;
+  kassert(astViewerController);
+  astViewerController.representedDocument = self;
 }
 
 
@@ -1278,10 +1304,9 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
   if (!astNode.get())
     return @"<null>";
   NSMutableString *str = [NSMutableString stringWithFormat:
-      @"{ kind:\"%@\", sourceLocation:%u, sourceLength:%u",
+      @"{ kind:\"%@\", sourceRange:%@",
       astNode->kind()->weakNSString(),
-      astNode->sourceLocation(),
-      astNode->sourceLength()];
+      NSStringFromRange(astNode->sourceRange())];
 
   if (!astNode->childNodes().empty()) {
     [str appendFormat:@", childNodes: ["];
@@ -1333,10 +1358,12 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
     //kassert(!parseV.IsEmpty());
     if (!parseV.IsEmpty() && parseV->IsFunction()) {
       // build arguments
-      // Note that we convert ints to v8::Number with doubles since v8::Integer
-      // is limited to 32-bit integers.
       v8::Local<v8::Value> argv[] = {
         v8::String::NewExternal(exportedText),
+        // Note that we convert ints to v8::Number with doubles since
+        // v8::Integer is currently limited to 32-bit precision when created.
+        // As soon as the v8::Integer::New accepts a 64-bit integer we can use
+        // that instead.
         v8::Number::New((double)editedRange.location),
         v8::Number::New((double)changeDelta)
       };
@@ -1376,8 +1403,9 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
         krusage_end(rusage, "Parser returned", "[rusage] ");
 
         // replace/update ast root
-        ast_.setRootNode(astRoot);
-        DLOG("AST: %@", [self _inspectASTTree:astRoot]);
+        ast_->setRootNode(astRoot);
+        //DLOG("AST: %@", [self _inspectASTTree:astRoot]);
+        K_DISPATCH_MAIN_ASYNC({ [self debugUpdateASTViewer:self]; });
       }
 
       // free memory used by the temporary copy of our text
