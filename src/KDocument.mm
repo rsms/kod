@@ -1431,12 +1431,12 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
                                        inRange:(NSRange)editedRange
                                    changeDelta:(NSInteger)changeInLength
                                       recursed:(BOOL)recursed {
-  
+
   // Note: We can't use a HSpinLock::Scope here since we need to release the
   // lock before we call linesDidChangeWithLineCountDelta: at the end
   lineToRangeSpinLock_.lock();
 
-  
+
   // update linebreaks mapping
   NSString *string = textStorage.string;
 
@@ -1564,7 +1564,7 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
       }
     }
   }
-  
+
   // offset affected ranges
   if (didAffectLines) {
     //DLOG("_lb_offset_ranges(%lu, %ld)", offsetRangesStart, changeInLength);
@@ -1580,9 +1580,10 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
       (lineToRangeVec_.size() != 0 || lineCountDelta != 0)) {
     [self linesDidChangeWithLineCountDelta:lineCountDelta];
   }
-  
-  // TODO: this section might be a hack, perhaps there is a more efficient way of solving this problem.
-  
+
+  // TODO(swizec): this section might be a hack, perhaps there is a more
+  // efficient way of solving this problem.
+
   // performing recursion like this solves problems with line numbering
   if (changeInLength < 1 && recursed == NO) {
     // this happens when we're replacing text with less text
@@ -1595,13 +1596,15 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
   } else if (editedRange.length > 1 && recursed == NO) {
     // this happens when we insert text into the document
     // the idea is that the first time 'round we took care of the inserted text
-    // now we have to treat all text from here to the end of the document as new text
-    // otherwise the last x lines don't get numbered
-    NSRange newEditedRange = NSMakeRange(editedRange.location+editedRange.length, 
-                                         textStorage.string.length-(editedRange.location+editedRange.length));
+    // now we have to treat all text from here to the end of the document as new
+    // text otherwise the last x lines don't get numbered
+    NSRange newEditedRange =
+        NSMakeRange(editedRange.location + editedRange.length,
+                    textStorage.string.length -
+                    (editedRange.location + editedRange.length));
     [self _updateLinesToRangesInfoForTextStorage:textStorage
                                          inRange:newEditedRange
-                                     changeDelta:newEditedRange.length 
+                                     changeDelta:newEditedRange.length
                                         recursed:YES];
   }
 }
