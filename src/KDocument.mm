@@ -23,10 +23,15 @@
 #import "NSImage-kod.h"
 #import "CIImage-kod.h"
 
+// set to 1 to enable resource usage sampling and logging
+#define KOD_WITH_K_RUSAGE 1
+#import "KRUsage.hh"
+
+
+// Hate to use this, but we need to travel around the world if we don't
 @interface NSDocument (Private)
 - (void)_updateForDocumentEdited:(BOOL)arg1;
 @end
-
 
 // used in stateFlags_
 enum {
@@ -70,7 +75,6 @@ static uint64_t KDocumentNextIdentifier() {
 
 @interface KDocument (Private)
 - (void)undoManagerCheckpoint:(NSNotification*)notification;
-- (BOOL)_updateLastEditTimestamp;
 @end
 
 @implementation KDocument
@@ -175,9 +179,6 @@ static NSFont* _kDefaultFont = nil;
   // register as text storage delegate
   textView_.textStorage.delegate = self;
 
-  // set to zero
-  lastEditedHighlightStateRange_ = NSMakeRange(NSNotFound,0);
-
   return self;
 }
 
@@ -246,18 +247,6 @@ static NSFont* _kDefaultFont = nil;
 - (void)destroy:(CTTabStripModel*)sender {
   sender->TabContentsWasDestroyed(self);
 }*/
-
-
-#pragma mark -
-#pragma mark Internal support functions
-
-
-// Returns true if the calling thread was the one to alter the timestamp value
-- (BOOL)_updateLastEditTimestamp {
-  NSTimeInterval ts = [NSDate timeIntervalSinceReferenceDate];
-  uint64_t d = (uint64_t)((ts * 1000000.0)+0.5); // usec
-  return h_atomic_cas(&lastEditTimestamp_, lastEditTimestamp_, d);
-}
 
 
 #pragma mark -
@@ -494,6 +483,10 @@ static NSFont* _kDefaultFont = nil;
 
 - (uint64_t)identifier {
   return identifier_;
+}
+
+- (uint64_t)version {
+  return version_;
 }
 
 
@@ -1100,7 +1093,7 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
   // lock before we call linesDidChangeWithLineCountDelta: at the end
   lineToRangeSpinLock_.lock();
 
-  
+
   // update linebreaks mapping
   NSString *string = textStorage.string;
 
@@ -1228,7 +1221,7 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
       }
     }
   }
-  
+
   // offset affected ranges
   if (didAffectLines) {
     //DLOG("_lb_offset_ranges(%lu, %ld)", offsetRangesStart, changeInLength);
@@ -1244,7 +1237,7 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
       (lineToRangeVec_.size() != 0 || lineCountDelta != 0)) {
     [self linesDidChangeWithLineCountDelta:lineCountDelta];
   }
-  
+
   // performing recursion like this solves problems with line numbering
   // the idea being that the first time 'round we took care of vanishing text
   // and on the second go we take care of the newly added text
@@ -1261,42 +1254,44 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
 #pragma mark Responding to text edits
 
 
+- (void)_convertAST:(v8::Local<v8::Value>)value {
+  v8::HandleScope scope;
+
+  kassert(!value.IsEmpty());
+  kassert(value->IsObject());
+
+  v8::Local<v8::Object> obj = value->ToObject();
+
+}
+
+
 // invoked after an editing occured, but before it's been committed
-// Has the nasty side effect of losing the selection when applying attributes
+// Has the nasty side effect of losing the selection if applying attributes
 - (void)textStorageWillProcessEditing:(NSNotification *)notification {
   NSTextStorage *textStorage = [notification object];
 
   if (!(textStorage.editedMask & NSTextStorageEditedCharacters))
     return;
 
-  // Record the real time
-  NSTimeInterval startTime = [NSDate timeIntervalSinceReferenceDate];
-
   // Record change properties
+  krusage_begin(rusage, "Retrieve changes from text storage");
   NSRange editedRange = [textStorage editedRange];
   int changeDelta = [textStorage changeInLength];
-  
+
+
   // Export a copy of our current text state into V8 which will be governed by
   // the V8 GC.
+  krusage_sample(rusage, "Copy document text to V8 string");
   kod::ExternalUTF16String *exportedText =
       new kod::ExternalUTF16String(textStorage.string);
 
-  #if 1
-  NSTimeInterval textTime = [NSDate timeIntervalSinceReferenceDate];
-  fprintf(stderr, "[timer] copy text: %.4f ms\n", (textTime-startTime)*1000.0);
-  #endif
-
-  fprintf(stderr, "[main -> nodejs] parse()\n");
-
+  //fprintf(stderr, "[main -> nodejs] parse()\n");
+  krusage_sample(rusage, "Calling into nodejs");
   KNodePerformInNode(^(KNodeReturnBlock returnCallback){
     // we are now in the nodejs thread
     v8::HandleScope scope;
 
-    #if 1
-    NSTimeInterval callTime = [NSDate timeIntervalSinceReferenceDate];
-    fprintf(stderr, "[timer] kod->node call overhead: %.4f ms\n",
-            (callTime-textTime)*1000.0);
-    #endif
+    krusage_sample(rusage, "Parsing");
 
     // get the v8 KDocument
     v8::Local<v8::Object> doc = [self v8Value]->ToObject();
@@ -1318,7 +1313,8 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
       v8::TryCatch tryCatch;
 
       // call function
-      v8::Local<v8::Function>::Cast(parseV)->Call(doc, argc, argv);
+      v8::Local<v8::Value> returnValue =
+          v8::Local<v8::Function>::Cast(parseV)->Call(doc, argc, argv);
 
       // check for error
       NSError *error = nil;
@@ -1336,12 +1332,13 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
         [pool drain];
       }
 
-      // calculate real time taken
-      #if 1
-      NSTimeInterval realTime =
-          [NSDate timeIntervalSinceReferenceDate] - callTime;
-      fprintf(stderr, "[timer] parse: %.4f ms\n", realTime*1000.0);
-      #endif
+      krusage_sample(rusage, "Converting AST to NSObject struct");
+
+      // convert ast into a structure
+      [self _convertAST:returnValue];
+
+      // present rusage report
+      krusage_end(rusage, "Parser returned", "[rusage] ");
 
     } else DLOG("no parse() function available for document");
   });
@@ -1358,6 +1355,9 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
   if (!(textStorage.editedMask & NSTextStorageEditedCharacters)) {
     return;
   }
+
+  // Increment our version
+  h_atomic_inc(&version_);
 
   // range that was affected by the edit
   NSRange editedRange = [textStorage editedRange];
@@ -1379,9 +1379,6 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
                                           recursed:NO];
     });
   }
-
-  // Update edit timestamp
-  [self _updateLastEditTimestamp];
 
   // we do not process edits when we are loading
   if (isLoading_) return;

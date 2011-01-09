@@ -21,13 +21,16 @@ function exposeGetter(name, fun) {
 exposeGetter("allDocuments", exports.getAllDocuments);
 
 // ----------------------------------------------------------------------------
-// KDocument
-if (exports.outsideOfKod) exports.KDocument = function(){};
-var KDocument_proto = exports.KDocument.prototype;
+
+// If we are not running in kod, setup some dummy constructors
+if (exports.outsideOfKod) {
+  exports.KDocument = function () {};
+  exports.ASTNode = function () {}
+}
 
 // toString
 // <KDocument #123 "basictypes.h" [public.c-header] "file://...">
-KDocument_proto.toString = function(){
+exports.KDocument.prototype.toString = function(){
   var url = this.url;
   return '<KDocument #'+this.identifier+
          ' "'+this.title+'" ['+this.type+']'+

@@ -20,7 +20,7 @@ class HObjCPtr {
     id old = object_; object_ = [other.object_ retain]; [old release];
     return *this;
   }
-  inline id get() const { return object_; }
+  id get() const { return object_; }
   bool operator==(id that) const { return object_ == that; }
   bool operator!=(id that) const { return object_ != that; }
   operator id() const { return object_; }

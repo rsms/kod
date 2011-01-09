@@ -14,6 +14,7 @@ extern NSString *const KDocumentDidLoadDataNotification;
 @interface KDocument : CTTabContents <NSTextViewDelegate,
                                       NSTextStorageDelegate> {
   uint64_t identifier_;
+  volatile uint64_t version_;
 
   KTextView* textView_; // Owned by NSScrollView which is our view_
   __weak NSUndoManager *undoManager_; // Owned by textView_
@@ -30,13 +31,8 @@ extern NSString *const KDocumentDidLoadDataNotification;
   // Meta ruler (nil if not shown)
   __weak KMetaRulerView *metaRulerView_;
 
-  // Timestamp of last edit (in microseconds). 0 if never edited.
-  uint64_t lastEditTimestamp_;
-
   // Internal state
   hatomic_flags_t stateFlags_;
-  NSRange lastEditedHighlightStateRange_;
-  NSNumber *activeNodeTextEditedInvocationRTag_;
 }
 
 @property(assign, nonatomic) BOOL isDirty;
@@ -58,6 +54,26 @@ extern NSString *const KDocumentDidLoadDataNotification;
 // An opaque value which identifies this document. It's guaranteed to be unique
 // during a session (between starting and terminating Kod.app).
 @property(readonly) uint64_t identifier;
+
+
+/*!
+ * Monotonically incrementing version number which changes for each edit.
+ * This number is only unique within this document and during its opened
+ * life-cycle (that is, when closing and again opening a document, it is reset).
+ *
+ * -- Internal usage --
+ *
+ * Incrementing the version and reading the new value:
+ *    uint64_t version = h_atomic_inc(&version_);
+ *
+ * Incrementing the version and reading the previous value:
+ *    uint64_t oldVersion = h_atomic_inc_and_return_prev(&version_);
+ *
+ * Reading the current version can be done by simply reading the value of
+ * version_ since each h_atomic_inc-call issues a full memory barrier, thus any
+ * concurrent reads will synchronize to either complete or hold.
+ */
+@property(readonly) uint64_t version;
 
 
 // A Uniform Type Identifier for the current contents

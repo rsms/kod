@@ -1,4 +1,5 @@
 var util = require('util');
+var kod = require('../');
 var textparser = require('./');
 
 // An rudimentary "fallback" parser which divides a document into paragraphs and

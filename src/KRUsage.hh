@@ -1,6 +1,8 @@
 #ifndef K_RUSAGE_H_
 #define K_RUSAGE_H_
 
+#if KOD_WITH_K_RUSAGE
+
 #include <deque>
 
 /*!
@@ -29,7 +31,7 @@ class KRUsage {
     samples.push_back(sample);
   }
 
-  inline static double tvToMs(const struct timeval &tv) {
+  static double tvToMs(const struct timeval &tv) {
     return (((double)tv.tv_sec)*1000.0) + (((double)tv.tv_usec)/1000.0);
   }
 
@@ -74,5 +76,29 @@ class KRUsage {
     }
   }
 };
+
+
+#define krusage_begin(variable, start_label) \
+  __block KRUsage *variable = new KRUsage(start_label)
+
+#define krusage_end(variable, end_label, report_prefix) do { \
+  (variable)->sample(end_label); \
+  std::string rusageString = report_prefix; \
+  (variable)->format(rusageString); \
+  fputs(rusageString.c_str(), stderr); \
+  delete (variable); \
+} while(0)
+
+#define krusage_sample(variable, label) (variable)->sample(label)
+
+
+#else  // KOD_WITH_K_RUSAGE
+
+#define krusage_begin(variable, start_label) ((void)0)
+#define krusage_end(variable, end_label, report_prefix) ((void)0)
+#define krusage_sample(variable, label) ((void)0)
+
+#endif  // KOD_WITH_K_RUSAGE
+
 
 #endif  // K_RUSAGE_H_
