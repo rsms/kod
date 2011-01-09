@@ -1311,7 +1311,6 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
   NSRange editedRange = [textStorage editedRange];
   int changeDelta = [textStorage changeInLength];
 
-
   // Export a copy of our current text state into V8 which will be governed by
   // the V8 GC.
   krusage_sample(rusage, "Copy document text to V8 string");
@@ -1363,23 +1362,26 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
         h_atomic_barrier();
         WLOG("Error while executing parser for %@: %s", self, msg);
         [pool drain];
+      } else {
+        // check results
+        kassert(!returnValue.IsEmpty());
+        kassert(returnValue->IsObject());
+
+        // unwrap AST root object
+        kod::ASTNodePtr astRoot =
+            kod::ASTNodeWrapper::UnwrapNode(returnValue->ToObject());
+        kassert(astRoot.get() != NULL);
+
+        // present rusage report
+        krusage_end(rusage, "Parser returned", "[rusage] ");
+
+        // replace/update ast root
+        ast_.setRootNode(astRoot);
+        DLOG("AST: %@", [self _inspectASTTree:astRoot]);
       }
 
-      // check results
-      kassert(!returnValue.IsEmpty());
-      kassert(returnValue->IsObject());
-
-      // unwrap AST root object
-      kod::ASTNodePtr astRoot =
-          kod::ASTNodeWrapper::UnwrapNode(returnValue->ToObject());
-      kassert(astRoot.get() != NULL);
-
-      // present rusage report
-      krusage_end(rusage, "Parser returned", "[rusage] ");
-
-      // replace/update ast root
-      ast_.setRootNode(astRoot);
-      DLOG("AST: %@", [self _inspectASTTree:astRoot]);
+      // free memory used by the temporary copy of our text
+      exportedText->clear();
 
     } else DLOG("no parse() function available for document");
   });

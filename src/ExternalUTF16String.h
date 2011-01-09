@@ -35,7 +35,14 @@ class ExternalUTF16String : public v8::String::ExternalStringResource {
 #endif  // __OBJC__
 
   virtual ~ExternalUTF16String() {
-    delete data_;
+    clear();
+  }
+
+  // The string data from the underlying buffer
+  void clear(bool freeData=true) {
+    if (data_ && freeData) delete data_;
+    data_ = NULL;
+    length_ = 0;
   }
 
   // The string data from the underlying buffer
