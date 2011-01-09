@@ -28,7 +28,9 @@ typedef struct URegularExpression URegularExpression;
 @implementation ICUMatcher
 
 +(ICUMatcher *)matcherWithPattern:(ICUPattern *)p overString:(NSString *)stringToSearchOver {
-  return [[[ICUMatcher class] alloc] initWithPattern:p overString:stringToSearchOver];
+  return [[[[ICUMatcher class] alloc] initWithPattern:p
+                                           overString:stringToSearchOver]
+          autorelease];
 }
 
 -(ICUMatcher *)initWithPattern:(ICUPattern *)p overString:(NSString *)aStringToSearch; {
@@ -118,7 +120,7 @@ typedef struct URegularExpression URegularExpression;
                                  length:buffSize*sizeof(UChar)
                                encoding:[NSString nativeUTF16Encoding]];
     NSZoneFree([self zone], dest);
-    return result;
+    return [result autorelease];
   }
 }
 
@@ -195,7 +197,7 @@ typedef struct URegularExpression URegularExpression;
                          length:resultLength * sizeof(UChar)
                          encoding:[NSString nativeUTF16Encoding]];
   NSZoneFree([self zone], destString);
-  return result;
+  return [result autorelease];
 }
 
 

@@ -86,9 +86,9 @@ static NSFont* _kDefaultFont = nil;
 
 + (NSFont*)defaultFont {
   if (!_kDefaultFont) {
-    _kDefaultFont = [[NSFont fontWithName:@"M+ 1m light" size:11.0] retain];
+    _kDefaultFont = [[[KStyle sharedStyle] baseFont] retain];
     if (!_kDefaultFont) {
-      WLOG("unable to find default font \"M+\" -- using system default");
+      WLOG("unable to find default font from CSS -- using system default");
       _kDefaultFont = [[NSFont userFixedPitchFontOfSize:11.0] retain];
     }
   }
@@ -883,9 +883,9 @@ static int debugSimulateTextAppendingIteration = 0;
 }*/
 
 // private method of NSDocument which is triggered when "dirty state" changes
-- (void)_updateForDocumentEdited:(BOOL)documentEdited {
-  self.isDirty = documentEdited;
-  [super _updateForDocumentEdited:documentEdited];
+- (void)_updateForDocumentEdited:(BOOL)isDirty {
+  self.isDirty = isDirty;
+  [super _updateForDocumentEdited:isDirty];
 }
 
 
@@ -1429,10 +1429,13 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
 
 - (void)_updateLinesToRangesInfoForTextStorage:(NSTextStorage*)textStorage
                                        inRange:(NSRange)editedRange
-                                       changeDelta:(NSInteger)changeInLength {
+                                   changeDelta:(NSInteger)changeInLength
+                                      recursed:(BOOL)recursed {
+
   // Note: We can't use a HSpinLock::Scope here since we need to release the
   // lock before we call linesDidChangeWithLineCountDelta: at the end
   lineToRangeSpinLock_.lock();
+
 
   // update linebreaks mapping
   NSString *string = textStorage.string;
@@ -1533,11 +1536,7 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
   } else if (changeInLength < 0) {
     // edit action was "deletion"
 
-    // BUG(rsms): There's a bug in here somewhere which "removes" more lines
-    // than actually removed
-
     if (didAffectLines) {
-
       NSRange deletedRange = editedRange;
       deletedRange.length = -changeInLength;
       //DLOG("deletedRange -> %@", NSStringFromRange(deletedRange));
@@ -1581,6 +1580,33 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
       (lineToRangeVec_.size() != 0 || lineCountDelta != 0)) {
     [self linesDidChangeWithLineCountDelta:lineCountDelta];
   }
+
+  // TODO(swizec): this section might be a hack, perhaps there is a more
+  // efficient way of solving this problem.
+
+  // performing recursion like this solves problems with line numbering
+  if (changeInLength < 1 && recursed == NO) {
+    // this happens when we're replacing text with less text
+    // the idea is that the first time 'round we took care of vanishing text
+    // and on the second go we take care of the newly added text
+    [self _updateLinesToRangesInfoForTextStorage:textStorage
+                                         inRange:editedRange
+                                     changeDelta:editedRange.length
+                                        recursed:YES];
+  } else if (editedRange.length > 1 && recursed == NO) {
+    // this happens when we insert text into the document
+    // the idea is that the first time 'round we took care of the inserted text
+    // now we have to treat all text from here to the end of the document as new
+    // text otherwise the last x lines don't get numbered
+    NSRange newEditedRange =
+        NSMakeRange(editedRange.location + editedRange.length,
+                    textStorage.string.length -
+                    (editedRange.location + editedRange.length));
+    [self _updateLinesToRangesInfoForTextStorage:textStorage
+                                         inRange:newEditedRange
+                                     changeDelta:newEditedRange.length
+                                        recursed:YES];
+  }
 }
 
 
@@ -1611,12 +1637,14 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
   if ([NSThread isMainThread]) {
     [self _updateLinesToRangesInfoForTextStorage:textStorage
                                          inRange:editedRange
-                                     changeDelta:changeInLength];
+                                     changeDelta:changeInLength
+                                        recursed:NO];
   } else {
     K_DISPATCH_MAIN_ASYNC({
       [self _updateLinesToRangesInfoForTextStorage:textStorage
                                            inRange:editedRange
-                                       changeDelta:changeInLength];
+                                       changeDelta:changeInLength
+                                          recursed:NO];
     });
   }
 
