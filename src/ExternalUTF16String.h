@@ -3,12 +3,12 @@
 #ifdef __cplusplus
 
 #import <v8.h>
-#include <boost/shared_ptr.hpp>
+#include <tr1/memory>
 
 namespace kod {
 
 class ExternalUTF16String;
-typedef boost::shared_ptr<ExternalUTF16String> ExternalUTF16StringPtr;
+typedef std::tr1::shared_ptr<ExternalUTF16String> ExternalUTF16StringPtr;
 
 /*!
  * Wraps a buffer of UTF-16 characters and can be passed to a v8::String which
@@ -43,6 +43,22 @@ class ExternalUTF16String : public v8::String::ExternalStringResource {
 
   // Number of characters.
   virtual size_t length() const { return length_; }
+
+#ifdef __OBJC__
+  // returns a weak NSString which only holds a reference to our data
+  NSString *weakNSString(BOOL freeWhenDone=NO) {
+    NSString *s = [[NSString alloc] initWithCharactersNoCopy:data_
+                                                      length:length_
+                                                freeWhenDone:freeWhenDone];
+    return [s autorelease];
+  }
+
+  // returns a copy of data
+  NSString *toNSString() {
+    return [[[NSString alloc] initWithCharacters:data_
+                                          length:length_] autorelease];
+  }
+#endif  // __OBJC__
 
  protected:
   uint16_t *data_;

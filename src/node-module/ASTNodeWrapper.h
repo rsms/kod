@@ -12,9 +12,12 @@ class ASTNodeWrapper : public node::ObjectWrap {
   static void Initialize(v8::Handle<v8::Object> target);
   static v8::Handle<v8::Value> New(const v8::Arguments& args);
 
-  ASTNodeWrapper() {
-    node_.reset(new ASTNode());
-  }
+  static ASTNodePtr UnwrapNode(v8::Handle<v8::Object> obj);
+
+  ASTNodeWrapper() { node_.reset(new ASTNode()); }
+  ~ASTNodeWrapper();
+
+  static v8::Handle<v8::Value> PushChild(const v8::Arguments& args);
 
  protected:
   ASTNodePtr node_;

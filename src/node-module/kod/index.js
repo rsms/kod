@@ -25,7 +25,20 @@ exposeGetter("allDocuments", exports.getAllDocuments);
 // If we are not running in kod, setup some dummy constructors
 if (exports.outsideOfKod) {
   exports.KDocument = function () {};
-  exports.ASTNode = function () {}
+  
+  // this is a rather special thing when running live -- it's a data structure
+  // shared with other parts of Kod and is not managed by V8 and its GC.
+  exports.ASTNode = function (kind, sourceLocation, sourceLength, parentNode) {
+    this.kind = kind;
+    this.sourceLocation = sourceLocation;
+    this.sourceLength = sourceLength;
+    if (parentNode)
+      this.parentNode = parentNode;
+  }
+  exports.ASTNode.prototype.pushChild = function (node) {
+    if (!this.childNodes) this.childNodes = [node];
+    else this.childNodes.push(node);
+  }
 }
 
 // toString

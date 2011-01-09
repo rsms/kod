@@ -1,5 +1,5 @@
 #import "knode_ns_additions.h"
-#import "kod_ExternalUTF16String.h"
+#import "ExternalUTF16String.h"
 
 #import <err.h>
 #import <node_buffer.h>

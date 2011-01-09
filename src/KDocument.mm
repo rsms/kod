@@ -19,6 +19,7 @@
 #import "kod_node_interface.h"
 #import "knode_ns_additions.h"
 #import "ExternalUTF16String.h"
+#import "node-module/ASTNodeWrapper.h"
 
 #import "NSImage-kod.h"
 #import "CIImage-kod.h"
@@ -1272,14 +1273,41 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
 #pragma mark Responding to text edits
 
 
-- (void)_convertAST:(v8::Local<v8::Value>)value {
-  v8::HandleScope scope;
 
-  kassert(!value.IsEmpty());
-  kassert(value->IsObject());
+- (NSString*)_inspectASTTree:(kod::ASTNodePtr&)astNode {
+  if (!astNode.get())
+    return @"<null>";
+  NSMutableString *str = [NSMutableString stringWithFormat:
+      @"{ kind:\"%@\", sourceLocation:%u, sourceLength:%u",
+      astNode->kind()->weakNSString(),
+      astNode->sourceLocation(),
+      astNode->sourceLength()];
 
-  v8::Local<v8::Object> obj = value->ToObject();
+  if (!astNode->childNodes().empty()) {
+    [str appendFormat:@", childNodes: ["];
+    std::vector<kod::ASTNodePtr>::iterator it = astNode->childNodes().begin();
+    std::vector<kod::ASTNodePtr>::iterator endit = astNode->childNodes().end();
+    for ( ; it < endit; ++it ) {
+      [str appendString:[self _inspectASTTree:*it]];
+    }
+    [str appendFormat:@"]"];
+  }
 
+  [str appendString:@"},"];
+  return str;
+}
+
+
+- (void)_setASTRoot:(kod::ASTNodePtr&)astRoot {
+  // dump kind
+  DLOG("astRoot.kind => %@", astRoot->kind()->weakNSString());
+
+  // this miiiiight not be a good solution
+  h_atomic_barrier();
+  astRoot_ = astRoot;
+
+  // dump tree
+  DLOG("AST: %@", [self _inspectASTTree:astRoot_]);
 }
 
 
@@ -1352,8 +1380,17 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
 
       krusage_sample(rusage, "Converting AST to NSObject struct");
 
-      // convert ast into a structure
-      [self _convertAST:returnValue];
+      // check results
+      kassert(!returnValue.IsEmpty());
+      kassert(returnValue->IsObject());
+
+      // unwrap AST root object
+      kod::ASTNodePtr astRoot =
+          kod::ASTNodeWrapper::UnwrapNode(returnValue->ToObject());
+      kassert(astRoot.get() != NULL);
+
+      // swap ast root
+      [self _setASTRoot:astRoot];
 
       // present rusage report
       krusage_end(rusage, "Parser returned", "[rusage] ");

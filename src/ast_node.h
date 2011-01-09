@@ -4,30 +4,33 @@
 #include "ExternalUTF16String.h"
 
 #include <vector>
-#include <boost/shared_ptr.hpp>
+#include <string>
+#include <tr1/memory>
 
 namespace kod {
 
 class ASTNode;
-typedef boost::shared_ptr<ASTNode> ASTNodePtr;
+typedef std::tr1::shared_ptr<ASTNode> ASTNodePtr;
 
 class ASTNode {
  public:
   static const uint32_t NotFound = UINT32_MAX;
-  ASTNode() : rangeStart_(NotFound), rangeLength_(0) {
-  }
+  ASTNode() : sourceLocation_(NotFound), sourceLength_(0) {}
   ~ASTNode() {}
 
   ASTNodePtr &parentNode() { return parentNode_; }
   std::vector<ASTNodePtr> &childNodes() { return childNodes_; }
   ExternalUTF16StringPtr &kind() { return kind_; }
+  uint32_t &sourceLocation() { return sourceLocation_; }
+  uint32_t &sourceLength() { return sourceLength_; }
 
  protected:
   ASTNodePtr parentNode_;
   std::vector<ASTNodePtr> childNodes_;
   ExternalUTF16StringPtr kind_;
-  uint32_t rangeStart_;
-  uint32_t rangeLength_;
+  uint32_t sourceLocation_;
+  uint32_t sourceLength_;
+  // Note: uint32 spans [0, 4 294 967 295] which is definitely enough
 };
 
 

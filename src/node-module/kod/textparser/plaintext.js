@@ -155,53 +155,49 @@ PlainTextParser.prototype.parse = function (parseTask) {
            (val == undefined || token.value === val);
   }
   
-  // AST node
-  function Node (kind, children) {
-    this.kind = kind;
-    
-    var location = token.location - parentSourceLocation;
-    this.range = [location, token.length];
-    
-    if (children) this.children = children;
-    if (parentNode) this.parent = parentNode;
+  // create an AST node
+  function astnode (kind) {
+    return new kod.ASTNode(kind,
+      /* sourceLocation*/  token.location - parentSourceLocation,
+       /* sourceLength */  token.length,
+                           parentNode);
   }
   
   // statements
   function unexpected(tok) {
     if (!tok) tok = token;
-    return new Node('error.unexpected');
+    return astnode('error.unexpected');
   }
   function word() {
     if (!token || token.kind !== 'text.word')
       return unexpected();
-    var word = new Node('text.word');
+    var word = astnode('text.word');
     if (debug)
       word._value = source.substr(token.location, token.length);
     next();
     return word;
   }
   function paragraph() {
-    var children = [];
-    var node = new Node('text.paragraph', children);
+    var node = astnode('text.paragraph');
 
     // push
     var parentParentSourceLocation = parentSourceLocation;
     var parentParentNode = parentNode;
     parentSourceLocation = token.location;
     parentNode = node;
-    
+
     while (token) {
       if (token.newline) {
         // break here and have statement() call paragraph() again
         token.newline = false;
         break;
       } else {
-        children.push(word());
+        node.pushChild(word());
       }
     }
-    
+
     // update length
-    node.range[1] =
+    node.sourceLength =
         (token ? token.location-1 : source.length) - parentSourceLocation;
 
     // pop
@@ -218,19 +214,16 @@ PlainTextParser.prototype.parse = function (parseTask) {
         return unexpected();
     }
   }
-  
+
   // ignite
   token = next();
-  parentNode = new Node('root');
-  parentNode.children = (function (a) {
-    while (token) {
-      a.push(statement());
-    }
-    return a;
-  })([]);
+  var rootNode = parentNode = astnode('root');
+  while (token) {
+    rootNode.pushChild(statement());
+  }
 
   // dump the AST (warning -- might be VERY SLOW)
-  //console.log(util.inspect(parentNode, 0, 10));
+  console.log(util.inspect(parentNode, 0, 10));
 
   return parentNode;
 };

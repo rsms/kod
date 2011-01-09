@@ -4,7 +4,7 @@ extern NSString * const KStyleElementAttributeName;
 
 #ifdef __cplusplus
 
-#import <boost/shared_ptr.hpp>
+#include <tr1/memory>
 
 @class CSSStyle, KStyle;
 
@@ -74,6 +74,6 @@ class KStyleElement {
 };
 
 /// shared pointer for KStyleElement
-typedef boost::shared_ptr<KStyleElement> KStyleElementPtr;
+typedef std::tr1::shared_ptr<KStyleElement> KStyleElementPtr;
 
 #endif  // __cplusplus

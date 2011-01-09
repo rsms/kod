@@ -2,6 +2,7 @@
 
 #import "common.h"
 #import "HSpinLock.h"
+#import "ast_node.h"
 
 @class KBrowser, KStyle, KBrowserWindowController, KScrollView, KMetaRulerView;
 @class KTextView, KClipView, KURLHandler;
@@ -20,6 +21,9 @@ extern NSString *const KDocumentDidLoadDataNotification;
   __weak NSUndoManager *undoManager_; // Owned by textView_
   BOOL isDirty_;
   NSStringEncoding textEncoding_;
+
+  // Current AST root
+  kod::ASTNodePtr astRoot_;
 
   // Mapped line breaks. Provides number of lines and a mapping from line number
   // to actual character offset. The location of each range denotes the start
