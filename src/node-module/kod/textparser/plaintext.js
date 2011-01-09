@@ -228,6 +228,10 @@ PlainTextParser.prototype.parse = function (parseTask) {
     }
     return a;
   })([]);
+
+  // dump the AST (warning -- might be VERY SLOW)
+  //console.log(util.inspect(parentNode, 0, 10));
+
   return parentNode;
 };
 
@@ -243,5 +247,4 @@ if (module.id == '.') {
   var ast = textparser.Parser.simulate('public.text', source, 0, source.length);
   time = (new Date)-time;
   console.log('Real time spent: '+time+'ms');
-  console.log(util.inspect(ast, 0, 10));
 }

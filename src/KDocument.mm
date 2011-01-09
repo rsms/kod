@@ -18,7 +18,7 @@
 #import "HEventEmitter.h"
 #import "kod_node_interface.h"
 #import "knode_ns_additions.h"
-#import "kod_ExternalUTF16String.h"
+#import "ExternalUTF16String.h"
 
 #import "NSImage-kod.h"
 #import "CIImage-kod.h"
