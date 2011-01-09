@@ -4,6 +4,8 @@
 
 include "_url.lang"
 
+include "_markdown_inlines.lang"
+
 # preformatted text block starts with at least 4 spaces or 1 tab
 fixed start '^([ ]{4,}|\t)'
 
@@ -14,3 +16,21 @@ h4 start '^####'
 h5 start '^#####'
 h6 start '^######'
 
+include "_html_basic.lang"
+
+h1 = '^.*^(={3,})(?=[ \t]*$)'
+h2 = '^(-{3,})(?=[ \t]*$)'
+
+# Link definitions
+(normal, symbol, variable, symbol, symbol, normal, url) =
+`(^[ ]{0,3})(\[)([^\]]+)(\])(:)(\s+)(.*$)`
+
+state ul delim '^[ ]{0,3}([*+-])(?=\s)' '^(?=\S)' multiline begin
+  include "_markdown_inlines.lang"
+  normal = '^(?=\S)'
+end
+
+state ol delim '^[ ]{0,3}([0-9]+\.)(?=\s)' '^(?=\S)' multiline begin
+  include "_markdown_inlines.lang"
+  normal = '^(?=\S)'
+end

@@ -9,3 +9,4 @@
 - Luc Heinrich <luc@honk-honk.com>
 - Steve Johnson <steve.johnson.public@gmail.com>
 - Christian Eager <ceager@gmail.com>
+- Agostino Carandente <aragost+kod@gmail.com>

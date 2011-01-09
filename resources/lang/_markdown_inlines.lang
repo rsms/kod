@@ -1,0 +1,22 @@
+bold = '\*\*[^\*]+\*\*'
+bold = '__[^_]+__'
+italics = '\*[^\*]+\*'
+italics = '_[^_]+_'
+
+# Inline links
+state symbol delim '\[(?=.*\]\()' '\)' begin
+ usertype = '[^\]]+(?=\])'
+ symbol = '\]'
+ symbol = '\('
+ include "_url.lang"
+ include "_c_string.lang"
+end
+
+# Reference links for images
+(symbol,symbol,string,symbol,normal,symbol,variable,symbol) =
+`(!)(\[)([^\]]+)(\])([ ]{0,1})(\[)([^\]]*)(\])`
+
+
+# Reference links
+(symbol,string,symbol,normal,symbol,variable,symbol) =
+`(\[)([^\]]+)(\])([ ]{0,1})(\[)([^\]]*)(\])`
