@@ -1298,19 +1298,6 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
 }
 
 
-- (void)_setASTRoot:(kod::ASTNodePtr&)astRoot {
-  // dump kind
-  DLOG("astRoot.kind => %@", astRoot->kind()->weakNSString());
-
-  // this miiiiight not be a good solution
-  h_atomic_barrier();
-  astRoot_ = astRoot;
-
-  // dump tree
-  DLOG("AST: %@", [self _inspectASTTree:astRoot_]);
-}
-
-
 // invoked after an editing occured, but before it's been committed
 // Has the nasty side effect of losing the selection if applying attributes
 - (void)textStorageWillProcessEditing:(NSNotification *)notification {
@@ -1378,8 +1365,6 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
         [pool drain];
       }
 
-      krusage_sample(rusage, "Converting AST to NSObject struct");
-
       // check results
       kassert(!returnValue.IsEmpty());
       kassert(returnValue->IsObject());
@@ -1389,11 +1374,12 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
           kod::ASTNodeWrapper::UnwrapNode(returnValue->ToObject());
       kassert(astRoot.get() != NULL);
 
-      // swap ast root
-      [self _setASTRoot:astRoot];
-
       // present rusage report
       krusage_end(rusage, "Parser returned", "[rusage] ");
+
+      // replace/update ast root
+      ast_.setRootNode(astRoot);
+      DLOG("AST: %@", [self _inspectASTTree:astRoot]);
 
     } else DLOG("no parse() function available for document");
   });

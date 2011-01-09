@@ -8,7 +8,7 @@ using namespace kod;
 Persistent<FunctionTemplate> ASTNodeWrapper::constructor_template;
 
 #define DLOG(fmt, ...) \
-    fprintf(stderr, "[%s] " fmt "\n", __FILENAME__, ##__VA_ARGS__ );
+    fprintf(stderr, "[%s:%d] " fmt "\n", __FILENAME__, __LINE__, ##__VA_ARGS__);
 
 
 // -----------------------------------------------------------------------------
@@ -16,7 +16,7 @@ Persistent<FunctionTemplate> ASTNodeWrapper::constructor_template;
 
 
 ASTNodeWrapper::~ASTNodeWrapper() {
-  DLOG("dealloc");
+  //DLOG("dealloc");
 }
 
 
@@ -39,7 +39,7 @@ Handle<Value> ASTNodeWrapper::New(const Arguments& args) {
 
   // parse args:
   // [kind, [sourceLocation, [sourceLength, [parentNode]]]]
-  DLOG("args.Length() -> %d", args.Length());
+  //DLOG("args.Length() -> %d", args.Length());
   if (args.Length() > 0) {
     // kind is currently a string, but should become an int symbol or something
     Local<String> s = args[0]->ToString();

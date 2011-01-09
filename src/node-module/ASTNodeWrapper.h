@@ -2,7 +2,7 @@
 #define KOD_NODE_AST_NODE_WRAPPER_H_
 
 #include <node.h>
-#include "../ast_node.h"
+#include "../ASTNode.h"
 
 namespace kod {
 

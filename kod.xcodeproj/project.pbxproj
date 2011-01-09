@@ -286,7 +286,8 @@
 		3A366A8312CB873D00257AE6 /* node_kod.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = node_kod.mm; path = "node-module/node_kod.mm"; sourceTree = "<group>"; };
 		3A37B0E412D9508B00ED811C /* ASTNodeWrapper.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ASTNodeWrapper.cc; path = "node-module/ASTNodeWrapper.cc"; sourceTree = "<group>"; };
 		3A37B0E512D9508B00ED811C /* ASTNodeWrapper.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; fileEncoding = 4; name = ASTNodeWrapper.h; path = "node-module/ASTNodeWrapper.h"; sourceTree = "<group>"; };
-		3A37B10F12D9592900ED811C /* ast_node.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; fileEncoding = 4; path = ast_node.h; sourceTree = "<group>"; };
+		3A37B10F12D9592900ED811C /* ASTNode.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; fileEncoding = 4; path = ASTNode.h; sourceTree = "<group>"; };
+		3A37B2AD12D9895600ED811C /* AST.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; fileEncoding = 4; path = AST.h; sourceTree = "<group>"; };
 		3A40F92E12AFF21A007B5879 /* main.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = main.js; sourceTree = "<group>"; };
 		3A4450C512D68E4800036EF0 /* sudden_termination.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = sudden_termination.h; path = core/sudden_termination.h; sourceTree = "<group>"; };
 		3A4CB3DF12B1872300B45858 /* NSString-data.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString-data.h"; sourceTree = "<group>"; };
@@ -619,7 +620,6 @@
 				3AB57EAC12CA725A00E528B1 /* knode_ns_additions.mm */,
 				3AA91F2112CA43DE00132A25 /* KNodeThread.h */,
 				3AA91F2212CA43DE00132A25 /* KNodeThread.mm */,
-				3A37B10F12D9592900ED811C /* ast_node.h */,
 				3A366A6F12CB86CA00257AE6 /* kod module */,
 			);
 			name = Node;
@@ -628,6 +628,8 @@
 		3A4F478212CFA81800301464 /* Text */ = {
 			isa = PBXGroup;
 			children = (
+				3A37B2AD12D9895600ED811C /* AST.h */,
+				3A37B10F12D9592900ED811C /* ASTNode.h */,
 				3A4F478312CFA83900301464 /* KWordDictionary.h */,
 				3A4F478412CFA83900301464 /* KWordDictionary.mm */,
 			);
