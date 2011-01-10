@@ -2,106 +2,10 @@
 
 #import "KLangMap.h"
 #import "kconf.h"
+#import "kfs.h"
 #import "ICUPattern.h"
 #import "ICUMatcher.h"
 #import <libkern/OSAtomic.h>
-
-
-static NSError *kio_iterdir_foreach(NSURL *dirURL,
-                                    BOOL(^entryHandler)(NSError**,NSURL*),
-                                    NSArray *prefetchKeys = nil,
-                                    NSDirectoryEnumerationOptions options =
-                                      NSDirectoryEnumerationSkipsHiddenFiles) {
-  NSFileManager *fm = [NSFileManager defaultManager];
-  __block NSError *error = nil;
-  NSDirectoryEnumerator *en =
-            [fm enumeratorAtURL:dirURL
-     includingPropertiesForKeys:prefetchKeys
-                        options:options
-                   errorHandler:^(NSURL *url, NSError *err) {
-    if (!entryHandler(&err, url)) {
-      error = err;
-      return NO;
-    }
-    return YES;
-  }];
-  for (NSURL *url in en) {
-    NSError *err = nil;
-    if (!entryHandler(&err, url)) {
-      error = err;
-      break;
-    }
-  }
-  return error;
-}
-
-
-static void kio_iterdirs_async(NSArray *dirs,
-                               BOOL(^entryHandler)(NSError**,NSURL*),
-                               void(^callback)(NSError*)=NULL) {
-  // copy to avoid race cond: count vs actual
-  assert(dirs);
-  dirs = [dirs copy];
-  assert(dirs.count <= INT32_MAX);
-  __block int32_t countdown = dirs.count;
-  if (countdown == 0) {
-    callback(nil);
-    [dirs release];
-    return;
-  }
-
-  // dispatch queue
-  dispatch_queue_t queue = dispatch_get_global_queue(0,0);
-
-  // retain handler and callback
-  __block BOOL(^_entryHandler)(NSError**,NSURL*) = [entryHandler copy];
-  if (callback) callback = [callback copy];
-  Class NSURLClass = [NSURL class];
-
-  // dispatch each operation
-  [dirs retain]; //< we need to retain this for some reason
-  for (NSURL *dirURL_ in dirs) {
-    dispatch_async(queue, ^{
-      NSAutoreleasePool *pool = [NSAutoreleasePool new];
-      // scan directory
-      // convert path string to URL if neccessary
-      NSURL *dirURL = dirURL_;
-      if (![dirURL isKindOfClass:NSURLClass]) {
-        assert([dirURL isKindOfClass:[NSString class]]);
-        dirURL = [NSURL fileURLWithPath:(NSString*)dirURL];
-      }
-      if (!entryHandler) {
-        // chain was aborted by an error
-        [pool drain];
-        return;
-      }
-      // synchronous readdir (deep)
-      NSError *error = kio_iterdir_foreach(dirURL, _entryHandler);
-      // decrement countdown
-      uint32_t n = OSAtomicDecrement32(&countdown);
-      // if we hit an error and we aren't the last job to finish...
-      if (error && n != 0) {
-        // ...cmpxch countdown to 0
-        if (OSAtomicCompareAndSwap32(n, 0, &countdown)) {
-          // we know that we "got number zero"
-          n = 0;
-        }
-      }
-      if (n == 0) {
-        // we are the last job finishing (or we are responsible for aborting
-        // due to an error)
-        if (callback) {
-          callback(error);
-          [callback release];
-        }
-        [h_objc_swap((id volatile*)&_entryHandler, nil) release];
-        [dirs release];
-      }
-      [pool drain];
-    });
-  }
-  [dirs release];
-}
 
 
 @implementation KLangInfo
@@ -509,7 +413,7 @@ static ICUPattern *gSheBangEnvRegExp;
 
 - (void)rescanWithCallback:(void(^)(NSError*))callback {
   NSZone *zone = [self zone];
-  kio_iterdirs_async(self.searchPaths, ^(NSError **ioerr, NSURL *url) {
+  kfs_iterdirs_async(self.searchPaths, ^(NSError **ioerr, NSURL *url) {
     if (*ioerr) {
       // abort on error
       return NO;

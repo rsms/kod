@@ -54,7 +54,7 @@
 		3A510B3F12C26F1200AAC1D5 /* KTerminalUsageWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A510B3E12C26F1200AAC1D5 /* KTerminalUsageWindowController.m */; };
 		3A510BE612C2926000AAC1D5 /* KSudo.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A510BE512C2926000AAC1D5 /* KSudo.m */; };
 		3A510BEA12C2927A00AAC1D5 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A510BE912C2927A00AAC1D5 /* Security.framework */; };
-		3A510C4B12C2ADCB00AAC1D5 /* kfs.c in Sources */ = {isa = PBXBuildFile; fileRef = 3A510C4A12C2ADCB00AAC1D5 /* kfs.c */; };
+		3A510C4B12C2ADCB00AAC1D5 /* kfs.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A510C4A12C2ADCB00AAC1D5 /* kfs.m */; };
 		3A62B9E6129D652700822274 /* KTextFieldDecoration.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A62B9E5129D652700822274 /* KTextFieldDecoration.mm */; };
 		3A62BA01129D686F00822274 /* KAutocompleteTextField.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A62BA00129D686F00822274 /* KAutocompleteTextField.mm */; };
 		3A62BA49129D756100822274 /* KAutocompleteTextFieldEditor.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A62BA48129D756100822274 /* KAutocompleteTextFieldEditor.mm */; };
@@ -314,7 +314,7 @@
 		3A510BE512C2926000AAC1D5 /* KSudo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KSudo.m; sourceTree = "<group>"; };
 		3A510BE912C2927A00AAC1D5 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		3A510C4912C2ADCB00AAC1D5 /* kfs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = kfs.h; sourceTree = "<group>"; };
-		3A510C4A12C2ADCB00AAC1D5 /* kfs.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = kfs.c; sourceTree = "<group>"; };
+		3A510C4A12C2ADCB00AAC1D5 /* kfs.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = kfs.m; sourceTree = "<group>"; };
 		3A62B9D1129D63AA00822274 /* basictypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = basictypes.h; sourceTree = "<group>"; };
 		3A62B9DF129D63F000822274 /* scoped_nsobject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = scoped_nsobject.h; sourceTree = "<group>"; };
 		3A62B9E4129D652700822274 /* KTextFieldDecoration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KTextFieldDecoration.h; sourceTree = "<group>"; };
@@ -951,7 +951,7 @@
 				3AE5EA551292B2D000B17C4F /* kconf.h */,
 				3AAC02B712BD1110001BDC39 /* kconf.m */,
 				3A510C4912C2ADCB00AAC1D5 /* kfs.h */,
-				3A510C4A12C2ADCB00AAC1D5 /* kfs.c */,
+				3A510C4A12C2ADCB00AAC1D5 /* kfs.m */,
 				3AF3A0A312BF7F6400FC534A /* KAnimation.h */,
 				3AF3A0A412BF7F6400FC534A /* KAnimation.m */,
 				3AE5ECB41292F7B800B17C4F /* KThread.h */,
@@ -1226,6 +1226,7 @@
 			files = (
 				3A78955D12B043B400D08FD5 /* hdispatch.m in Sources */,
 				3A9291C51229BF7500DA7E43 /* main.m in Sources */,
+				3A510C4B12C2ADCB00AAC1D5 /* kfs.m in Sources */,
 				3A9291C61229BFAD00DA7E43 /* KAppDelegate.mm in Sources */,
 				3A9291C71229BFB000DA7E43 /* KBrowser.mm in Sources */,
 				3A92911B1229B96A00DA7E43 /* KDocument.mm in Sources */,
@@ -1306,7 +1307,6 @@
 				3A51083612C13AF900AAC1D5 /* common.m in Sources */,
 				3A510B3F12C26F1200AAC1D5 /* KTerminalUsageWindowController.m in Sources */,
 				3A510BE612C2926000AAC1D5 /* KSudo.m in Sources */,
-				3A510C4B12C2ADCB00AAC1D5 /* kfs.c in Sources */,
 				3AA8135512C36EE70085F086 /* KURLHandler.mm in Sources */,
 				3AA8135812C37DC90085F086 /* KFileURLHandler.mm in Sources */,
 				3AA8138F12C387A20085F086 /* KHTTPURLHandler.mm in Sources */,
