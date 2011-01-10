@@ -208,6 +208,11 @@ static NSString *gDefaultElementSymbol;
   return baseFont_;
 }
 
+- (void)refreshBaseFont {
+  [baseFont_ release];
+  baseFont_ = nil;
+}
+
 
 #pragma mark -
 #pragma mark Loading

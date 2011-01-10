@@ -8,6 +8,7 @@
 #import "virtual_key_codes.h"
 #import "kconf.h"
 #import "common.h"
+#import "KStyle.h"
 
 
 // text container rect adjustments
@@ -42,14 +43,14 @@ static CGFloat kTextContainerYOffset = 0.0;
   // this bastard causes sporadical crashes when run in other than main
   K_DISPATCH_MAIN_ASYNC( [self setRichText:NO]; );
 
-  // TODO: the following settings should follow the current style
-  [self setBackgroundColor:
-      [NSColor colorWithCalibratedWhite:0.1 alpha:1.0]];
-  [self setTextColor:[NSColor whiteColor]];
-  [self setInsertionPointColor:
-      [NSColor colorWithCalibratedRed:1.0 green:0.2 blue:0.1 alpha:1.0]];
+  CSSStyle *bodyStyle = [[KStyle sharedStyle] styleForElementName: @"body"];
+  [self setBackgroundColor: [bodyStyle backgroundColor]];
+  [self setTextColor: [bodyStyle color]];
+  CSSStyle *caretStyle = [[KStyle sharedStyle] styleForElementName: @"caret"];
+  [self setInsertionPointColor: [caretStyle color]];
+  CSSStyle *selectedStyle = [[KStyle sharedStyle] styleForElementName: @"selected"];
   [self setSelectedTextAttributes:[NSDictionary dictionaryWithObject:
-      [NSColor colorWithCalibratedRed:0.12 green:0.18 blue:0.27 alpha:1.0]
+      [selectedStyle backgroundColor]
       forKey:NSBackgroundColorAttributeName]];
 
   // later adjusted by textContainerOrigin
@@ -147,7 +148,19 @@ static CGFloat kTextContainerYOffset = 0.0;
 
 
 - (void)styleDidChange:(NSNotification*)notification {
-  // TODO(rsms): for Agos
+  CSSStyle *bodyStyle = [[KStyle sharedStyle] styleForElementName: @"body"];
+  [self setBackgroundColor: [bodyStyle backgroundColor]];
+  [self setTextColor: [bodyStyle color]];
+  CSSStyle *caretStyle = [[KStyle sharedStyle] styleForElementName: @"caret"];
+  [self setInsertionPointColor: [caretStyle color]];
+  CSSStyle *selectedStyle = [[KStyle sharedStyle] styleForElementName: @"selected"];
+  [self setSelectedTextAttributes:[NSDictionary dictionaryWithObject:
+      [selectedStyle backgroundColor]
+      forKey:NSBackgroundColorAttributeName]];
+  NSWindow *window = [self window];
+  if (window) {
+    [window setViewsNeedDisplay:YES];
+  }  
 }
 
 

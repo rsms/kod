@@ -95,6 +95,11 @@ static NSFont* _kDefaultFont = nil;
   return _kDefaultFont;
 }
 
++ (void)refreshDefaultFont {
+  [_kDefaultFont release];
+  _kDefaultFont = nil;
+}
+
 // DEBUG: intercepts and dumps selector queries
 /*- (BOOL)respondsToSelector:(SEL)selector {
   BOOL y = [super respondsToSelector:selector];
@@ -1079,13 +1084,12 @@ longestEffectiveRange:&range
   DLOG("refreshStyle");
   KStyle *style = [KStyle sharedStyle];
   kassert(style);
-  KStyleElement *defaultElem = [style defaultStyleElement];
 
-  // textview bgcolor
-  NSColor *color = defaultElem->backgroundColor();
-  kassert(color);
-  [textView_ setBackgroundColor:color];
-
+  [style refreshBaseFont];
+  [textView_ setFont:[style baseFont]];
+  
+  [KDocument refreshDefaultFont];
+  
   // text attributes
   NSTextStorage *textStorage = textView_.textStorage;
   [textStorage beginEditing];

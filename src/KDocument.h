@@ -84,6 +84,7 @@ extern NSString *const KDocumentDidLoadDataNotification;
 
 
 + (NSFont*)defaultFont;
++ (void)refreshDefaultFont;
 - (void)setIconBasedOnContents;
 
 - (void)guessLanguageBasedOnUTI:(NSString*)uti textContent:(NSString*)text;
