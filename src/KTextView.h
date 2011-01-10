@@ -39,6 +39,9 @@
 // Invoked when a proprety of kconf changed
 - (void)configurationValueDidChange:(NSNotification*)notification;
 
+// Invoked when the current style changed
+- (void)styleDidChange:(NSNotification*)notification;
+
 // Inrease the indentation level for the currently selected text
 - (void)increaseIndentation;
 
