@@ -4,6 +4,7 @@
 #import "KDocument.h"
 #import "HEventEmitter.h"
 #import "KWordDictionary.h"
+#import "KStyle.h"
 #import "virtual_key_codes.h"
 #import "kconf.h"
 #import "common.h"
@@ -68,6 +69,11 @@ static CGFloat kTextContainerYOffset = 0.0;
   [self observe:KConfValueDidChangeNotification
          source:kconf_defaults()
         handler:@selector(configurationValueDidChange:)];
+
+  kassert([KStyle sharedStyle] != nil);
+  [self observe:KStyleDidChangeNotification
+         source:[KStyle sharedStyle]
+        handler:@selector(styleDidChange:)];
 
   return self;
 }
@@ -137,6 +143,11 @@ static CGFloat kTextContainerYOffset = 0.0;
     h_atomic_barrier();
     tabControlsIndentationLevel_ = kconf_bool(@"editor/indent/tabkey", YES);
   }
+}
+
+
+- (void)styleDidChange:(NSNotification*)notification {
+  // TODO(rsms): for Agos
 }
 
 

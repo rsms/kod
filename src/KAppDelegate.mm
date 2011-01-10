@@ -21,6 +21,9 @@
 
 @implementation KAppDelegate
 
+
+
+
 - (void)awakeFromNib {
   // Sparkle configuration
   [sparkleUpdater_ setAutomaticallyChecksForUpdates:YES];
@@ -28,6 +31,62 @@
   [sparkleUpdater_ setUpdateCheckInterval:3600.0];
   [sparkleUpdater_ setFeedURL:[NSURL URLWithString:
       @"http://kodapp.com/appcast.xml"]];
+}
+
+#pragma mark -
+#pragma mark Internal
+
+
+- (void)_checkIntegrityOfCLIHelperForSymlink:(NSString*)symlinkPath {
+  DLOG("verifying integrity of CLI symlink");
+
+  NSFileManager *fm = [NSFileManager defaultManager];
+
+  // resolve the symlink target
+  NSString *actualPath = [fm destinationOfSymbolicLinkAtPath:symlinkPath
+                                                       error:nil];
+  NSString *askToFixWithMessage = nil;
+  // TODO(rsms): Move these text snippets into a string table and use
+  // descriptive but short keys instead.
+  if (!actualPath) {
+    // case: symlinkPath is not a symlink or missing
+    askToFixWithMessage = NSLocalizedString(
+        @"The \"kod\" terminal helper seems to be missing."
+        " Would you like to create or repair the symlink?", nil);
+  } else {
+    // case: symlinkPath is a symlink...
+    // confirm that the target points to our cli program
+    NSString *expectedPath = [kconf_support_url(@"kod") path];
+    if (![actualPath isEqualToString:expectedPath]) {
+      // case: the symlink points to something else
+      askToFixWithMessage = [NSString stringWithFormat:NSLocalizedString(
+          @"It seems as if you moved Kod and thus broken the terminal"
+          " helper program. Would you like to repair the symlink at"
+          " \"%@\"?", nil), symlinkPath];
+    }
+  }
+
+  // ask to fix the symlink?
+  if (askToFixWithMessage) {
+    K_DISPATCH_MAIN_ASYNC({
+      NSString *title = NSLocalizedString(@"Terminal helper missing", nil);
+      NSString *repairLabel = NSLocalizedString(@"Repair...", nil);
+      NSString *cancelLabel = NSLocalizedString(@"Do nothing", nil);
+      NSAlert *alert = [NSAlert alertWithMessageText:title
+                                       defaultButton:repairLabel
+                                     alternateButton:cancelLabel
+                                         otherButton:nil
+                           informativeTextWithFormat:askToFixWithMessage];
+      [alert setAlertStyle:NSWarningAlertStyle];
+      if ([alert runModal] == NSAlertDefaultReturn) {
+        [self displayTerminalUsage:self];
+      } else {
+        // clear the conf key so that Kod will not ask the same question
+        // over and over (each time it's launched)
+        kconf_remove(@"cli/symlink/url");
+      }
+    });
+  }
 }
 
 
@@ -60,6 +119,17 @@
          @"terminal-usage"];
   }
   [terminalUsageWindowController_ showWindow:sender];
+}
+
+
+- (IBAction)checkIntegrityOfCLIHelper:(id)sender {
+  NSString *symlinkPath = [kconf_url(@"cli/symlink/url", nil) path];
+  // only verify integrity if we are expecting a CLI symlink to exists
+  if (symlinkPath) {
+    K_DISPATCH_BG_ASYNC({
+      [self _checkIntegrityOfCLIHelperForSymlink:symlinkPath];
+    });
+  }
 }
 
 
@@ -134,6 +204,9 @@
     kconf_set_bool(@"firstLaunchMarker", YES);
     // Offer to enable the kod helper
     [self displayTerminalUsage:self];
+  } else {
+    // Confirm integrity of the kod helper
+    [self checkIntegrityOfCLIHelper:self];
   }
 
   // Did we just launch a new version? (happens after upgrade)
@@ -147,10 +220,12 @@
     if (![currentVersion isEqualToString:lastLaunchedVersion] ||
         // happens when upgrading from 0.0.1:
         (launchedBefore && !lastLaunchedVersion)) {
-      // we did upgrade -- display the changelog
-      NSURL *changelogURL = [NSURL URLWithString:@"kod:changelog"];
-      [[KDocumentController kodController]
-       openDocumentsWithContentsOfURL:changelogURL callback:nil];
+      // we did upgrade -- display the changelog (at next tick)
+      K_DISPATCH_MAIN_ASYNC({
+        NSURL *changelogURL = [NSURL URLWithString:@"kod:changelog"];
+        [[KDocumentController kodController]
+         openDocumentsWithContentsOfURL:changelogURL callback:nil];
+      });
     }
   }
 

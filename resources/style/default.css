@@ -42,16 +42,17 @@ ip, name { color: #8CB194; }
 
 /* for Prolog, Perl, lang */
 variable { color: #cda869; }
-italics { color: #3C7E5B; font-style: italic; }
-bold { color: #3C7E5B; font-weight: bold; }
+italics { text-decoration: underline; font-style: italic; }
+bold { color: #fff; font-weight: bold; }
 
 /* for LaTeX, markdown, etc */
 underline { color: #3C7E5B; text-decoration: underline; }
-fixed { color: #73C976; }
+fixed { color: #bbeecc; background-color: #2c2c2c; }
 argument, optionalargument { color: #9194BB; }
 math { color: orange; }
 bibtex { color: #8D86EE; }
 h1,h2,h3,h4,h5,h6 { color: lightsalmon; }
+ul, ol { color: yellow; }
 
 /* for diffs */
 oldfile { color: #f7bfb6; background-color:#42201C; }
