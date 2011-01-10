@@ -1065,6 +1065,9 @@ longestEffectiveRange:&range
   KStyle *style = [KStyle sharedStyle];
   kassert(style);
 
+  [style refreshBaseFont];
+  [textView_ setFont:[style baseFont]];
+  
   // text attributes
   NSTextStorage *textStorage = textView_.textStorage;
   [textStorage beginEditing];
