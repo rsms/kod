@@ -335,7 +335,7 @@ void KNodeEventIOEntry::perform() {
     Local<Value> v = gKodNodeModule->Get(String::New("emit"));
     if (v->IsFunction()) {
       int argc = argc_ + 1;
-      Local<Value> argv[argc];// = new Local<Value>[];
+      Local<Value> *argv = new Local<Value>[argc];
       argv[0] = Local<Value>::New(String::NewSymbol(name_));
       for (int i = 1; i<argc; ++i) {
         id arg = argv_[i-1];
@@ -348,6 +348,7 @@ void KNodeEventIOEntry::perform() {
       }
       Local<Function> fun = Local<Function>::Cast(v);
       Local<Value> ret = fun->Call(gKodNodeModule, argc, argv);
+      delete argv;
     }
   }
   KNodeIOEntry::perform();
