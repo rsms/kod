@@ -1066,11 +1066,6 @@ longestEffectiveRange:&range
   kassert(style);
   KStyleElement *defaultElem = [style defaultStyleElement];
 
-  // textview bgcolor
-  NSColor *color = defaultElem->backgroundColor();
-  kassert(color);
-  [textView_ setBackgroundColor:color];
-
   // text attributes
   NSTextStorage *textStorage = textView_.textStorage;
   [textStorage beginEditing];
