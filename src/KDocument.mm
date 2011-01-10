@@ -1064,7 +1064,6 @@ longestEffectiveRange:&range
   DLOG("refreshStyle");
   KStyle *style = [KStyle sharedStyle];
   kassert(style);
-  KStyleElement *defaultElem = [style defaultStyleElement];
 
   // text attributes
   NSTextStorage *textStorage = textView_.textStorage;
