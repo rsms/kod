@@ -125,7 +125,7 @@ static void kio_iterdirs_async(NSArray *dirs,
 
 @implementation KLangMap
 
-static KLangMap const *gKLangMap = nil;
+static KLangMap *gKLangMap = nil;
 static HSpinLock gKLangMapSpinLock; // used by +sharedLangMap
 
 // Shared regular expressions
@@ -174,7 +174,7 @@ static ICUPattern *gSheBangEnvRegExp;
 }
 
 
-+ (KLangMap const *)sharedLangMap {
++ (KLangMap*)sharedLangMap {
   HSpinLock::Scope slscope(gKLangMapSpinLock);
   if (!gKLangMap) {
     gKLangMap = [[KLangMap alloc] init];
@@ -249,9 +249,9 @@ static ICUPattern *gSheBangEnvRegExp;
 }
 
 
-- (NSString const*)langIdForSourceURL:(NSURL*)url
-                              withUTI:(NSString*)uti
-                 consideringFirstLine:(NSString*)firstLine {
+- (NSString*)langIdForSourceURL:(NSURL*)url
+                        withUTI:(NSString*)uti
+           consideringFirstLine:(NSString*)firstLine {
   /*
    * Search order priority:
    *

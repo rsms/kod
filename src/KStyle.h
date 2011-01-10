@@ -6,7 +6,7 @@
 
 @class KStyle;
 
-extern NSString const *KStyleDidChangeNotification;
+extern NSString * const KStyleDidChangeNotification;
 
 /**
  * Represents a style (e.g. default.css)
@@ -67,7 +67,7 @@ extern NSString const *KStyleDidChangeNotification;
  * Note: Don't call unless |reload:| has been called at least once (which is
  *       implied by any of the class methods, but not init methods).
  */
-- (KStyleElement*)styleElementForSymbol:(NSString const*)symbol;
+- (KStyleElement*)styleElementForSymbol:(NSString*)symbol;
 
 /// Return the default element for this style ("body")
 @property(readonly) KStyleElement *defaultStyleElement;

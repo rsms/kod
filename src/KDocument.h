@@ -28,7 +28,7 @@ extern NSString *const KDocumentDidLoadDataNotification;
   HSemaphore highlightSem_;
 
   // Current language
-  NSString const *langId_;
+  NSString *langId_;
 
   // Mapped line breaks. Provides number of lines and a mapping from line number
   // to actual character offset. The location of each range denotes the start

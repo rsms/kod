@@ -2,7 +2,7 @@
 #import "KThread.h"
 #import "kconf.h"
 
-NSString const *KStyleDidChangeNotification = @"KStyleDidChangeNotification";
+NSString * const KStyleDidChangeNotification = @"KStyleDidChangeNotification";
 
 static lwc_string *kBodyLWCString;
 
@@ -82,7 +82,7 @@ static css_select_handler gCSSHandler;
 static CSSStylesheet* gBaseStylesheet_ = nil;
 
 static KStyle *gSharedStyle_ = nil;
-static NSString const *gDefaultElementSymbol;
+static NSString *gDefaultElementSymbol;
 
 
 + (void)load {
@@ -197,7 +197,7 @@ static NSString const *gDefaultElementSymbol;
 
 - (NSFont*)baseFont {
   if (!baseFont_) {
-    CSSStyle *bodyStyle = [self styleForElementName: gDefaultElementSymbol];
+    CSSStyle *bodyStyle = [self styleForElementName:gDefaultElementSymbol];
     NSFont *font = [bodyStyle font];
     if (!font) {
       WLOG("unable to find any of the specified fonts -- using system default");
@@ -369,7 +369,7 @@ static NSString const *gDefaultElementSymbol;
 
 
 /// Return the style element for symbolic key
-- (KStyleElement*)styleElementForSymbol:(NSString const*)key {
+- (KStyleElement*)styleElementForSymbol:(NSString*)key {
   OSSpinLockLock(&elementsSpinLock_);
   KStyleElement *elem = elements_.get(key);
   if (!elem) {
@@ -410,7 +410,7 @@ static NSString const *gDefaultElementSymbol;
                    inRange:range
                    options:opts
                 usingBlock:^(id value, NSRange range, BOOL *stop) {
-    NSString const *symbol = value;
+    NSString *symbol = value;
 
     // clear any formatter attributes (so we can perform "add" later, without
     // disrupting other attributes)

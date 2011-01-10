@@ -3,11 +3,10 @@
 // struct-style member access for speed
 @interface KLangMapLinePattern : NSObject {
  @public
-  NSString const *langId;
+  NSString *langId;
   ICUPattern *pattern;
 }
 
-- (id)initWithPattern:(NSString*)pattern
-               langId:(NSString const*)langId;
+- (id)initWithPattern:(NSString*)pattern langId:(NSString*)langId;
 
 @end

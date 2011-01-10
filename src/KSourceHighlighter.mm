@@ -67,7 +67,7 @@ KSourceHighlighter::~KSourceHighlighter() {
 }
 
 
-bool KSourceHighlighter::setLanguage(NSString const *langId, NSURL *url) {
+bool KSourceHighlighter::setLanguage(NSString *langId, NSURL *url) {
   h_objc_xch(&langId_, langId);
 
   // no language?
@@ -209,7 +209,7 @@ NSString * const KSourceHighlightStateAttribute = @"KHighlightState";
 
 
 bool KSourceHighlighter::beginBufferingOfAttributes() {
-  h_objc_swap(&attributesBuffer_, [NSMutableArray new]);
+  return h_casid(&attributesBuffer_, [NSMutableArray new]);
 }
 
 void KSourceHighlighter::bufferAttributes(NSDictionary* attrs, NSRange range) {
@@ -236,7 +236,7 @@ void KSourceHighlighter::clearBufferedAttributes() {
 
 void KSourceHighlighter::format(const std::string &elem) {
   if (isCancelled()) return;
-  NSString const *typeSymbol = KLangSymbol::symbolForString(elem);
+  NSString *typeSymbol = KLangSymbol::symbolForString(elem);
   NSRange range = matchUnicodeRange();
   uint32_t stateHash = currentStateHash();
 

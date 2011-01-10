@@ -3,7 +3,7 @@
 @implementation KLangMapLinePattern
 
 - (id)initWithPattern:(NSString*)p
-               langId:(NSString const*)lid {
+               langId:(NSString*)lid {
   if ((self = [super init])) {
     pattern = [[ICUPattern alloc] initWithString:p flags:0];
     langId = [lid retain];

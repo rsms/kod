@@ -220,7 +220,7 @@ class KSourceHighlighter {
   KSourceHighlighter();
   ~KSourceHighlighter();
 
-  bool setLanguage(NSString const *langId, NSURL *url=NULL);
+  bool setLanguage(NSString *langId, NSURL *url=NULL);
 
   // apply formatting
   void format(const std::string &elem);
@@ -229,14 +229,14 @@ class KSourceHighlighter {
   void clearStateStack();
 
   // Attribute buffering
-  bool beginBufferingOfAttributes();
+  bool beginBufferingOfAttributes(); // true if the calling thread "won"
   void bufferAttributes(NSDictionary *attrs, NSRange range);
   void endFlushBufferedAttributes(NSTextStorage *textStorage);
   void clearBufferedAttributes();
 
   // cancellation
   inline bool isCancelled() { return isCancelled_; }
-  inline bool resetCancelled() {
+  inline void resetCancelled() {
     OSMemoryBarrier();
     isCancelled_ = false;
   }

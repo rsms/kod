@@ -1,11 +1,11 @@
 #import "KLangSymbol.h"
 
-typedef std::map<std::string, NSString const*> KLangSymbolMap;
+typedef std::map<std::string, NSString*> KLangSymbolMap;
 static KLangSymbolMap gNames;
 
 
 const std::string &KLangSymbol::symbolize(const std::string &name,
-                                          NSString const ** symbol) {
+                                          NSString **symbol) {
   // TODO: atomicity
   KLangSymbolMap::iterator it = gNames.find(name);
   if (it == gNames.end()) {
@@ -15,7 +15,7 @@ const std::string &KLangSymbol::symbolize(const std::string &name,
                                        length:name.size()
                                      encoding:NSISOLatin1StringEncoding
                                  freeWhenDone:NO];
-    NSString const * internedSymbol = [sym internedString];
+    NSString *internedSymbol = [sym internedString];
     if (internedSymbol != sym)
       [sym release];
     gNames.insert(std::pair<std::string, NSString*>(name, internedSymbol));
@@ -30,10 +30,10 @@ const std::string &KLangSymbol::symbolize(const std::string &name,
 }
 
 
-NSString const *KLangSymbol::symbolForString(const std::string &name) {
+NSString *KLangSymbol::symbolForString(const std::string &name) {
   KLangSymbolMap::iterator it = gNames.find(name);
   if (it == gNames.end()) {
-    NSString const *symbol = nil;
+    NSString *symbol = nil;
     symbolize(name, &symbol);
     return symbol;
   } else {

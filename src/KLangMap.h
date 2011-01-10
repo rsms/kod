@@ -51,7 +51,7 @@
 @property(readonly) NSMutableArray *searchPaths;
 
 /// Shared instance
-+ (KLangMap const *)sharedLangMap;
++ (KLangMap*)sharedLangMap;
 
 /**
  * Retrieve the most suiting language id for source |filename| including
@@ -69,9 +69,9 @@
  * 6. Case-insensitive filename
  *
  */
-- (NSString const*)langIdForSourceURL:(NSURL*)url
-                              withUTI:(NSString*)uti
-                 consideringFirstLine:(NSString*)firstLine;
+- (NSString*)langIdForSourceURL:(NSURL*)url
+                        withUTI:(NSString*)uti
+           consideringFirstLine:(NSString*)firstLine;
 
 /// Retrieve info for language with id |langId| or nil if not found.
 - (KLangInfo*)langInfoForLangId:(NSString*)langId;
