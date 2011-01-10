@@ -202,17 +202,20 @@
   goToLineLastValue_ = [textField.cell integerValue];
   if (goToLineLastValue_ < 1)
     return; // 0 if the text field was empty or non-number
-  KDocument *tab = (KDocument*)[self selectedTabContents];
-  if (!tab) return;
-  NSRange lineRange = [tab rangeOfLineAtLineNumber:goToLineLastValue_];
+  KDocument *doc = (KDocument*)[self selectedTabContents];
+  if (!doc) return;
+
+  // e.g. jumping to line 999999 jumps to last line
+  goToLineLastValue_ = MIN(goToLineLastValue_, [doc lineCount]);
+
+  NSRange lineRange = [doc rangeOfLineAtLineNumber:goToLineLastValue_];
   if (lineRange.location == NSNotFound) {
     DLOG("out-of-range line jump requested but ignored");
   } else {
-    //DLOG("selecting line %ld %@", goToLineLastValue_,
-    //     NSStringFromRange(lineRange));
-    [tab.textView setSelectedRange:lineRange];
-    [tab.textView scrollRangeToVisible:lineRange];
-    [tab.textView showFindIndicatorForRange:lineRange];
+    KTextView *textView = doc.textView;
+    [textView setSelectedRange:lineRange];
+    [textView scrollRangeToVisible:lineRange];
+    [textView showFindIndicatorForRange:lineRange];
   }
 }
 
