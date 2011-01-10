@@ -1,0 +1,6 @@
+// You can make a copy of this file as "base-local.xcconfig" where build
+// settings can be overridden or customized.
+
+// Example of using a LLVM/Clang compiler in a custom location:
+//CC = /usr/local/bin/clang
+//CXX = /usr/local/bin/clang++

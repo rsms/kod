@@ -25,3 +25,4 @@ xcuserdata
 /src/kod_version.h
 /website/public/config.php
 /node-kod/build
+/xcconfig/base-local.xcconfig
