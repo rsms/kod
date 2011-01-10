@@ -1,4 +1,5 @@
-0000-00-00  0.0.3
+
+2011-01-11  0.0.3
 
  * [FIXED] Crash when "Go to line" in a tab which was moved in from another
    window. Ticket 23
@@ -35,8 +36,18 @@
 
  * [NEW] Added support for Gherkin syntax (use by e.g. Cucumber).
 
- * See http://hunch.lighthouseapp.com/projects/66522/milestones/96486 for more
-   details.
+ * [FIXED] New line numbers not shown in some cases. Ticket 19
+
+ * [NEW] Kod will check the integrity of and help repair an installed CLI helper
+   "kod" symlink. Related to ticket 30
+
+ * [NEW] Active syntax mode can be now be changed through the View > Syntax mode
+   menu. Ticket 52
+
+ * [REMOVED] Menu items to increase/decrease font size as it was broken. A
+   better implementation will be accomplished in a future release.
+
+ * [CHANGED] Better support for Markdown syntax highlighting. Ticket 47
 
 
 2010-12-24  0.0.2  (Rasmus Andersson <rasmus@notion.se>)
@@ -44,11 +55,11 @@
  * [NEW] Writing to files now support asynchronous or synchronous (blocking the
    UI) operation. To use synchronous saving of local files, set the defaults key
    "KFileURLHandler/write/async" to "NO". Writing is now based on URL handlers.
-
+   
  * [FIXED] Writing files no longer reset file mode. Ticket 16
-
+ 
  * [NEW] Changelog accessible through kod:changelog
-
+ 
  * [FIXED] Saving a file with a different type causes syntax type to be
    reconsidered. Ticket 21
 
