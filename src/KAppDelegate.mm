@@ -8,6 +8,7 @@
 #import "KCrashReportCollector.h"
 #import "kconf.h"
 #import "KStyle.h"
+#import "KLangMap.h"
 #import "KMachService.h"
 #import "KSudo.h"
 #import "KNodeThread.h"
@@ -149,6 +150,58 @@
 
   // Register ourselves as service provider
   [NSApp setServicesProvider:self];
+
+  // Scan language files
+  __block KLangMap *langMap = [KLangMap sharedLangMap];
+  [langMap rescanWithCallback:^(NSError *err){
+    if (err) {
+      DLOG("error while rescanning lang dirs: %@", err);
+      K_DISPATCH_MAIN_ASYNC({ [NSApp presentError:err]; });
+      return;
+    }
+    DLOG("rescanned lang dirs");
+
+    // aquire mutex lock until returning
+    HSpinLock::Scope slscope(langMap->langIdToInfoLock_);
+
+    // make a list of sorted langId's
+    NSArray *sortedLangIds =
+        [langMap->langIdToInfo_ keysSortedByValueUsingComparator:
+        ^(id langInfo1, id langInfo2) {
+          return [((KLangInfo*)langInfo1)->name
+              localizedStandardCompare:((KLangInfo*)langInfo2)->name];
+        }];
+
+    // Update syntax mode menu
+    [syntaxModeMenu_ removeAllItems];
+
+    // keep track of which key equiv. we have used
+    NSMutableSet *registeredKeyEquivalents =
+        [NSMutableSet setWithCapacity:sortedLangIds.count];
+
+    // build menu
+    for (NSString *langId in sortedLangIds) {
+      KLangInfo *langInfo = [langMap->langIdToInfo_ objectForKey:langId];
+      NSString *name = langInfo->name;
+      NSString *keyEquivalent = @"";
+      NSUInteger i = 0;
+      while (i < name.length) {
+        keyEquivalent = [name substringWithRange:NSMakeRange(i++, 1)];
+        if (![registeredKeyEquivalents containsObject:keyEquivalent]) {
+          [registeredKeyEquivalents addObject:keyEquivalent];
+          break;
+        }
+      }
+      NSMenuItem *menuItem =
+          [syntaxModeMenu_ addItemWithTitle:name
+                                     action:@selector(setSyntaxMode:)
+                              keyEquivalent:keyEquivalent];
+      [menuItem setKeyEquivalentModifierMask:NSControlKeyMask
+                                            |NSAlternateKeyMask
+                                            |NSShiftKeyMask];
+      [menuItem setRepresentedObject:langId];
+    }
+  }];
 
   // Start loading default style
   NSURL *builtinURL = kconf_res_url(@"style/default.css");

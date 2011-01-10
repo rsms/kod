@@ -4,6 +4,7 @@
 
 @interface KAppDelegate : NSObject <NSApplicationDelegate> {
   IBOutlet SUUpdater *sparkleUpdater_;
+  IBOutlet NSMenu *syntaxModeMenu_;
   KTerminalUsageWindowController *terminalUsageWindowController_;
 }
 

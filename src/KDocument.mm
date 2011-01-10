@@ -599,6 +599,13 @@ static int debugSimulateTextAppendingIteration = 0;
     NSMenuItem *menuItem = (NSMenuItem*)item;
     [menuItem setState:self.hasMetaRuler];
     y = YES;
+  } else if (action == @selector(setSyntaxMode:)) {
+    NSMenuItem *menuItem = (NSMenuItem*)item;
+    NSString *langId = [menuItem representedObject];
+    if ([langId isKindOfClass:[NSString class]]) {
+      [menuItem setState:[langId isEqualToString:self.langId]];
+      y = YES;
+    }
   } else {
     y = [super validateUserInterfaceItem:item];
   }
@@ -1031,6 +1038,14 @@ longestEffectiveRange:&range
 
 - (IBAction)toggleMetaRuler:(id)sender {
   self.hasMetaRuler = !self.hasMetaRuler;
+}
+
+
+- (IBAction)setSyntaxMode:(id)sender {
+  DLOG("setSyntaxMode:%@", [sender representedObject]);
+  NSString *langId = [sender representedObject];
+  if ([langId isKindOfClass:[NSString class]])
+    self.langId = langId;
 }
 
 

@@ -51,29 +51,6 @@ static ICUPattern *gSheBangEnvRegExp;
                                               flags:ICUCaseInsensitiveMatching];
   assert(gSheBangDirectRegExp != nil);
 
-  // FIXME: cache results in KConfig and "watch" URLs in searchPaths_ and
-  // langIdToInfo_ for changes and scan only those files which change.
-  KLangMap *langMap = [KLangMap sharedLangMap];
-  [langMap rescanWithCallback:^(NSError *err){
-    if (err) DLOG("error while rescanning lang dirs: %@", err);
-    else DLOG("rescanned lang dirs");
-    //DLOG("searchPaths_ => %@", langMap->searchPaths_);
-    //DLOG("langIdToInfo_ => %@", langMap->langIdToInfo_);
-    /*DLOG("UTIToLangIdMap_ => %@", langMap->UTIToLangIdMap_);
-    DLOG("firstLinePatternList_ => %@", langMap->firstLinePatternList_);
-    DLOG("nameToLangIdMap_ => %@", langMap->nameToLangIdMap_);
-    DLOG("extToLangIdMap_ => %@", langMap->extToLangIdMap_);*/
-    #if 0
-    NSLog(@"searchPaths_ => %@", langMap->searchPaths_);
-    NSLog(@"langIdToInfo_ => %@", langMap->langIdToInfo_);
-    NSLog(@"UTIToLangIdMap_ => %@", langMap->UTIToLangIdMap_);
-    NSLog(@"firstLinePatternList_ => %@", langMap->firstLinePatternList_);
-    NSLog(@"programToLangIdMap_ => %@", langMap->programToLangIdMap_);
-    NSLog(@"nameToLangIdMap_ => %@", langMap->nameToLangIdMap_);
-    NSLog(@"extToLangIdMap_ => %@", langMap->extToLangIdMap_);
-    #endif
-  }];
-
   [pool drain];
 }
 
