@@ -148,7 +148,19 @@ static CGFloat kTextContainerYOffset = 0.0;
 
 
 - (void)styleDidChange:(NSNotification*)notification {
-  // TODO(rsms): for Agos
+  CSSStyle *bodyStyle = [[KStyle sharedStyle] styleForElementName: @"body"];
+  [self setBackgroundColor: [bodyStyle backgroundColor]];
+  [self setTextColor: [bodyStyle color]];
+  CSSStyle *caretStyle = [[KStyle sharedStyle] styleForElementName: @"caret"];
+  [self setInsertionPointColor: [caretStyle color]];
+  CSSStyle *selectedStyle = [[KStyle sharedStyle] styleForElementName: @"selected"];
+  [self setSelectedTextAttributes:[NSDictionary dictionaryWithObject:
+      [selectedStyle backgroundColor]
+      forKey:NSBackgroundColorAttributeName]];
+  NSWindow *window = [self window];
+  if (window) {
+    [window setViewsNeedDisplay:YES];
+  }  
 }
 
 
