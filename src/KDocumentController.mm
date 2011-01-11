@@ -178,15 +178,15 @@
       if (countdown) countdown(error);
       if (!doc) [windowController presentError:error];
     } else {
+      url = [url copy];
       dispatch_async(dispatchQueue, ^{
         NSAutoreleasePool *pool = [NSAutoreleasePool new];
         NSError *error = nil;
-        KDocument *doc = [self openDocumentWithContentsOfURL:url
-                                           withWindowController:windowController
-                                              groupWithSiblings:YES
-                                                // display last document opened:
-                                                        display:index==0
-                                                          error:&error];
+        KDocument *doc = [self openDocumentWithContentsOfURL:[url autorelease]
+                                        withWindowController:windowController
+                                           groupWithSiblings:YES
+                 /* display last document opened: */ display:index==0
+                                                       error:&error];
         if (doc && doc.isLoading) {
           if (countdown) {
             [doc on:@"load" call:^(KDocument *doc2){
