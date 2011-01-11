@@ -28,9 +28,9 @@ try { userModule = require(process.env.HOME + '/.kod'); } catch (e) {}
 // debug
 var util = require('util');
 var kod = require('kod');
-console.log('main.js started. kod -> '+util.inspect(kod));
-console.log('process.env -> '+util.inspect(process.env));
-console.log('require.paths -> '+util.inspect(require.paths));
+//console.log('main.js started. kod -> '+util.inspect(kod));
+//console.log('process.env -> '+util.inspect(process.env));
+//console.log('require.paths -> '+util.inspect(require.paths));
 
 // function which returns the arguments it received
 kod.exposedFunctions.ping = function(callback) {

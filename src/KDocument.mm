@@ -82,19 +82,6 @@ static NSString* _kDefaultTitle = @"Untitled";
   [pool drain];
 }
 
-static NSFont* _kDefaultFont = nil;
-
-+ (NSFont*)defaultFont {
-  if (!_kDefaultFont) {
-    _kDefaultFont = [[[KStyle sharedStyle] baseFont] retain];
-    if (!_kDefaultFont) {
-      WLOG("unable to find default font from CSS -- using system default");
-      _kDefaultFont = [[NSFont userFixedPitchFontOfSize:11.0] retain];
-    }
-  }
-  return _kDefaultFont;
-}
-
 // DEBUG: intercepts and dumps selector queries
 /*- (BOOL)respondsToSelector:(SEL)selector {
   BOOL y = [super respondsToSelector:selector];
@@ -161,7 +148,7 @@ static int debugSimulateTextAppendingIteration = 0;
   // Create a KTextView
   textView_ = [[KTextView alloc] initWithFrame:NSZeroRect];
   [textView_ setDelegate:self];
-  [textView_ setFont:[isa defaultFont]];
+  [textView_ setFont:[[KStyle sharedStyle] baseFont]];
 
   // configure layout manager
   //NSLayoutManager *layoutManager = []
@@ -1076,15 +1063,9 @@ longestEffectiveRange:&range
 
 
 - (void)refreshStyle {
-  DLOG("refreshStyle");
+  //DLOG("refreshStyle");
   KStyle *style = [KStyle sharedStyle];
   kassert(style);
-  KStyleElement *defaultElem = [style defaultStyleElement];
-
-  // textview bgcolor
-  NSColor *color = defaultElem->backgroundColor();
-  kassert(color);
-  [textView_ setBackgroundColor:color];
 
   // text attributes
   NSTextStorage *textStorage = textView_.textStorage;

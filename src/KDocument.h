@@ -83,7 +83,6 @@ extern NSString *const KDocumentDidLoadDataNotification;
 @property(readonly) BOOL isVirgin;
 
 
-+ (NSFont*)defaultFont;
 - (void)setIconBasedOnContents;
 
 - (void)guessLanguageBasedOnUTI:(NSString*)uti textContent:(NSString*)text;

@@ -9,11 +9,15 @@
 #import "kconf.h"
 #import "common.h"
 
-
 // text container rect adjustments
 static NSSize kTextContainerInset = (NSSize){6.0, 4.0}; // {(LR),(TB)}
 static CGFloat kTextContainerXOffset = -8.0;
 static CGFloat kTextContainerYOffset = 0.0;
+
+
+@interface KTextView (Private)
+- (void)refreshStyle;
+@end
 
 
 @implementation KTextView
@@ -42,15 +46,8 @@ static CGFloat kTextContainerYOffset = 0.0;
   // this bastard causes sporadical crashes when run in other than main
   K_DISPATCH_MAIN_ASYNC( [self setRichText:NO]; );
 
-  // TODO: the following settings should follow the current style
-  [self setBackgroundColor:
-      [NSColor colorWithCalibratedWhite:0.1 alpha:1.0]];
-  [self setTextColor:[NSColor whiteColor]];
-  [self setInsertionPointColor:
-      [NSColor colorWithCalibratedRed:1.0 green:0.2 blue:0.1 alpha:1.0]];
-  [self setSelectedTextAttributes:[NSDictionary dictionaryWithObject:
-      [NSColor colorWithCalibratedRed:0.12 green:0.18 blue:0.27 alpha:1.0]
-      forKey:NSBackgroundColorAttributeName]];
+  // setup inital style
+  [self refreshStyle];
 
   // later adjusted by textContainerOrigin
   [self setTextContainerInset:kTextContainerInset];
@@ -146,8 +143,57 @@ static CGFloat kTextContainerYOffset = 0.0;
 }
 
 
+- (void)refreshStyle {
+  //DLOG("refreshStyle");
+  KStyle *style = [KStyle sharedStyle];
+
+  // font
+  if (style.baseFont)
+    [self setFont:style.baseFont];
+
+  // body/document
+  CSSStyle *bodyStyle = [style styleForElementName:@"body"];
+  NSColor *bgColor = bodyStyle ? bodyStyle.backgroundColor : nil;
+  if (bgColor) {
+    [self setBackgroundColor:bgColor];
+  } else {
+    [self setBackgroundColor:[NSColor colorWithCalibratedWhite:0.1 alpha:1.0]];
+  }
+  NSColor *textColor = bodyStyle.color;
+  if (textColor) {
+    [self setTextColor:textColor];
+  } else {
+    [self setTextColor:[NSColor colorWithCalibratedWhite:0.9 alpha:1.0]];
+  }
+
+  // caret
+  CSSStyle *caretStyle = [style styleForElementName:@"caret"];
+  NSColor *caretColor = caretStyle ? caretStyle.color : nil;
+  if (caretColor) {
+    [self setInsertionPointColor:caretColor];
+  } else {
+    [self setInsertionPointColor:[NSColor redColor]];
+  }
+
+  // selection color
+  CSSStyle *selectedStyle = [style styleForElementName:@"selection"];
+  bgColor = selectedStyle ? selectedStyle.backgroundColor : nil;
+  if (!bgColor) {
+    bgColor =
+        [NSColor colorWithCalibratedRed:0.12 green:0.18 blue:0.27 alpha:1.0];
+  }
+  [self setSelectedTextAttributes:
+      [NSDictionary dictionaryWithObject:bgColor
+                                  forKey:NSBackgroundColorAttributeName]];
+}
+
+
 - (void)styleDidChange:(NSNotification*)notification {
-  // TODO(rsms): for Agos
+  [self refreshStyle];
+  NSWindow *window = [self window];
+  if (window) {
+    [window setViewsNeedDisplay:YES];
+  }
 }
 
 

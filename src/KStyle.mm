@@ -1,6 +1,7 @@
 #import "KStyle.h"
 #import "KThread.h"
 #import "kconf.h"
+#import "common.h"
 
 NSString * const KStyleDidChangeNotification = @"KStyleDidChangeNotification";
 
@@ -198,6 +199,7 @@ static NSString *gDefaultElementSymbol;
 - (NSFont*)baseFont {
   if (!baseFont_) {
     CSSStyle *bodyStyle = [self styleForElementName:gDefaultElementSymbol];
+    kassert(bodyStyle != nil);
     NSFont *font = [bodyStyle font];
     if (!font) {
       WLOG("unable to find any of the specified fonts -- using system default");
@@ -242,11 +244,14 @@ static NSString *gDefaultElementSymbol;
     // Empty cached elements
     OSSpinLockLock(&elementsSpinLock_);
     h_casid(&defaultStyle_, nil);
+    h_casid(&baseFont_, nil);
     elements_.clear();
     OSSpinLockUnlock(&elementsSpinLock_);
 
     // deliver notification and call callback on main thread
     K_DISPATCH_MAIN_ASYNC({
+      DLOG("successfully reloaded %@", self);
+
       // post KStyleDidChangeNotification before calling callback. This way code
       // inside the callback can register for the notification without receiving
       // a notification directly afterwards, which obvisouly indicate the same
@@ -264,6 +269,7 @@ static NSString *gDefaultElementSymbol;
 
   // URL connection failed to start?
   if (!started) {
+    WLOG("failed to start loading of stylesheet '%@'", url);
     [stylesheet release];
     if (callback) {
       callback([NSError kodErrorWithFormat:@"Failed to open URL %@", url]);
@@ -287,13 +293,11 @@ static NSString *gDefaultElementSymbol;
   //       choice (depending on the complexity of the loaded CSS, considerable
   //       CPU cycles might be needed).
   //
-  [url retain];
   [[KThread backgroundThread] performBlock:^{
     // shortcut to have the underlying NSURLConnection scheduled in the
     // backgroundThread (i.e. the callback will be invoked in that thread
     // -- the actual I/O is handled by a global Foundation-controlled thread).
     [self _loadStylesheet:[url absoluteURL] callback:callback];
-    [url release];
   }];
 }
 
@@ -322,10 +326,16 @@ static NSString *gDefaultElementSymbol;
 
 /// Return the style element for symbolic key
 - (CSSStyle*)styleForElementName:(NSString*)elementNameStr {
-  // this might happen when empty
-  if (!cssContext_) return nil;
+  if (!elementNameStr)
+    return nil;
 
   OSSpinLockLock(&styleSpinLock_);
+
+  // this might happen when empty
+  if (!cssContext_) {
+    OSSpinLockUnlock(&styleSpinLock_);
+    return nil;
+  }
 
   // assure the default element is loaded before continuing
   if (elementNameStr != gDefaultElementSymbol && !defaultStyle_) {
@@ -333,6 +343,8 @@ static NSString *gDefaultElementSymbol;
     [self defaultStyleElement];
     OSSpinLockLock(&styleSpinLock_);
   }
+
+  kassert(cssContext_ != nil);
 
   lwc_string *elementName = [elementNameStr LWCString];
   CSSStyle *style = nil;
@@ -357,6 +369,7 @@ static NSString *gDefaultElementSymbol;
     WLOG("CSSStyle select failed %@ -- %@", e, [e callStackSymbols]);
     DLOG("cssContext_ => %@", cssContext_);
     DLOG("elementName => %@", elementNameStr);
+    Debugger();
   }
 
   OSSpinLockUnlock(&styleSpinLock_);
@@ -374,8 +387,8 @@ static NSString *gDefaultElementSymbol;
   KStyleElement *elem = elements_.get(key);
   if (!elem) {
     CSSStyle *style = [self styleForElementName:key];
-    kassert(style != nil);
-    elem = new KStyleElement(key, style, self);
+    if (style)
+      elem = new KStyleElement(key, style, self);
     elements_.put(key, elem);
   }
   OSSpinLockUnlock(&elementsSpinLock_);
@@ -410,6 +423,11 @@ static NSString *gDefaultElementSymbol;
                    inRange:range
                    options:opts
                 usingBlock:^(id value, NSRange range, BOOL *stop) {
+    // we might get invoked once with a nil value if the receiver does not
+    // contain any KStyleElementAttributeName attributes.
+    if (!value)
+      return;
+
     NSString *symbol = value;
 
     // clear any formatter attributes (so we can perform "add" later, without

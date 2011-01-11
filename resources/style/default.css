@@ -1,10 +1,24 @@
-
+/*
+ * This is the default style of Kod. If you wish to modify this to your liking,
+ * make a copy and put it in ~/.kod/mystyle.css then tell Kod where to find it
+ * by setting a configuration key:
+ *
+ *  $ defaults write se.hunch.kod style/url ~/.kod/mystyle.css
+ *
+ * You might need to restart Kod for changes to take effect. Then, simply open
+ * your ~/.kod/mystyle.css in Kod -- when edited and saved Kod will
+ * automatically reload the style, thus you see the effect of your alterations.
+ */
 body {
   font-family: "M+ 1m", monospace;
   font-size: 11px;
   background-color:#222;
   color: #eee;
 }
+
+/* color of the caret and selection range */
+caret { color: #ff3319; }
+selection { background-color: #2F3F52; }
 
 /* the color for context lines (when specified with line ranges) */
 metaruler {
