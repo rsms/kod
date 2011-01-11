@@ -49,6 +49,9 @@
 
  * [CHANGED] Better support for Markdown syntax highlighting. Ticket 47
 
+ * [CHANGED] Font family, size and color is now loaded from the active
+   stylesheet rather then using hard-coded values.
+
 
 2010-12-24  0.0.2  (Rasmus Andersson <rasmus@notion.se>)
 
