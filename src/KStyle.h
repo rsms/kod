@@ -55,9 +55,6 @@ extern NSString * const KStyleDidChangeNotification;
 /// Shorthand for reloadWithCallback:nil
 - (void)reload;
 
-/// Refresh baseFont
-- (void)refreshBaseFont;
-
 #pragma mark -
 #pragma mark Getting style elements
 
