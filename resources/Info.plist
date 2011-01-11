@@ -17,7 +17,6 @@
 
   LSArchitecturePriority = ( "x86_64", i386 );
   LSMinimumSystemVersion = "10.6.0";
-  LSMinimumSystemVersionByArchitecture = { "x86_64" = "10.6"; };
 
   /* Sparkle (other settings are hard-coded) */
   SUPublicDSAKeyFile = "dsa_pub.pem";

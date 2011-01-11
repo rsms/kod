@@ -691,7 +691,6 @@
 				3AA91E5B12C95CC000132A25 /* xcconfig */,
 				3A92914F1229BD5E00DA7E43 /* Frameworks */,
 				3A928C211227151800DA7E43 /* Products */,
-				3AA91F3B12CA46B200132A25 /* libssl.dylib */,
 			);
 			sourceTree = "<group>";
 		};
@@ -764,6 +763,7 @@
 		3A92914F1229BD5E00DA7E43 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				3AA91F3B12CA46B200132A25 /* libssl.dylib */,
 				3AAA9F4112BFB7B50079F079 /* Sparkle.framework */,
 				3A25E47A1281A6A200B6A33E /* libboost_regex-mt.dylib */,
 				3A25E47C1281A6A700B6A33E /* libsource-highlight.dylib */,

@@ -55,7 +55,7 @@ kod.exposedFunctions.foo = function(callback) {
     callback(null, {"bar":[1,2,3.4,"mos"],"grek en":"hoppär"});
 }
 
-kod.on('openDocument', function(document) {
+/*kod.on('openDocument', function(document) {
   //console.log('openDocument: '+ util.inspect(document, 0, 4));
   console.log('openDocument: '+document.identifier+' '+document.url);
 });
@@ -84,7 +84,7 @@ kod.on('activateDocument', function(document) {
 kod.on('closeDocument', function(document, docId) {
   //console.log('closeDocument: ['+docId+'] '+ util.inspect(document, 0, 4));
   console.log('closeDocument: '+document.identifier+' '+document.url);
-});
+});*/
 
 // dump kod.allDocuments every 10 sec
 /*setInterval(function(){
