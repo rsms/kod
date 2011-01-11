@@ -184,11 +184,21 @@
       KLangInfo *langInfo = [langMap->langIdToInfo_ objectForKey:langId];
       NSString *name = langInfo->name;
       NSString *keyEquivalent = @"";
+      NSString *lowerCaseName = [name lowercaseString];
+      NSCharacterSet *consideredCharset =
+          [NSCharacterSet characterSetWithCharactersInString:
+           @"abcdefghijklmnopqrstuvwxyz1234567890"];
       NSUInteger i = 0;
       while (i < name.length) {
-        keyEquivalent = [name substringWithRange:NSMakeRange(i++, 1)];
-        if (![registeredKeyEquivalents containsObject:keyEquivalent]) {
-          [registeredKeyEquivalents addObject:keyEquivalent];
+        if (![consideredCharset characterIsMember:
+              [lowerCaseName characterAtIndex:i]]) {
+          ++i;
+          continue;
+        }
+        NSString *s = [lowerCaseName substringWithRange:NSMakeRange(i++, 1)];
+        if (![registeredKeyEquivalents containsObject:s]) {
+          [registeredKeyEquivalents addObject:s];
+          keyEquivalent = s;
           break;
         }
       }

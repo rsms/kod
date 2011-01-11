@@ -263,6 +263,8 @@ static ICUPattern *gSheBangEnvRegExp;
     for (; *p && (*p != ' ' && *p != '\t'); p++ )
   #define SKIP_UNTIL_WHITESPACE_OR_NEWLINE \
     for (; *p && (*p != ' ' && *p != '\t' && *p != '\n' && *p != '\r'); p++ )
+  #define SKIP_UNTIL_NEWLINE \
+    for (; *p && (*p != '\n' && *p != '\r'); p++ )
   #define MATCH_EXT 1
   #define MATCH_UTI 2
   #define MATCH_NAME 3
@@ -288,7 +290,7 @@ static ICUPattern *gSheBangEnvRegExp;
         if (*p++ == ' ' || *p == '\t') {
           SKIP_PAST_WHITESPACE;
           char *startp = p;
-          SKIP_UNTIL_WHITESPACE_OR_NEWLINE;
+          SKIP_UNTIL_NEWLINE;
           int matchlen = p-startp;
           if (matchlen) {
             langInfo->name = [[NSString allocWithZone:zone]
