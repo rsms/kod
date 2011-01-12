@@ -1,7 +1,0 @@
-# @name TODO
-# @matchext todo
-# @matchname TODO, todo
-
-vardef TODO = '(TODO|FIXME|BUG)([:]?)'
-
-todo = $TODO

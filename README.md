@@ -27,24 +27,11 @@ If you want to contribute to the project you will have to [make a fork](http://h
     git clone --recursive git@github.com:MyUsername/kod.git
     git remote add upstream https://github.com/rsms/kod.git
 
-**Build dependencies:**
+**Checkout and build libcss:**
 
-    deps/node-build.sh
+This step isn't entirely necessary, but the first time you run this it will check out a bunch of subversion repositories which might take a few minutes.
+
     deps/libcss/build.sh
-
-**Setup Source Highlight:**
-
-This currently requires [MacPorts](http://www.macports.org/) or [Homebrew](http://mxcl.github.com/homebrew/).
-
-Via MacPorts:
-
-    port install source-highlight +universal
-    deps/srchilight/import-from-macports.sh
-
-Via Homebrew:
-
-    brew install source-highlight
-    deps/srchilight/import-from-homebrew.sh
 
 **Start hacking:**
 

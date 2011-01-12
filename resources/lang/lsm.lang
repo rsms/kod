@@ -1,9 +1,0 @@
-# @title Linux Software Map
-# @matchuti org.gnu.linux-software-map
-# @matchext lsm
-
-keyword = 'Begin[[:digit:]]*|End'
-
-type = '^[[:word:]-]+:'
-
-include "_url.lang"

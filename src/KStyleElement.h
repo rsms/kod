@@ -4,17 +4,12 @@ extern NSString * const KStyleElementAttributeName;
 
 #ifdef __cplusplus
 
-#import <boost/shared_ptr.hpp>
-#import <srchilite/formatter.h>
-#import <srchilite/formatterfactory.h>
+#include <tr1/memory>
 
 @class CSSStyle, KStyle;
 
 /**
  * Constitutes the text attributes for a specific language element.
- *
- * Part of the source-highlight API. srchilite::Formatter is an interface which
- * defines a single method |format(text, params)|.
  *
  * KStyleElements are owned by KStyle objects:
  *
@@ -79,6 +74,6 @@ class KStyleElement {
 };
 
 /// shared pointer for KStyleElement
-typedef boost::shared_ptr<KStyleElement> KStyleElementPtr;
+typedef std::tr1::shared_ptr<KStyleElement> KStyleElementPtr;
 
 #endif  // __cplusplus

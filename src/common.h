@@ -31,7 +31,7 @@
             __SRC_FILENAME__, __LINE__, ##__VA_ARGS__)
 #else
   #define _LOG(prefixch, fmt, ...) \
-      fprintf(stderr, "%c [%s:%d] " fmt, prefixch, \
+      fprintf(stderr, "%c [%s:%d] " fmt "\n", prefixch, \
               __SRC_FILENAME__, __LINE__, ##__VA_ARGS__)
 #endif
 #ifdef LOG_SILENT
@@ -183,31 +183,33 @@ static inline const char *debug_bits32(int32_t a) {
 #import "kfs.h"
 
 #ifdef __cplusplus
-#import "basictypes.h"
-#import "scoped_nsobject.h"
-#import "HSemaphore.h"
+  #import "basictypes.h"
+  #ifdef __OBJC__
+    #import "scoped_nsobject.h"
+  #endif
+  #import "HSemaphore.h"
 #endif
 
 #ifdef __OBJC__
-#import "hobjc.h"
-#import "kexceptions.h"
-#import "core/sudden_termination.h"
+  #import "hobjc.h"
+  #import "kexceptions.h"
+  #import "core/sudden_termination.h"
 
-// NS categories
-#import "NSString-utf8-range-conv.h"
-#import "NSString-cpp.h"
-#import "NSString-intern.h"
-#import "NSString-ranges.h"
-#import "NSString-editdistance.h"
-#import "NSString-data.h"
-#import "NSError+KAdditions.h"
-#import "NSColor-web.h"
-#import "NSCharacterSet-kod.h"
-#import "HURLConnection.h"  // provides NSURL category
-#import "NSMutableArray-kod.h"
-#import "NSView-kod.h"
-#import "NSData-kod.h"
-#import "NSThread-condensedStackTrace.h"
+  // NS categories
+  #import "NSString-utf8-range-conv.h"
+  #import "NSString-cpp.h"
+  #import "NSString-intern.h"
+  #import "NSString-ranges.h"
+  #import "NSString-editdistance.h"
+  #import "NSString-data.h"
+  #import "NSError+KAdditions.h"
+  #import "NSColor-web.h"
+  #import "NSCharacterSet-kod.h"
+  #import "HURLConnection.h"  // provides NSURL category
+  #import "NSMutableArray-kod.h"
+  #import "NSView-kod.h"
+  #import "NSData-kod.h"
+  #import "NSThread-condensedStackTrace.h"
 #endif  // __OBJC__
 
 #endif  // K_COMMON_H_

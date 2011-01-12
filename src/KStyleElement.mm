@@ -2,10 +2,8 @@
 #import "KStyleElement.h"
 #import "NSColor-web.h"
 #import "NSString-intern.h"
-#import "KLangSymbol.h"
 #import "kconf.h"
 #import "KStyle.h"
-#import <srchilite/formatterparams.h>
 #import <CSS/CSS.h>
 
 

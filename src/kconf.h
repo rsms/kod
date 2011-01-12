@@ -43,10 +43,11 @@ SI NSString*     kconf_string(NSString* key, NSString* def)   _OIMPL(string)
    NSURL*        kconf_url(NSString* key, NSURL* def);
    NSColor*      kconf_color(NSString* key, NSColor* def);
 
-SI BOOL          kconf_bool(NSString* key, BOOL def)          _NIMPL(boolValue)
-SI int           kconf_int(NSString* key, int def)            _NIMPL(intValue)
-SI float         kconf_float(NSString* key, float def)        _NIMPL(floatValue)
-SI double        kconf_double(NSString* key, double def)      _NIMPL(doubleValue)
+SI BOOL          kconf_bool(NSString* key, BOOL def) _NIMPL(boolValue)
+SI NSInteger     kconf_int(NSString* key, NSInteger def) _NIMPL(integerValue)
+SI NSUInteger    kconf_uint(NSString* key, NSUInteger def) _NIMPL(unsignedIntegerValue)
+SI float         kconf_float(NSString* key, float def)   _NIMPL(floatValue)
+SI double        kconf_double(NSString* key, double def) _NIMPL(doubleValue)
 
 // Posts a "change" notification on kconf_defaults() passing |key| in userInfo
 void kconf_notify_change(NSString *key);
@@ -58,8 +59,7 @@ void kconf_notify_change(NSString *key);
                     else [kconf_defaults() removeObjectForKey:key]; \
                     kconf_notify_change(key); }
 #undef  _NIMPL
-#define _NIMPL(M) { [kconf_defaults() set##M:v forKey:key]; \
-                    kconf_notify_change(key); }
+#define _NIMPL(M) { kconf_set_object(key, [NSNumber numberWith##M:v]); }
 
 SI void kconf_set_object(NSString* key, id v)       _OIMPL(Object)
 
@@ -67,7 +67,8 @@ SI void kconf_set_url(NSString* key, NSURL* v)      _OIMPL(URL)
    void kconf_set_color(NSString* key, NSColor* v);
 
 SI void kconf_set_bool(NSString* key, BOOL v)       _NIMPL(Bool)
-SI void kconf_set_int(NSString* key, int v)         _NIMPL(Integer)
+SI void kconf_set_int(NSString* key, NSInteger v)     _NIMPL(Integer)
+SI void kconf_set_uint(NSString* key, NSUInteger v)   _NIMPL(UnsignedInteger)
 SI void kconf_set_float(NSString* key, float v)     _NIMPL(Float)
 SI void kconf_set_double(NSString* key, double v)   _NIMPL(Double)
 

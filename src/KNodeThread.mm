@@ -35,7 +35,7 @@ static void _KPrepareNode(EV_P_ ev_prepare *watcher, int revents) {
 
 - (id)init {
   if (!(self = [super init])) return nil;
-  [self setName:@"se.hunch.kod.node"];
+  [self setName:@"se.hunch.kod.nodejs"];
   return self;
 }
 

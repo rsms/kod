@@ -19,12 +19,7 @@ typedef void (^KDocumentOpenClosure)(NSError*,KDocument*);
 @interface KDocumentController : NSDocumentController {
   KCloseCycleContext *closeCycleContext_;
   NSMutableDictionary *urlHandlers_;
-
-  // atomically monotonically incrementing counter
-  int32_t untitledNumberCounter_;
 }
-
-@property(readonly) int32_t nextUntitledNumber;
 
 // Typed sharedDocumentController
 + (KDocumentController*)kodController;

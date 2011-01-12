@@ -27,21 +27,22 @@
 		3A158ADE128A09D300339E6E /* NSStringICUAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A158ADA128A09D300339E6E /* NSStringICUAdditions.m */; };
 		3A158AFF128A0A3700339E6E /* libicucore.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A158AFE128A0A3700339E6E /* libicucore.dylib */; };
 		3A158DF4128A282F00339E6E /* style in Resources */ = {isa = PBXBuildFile; fileRef = 3A158DF1128A282F00339E6E /* style */; };
-		3A158E4C128A296100339E6E /* lang in Resources */ = {isa = PBXBuildFile; fileRef = 3A158DF5128A296000339E6E /* lang */; };
 		3A159312128B581E00339E6E /* NSString-ranges.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A159311128B581E00339E6E /* NSString-ranges.m */; };
 		3A15936B128B619800339E6E /* NSString-intern.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A15936A128B619800339E6E /* NSString-intern.m */; };
 		3A15949F128B83F100339E6E /* NSString-cpp.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A15949E128B83F100339E6E /* NSString-cpp.mm */; };
-		3A159629128C3BCB00339E6E /* KSourceHighlighter.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A159628128C3BCB00339E6E /* KSourceHighlighter.mm */; };
 		3A159685128C432800339E6E /* KStyle.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A159684128C432800339E6E /* KStyle.mm */; };
 		3A24231712CB9A2100522D81 /* kod in Copy nodelib */ = {isa = PBXBuildFile; fileRef = 3A24231112CB99FF00522D81 /* kod */; };
-		3A25E47B1281A6A200B6A33E /* libboost_regex-mt.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A25E47A1281A6A200B6A33E /* libboost_regex-mt.dylib */; };
-		3A25E47D1281A6A700B6A33E /* libsource-highlight.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A25E47C1281A6A700B6A33E /* libsource-highlight.dylib */; };
-		3A25E4971281A9D300B6A33E /* libsource-highlight.dylib in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 3A25E47C1281A6A700B6A33E /* libsource-highlight.dylib */; };
-		3A25E4981281A9D500B6A33E /* libboost_regex-mt.dylib in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 3A25E47A1281A6A200B6A33E /* libboost_regex-mt.dylib */; };
 		3A25E4B71281AE3700B6A33E /* KStyleElement.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A25E4B61281AE3700B6A33E /* KStyleElement.mm */; };
 		3A25E6101281CFEF00B6A33E /* NSColor-web.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A25E60F1281CFEF00B6A33E /* NSColor-web.m */; };
+		3A34A7CF12D8C5A9009D17BA /* ChromiumTabs.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 3AC6ECC412C8E05B00C8DBFC /* ChromiumTabs.framework */; };
 		3A366A8412CB873D00257AE6 /* KObjectProxy.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A366A8112CB873D00257AE6 /* KObjectProxy.mm */; };
 		3A366A8512CB873D00257AE6 /* node_kod.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A366A8312CB873D00257AE6 /* node_kod.mm */; };
+		3A37B0E612D9508B00ED811C /* ASTNodeWrapper.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A37B0E412D9508B00ED811C /* ASTNodeWrapper.mm */; };
+		3A37B39412DA2A4200ED811C /* ast-viewer.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3A37B39312DA2A4200ED811C /* ast-viewer.xib */; };
+		3A37B39812DA2AB600ED811C /* KASTViewerController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A37B39712DA2AB600ED811C /* KASTViewerController.mm */; };
+		3A37B39D12DA2C5000ED811C /* KASTViewerWindowController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A37B39C12DA2C5000ED811C /* KASTViewerWindowController.mm */; };
+		3A37B4A812DA416E00ED811C /* ASTNode.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A37B4A712DA416E00ED811C /* ASTNode.mm */; };
+		3A37B54712DA48E500ED811C /* KASTOutlineView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A37B54612DA48E500ED811C /* KASTOutlineView.m */; };
 		3A40F92F12AFF21A007B5879 /* main.js in Resources */ = {isa = PBXBuildFile; fileRef = 3A40F92E12AFF21A007B5879 /* main.js */; };
 		3A4CB3E112B1872300B45858 /* NSString-data.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A4CB3E012B1872300B45858 /* NSString-data.m */; };
 		3A4D50ED1282E40300B06EEB /* NSString-utf8-range-conv.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A4D50EC1282E40300B06EEB /* NSString-utf8-range-conv.m */; };
@@ -61,9 +62,7 @@
 		3A62BAA5129D84F900822274 /* NSMutableArray-kod.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A62BAA4129D84F900822274 /* NSMutableArray-kod.m */; };
 		3A62BB4E129D9E9D00822274 /* KLocationBarController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A62BB4D129D9E9D00822274 /* KLocationBarController.mm */; };
 		3A6D468A12947AF700DBA2A3 /* HUnorderedMap.cc in Sources */ = {isa = PBXBuildFile; fileRef = 3A6D468912947AF700DBA2A3 /* HUnorderedMap.cc */; };
-		3A6D4A3B1295781D00DBA2A3 /* KLangManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A6D4A3A1295781D00DBA2A3 /* KLangManager.mm */; };
 		3A6D4B05129591F300DBA2A3 /* kexceptions.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A6D4B04129591F300DBA2A3 /* kexceptions.m */; };
-		3A6D4B681295A85400DBA2A3 /* KLangMap.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A6D4B671295A85400DBA2A3 /* KLangMap.mm */; };
 		3A6D4D6B1295F0BA00DBA2A3 /* NSCharacterSet-kod.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A6D4D6A1295F0BA00DBA2A3 /* NSCharacterSet-kod.m */; };
 		3A74A4D3129FF6E000BB5503 /* HUTF8MappedUTF16String.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A74A4D2129FF6E000BB5503 /* HUTF8MappedUTF16String.mm */; };
 		3A78955D12B043B400D08FD5 /* hdispatch.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A78955C12B043B400D08FD5 /* hdispatch.m */; };
@@ -141,19 +140,14 @@
 		3ABF539612A5D52F0020233C /* KSplitView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3ABF539512A5D52F0020233C /* KSplitView.m */; };
 		3ABF541012A5DB1D0020233C /* KTextView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3ABF540F12A5DB1D0020233C /* KTextView.mm */; };
 		3ABF541F12A5DC6F0020233C /* KClipView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3ABF541E12A5DC6F0020233C /* KClipView.m */; };
-		3AC2D3FD1298C40A0066B586 /* KSourceHighlightState.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3AC2D3FC1298C40A0066B586 /* KSourceHighlightState.mm */; };
 		3AC2D4A71298D8050066B586 /* KTextStorage.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3AC2D4A61298D8050066B586 /* KTextStorage.mm */; };
 		3AC2D74012998D590066B586 /* CSS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3AE5EB871292DB5C00B17C4F /* CSS.framework */; };
-		3AC4FADC1296D049004CDCFD /* KLangMapLinePattern.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3AC4FADB1296D049004CDCFD /* KLangMapLinePattern.mm */; };
 		3AC6ECCD12C8E07D00C8DBFC /* ChromiumTabs.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3AC6ECC412C8E05B00C8DBFC /* ChromiumTabs.framework */; };
-		3AC6ECCE12C8E08000C8DBFC /* ChromiumTabs.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 3AC6ECC412C8E05B00C8DBFC /* ChromiumTabs.framework */; };
 		3AE5E5171290955000B17C4F /* kod.icns in Resources */ = {isa = PBXBuildFile; fileRef = 3AE5E5161290955000B17C4F /* kod.icns */; };
 		3AE5E9A3129180CB00B17C4F /* CSS.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 3AE5E8B312915ABA00B17C4F /* CSS.framework */; };
 		3AE5ECB61292F7B800B17C4F /* KThread.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3AE5ECB51292F7B800B17C4F /* KThread.mm */; };
 		3AEC6C8F12BC12FB00F769DB /* KLineNumberMarker.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AEC6C8C12BC12FB00F769DB /* KLineNumberMarker.m */; };
 		3AEC6C9012BC12FB00F769DB /* KMetaRulerView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3AEC6C8E12BC12FB00F769DB /* KMetaRulerView.mm */; };
-		3AF14C42128D792F00623011 /* KLangRegexRuleFactory.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3AF14C41128D792F00623011 /* KLangRegexRuleFactory.mm */; };
-		3AF14D20128D928A00623011 /* KLangSymbol.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3AF14D1F128D928A00623011 /* KLangSymbol.mm */; };
 		3AF39D1C12BE8C2400FC534A /* shared-dispatch-queues.c in Sources */ = {isa = PBXBuildFile; fileRef = 3AF39D1B12BE8C2400FC534A /* shared-dispatch-queues.c */; };
 		3AF39DB212BE9C8A00FC534A /* KPopUp.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AF39DB112BE9C8A00FC534A /* KPopUp.m */; };
 		3AF39DE212BEC15E00FC534A /* KPopUpContentView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AF39DE112BEC15E00FC534A /* KPopUpContentView.m */; };
@@ -161,6 +155,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		3A4455C912D7B16900036EF0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 3A928BEF1227143800DA7E43 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 3A44552012D786AC00036EF0;
+			remoteInfo = nodejs;
+		};
 		3A510B3112C26C3E00AAC1D5 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 3A928BEF1227143800DA7E43 /* Project object */;
@@ -237,11 +238,9 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				3AC6ECCE12C8E08000C8DBFC /* ChromiumTabs.framework in Copy Frameworks */,
+				3A34A7CF12D8C5A9009D17BA /* ChromiumTabs.framework in Copy Frameworks */,
 				3AAA9F7712BFC0440079F079 /* Sparkle.framework in Copy Frameworks */,
 				3AE5E9A3129180CB00B17C4F /* CSS.framework in Copy Frameworks */,
-				3A25E4981281A9D500B6A33E /* libboost_regex-mt.dylib in Copy Frameworks */,
-				3A25E4971281A9D300B6A33E /* libsource-highlight.dylib in Copy Frameworks */,
 			);
 			name = "Copy Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -268,7 +267,6 @@
 		3A158ADA128A09D300339E6E /* NSStringICUAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NSStringICUAdditions.m; sourceTree = "<group>"; };
 		3A158AFE128A0A3700339E6E /* libicucore.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libicucore.dylib; path = usr/lib/libicucore.dylib; sourceTree = SDKROOT; };
 		3A158DF1128A282F00339E6E /* style */ = {isa = PBXFileReference; lastKnownFileType = folder; path = style; sourceTree = "<group>"; };
-		3A158DF5128A296000339E6E /* lang */ = {isa = PBXFileReference; lastKnownFileType = folder; path = lang; sourceTree = "<group>"; };
 		3A159310128B581E00339E6E /* NSString-ranges.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString-ranges.h"; sourceTree = "<group>"; };
 		3A159311128B581E00339E6E /* NSString-ranges.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString-ranges.m"; sourceTree = "<group>"; };
 		3A159369128B619800339E6E /* NSString-intern.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString-intern.h"; sourceTree = "<group>"; };
@@ -276,8 +274,6 @@
 		3A159448128B7B9500339E6E /* common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = common.h; sourceTree = "<group>"; };
 		3A15949D128B83F100339E6E /* NSString-cpp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString-cpp.h"; sourceTree = "<group>"; };
 		3A15949E128B83F100339E6E /* NSString-cpp.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = "NSString-cpp.mm"; sourceTree = "<group>"; };
-		3A159627128C3BCB00339E6E /* KSourceHighlighter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSourceHighlighter.h; sourceTree = "<group>"; };
-		3A159628128C3BCB00339E6E /* KSourceHighlighter.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KSourceHighlighter.mm; sourceTree = "<group>"; };
 		3A159683128C432800339E6E /* KStyle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KStyle.h; sourceTree = "<group>"; };
 		3A159684128C432800339E6E /* KStyle.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KStyle.mm; sourceTree = "<group>"; };
 		3A15968A128C501C00339E6E /* HSemaphore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HSemaphore.h; sourceTree = "<group>"; };
@@ -293,6 +289,18 @@
 		3A366A8112CB873D00257AE6 /* KObjectProxy.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = KObjectProxy.mm; path = "node-module/KObjectProxy.mm"; sourceTree = "<group>"; };
 		3A366A8212CB873D00257AE6 /* node_kod.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = node_kod.h; path = "node-module/node_kod.h"; sourceTree = "<group>"; };
 		3A366A8312CB873D00257AE6 /* node_kod.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = node_kod.mm; path = "node-module/node_kod.mm"; sourceTree = "<group>"; };
+		3A37B0E412D9508B00ED811C /* ASTNodeWrapper.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = ASTNodeWrapper.mm; path = "node-module/ASTNodeWrapper.mm"; sourceTree = "<group>"; };
+		3A37B0E512D9508B00ED811C /* ASTNodeWrapper.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; fileEncoding = 4; name = ASTNodeWrapper.h; path = "node-module/ASTNodeWrapper.h"; sourceTree = "<group>"; };
+		3A37B10F12D9592900ED811C /* ASTNode.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; fileEncoding = 4; path = ASTNode.h; sourceTree = "<group>"; };
+		3A37B2AD12D9895600ED811C /* AST.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; fileEncoding = 4; path = AST.h; sourceTree = "<group>"; };
+		3A37B39312DA2A4200ED811C /* ast-viewer.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "ast-viewer.xib"; path = "resources/ast-viewer.xib"; sourceTree = SOURCE_ROOT; };
+		3A37B39612DA2AB600ED811C /* KASTViewerController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KASTViewerController.h; sourceTree = "<group>"; };
+		3A37B39712DA2AB600ED811C /* KASTViewerController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KASTViewerController.mm; sourceTree = "<group>"; };
+		3A37B39B12DA2C5000ED811C /* KASTViewerWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KASTViewerWindowController.h; sourceTree = "<group>"; };
+		3A37B39C12DA2C5000ED811C /* KASTViewerWindowController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KASTViewerWindowController.mm; sourceTree = "<group>"; };
+		3A37B4A712DA416E00ED811C /* ASTNode.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ASTNode.mm; sourceTree = "<group>"; };
+		3A37B54512DA48E500ED811C /* KASTOutlineView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KASTOutlineView.h; sourceTree = "<group>"; };
+		3A37B54612DA48E500ED811C /* KASTOutlineView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KASTOutlineView.m; sourceTree = "<group>"; };
 		3A40F92E12AFF21A007B5879 /* main.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = main.js; sourceTree = "<group>"; };
 		3A4450C512D68E4800036EF0 /* sudden_termination.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = sudden_termination.h; path = core/sudden_termination.h; sourceTree = "<group>"; };
 		3A4CB3DF12B1872300B45858 /* NSString-data.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString-data.h"; sourceTree = "<group>"; };
@@ -332,13 +340,9 @@
 		3A6D468812947AF700DBA2A3 /* HUnorderedMap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HUnorderedMap.h; sourceTree = "<group>"; };
 		3A6D468912947AF700DBA2A3 /* HUnorderedMap.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = HUnorderedMap.cc; sourceTree = "<group>"; };
 		3A6D468F12947B6000DBA2A3 /* HSpinLock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HSpinLock.h; sourceTree = "<group>"; };
-		3A6D47431294950700DBA2A3 /* HObjCPtr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HObjCPtr.h; sourceTree = "<group>"; };
-		3A6D4A391295781D00DBA2A3 /* KLangManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KLangManager.h; sourceTree = "<group>"; };
-		3A6D4A3A1295781D00DBA2A3 /* KLangManager.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KLangManager.mm; sourceTree = "<group>"; };
+		3A6D47431294950700DBA2A3 /* HObjCPtr.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; fileEncoding = 4; path = HObjCPtr.h; sourceTree = "<group>"; };
 		3A6D4B03129591F300DBA2A3 /* kexceptions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = kexceptions.h; sourceTree = "<group>"; };
 		3A6D4B04129591F300DBA2A3 /* kexceptions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = kexceptions.m; sourceTree = "<group>"; };
-		3A6D4B661295A85400DBA2A3 /* KLangMap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KLangMap.h; sourceTree = "<group>"; };
-		3A6D4B671295A85400DBA2A3 /* KLangMap.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KLangMap.mm; sourceTree = "<group>"; };
 		3A6D4D691295F0BA00DBA2A3 /* NSCharacterSet-kod.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSCharacterSet-kod.h"; sourceTree = "<group>"; };
 		3A6D4D6A1295F0BA00DBA2A3 /* NSCharacterSet-kod.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSCharacterSet-kod.m"; sourceTree = "<group>"; };
 		3A74A4D1129FF6E000BB5503 /* HUTF8MappedUTF16String.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HUTF8MappedUTF16String.h; sourceTree = "<group>"; };
@@ -445,7 +449,7 @@
 		3AB5823512CAD15300E528B1 /* k_objc_prop.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = k_objc_prop.m; sourceTree = "<group>"; };
 		3AB6974912D1085700330F3A /* KMachService-NSInvocation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "KMachService-NSInvocation.h"; sourceTree = "<group>"; };
 		3AB6974A12D1085700330F3A /* KMachService-NSInvocation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "KMachService-NSInvocation.m"; sourceTree = "<group>"; };
-		3AB6A0DD12D5467400330F3A /* kod_ExternalUTF16String.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = kod_ExternalUTF16String.h; sourceTree = "<group>"; };
+		3AB6A0DD12D5467400330F3A /* ExternalUTF16String.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ExternalUTF16String.h; sourceTree = "<group>"; };
 		3AB97BD412B2836800F4ADB2 /* KStatusBarView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KStatusBarView.h; sourceTree = "<group>"; };
 		3AB97BD512B2836800F4ADB2 /* KStatusBarView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KStatusBarView.m; sourceTree = "<group>"; };
 		3AB97C3412B2893C00F4ADB2 /* KStatusBarController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KStatusBarController.h; sourceTree = "<group>"; };
@@ -483,12 +487,8 @@
 		3ABF540F12A5DB1D0020233C /* KTextView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KTextView.mm; sourceTree = "<group>"; };
 		3ABF541D12A5DC6F0020233C /* KClipView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KClipView.h; sourceTree = "<group>"; };
 		3ABF541E12A5DC6F0020233C /* KClipView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KClipView.m; sourceTree = "<group>"; };
-		3AC2D3FB1298C40A0066B586 /* KSourceHighlightState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSourceHighlightState.h; sourceTree = "<group>"; };
-		3AC2D3FC1298C40A0066B586 /* KSourceHighlightState.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KSourceHighlightState.mm; sourceTree = "<group>"; };
 		3AC2D4A51298D8050066B586 /* KTextStorage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KTextStorage.h; sourceTree = "<group>"; };
 		3AC2D4A61298D8050066B586 /* KTextStorage.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KTextStorage.mm; sourceTree = "<group>"; };
-		3AC4FADA1296D049004CDCFD /* KLangMapLinePattern.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KLangMapLinePattern.h; sourceTree = "<group>"; };
-		3AC4FADB1296D049004CDCFD /* KLangMapLinePattern.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KLangMapLinePattern.mm; sourceTree = "<group>"; };
 		3AE5E5161290955000B17C4F /* kod.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = kod.icns; path = icon/kod.icns; sourceTree = "<group>"; };
 		3AE5E8A912915ABA00B17C4F /* CSS.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = CSS.xcodeproj; path = "deps/libcss/cocoa-framework/CSS.xcodeproj"; sourceTree = "<group>"; };
 		3AE5EA551292B2D000B17C4F /* kconf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = kconf.h; sourceTree = "<group>"; };
@@ -499,10 +499,6 @@
 		3AEC6C8C12BC12FB00F769DB /* KLineNumberMarker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KLineNumberMarker.m; sourceTree = "<group>"; };
 		3AEC6C8D12BC12FB00F769DB /* KMetaRulerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KMetaRulerView.h; sourceTree = "<group>"; };
 		3AEC6C8E12BC12FB00F769DB /* KMetaRulerView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KMetaRulerView.mm; sourceTree = "<group>"; };
-		3AF14C40128D792F00623011 /* KLangRegexRuleFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KLangRegexRuleFactory.h; sourceTree = "<group>"; };
-		3AF14C41128D792F00623011 /* KLangRegexRuleFactory.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KLangRegexRuleFactory.mm; sourceTree = "<group>"; };
-		3AF14D1E128D928A00623011 /* KLangSymbol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KLangSymbol.h; sourceTree = "<group>"; };
-		3AF14D1F128D928A00623011 /* KLangSymbol.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KLangSymbol.mm; sourceTree = "<group>"; };
 		3AF39D1A12BE8C2400FC534A /* shared-dispatch-queues.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "shared-dispatch-queues.h"; sourceTree = "<group>"; };
 		3AF39D1B12BE8C2400FC534A /* shared-dispatch-queues.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "shared-dispatch-queues.c"; sourceTree = "<group>"; };
 		3AF39DB012BE9C8A00FC534A /* KPopUp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KPopUp.h; sourceTree = "<group>"; };
@@ -527,8 +523,6 @@
 			files = (
 				3AC6ECCD12C8E07D00C8DBFC /* ChromiumTabs.framework in Frameworks */,
 				3AC2D74012998D590066B586 /* CSS.framework in Frameworks */,
-				3A25E47B1281A6A200B6A33E /* libboost_regex-mt.dylib in Frameworks */,
-				3A25E47D1281A6A700B6A33E /* libsource-highlight.dylib in Frameworks */,
 				3A158AFF128A0A3700339E6E /* libicucore.dylib in Frameworks */,
 				3AAA9F4212BFB7B50079F079 /* Sparkle.framework in Frameworks */,
 				3A510BEA12C2927A00AAC1D5 /* Security.framework in Frameworks */,
@@ -563,10 +557,85 @@
 				3A24231112CB99FF00522D81 /* kod */,
 				3A366A8212CB873D00257AE6 /* node_kod.h */,
 				3A366A8312CB873D00257AE6 /* node_kod.mm */,
+				3A37B0E512D9508B00ED811C /* ASTNodeWrapper.h */,
+				3A37B0E412D9508B00ED811C /* ASTNodeWrapper.mm */,
 				3A366A8012CB873D00257AE6 /* KObjectProxy.h */,
 				3A366A8112CB873D00257AE6 /* KObjectProxy.mm */,
 			);
 			name = "kod module";
+			sourceTree = "<group>";
+		};
+		3A37B13512D95F5E00ED811C /* Strings (text) */ = {
+			isa = PBXGroup;
+			children = (
+				3A74A4D1129FF6E000BB5503 /* HUTF8MappedUTF16String.h */,
+				3A74A4D2129FF6E000BB5503 /* HUTF8MappedUTF16String.mm */,
+				3A4D50EB1282E40300B06EEB /* NSString-utf8-range-conv.h */,
+				3A4D50EC1282E40300B06EEB /* NSString-utf8-range-conv.m */,
+				3A159310128B581E00339E6E /* NSString-ranges.h */,
+				3A159311128B581E00339E6E /* NSString-ranges.m */,
+				3A159369128B619800339E6E /* NSString-intern.h */,
+				3A15936A128B619800339E6E /* NSString-intern.m */,
+				3A15949D128B83F100339E6E /* NSString-cpp.h */,
+				3A15949E128B83F100339E6E /* NSString-cpp.mm */,
+				3ABF4F3C12A55AFC0020233C /* NSString-editdistance.h */,
+				3ABF4F3D12A55AFC0020233C /* NSString-editdistance.m */,
+				3A4CB3DF12B1872300B45858 /* NSString-data.h */,
+				3A4CB3E012B1872300B45858 /* NSString-data.m */,
+				3AB6A0DD12D5467400330F3A /* ExternalUTF16String.h */,
+			);
+			name = "Strings (text)";
+			sourceTree = "<group>";
+		};
+		3A37B13612D95FC700ED811C /* Helpers */ = {
+			isa = PBXGroup;
+			children = (
+				3A62B9DF129D63F000822274 /* scoped_nsobject.h */,
+				3A93B4E5129B67CB00185857 /* KRUsage.hh */,
+				3A93AB82129ADA5500185857 /* hatomic_flags.h */,
+				3A6D47431294950700DBA2A3 /* HObjCPtr.h */,
+				3A6D468F12947B6000DBA2A3 /* HSpinLock.h */,
+				3A15968A128C501C00339E6E /* HSemaphore.h */,
+				3A6D468812947AF700DBA2A3 /* HUnorderedMap.h */,
+				3A6D468912947AF700DBA2A3 /* HUnorderedMap.cc */,
+				3ABF483812A406AF0020233C /* hdispatch.h */,
+				3A78955C12B043B400D08FD5 /* hdispatch.m */,
+				3A510C4912C2ADCB00AAC1D5 /* kfs.h */,
+				3A510C4A12C2ADCB00AAC1D5 /* kfs.m */,
+				3AF3A0A312BF7F6400FC534A /* KAnimation.h */,
+				3AF3A0A412BF7F6400FC534A /* KAnimation.m */,
+			);
+			name = Helpers;
+			sourceTree = "<group>";
+		};
+		3A37B13712D95FDB00ED811C /* Shared globals */ = {
+			isa = PBXGroup;
+			children = (
+				3A6D4B03129591F300DBA2A3 /* kexceptions.h */,
+				3A6D4B04129591F300DBA2A3 /* kexceptions.m */,
+				3A4450C512D68E4800036EF0 /* sudden_termination.h */,
+				3AE5EA551292B2D000B17C4F /* kconf.h */,
+				3AAC02B712BD1110001BDC39 /* kconf.m */,
+				3AE5ECB41292F7B800B17C4F /* KThread.h */,
+				3AE5ECB51292F7B800B17C4F /* KThread.mm */,
+				3A510BE412C2926000AAC1D5 /* KSudo.h */,
+				3A510BE512C2926000AAC1D5 /* KSudo.m */,
+			);
+			name = "Shared globals";
+			sourceTree = "<group>";
+		};
+		3A37B39212DA29F000ED811C /* AST viewer */ = {
+			isa = PBXGroup;
+			children = (
+				3A37B54512DA48E500ED811C /* KASTOutlineView.h */,
+				3A37B54612DA48E500ED811C /* KASTOutlineView.m */,
+				3A37B39B12DA2C5000ED811C /* KASTViewerWindowController.h */,
+				3A37B39C12DA2C5000ED811C /* KASTViewerWindowController.mm */,
+				3A37B39612DA2AB600ED811C /* KASTViewerController.h */,
+				3A37B39712DA2AB600ED811C /* KASTViewerController.mm */,
+				3A37B39312DA2A4200ED811C /* ast-viewer.xib */,
+			);
+			name = "AST viewer";
 			sourceTree = "<group>";
 		};
 		3A40F8C312AFE5D7007B5879 /* Node */ = {
@@ -576,7 +645,6 @@
 				3AB57E0512CA634C00E528B1 /* kod_node_interface.mm */,
 				3AB57EAB12CA725A00E528B1 /* knode_ns_additions.h */,
 				3AB57EAC12CA725A00E528B1 /* knode_ns_additions.mm */,
-				3AB6A0DD12D5467400330F3A /* kod_ExternalUTF16String.h */,
 				3AA91F2112CA43DE00132A25 /* KNodeThread.h */,
 				3AA91F2212CA43DE00132A25 /* KNodeThread.mm */,
 				3A366A6F12CB86CA00257AE6 /* kod module */,
@@ -587,6 +655,10 @@
 		3A4F478212CFA81800301464 /* Text */ = {
 			isa = PBXGroup;
 			children = (
+				3A37B39212DA29F000ED811C /* AST viewer */,
+				3A37B2AD12D9895600ED811C /* AST.h */,
+				3A37B10F12D9592900ED811C /* ASTNode.h */,
+				3A37B4A712DA416E00ED811C /* ASTNode.mm */,
 				3A4F478312CFA83900301464 /* KWordDictionary.h */,
 				3A4F478412CFA83900301464 /* KWordDictionary.mm */,
 			);
@@ -622,27 +694,6 @@
 				3A7E723A1287024100D85E4C /* KFileTreeController.mm */,
 			);
 			name = Sidebar;
-			sourceTree = "<group>";
-		};
-		3A7E717D1286F41C00D85E4C /* Syntax highlighting */ = {
-			isa = PBXGroup;
-			children = (
-				3AF14D1E128D928A00623011 /* KLangSymbol.h */,
-				3AF14D1F128D928A00623011 /* KLangSymbol.mm */,
-				3AF14C40128D792F00623011 /* KLangRegexRuleFactory.h */,
-				3AF14C41128D792F00623011 /* KLangRegexRuleFactory.mm */,
-				3A6D4B661295A85400DBA2A3 /* KLangMap.h */,
-				3A6D4B671295A85400DBA2A3 /* KLangMap.mm */,
-				3AC4FADA1296D049004CDCFD /* KLangMapLinePattern.h */,
-				3AC4FADB1296D049004CDCFD /* KLangMapLinePattern.mm */,
-				3A6D4A391295781D00DBA2A3 /* KLangManager.h */,
-				3A6D4A3A1295781D00DBA2A3 /* KLangManager.mm */,
-				3A159627128C3BCB00339E6E /* KSourceHighlighter.h */,
-				3A159628128C3BCB00339E6E /* KSourceHighlighter.mm */,
-				3AC2D3FB1298C40A0066B586 /* KSourceHighlightState.h */,
-				3AC2D3FC1298C40A0066B586 /* KSourceHighlightState.mm */,
-			);
-			name = "Syntax highlighting";
 			sourceTree = "<group>";
 		};
 		3A811A5812AE7DC400BC08AE /* hunch-cocoa */ = {
@@ -691,6 +742,7 @@
 				3AA91E5B12C95CC000132A25 /* xcconfig */,
 				3A92914F1229BD5E00DA7E43 /* Frameworks */,
 				3A928C211227151800DA7E43 /* Products */,
+				3AA91F3B12CA46B200132A25 /* libssl.dylib */,
 			);
 			sourceTree = "<group>";
 		};
@@ -698,7 +750,6 @@
 			isa = PBXGroup;
 			children = (
 				3AE5E8D112916F3300B17C4F /* Base */,
-				3AE5E8D212916F4100B17C4F /* NS categories */,
 				3A811A5812AE7DC400BC08AE /* hunch-cocoa */,
 				3AB97D3F12B298FB00F4ADB2 /* BWToolkit */,
 				3A928C16122714E800DA7E43 /* main.m */,
@@ -724,7 +775,6 @@
 				3A4F478212CFA81800301464 /* Text */,
 				3A158AD3128A09D300339E6E /* ICU */,
 				3ABF56AE12A69F9D0020233C /* Style */,
-				3A7E717D1286F41C00D85E4C /* Syntax highlighting */,
 			);
 			path = src;
 			sourceTree = "<group>";
@@ -740,7 +790,6 @@
 				3AAC03EE12BD2FC2001BDC39 /* sidebar-closed.png */,
 				3AAC03EF12BD2FC2001BDC39 /* sidebar-open.png */,
 				3A158DF1128A282F00339E6E /* style */,
-				3A158DF5128A296000339E6E /* lang */,
 				3A928C1A122714EE00DA7E43 /* Info.plist */,
 				3A40F92E12AFF21A007B5879 /* main.js */,
 				3A7E71121286EAE800D85E4C /* BrowserWindow.xib */,
@@ -763,7 +812,6 @@
 		3A92914F1229BD5E00DA7E43 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				3AA91F3B12CA46B200132A25 /* libssl.dylib */,
 				3AAA9F4112BFB7B50079F079 /* Sparkle.framework */,
 				3A25E47A1281A6A200B6A33E /* libboost_regex-mt.dylib */,
 				3A25E47C1281A6A700B6A33E /* libsource-highlight.dylib */,
@@ -931,35 +979,14 @@
 				3A159448128B7B9500339E6E /* common.h */,
 				3A51083412C13AF900AAC1D5 /* common.m */,
 				3A62B9D1129D63AA00822274 /* basictypes.h */,
-				3A4450C512D68E4800036EF0 /* sudden_termination.h */,
 				3A62BE75129E0C3100822274 /* virtual_key_codes.h */,
-				3A62B9DF129D63F000822274 /* scoped_nsobject.h */,
-				3ABF483812A406AF0020233C /* hdispatch.h */,
-				3A78955C12B043B400D08FD5 /* hdispatch.m */,
-				3A6D4B03129591F300DBA2A3 /* kexceptions.h */,
-				3A6D4B04129591F300DBA2A3 /* kexceptions.m */,
 				3A1596E5128C607700339E6E /* hobjc.h */,
-				3A93B4E5129B67CB00185857 /* KRUsage.hh */,
-				3A93AB82129ADA5500185857 /* hatomic_flags.h */,
-				3A6D47431294950700DBA2A3 /* HObjCPtr.h */,
-				3A6D468F12947B6000DBA2A3 /* HSpinLock.h */,
-				3A15968A128C501C00339E6E /* HSemaphore.h */,
-				3A6D468812947AF700DBA2A3 /* HUnorderedMap.h */,
-				3A6D468912947AF700DBA2A3 /* HUnorderedMap.cc */,
-				3A74A4D1129FF6E000BB5503 /* HUTF8MappedUTF16String.h */,
-				3A74A4D2129FF6E000BB5503 /* HUTF8MappedUTF16String.mm */,
-				3AE5EA551292B2D000B17C4F /* kconf.h */,
-				3AAC02B712BD1110001BDC39 /* kconf.m */,
-				3A510C4912C2ADCB00AAC1D5 /* kfs.h */,
-				3A510C4A12C2ADCB00AAC1D5 /* kfs.m */,
-				3AF3A0A312BF7F6400FC534A /* KAnimation.h */,
-				3AF3A0A412BF7F6400FC534A /* KAnimation.m */,
-				3AE5ECB41292F7B800B17C4F /* KThread.h */,
-				3AE5ECB51292F7B800B17C4F /* KThread.mm */,
-				3A510BE412C2926000AAC1D5 /* KSudo.h */,
-				3A510BE512C2926000AAC1D5 /* KSudo.m */,
 				3AB5823412CAD15300E528B1 /* k_objc_prop.h */,
 				3AB5823512CAD15300E528B1 /* k_objc_prop.m */,
+				3A37B13612D95FC700ED811C /* Helpers */,
+				3A37B13712D95FDB00ED811C /* Shared globals */,
+				3A37B13512D95F5E00ED811C /* Strings (text) */,
+				3AE5E8D212916F4100B17C4F /* NS categories */,
 			);
 			name = Base;
 			sourceTree = "<group>";
@@ -971,18 +998,6 @@
 				3A9293661229E49A00DA7E43 /* NSError+KAdditions.m */,
 				3A25E60E1281CFEF00B6A33E /* NSColor-web.h */,
 				3A25E60F1281CFEF00B6A33E /* NSColor-web.m */,
-				3A4D50EB1282E40300B06EEB /* NSString-utf8-range-conv.h */,
-				3A4D50EC1282E40300B06EEB /* NSString-utf8-range-conv.m */,
-				3A159310128B581E00339E6E /* NSString-ranges.h */,
-				3A159311128B581E00339E6E /* NSString-ranges.m */,
-				3A159369128B619800339E6E /* NSString-intern.h */,
-				3A15936A128B619800339E6E /* NSString-intern.m */,
-				3A15949D128B83F100339E6E /* NSString-cpp.h */,
-				3A15949E128B83F100339E6E /* NSString-cpp.mm */,
-				3ABF4F3C12A55AFC0020233C /* NSString-editdistance.h */,
-				3ABF4F3D12A55AFC0020233C /* NSString-editdistance.m */,
-				3A4CB3DF12B1872300B45858 /* NSString-data.h */,
-				3A4CB3E012B1872300B45858 /* NSString-data.m */,
 				3A6D4D691295F0BA00DBA2A3 /* NSCharacterSet-kod.h */,
 				3A6D4D6A1295F0BA00DBA2A3 /* NSCharacterSet-kod.m */,
 				3A62BAA3129D84F900822274 /* NSMutableArray-kod.h */,
@@ -1029,6 +1044,23 @@
 		};
 /* End PBXGroup section */
 
+/* Begin PBXLegacyTarget section */
+		3A44552012D786AC00036EF0 /* nodejs */ = {
+			isa = PBXLegacyTarget;
+			buildArgumentsString = "$(ACTION)";
+			buildConfigurationList = 3A44552612D786E200036EF0 /* Build configuration list for PBXLegacyTarget "nodejs" */;
+			buildPhases = (
+			);
+			buildToolPath = "../node-build.sh";
+			buildWorkingDirectory = "$(SRCROOT)/deps/node";
+			dependencies = (
+			);
+			name = nodejs;
+			passBuildSettingsInEnvironment = 1;
+			productName = nodejs;
+		};
+/* End PBXLegacyTarget section */
+
 /* Begin PBXNativeTarget section */
 		3A5107F712C135A200AAC1D5 /* kod_helper */ = {
 			isa = PBXNativeTarget;
@@ -1065,6 +1097,7 @@
 				3AE5E8B712915AC600B17C4F /* PBXTargetDependency */,
 				3A510B3212C26C3E00AAC1D5 /* PBXTargetDependency */,
 				3AC6ECD612C8E09A00C8DBFC /* PBXTargetDependency */,
+				3A4455CA12D7B16900036EF0 /* PBXTargetDependency */,
 			);
 			name = Kod;
 			productName = Kod;
@@ -1102,8 +1135,9 @@
 			projectRoot = "";
 			targets = (
 				3A928C1F1227151800DA7E43 /* Kod */,
-				3AAA9FB312BFC8890079F079 /* Distribute */,
 				3A5107F712C135A200AAC1D5 /* kod_helper */,
+				3A44552012D786AC00036EF0 /* nodejs */,
+				3AAA9FB312BFC8890079F079 /* Distribute */,
 			);
 		};
 /* End PBXProject section */
@@ -1148,7 +1182,6 @@
 				3A9291181229B93C00DA7E43 /* Toolbar.xib in Resources */,
 				3A7E71131286EAE800D85E4C /* BrowserWindow.xib in Resources */,
 				3A158DF4128A282F00339E6E /* style in Resources */,
-				3A158E4C128A296100339E6E /* lang in Resources */,
 				3AE5E5171290955000B17C4F /* kod.icns in Resources */,
 				3A40F92F12AFF21A007B5879 /* main.js in Resources */,
 				3AAC03F012BD2FC2001BDC39 /* sidebar-closed.png in Resources */,
@@ -1158,6 +1191,7 @@
 				3AA8142712C390CE0085F086 /* about.md in Resources */,
 				3AA817FF12C4A6CC0085F086 /* fonts in Resources */,
 				3AA818D412C4DD330085F086 /* changelog in Resources */,
+				3A37B39412DA2A4200ED811C /* ast-viewer.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1226,7 +1260,6 @@
 			files = (
 				3A78955D12B043B400D08FD5 /* hdispatch.m in Sources */,
 				3A9291C51229BF7500DA7E43 /* main.m in Sources */,
-				3A510C4B12C2ADCB00AAC1D5 /* kfs.m in Sources */,
 				3A9291C61229BFAD00DA7E43 /* KAppDelegate.mm in Sources */,
 				3A9291C71229BFB000DA7E43 /* KBrowser.mm in Sources */,
 				3A92911B1229B96A00DA7E43 /* KDocument.mm in Sources */,
@@ -1249,18 +1282,11 @@
 				3A159312128B581E00339E6E /* NSString-ranges.m in Sources */,
 				3A15936B128B619800339E6E /* NSString-intern.m in Sources */,
 				3A15949F128B83F100339E6E /* NSString-cpp.mm in Sources */,
-				3A159629128C3BCB00339E6E /* KSourceHighlighter.mm in Sources */,
 				3A159685128C432800339E6E /* KStyle.mm in Sources */,
-				3AF14C42128D792F00623011 /* KLangRegexRuleFactory.mm in Sources */,
-				3AF14D20128D928A00623011 /* KLangSymbol.mm in Sources */,
 				3AE5ECB61292F7B800B17C4F /* KThread.mm in Sources */,
 				3A6D468A12947AF700DBA2A3 /* HUnorderedMap.cc in Sources */,
-				3A6D4A3B1295781D00DBA2A3 /* KLangManager.mm in Sources */,
 				3A6D4B05129591F300DBA2A3 /* kexceptions.m in Sources */,
-				3A6D4B681295A85400DBA2A3 /* KLangMap.mm in Sources */,
 				3A6D4D6B1295F0BA00DBA2A3 /* NSCharacterSet-kod.m in Sources */,
-				3AC4FADC1296D049004CDCFD /* KLangMapLinePattern.mm in Sources */,
-				3AC2D3FD1298C40A0066B586 /* KSourceHighlightState.mm in Sources */,
 				3AC2D4A71298D8050066B586 /* KTextStorage.mm in Sources */,
 				3A841180129D5CAE00F4A36D /* KTextField.mm in Sources */,
 				3A841183129D5D5C00F4A36D /* KTextFieldCell.mm in Sources */,
@@ -1307,6 +1333,7 @@
 				3A51083612C13AF900AAC1D5 /* common.m in Sources */,
 				3A510B3F12C26F1200AAC1D5 /* KTerminalUsageWindowController.m in Sources */,
 				3A510BE612C2926000AAC1D5 /* KSudo.m in Sources */,
+				3A510C4B12C2ADCB00AAC1D5 /* kfs.m in Sources */,
 				3AA8135512C36EE70085F086 /* KURLHandler.mm in Sources */,
 				3AA8135812C37DC90085F086 /* KFileURLHandler.mm in Sources */,
 				3AA8138F12C387A20085F086 /* KHTTPURLHandler.mm in Sources */,
@@ -1323,12 +1350,22 @@
 				3A366A8512CB873D00257AE6 /* node_kod.mm in Sources */,
 				3A4F478512CFA83900301464 /* KWordDictionary.mm in Sources */,
 				3AB6974B12D1085700330F3A /* KMachService-NSInvocation.m in Sources */,
+				3A37B0E612D9508B00ED811C /* ASTNodeWrapper.mm in Sources */,
+				3A37B39812DA2AB600ED811C /* KASTViewerController.mm in Sources */,
+				3A37B39D12DA2C5000ED811C /* KASTViewerWindowController.mm in Sources */,
+				3A37B4A812DA416E00ED811C /* ASTNode.mm in Sources */,
+				3A37B54712DA48E500ED811C /* KASTOutlineView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		3A4455CA12D7B16900036EF0 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 3A44552012D786AC00036EF0 /* nodejs */;
+			targetProxy = 3A4455C912D7B16900036EF0 /* PBXContainerItemProxy */;
+		};
 		3A510B3212C26C3E00AAC1D5 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 3A5107F712C135A200AAC1D5 /* kod_helper */;
@@ -1352,6 +1389,20 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		3A44552112D786AC00036EF0 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = nodejs;
+			};
+			name = Debug;
+		};
+		3A44552212D786AC00036EF0 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = nodejs;
+			};
+			name = Release;
+		};
 		3A5107FA12C135A200AAC1D5 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -1462,6 +1513,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		3A44552612D786E200036EF0 /* Build configuration list for PBXLegacyTarget "nodejs" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3A44552112D786AC00036EF0 /* Debug */,
+				3A44552212D786AC00036EF0 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		3A51080212C135C800AAC1D5 /* Build configuration list for PBXNativeTarget "kod_helper" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

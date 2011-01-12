@@ -1,2 +1,0 @@
-vardef FUNCTION = '([[:alpha:]]|_)[[:word:]]*(?=[[:blank:]]*\()'
-function = $FUNCTION
