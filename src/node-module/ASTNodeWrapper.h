@@ -1,3 +1,7 @@
+// Copyright (c) 2010-2011, Rasmus Andersson. All rights reserved.
+// Use of this source code is governed by a MIT-style license that can be
+// found in the LICENSE file.
+
 #ifndef KOD_NODE_AST_NODE_WRAPPER_H_
 #define KOD_NODE_AST_NODE_WRAPPER_H_
 

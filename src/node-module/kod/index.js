@@ -1,3 +1,7 @@
+// Copyright (c) 2010-2011, Rasmus Andersson. All rights reserved.
+// Use of this source code is governed by a MIT-style license that can be
+// found in the LICENSE file.
+
 var events = require('events');
 
 // set the "kod" module to the object created by kod-core (_kod)
