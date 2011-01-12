@@ -1,4 +1,0 @@
-(usertype,usertype,normal) = 
-`([[:alpha:]](?:[^[:punct:][:space:]]|[_])*)
-((?:<.*>)?)
-(\s+(?=[*&]*[[:alpha:]][^[:punct:][:space:]]*\s*[[:punct:]\[\]]+))`

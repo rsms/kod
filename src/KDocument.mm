@@ -10,28 +10,35 @@
 #import "KDocument.h"
 #import "KBrowser.h"
 #import "KBrowserWindowController.h"
-#import "KSourceHighlighter.h"
 #import "KDocumentController.h"
 #import "KURLHandler.h"
 #import "KStyle.h"
 #import "KScroller.h"
 #import "KScrollView.h"
 #import "KClipView.h"
-#import "KLangMap.h"
 #import "KTextView.h"
 #import "KStatusBarView.h"
 #import "KMetaRulerView.h"
 #import "HEventEmitter.h"
 #import "kod_node_interface.h"
 #import "knode_ns_additions.h"
+#import "ExternalUTF16String.h"
+#import "node-module/ASTNodeWrapper.h"
+#import "KASTViewerWindowController.h"
+#import "KASTViewerController.h"
 
 #import "NSImage-kod.h"
 #import "CIImage-kod.h"
 
+// set to 1 to enable resource usage sampling and logging
+#define KOD_WITH_K_RUSAGE 1
+#import "KRUsage.hh"
+
+
+// Hate to use this, but we need to travel around the world if we don't
 @interface NSDocument (Private)
 - (void)_updateForDocumentEdited:(BOOL)arg1;
 @end
-
 
 // used in stateFlags_
 enum {
@@ -66,15 +73,22 @@ static NSString *_NSStringFromRangeArray(std::vector<NSRange> &lineToRangeVec,
 }
 
 
+// Document identifier
+static volatile uint64_t _identifierNext = 0;
+static uint64_t KDocumentNextIdentifier() {
+  return h_atomic_inc(&_identifierNext);
+}
+
+
 @interface KDocument (Private)
 - (void)undoManagerCheckpoint:(NSNotification*)notification;
-- (BOOL)_updateLastEditTimestamp;
 @end
 
 @implementation KDocument
 
 @synthesize textEncoding = textEncoding_,
-            textView = textView_;
+            textView = textView_,
+            ast = ast_;
 
 static NSImage* _kDefaultIcon = nil;
 static NSString* _kDefaultTitle = @"Untitled";
@@ -86,67 +100,18 @@ static NSString* _kDefaultTitle = @"Untitled";
   [pool drain];
 }
 
-static NSFont* _kDefaultFont = nil;
-
-+ (NSFont*)defaultFont {
-  if (!_kDefaultFont) {
-    _kDefaultFont = [[NSFont fontWithName:@"M+ 1m light" size:11.0] retain];
-    if (!_kDefaultFont) {
-      WLOG("unable to find default font \"M+\" -- using system default");
-      _kDefaultFont = [[NSFont userFixedPitchFontOfSize:11.0] retain];
-    }
-  }
-  return _kDefaultFont;
-}
-
-// DEBUG: intercepts and dumps selector queries
-/*- (BOOL)respondsToSelector:(SEL)selector {
-  BOOL y = [super respondsToSelector:selector];
-  DLOG("respondsToSelector %@ -> %@", NSStringFromSelector(selector), y?@"YES":@"NO");
-  return y;
-}*/
-
-
-// XXX DEBUG
-static int debugSimulateTextAppendingIteration = 0;
-- (void)debugSimulateTextAppending:(id)x {
-  #if 0
-  [textView_ insertText:@"void foo(int arg) {\n  return 5;\n}\n"
-                        @"/* multi\nline\ncomment */ bool bar;\n"
-                        @"string s = \"this is a \\\"string\\\" yes\";\n"];
-  return;
-  #endif
-  switch (debugSimulateTextAppendingIteration) {
-    case 0:
-      [textView_ insertText:@"void foo(int arg) {\n  return 5;\n}\n"];
-      break;
-    case 1:
-      [textView_ insertText:@"/* multi\nline"];
-      break;
-    case 2:
-      [textView_ insertText:@"\ncomment */ bool bar;\n"];
-      break;
-    case 3:
-      [textView_ insertText:@"string s = \"this is a \\\"string\\\" yes\";\n"];
-      break;
-  }
-  if (++debugSimulateTextAppendingIteration < 4) {
-    [self performSelector:@selector(debugSimulateTextAppending:)
-               withObject:self
-               afterDelay:0.1];
-  } else {
-    [self performSelector:@selector(debugSimulateSwitchStyle:)
-               withObject:self
-               afterDelay:2.0];
-  }
-}
-
 
 // This is the main initialization method
 - (id)initWithBaseTabContents:(CTTabContents*)baseContents {
   // Note: This might be called from a background thread and must thus be
   // thread-safe.
   if (!(self = [super init])) return nil;
+
+  // Assign a new identifier
+  identifier_ = KDocumentNextIdentifier();
+
+  // Initialize ast_
+  ast_.reset(new kod::AST);
 
   // Default title and icon
   self.title = _kDefaultTitle;
@@ -155,17 +120,13 @@ static int debugSimulateTextAppendingIteration = 0;
   // Default text encoding for new "Untitled" documents
   textEncoding_ = NSUTF8StringEncoding;
 
-  // Default highlighter
-  sourceHighlighter_.reset(new KSourceHighlighter);
-  highlightingEnabled_ = YES;
-
   // Save a weak reference to the undo manager (performance reasons)
   undoManager_ = [self undoManager]; assert(undoManager_);
 
   // Create a KTextView
   textView_ = [[KTextView alloc] initWithFrame:NSZeroRect];
   [textView_ setDelegate:self];
-  [textView_ setFont:[isa defaultFont]];
+  [textView_ setFont:[[KStyle sharedStyle] baseFont]];
 
   // configure layout manager
   //NSLayoutManager *layoutManager = []
@@ -214,9 +175,6 @@ static int debugSimulateTextAppendingIteration = 0;
   // register as text storage delegate
   textView_.textStorage.delegate = self;
 
-  // set to zero
-  lastEditedHighlightStateRange_ = NSMakeRange(NSNotFound,0);
-
   return self;
 }
 
@@ -253,15 +211,14 @@ static int debugSimulateTextAppendingIteration = 0;
     // our weak ref in the ruler:
     metaRulerView_.tabContents = nil;
   }
-  if (sourceHighlighter_.get())
-    sourceHighlighter_->cancel();
+  //if (sourceHighlighter_.get())
+  //  sourceHighlighter_->cancel();
   [super dealloc];
 }
 
 /*- (id)retain {
   DLOG("\n%@ retain (%lu) %@\n", self, [self retainCount],
-       //@""//
-       [NSThread callStackSymbols]
+       @""//[NSThread callStackSymbols]
        );
    fflush(stderr); fsync(STDERR_FILENO);
   usleep(5000);
@@ -270,8 +227,7 @@ static int debugSimulateTextAppendingIteration = 0;
 - (void)release {
   //DLOG("%@ release %@", self, [NSThread callStackSymbols]);
   DLOG("\n%@ release (%lu) %@\n", self, [self retainCount],
-       //@""//
-       [NSThread callStackSymbols]
+       @""//[NSThread callStackSymbols]
        );
   fflush(stderr); fsync(STDERR_FILENO);
   usleep(5000);
@@ -279,8 +235,7 @@ static int debugSimulateTextAppendingIteration = 0;
 }
 - (id)autorelease {
   DLOG("\n%@ autorelease %@\n", self,
-       //@""//
-       [NSThread callStackSymbols]
+       @""//[NSThread callStackSymbols]
        );
   fflush(stderr); fsync(STDERR_FILENO);
   return [super autorelease];
@@ -291,39 +246,7 @@ static int debugSimulateTextAppendingIteration = 0;
 
 
 #pragma mark -
-#pragma mark Internal support functions
-
-
-// Returns true if the calling thread was the one to alter the timestamp value
-- (BOOL)_updateLastEditTimestamp {
-  NSTimeInterval ts = [NSDate timeIntervalSinceReferenceDate];
-  uint64_t d = (uint64_t)((ts * 1000000.0)+0.5); // usec
-  return h_atomic_cas(&lastEditTimestamp_, lastEditTimestamp_, d);
-}
-
-
-#pragma mark -
 #pragma mark Properties
-
-
-- (BOOL)highlightingEnabled {
-  return highlightingEnabled_;
-}
-
-- (void)setHighlightingEnabled:(BOOL)enabled {
-  if (highlightingEnabled_ != enabled) {
-    highlightingEnabled_ = enabled;
-    // IDEA: here we could optimize the case where the user has highlighting
-    // turned on, thus contents are highlighted, then turns highlighting off,
-    // does not make any edits and the turns it back on again. We only need to
-    // re-apply the style in this case, not re-parse everything.
-    if (highlightingEnabled_) {
-      [self setNeedsHighlightingOfCompleteDocument];
-    } else {
-      [self clearHighlighting];
-    }
-  }
-}
 
 
 - (void)setIsLoading:(BOOL)loading {
@@ -353,26 +276,26 @@ static int debugSimulateTextAppendingIteration = 0;
 }
 
 
-- (NSString*)langId {
-  return langId_;
+- (NSString*)type {
+  return [self fileType];
 }
 
-- (void)setLangId:(NSString*)langId {
-  if (langId_ != langId) {
-    langId_ = [langId retain];
-    DLOG("%@ changed langId to '%@'", self, langId_);
-    // TODO: langId should be a UTI in the future
-    try {
-      self.fileType = langId;
-      sourceHighlighter_->setLanguage(langId_);
-    } catch (std::exception &e) {
-      self.fileType = @"public.text";
-      sourceHighlighter_->setLanguage(@"public.text");
-      [self presentError:[NSError kodErrorWithFormat:
-          @"Failed to parse language definition file for type '%@'", langId_]];
-    }
-    [self setNeedsHighlightingOfCompleteDocument];
-  }
+- (void)setType:(NSString*)typeName {
+  [self setFileType:typeName];
+}
+
+- (void)setTypeFromPathExtension:(NSString*)typeTag {
+  self.type = (NSString*)
+      UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension,
+                                            (CFStringRef)typeTag,
+                                            NULL /* no conform restraints */ );
+}
+
+- (void)setTypeFromMIMEType:(NSString*)typeTag {
+  self.type = (NSString*)
+      UTTypeCreatePreferredIdentifierForTag(kUTTagClassMIMEType,
+                                            (CFStringRef)typeTag,
+                                            NULL /* no conform restraints */ );
 }
 
 
@@ -554,8 +477,12 @@ static int debugSimulateTextAppendingIteration = 0;
 }
 
 
-- (NSUInteger)identifier {
-  return [self hash]; // FIXME
+- (uint64_t)identifier {
+  return identifier_;
+}
+
+- (uint64_t)version {
+  return version_;
 }
 
 
@@ -585,6 +512,12 @@ static int debugSimulateTextAppendingIteration = 0;
 }
 
 
+- (kod::ASTNodePtr)astRootNode {
+  kassert(ast_.get() != NULL);
+  return ast_->rootNode();
+}
+
+
 #pragma mark -
 #pragma mark Notifications
 
@@ -603,6 +536,8 @@ static int debugSimulateTextAppendingIteration = 0;
     NSMenuItem *menuItem = (NSMenuItem*)item;
     [menuItem setState:self.hasMetaRuler];
     y = YES;
+  } else if (action == @selector(setSyntaxMode:)) {
+    // TODO
   } else {
     y = [super validateUserInterfaceItem:item];
   }
@@ -617,10 +552,6 @@ static int debugSimulateTextAppendingIteration = 0;
   // of the kod module.
 
   [super tabWillCloseInBrowser:browser atIndex:index];
-
-  // cancel and disable highlighting
-  highlightingEnabled_ = NO;
-  sourceHighlighter_->cancel();
 
   NSWindowController *wc = browser.windowController;
   if (wc) {
@@ -645,6 +576,9 @@ static int debugSimulateTextAppendingIteration = 0;
     self.clipView.allowsScrolling = YES;
   });
 
+  // XXX FIXME TEMP DEBUG ...
+  [self debugUpdateASTViewer:self];
+
   KNodeEmitEvent("activateDocument", self, nil);
 }
 
@@ -663,26 +597,6 @@ static int debugSimulateTextAppendingIteration = 0;
     }
   }
 }
-
-
--(void)tabDidBecomeVisible {
-  [super tabDidBecomeVisible];
-  [self highlightCompleteDocumentInBackgroundIfQueued];
-}
-
-
-//- (void)undoManagerChangeDone:(NSNotification *)notification;
-//- (void)undoManagerChangeUndone:(NSNotification *)notification;
-
-
-/*- (void)undoManagerCheckpoint:(NSNotification*)notification {
-  //DLOG_EXPR([self isDocumentEdited]);
-  BOOL isDirty = [self isDocumentEdited];
-  if (isDirty_ != isDirty) {
-    isDirty_ = isDirty;
-    [self documentDidChangeDirtyState];
-  }
-}*/
 
 
 // Invoked when ranges of lines changed. |lineCountDelta| denotes how many lines
@@ -819,13 +733,6 @@ static int debugSimulateTextAppendingIteration = 0;
   return lineno + 1;
 }
 
-- (BOOL)isNewLine:(NSUInteger)lineNumber {
-  if ([self rangeOfLineAtLineNumber:lineNumber].length <= [self rangeOfLineTerminatorAtLineNumber:lineNumber].length) {
-    return YES;
-  }
-  return NO;
-}
-
 #pragma mark -
 #pragma mark NSTextViewDelegate implementation
 
@@ -858,8 +765,6 @@ static int debugSimulateTextAppendingIteration = 0;
                  shouldCloseSelector:(SEL)shouldCloseSelector
                          contextInfo:(void *)contextInfo {
   if (self.isDirty && self.browser) {
-    //BOOL highlightingWasEnabled = highlightingEnabled_;
-    highlightingEnabled_ = NO;
     [self.browser selectTabAtIndex:[self.browser indexOfTabContents:self]];
   }
   [super canCloseDocumentWithDelegate:delegate
@@ -887,13 +792,11 @@ static int debugSimulateTextAppendingIteration = 0;
 }*/
 
 // private method of NSDocument which is triggered when "dirty state" changes
-- (void)_updateForDocumentEdited:(BOOL)documentEdited {
-  self.isDirty = documentEdited;
-  [super _updateForDocumentEdited:documentEdited];
+- (void)_updateForDocumentEdited:(BOOL)isDirty {
+  self.isDirty = isDirty;
+  [super _updateForDocumentEdited:isDirty];
 }
 
-
-//- (void)setFileType:(NSString*)typeName { [super setFileType:typeName]; }
 
 #pragma mark -
 #pragma mark UI actions
@@ -913,8 +816,19 @@ static int debugSimulateTextAppendingIteration = 0;
 }
 
 
+- (IBAction)debugUpdateASTViewer:(id)sender {
+  KASTViewerWindowController *astViewerWindowController =
+      [KASTViewerWindowController sharedInstance];
+  kassert(astViewerWindowController);
+  KASTViewerController *astViewerController =
+    astViewerWindowController.outlineViewController;
+  kassert(astViewerController);
+  astViewerController.representedDocument = self;
+}
+
+
 - (IBAction)selectNextElement:(id)sender {
-  NSMutableAttributedString *mastr = textView_.textStorage;
+/*  NSMutableAttributedString *mastr = textView_.textStorage;
   NSString *text = mastr.string;
   NSCharacterSet *cs = [NSCharacterSet whitespaceAndNewlineCharacterSet];
   NSRange selectedRange = [textView_ selectedRange];
@@ -961,12 +875,12 @@ longestEffectiveRange:&range
     [textView_ setSelectedRange:range];
     //[textView_ showFindIndicatorForRange:range];
     return;
-  }
+  }*/
 }
 
 
 - (IBAction)selectPreviousElement:(id)sender {
-  NSMutableAttributedString *mastr = textView_.textStorage;
+/*  NSMutableAttributedString *mastr = textView_.textStorage;
   NSString *text = mastr.string;
   NSCharacterSet *cs = [NSCharacterSet whitespaceAndNewlineCharacterSet];
   NSRange selectedRange = [textView_ selectedRange];
@@ -1029,7 +943,7 @@ longestEffectiveRange:&range
     [textView_ setSelectedRange:range];
     //[textView_ showFindIndicatorForRange:range];
     return;
-  }
+  }*/
 }
 
 
@@ -1038,8 +952,15 @@ longestEffectiveRange:&range
 }
 
 
+- (IBAction)setSyntaxMode:(id)sender {
+  DLOG("TODO: setSyntaxMode:%@", [sender representedObject]);
+}
+
+
 #pragma mark -
-#pragma mark Highlighting
+#pragma mark Style
+// TODO(rsms): Most of these things should probably move to the KTextView and
+// its components.
 
 
 - (NSDictionary*)defaultTextAttributes {
@@ -1053,27 +974,10 @@ longestEffectiveRange:&range
 }
 
 
-// clear all highlighting attributes. Normally called after highlighting has
-// been turned off.
-- (void)clearHighlighting {
-  NSTextStorage *textStorage = textView_.textStorage;
-  [textStorage beginEditing];
-  [textStorage setAttributes:[self defaultTextAttributes]
-                       range:NSMakeRange(0, textStorage.length)];
-  [textStorage endEditing];
-}
-
-
 - (void)refreshStyle {
-  DLOG("refreshStyle");
+  //DLOG("refreshStyle");
   KStyle *style = [KStyle sharedStyle];
   kassert(style);
-  KStyleElement *defaultElem = [style defaultStyleElement];
-
-  // textview bgcolor
-  NSColor *color = defaultElem->backgroundColor();
-  kassert(color);
-  [textView_ setBackgroundColor:color];
 
   // text attributes
   NSTextStorage *textStorage = textView_.textStorage;
@@ -1096,191 +1000,13 @@ longestEffectiveRange:&range
 }
 
 
-// aka "enqueue complete highlighting"
-// returns true if processing was queued, otherwise false indicates processing
-// was already queued.
-- (BOOL)setNeedsHighlightingOfCompleteDocument {
-  if (hatomic_flags_set(&stateFlags_, kCompleteHighlightingIsQueued)) {
-    // we did set the flag ("enqueued")
-    if (isVisible_) {
-      // trigger highlighting directly if visible
-      [self highlightCompleteDocumentInBackgroundIfQueued];
-    }
-    return YES;
-  }
-  return NO;
-}
-
-
-// aka "dequeue and trigger complete highlighting"
-// returns true if processing was scheduled
-- (BOOL)highlightCompleteDocumentInBackgroundIfQueued {
-  if (hatomic_flags_clear(&stateFlags_, kCompleteHighlightingIsQueued)) {
-    // we cleared the flag ("dequeued")
-    return [self highlightCompleteDocumentInBackground];
-  }
-  return NO;
-}
-
-
-// returns true if processing was scheduled
-- (BOOL)highlightCompleteDocumentInBackground {
-  return [self deferHighlightTextStorage:textView_.textStorage
-                                 inRange:NSMakeRange(NSNotFound, 0)];
-}
-
-
-// returns true if processing was scheduled
-- (BOOL)deferHighlightTextStorage:(NSTextStorage*)textStorage
-                          inRange:(NSRange)editedRange {
-  //#define DLOG_HL DLOG
-  #define DLOG_HL(...) ((void)0)
-
-  // WARNING: this must not be called on the same thread as the
-  // dispatch_get_global_queue(0,0) run in -- it will cause a deadlock.
-
-  if (!highlightingEnabled_)
-    return NO;
-
-  // Make copies of these as they may change before we start processing
-  KSourceHighlightState* state = lastEditedHighlightState_;
-  NSRange stateRange = lastEditedHighlightStateRange_;
-  int changeInLength = [textStorage changeInLength];
-
-  // Aquire semaphore
-  if (!highlightSem_.tryGet()) {
-    // currently processing
-    DLOG_HL("highlight --CANCEL & WAIT--");
-
-    // Combine range of previous hl with current edit
-    if (editedRange.location != NSNotFound) {
-      NSRange prevHighlightRange = sourceHighlighter_->currentRange();
-      editedRange = NSUnionRange(prevHighlightRange, editedRange);
-    }
-
-    // We can no longer rely on state
-    //state = nil;
-    //stateRange = (NSRange){NSNotFound,0};
-
-    // TODO: some kind of funky logic here to deduce range changes
-    //int prevChangeInLength = sourceHighlighter_->currentChangeInLength();
-
-    // signal "cancel" and wait for lock
-    sourceHighlighter_->cancel();
-
-    // Since we put back the lock on main we need to reschedule for next tick.
-    // We will reschedule on to next tick until we get the semaphore.
-    if ([NSThread isMainThread]) {
-      // block to execute
-      dispatch_block_t block = ^{
-        NSAutoreleasePool *pool = [NSAutoreleasePool new];
-        // We can't rely on state in this case since we merged two edits
-        lastEditedHighlightState_ = nil;
-        lastEditedHighlightStateRange_ = NSMakeRange(NSNotFound,0);
-        [self deferHighlightTextStorage:textStorage inRange:editedRange];
-        [pool drain];
-      };
-
-      // execute with back-off delay
-      if (highlightWaitBackOffNSec_ == 0) {
-        // ASAP on next tick
-        dispatch_async(dispatch_get_main_queue(), block);
-        // start back-off delay at 50ms (1 000 000 000 = 1 sec)
-        highlightWaitBackOffNSec_ = 50000000LL;
-      } else {
-        // backing off and executing after highlightWaitBackOffNSec_ nanosecs
-        dispatch_time_t delay = dispatch_time(0, highlightWaitBackOffNSec_);
-        dispatch_after(delay, dispatch_get_main_queue(), block);
-        // increase back-off delay (100, 200, 400, 800, 1600, 3200 ms and so on)
-        highlightWaitBackOffNSec_ *= 2;
-      }
-
-      return YES;
-    } else {
-      highlightSem_.get();
-    }
-  }
-
-  // reset cancel-and-wait back-off timeout
-  highlightWaitBackOffNSec_ = 0;
-
-  // Dispatch
-  DLOG_HL("highlight --LOCKED--");
-  dispatch_async(gDispatchQueueSyntaxHighlight, ^{
-    if (textStorage.length == 0) {
-      highlightSem_.put();
-      return;
-    }
-    NSAutoreleasePool *pool = [NSAutoreleasePool new];
-
-    // Begin processing, buffering all attributes created
-    sourceHighlighter_->beginBufferingOfAttributes();
-
-    // highlight
-    #if !NDEBUG
-    DLOG_HL("highlight --PROCESS-- %@ %@ %@", NSStringFromRange(editedRange),
-            state, NSStringFromRange(stateRange));
-    #endif
-    NSRange affectedRange = {NSNotFound,0};
-    @try {
-      KStyle *style = [KStyle sharedStyle];
-      affectedRange =
-          sourceHighlighter_->highlight(textStorage, style, editedRange, state,
-                                        stateRange, changeInLength);
-    } @catch (NSException *e) {
-      WLOG("Caught exception while processing highlighting for range %@: %@",
-           NSStringFromRange(editedRange), e);
-      sourceHighlighter_->cancel();
-    }
-
-    if (sourceHighlighter_->isCancelled()) {
-      // highlighting was cancelled
-      // Note: No need to call clearBufferedAttributes() here since we know that
-      // we are soon called again which implies clearing the buffer.
-      highlightSem_.put();
-    } else {
-      // we are done processing -- time to flush our edits
-      //
-      // Notes:
-      //
-      // - this buffering and later flushing of attributes is needed to minimize
-      //   the time the UI is locked.
-      //
-      // - We perform this on the main thread to avoid scary _NSLayoutTree bugs
-      //
-      K_DISPATCH_MAIN_ASYNC(
-        if (!sourceHighlighter_->isCancelled()) {
-          DLOG_HL("highlight --FLUSH-START-- %@",
-                  NSStringFromRange(affectedRange));
-          [textStorage beginEditing];
-          @try {
-            sourceHighlighter_->endFlushBufferedAttributes(textStorage);
-          } @catch (NSException *e) {
-            WLOG("Caught exception while trying to flush highlighting "
-                 "attributes contained within %@: %@",
-                 NSStringFromRange(affectedRange), e);
-          }
-          //[textStorage invalidateAttributesInRange:affectedRange];
-          [textStorage endEditing];
-          DLOG_HL("highlight --FLUSH-END--");
-        }
-        highlightSem_.put();
-        DLOG_HL("highlight --FREED-- (cancelled: %@)",
-                sourceHighlighter_->isCancelled() ? @"YES":@"NO");
-      );
-    }
-
-    [pool drain];
-  });
-
-  return YES;
-  #undef DLOG_HL
-}
+#pragma mark -
+#pragma mark Tracking line count
 
 
 // Edits arrive in singles. This method is only called for used edits, not
 // programmatical changes.
-- (BOOL)textView:(NSTextView *)textView
+/*- (BOOL)textView:(NSTextView *)textView
 shouldChangeTextInRange:(NSRange)range
 replacementString:(NSString *)replacementString {
   #if 0
@@ -1309,67 +1035,12 @@ replacementString:(NSString *)replacementString {
       // insertion/replacement
       index = MIN(range.location, textStorage.length-1);
     }
-
-    if (index != NSNotFound) {
-      lastEditedHighlightState_ =
-        [textStorage attribute:KSourceHighlightStateAttribute
-                       atIndex:index
-                effectiveRange:&lastEditedHighlightStateRange_];
-    } else {
-      lastEditedHighlightState_ = nil;
-    }
   } else { // if (textStorage.length == 0)
-    lastEditedHighlightState_ = nil;
     didEditCharacters = (replacementString.length != 0);
   }
 
-  // Cancel any in-flight highlighting
-  if (didEditCharacters && highlightingEnabled_) {
-    #if 0
-    DLOG("text edited -- '%@' -> '%@' at %@",
-     [textView_.textStorage.string substringWithRange:range],
-     replacementString, NSStringFromRange(range));
-    #endif
-    sourceHighlighter_->cancel();
-  }
-
-  return YES;
-}
-
-
-/*- (BOOL)textView:(NSTextView *)textView
-shouldChangeTextInRanges:(NSArray *)affectedRanges
-      replacementStrings:(NSArray *)replacementStrings {
-  NSUInteger i, count = [affectedRanges count];
-  for (i = 0; i < count; i++) {
-    NSValue *val = [affectedRanges objectAtIndex:i];
-    NSString *str = [replacementStrings objectAtIndex:i];
-    NSRange range = [val rangeValue];
-    DLOG("replace text '%@' at %@ with '%@'",
-         [textView_.textStorage.string substringWithRange:range],
-         NSStringFromRange(range), str);
-
-    // find full range of state at edit location
-
-    NSRange highlightStateRange;
-    NSTextStorage *textStorage = textView_.textStorage;
-    KSourceHighlightState *hlstate =
-      [textStorage attribute:KSourceHighlightStateAttribute
-                     atIndex:range.location
-       longestEffectiveRange:&highlightStateRange
-                     inRange:NSMakeRange(0, textStorage.length)];
-    DLOG("state at %u -> %@ '%@'", range.location, hlstate,
-         [textStorage.string substringWithRange:highlightStateRange]);
-
-  }
   return YES;
 }*/
-
-
-
-// used for temporary storage ONLY ON MAIN THREAD
-//#define ucharbuf1_size 4096  // 1 memory page
-//static unichar ucharbuf1[ucharbuf1_size];
 
 
 /*!
@@ -1433,10 +1104,13 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
 
 - (void)_updateLinesToRangesInfoForTextStorage:(NSTextStorage*)textStorage
                                        inRange:(NSRange)editedRange
-                                       changeDelta:(NSInteger)changeInLength {
+                                   changeDelta:(NSInteger)changeInLength
+                                      recursed:(BOOL)recursed {
+
   // Note: We can't use a HSpinLock::Scope here since we need to release the
   // lock before we call linesDidChangeWithLineCountDelta: at the end
   lineToRangeSpinLock_.lock();
+
 
   // update linebreaks mapping
   NSString *string = textStorage.string;
@@ -1537,11 +1211,7 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
   } else if (changeInLength < 0) {
     // edit action was "deletion"
 
-    // BUG(rsms): There's a bug in here somewhere which "removes" more lines
-    // than actually removed
-
     if (didAffectLines) {
-
       NSRange deletedRange = editedRange;
       deletedRange.length = -changeInLength;
       //DLOG("deletedRange -> %@", NSStringFromRange(deletedRange));
@@ -1585,25 +1255,170 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
       (lineToRangeVec_.size() != 0 || lineCountDelta != 0)) {
     [self linesDidChangeWithLineCountDelta:lineCountDelta];
   }
+
+  // TODO(swizec): this section might be a hack, perhaps there is a more
+  // efficient way of solving this problem.
+
+  // performing recursion like this solves problems with line numbering
+  if (changeInLength < 1 && recursed == NO) {
+    // this happens when we're replacing text with less text
+    // the idea is that the first time 'round we took care of vanishing text
+    // and on the second go we take care of the newly added text
+    [self _updateLinesToRangesInfoForTextStorage:textStorage
+                                         inRange:editedRange
+                                     changeDelta:editedRange.length
+                                        recursed:YES];
+  } else if (editedRange.length > 1 && recursed == NO) {
+    // this happens when we insert text into the document
+    // the idea is that the first time 'round we took care of the inserted text
+    // now we have to treat all text from here to the end of the document as new
+    // text otherwise the last x lines don't get numbered
+    NSRange newEditedRange =
+        NSMakeRange(editedRange.location + editedRange.length,
+                    textStorage.string.length -
+                    (editedRange.location + editedRange.length));
+    [self _updateLinesToRangesInfoForTextStorage:textStorage
+                                         inRange:newEditedRange
+                                     changeDelta:newEditedRange.length
+                                        recursed:YES];
+  }
+}
+
+
+#pragma mark -
+#pragma mark Responding to text edits
+
+
+
+- (NSString*)_inspectASTTree:(kod::ASTNodePtr&)astNode {
+  if (!astNode.get())
+    return @"<null>";
+  NSMutableString *str = [NSMutableString stringWithFormat:
+      @"{ kind:\"%@\", sourceRange:%@",
+      astNode->kind()->weakNSString(),
+      NSStringFromRange(astNode->sourceRange())];
+
+  if (!astNode->childNodes().empty()) {
+    [str appendFormat:@", childNodes: ["];
+    std::vector<kod::ASTNodePtr>::iterator it = astNode->childNodes().begin();
+    std::vector<kod::ASTNodePtr>::iterator endit = astNode->childNodes().end();
+    for ( ; it < endit; ++it ) {
+      [str appendString:[self _inspectASTTree:*it]];
+    }
+    [str appendFormat:@"]"];
+  }
+
+  [str appendString:@"},"];
+  return str;
 }
 
 
 // invoked after an editing occured, but before it's been committed
-// Has the nasty side effect of losing the selection when applying attributes
-//- (void)textStorageWillProcessEditing:(NSNotification *)notification {}
+// Has the nasty side effect of losing the selection if applying attributes
+- (void)textStorageWillProcessEditing:(NSNotification *)notification {
+  NSTextStorage *textStorage = [notification object];
+
+  if (!(textStorage.editedMask & NSTextStorageEditedCharacters))
+    return;
+
+  // Record change properties
+  krusage_begin(rusage, "Retrieve changes from text storage");
+  NSRange editedRange = [textStorage editedRange];
+  int changeDelta = [textStorage changeInLength];
+
+  // Export a copy of our current text state into V8 which will be governed by
+  // the V8 GC.
+  krusage_sample(rusage, "Copy document text to V8 string");
+  kod::ExternalUTF16String *exportedText =
+      new kod::ExternalUTF16String(textStorage.string);
+
+  //fprintf(stderr, "[main -> nodejs] parse()\n");
+  krusage_sample(rusage, "Calling into nodejs");
+  KNodePerformInNode(^(KNodeReturnBlock returnCallback){
+    // we are now in the nodejs thread
+    v8::HandleScope scope;
+
+    krusage_sample(rusage, "Parsing");
+
+    // get the v8 KDocument
+    v8::Local<v8::Object> doc = [self v8Value]->ToObject();
+
+    // find the parse function
+    v8::Local<v8::Value> parseV = doc->Get(v8::String::New("parse"));
+    //kassert(!parseV.IsEmpty());
+    if (!parseV.IsEmpty() && parseV->IsFunction()) {
+      // build arguments
+      v8::Local<v8::Value> argv[] = {
+        v8::String::NewExternal(exportedText),
+        // Note that we convert ints to v8::Number with doubles since
+        // v8::Integer is currently limited to 32-bit precision when created.
+        // As soon as the v8::Integer::New accepts a 64-bit integer we can use
+        // that instead.
+        v8::Number::New((double)editedRange.location),
+        v8::Number::New((double)changeDelta)
+      };
+      static const int argc = sizeof(argv) / sizeof(argv[0]);
+
+      v8::TryCatch tryCatch;
+
+      // call function
+      v8::Local<v8::Value> returnValue =
+          v8::Local<v8::Function>::Cast(parseV)->Call(doc, argc, argv);
+
+      // check for error
+      NSError *error = nil;
+      if (tryCatch.HasCaught()) {
+        v8::String::Utf8Value trace(tryCatch.StackTrace());
+        const char *msg = NULL;
+        if (trace.length() > 0) {
+          msg = *trace;
+        } else {
+          msg = "(Unspecified exception)";
+        }
+        NSAutoreleasePool *pool = [NSAutoreleasePool new];
+        h_atomic_barrier();
+        WLOG("Error while executing parser for %@: %s", self, msg);
+        [pool drain];
+      } else {
+        // check results
+        kassert(!returnValue.IsEmpty());
+        kassert(returnValue->IsObject());
+
+        // unwrap AST root object
+        kod::ASTNodePtr astRoot =
+            kod::ASTNodeWrapper::UnwrapNode(returnValue->ToObject());
+        kassert(astRoot.get() != NULL);
+
+        // present rusage report
+        krusage_end(rusage, "Parser returned", "[rusage] ");
+
+        // replace/update ast root
+        ast_->setRootNode(astRoot);
+        //DLOG("AST: %@", [self _inspectASTTree:astRoot]);
+        K_DISPATCH_MAIN_ASYNC({ [self debugUpdateASTViewer:self]; });
+      }
+
+      // free memory used by the temporary copy of our text
+      exportedText->clear();
+
+    } else DLOG("no parse() function available for document");
+  });
+}
+
 
 // invoked after an editing occured which has just been committed
-//- (void)textStorageDidProcessEditing:(NSNotification *)notification {}
-
 - (void)textStorageDidProcessEditing:(NSNotification *)notification {
   // Note: this might be called on different threads
 
-  NSTextStorage  *textStorage = [notification object];
+  NSTextStorage *textStorage = [notification object];
 
   // no-op unless characters where edited
   if (!(textStorage.editedMask & NSTextStorageEditedCharacters)) {
     return;
   }
+
+  // Increment our version
+  h_atomic_inc(&version_);
 
   // range that was affected by the edit
   NSRange editedRange = [textStorage editedRange];
@@ -1615,17 +1430,16 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
   if ([NSThread isMainThread]) {
     [self _updateLinesToRangesInfoForTextStorage:textStorage
                                          inRange:editedRange
-                                     changeDelta:changeInLength];
+                                     changeDelta:changeInLength
+                                        recursed:NO];
   } else {
     K_DISPATCH_MAIN_ASYNC({
       [self _updateLinesToRangesInfoForTextStorage:textStorage
                                            inRange:editedRange
-                                       changeDelta:changeInLength];
+                                       changeDelta:changeInLength
+                                          recursed:NO];
     });
   }
-
-  // Update edit timestamp
-  [self _updateLastEditTimestamp];
 
   // we do not process edits when we are loading
   if (isLoading_) return;
@@ -1635,61 +1449,26 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
   #if 0 && K_DEBUG_BUILD
   DLOG_RANGE(editedRange, textStorage.string);
   #endif
+
   DLOG("editedRange: %@, changeInLength: %d, wasInUndoRedo: %@, editedMask: %d",
        NSStringFromRange(editedRange), changeInLength,
        wasInUndoRedo ? @"YES":@"NO", textStorage.editedMask);
 
-  // This should never happen, right?!
-  if (changeInLength == 0 && !lastEditedHighlightState_) {
-    DLOG("textStorageDidProcessEditing: bailing because "
-         "(changeInLength == 0 && !lastEditedHighlightState_)");
-    return;
-  }
-
-  // Syntax highlight
-  if (highlightingEnabled_) {
-
-    #if 0
-    NSTimeInterval startTime = [NSDate timeIntervalSinceReferenceDate];
-    KNodeInvokeExposedJSFunction("foo", nil, ^(NSError *err, NSArray *args){
-      NSTimeInterval endTime = [NSDate timeIntervalSinceReferenceDate];
-      DLOG("[node] call returned to kod (error: %@, args: %@) "
-           "real time spent: %.2f ms",
-           err, args, (endTime - startTime)*1000.0);
-    });
-    #endif
-
-    [self deferHighlightTextStorage:textStorage inRange:editedRange];
-  }
+  #if 0
+  NSTimeInterval startTime = [NSDate timeIntervalSinceReferenceDate];
+  NSArray *args = [NSArray arrayWithObject:textStorage.string];
+  KNodeInvokeExposedJSFunction("silentPing", args, ^(NSError *err, NSArray *args){
+    NSTimeInterval endTime = [NSDate timeIntervalSinceReferenceDate];
+    /*DLOG("[node] call returned to kod (error: %@, args: %@) "
+         "real time spent: %.2f ms",
+         err, args, (endTime - startTime)*1000.0);*/
+    fprintf(stderr, "real: %.4f ms\n", (endTime - startTime)*1000.0);
+  });
+  #endif
 
   // this makes the edit an undoable entry
   // TODO(rsms): Make this configurable through kconf "editor/undo/granularity"
   //[textView_ breakUndoCoalescing];
-}
-
-
-- (void)guessLanguageBasedOnUTI:(NSString*)uti textContent:(NSString*)text {
-  KLangMap *langMap = [KLangMap sharedLangMap];
-  NSString *firstLine = nil;
-
-  // find first line
-  if (text) {
-    NSUInteger stopIndex = MIN(512, text.length);
-    firstLine = [text substringToIndex:stopIndex];
-    firstLine = [firstLine stringByTrimmingCharactersInSet:
-        [NSCharacterSet whitespaceAndNewlineCharacterSet]];
-    NSRange firstNewlineRange = [firstLine rangeOfCharacterFromSet:
-        [NSCharacterSet newlineCharacterSet]];
-    if (firstNewlineRange.location != NSNotFound) {
-      firstLine = [text substringToIndex:firstNewlineRange.location];
-    } else {
-      firstLine = text;
-    }
-  }
-
-  self.langId = [langMap langIdForSourceURL:self.fileURL
-                                    withUTI:uti
-                       consideringFirstLine:firstLine];
 }
 
 
@@ -1868,15 +1647,7 @@ finishedReadingURL:(NSURL*)url
       [self post:KDocumentDidLoadDataNotification];
       [self emitEvent:@"load" argument:nil];
       // TODO(rsms): emit event in nodejs on our v8 wrapper object
-
-      // guess language if no language has been set
-      if (!langId_) {
-        // implies queueing of complete highlighting
-        [self guessLanguageBasedOnUTI:typeName textContent:text];
-      } else {
-        if (isVisible_)
-          [self setNeedsHighlightingOfCompleteDocument];
-      }
+      // TODO(rsms): guess language if no language has been set
 
       if (callback) callback();
 
@@ -1990,12 +1761,14 @@ finishedReadingURL:(NSURL*)url
         [[KStyle sharedStyle] loadFromURL:absoluteURL withCallback:nil];
       }
 
-      // Guess syntax
-      if (highlightingEnabled_) {
-        // TODO: typeName might have changed during reading
-        [self guessLanguageBasedOnUTI:typeName
-                          textContent:self.textView.string];
-      }
+      // Turn typeName back into UTI (e.g. php -> public.php-script)
+      NSString *uti = nil;
+      [absoluteURL getResourceValue:&uti
+                             forKey:NSURLTypeIdentifierKey
+                              error:nil];
+      self.type = uti;
+
+      // TODO(rsms): guess syntax/language
     }
 
     // unfreeze tab

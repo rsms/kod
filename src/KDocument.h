@@ -5,15 +5,11 @@
 #import <ChromiumTabs/ChromiumTabs.h>
 
 #import "common.h"
-#import "KSourceHighlighter.h"
-#import "HSemaphore.h"
 #import "HSpinLock.h"
+#import "AST.h"
 
 @class KBrowser, KStyle, KBrowserWindowController, KScrollView, KMetaRulerView;
 @class KTextView, KClipView, KURLHandler;
-
-typedef std::pair<std::pair<NSRange,NSRange>, HObjCPtr> KHighlightQueueEntry;
-typedef std::deque<KHighlightQueueEntry> KHighlightQueue;
 
 // notifications
 extern NSString *const KDocumentDidLoadDataNotification;
@@ -22,17 +18,16 @@ extern NSString *const KDocumentDidLoadDataNotification;
 // simple scrollable text area.
 @interface KDocument : CTTabContents <NSTextViewDelegate,
                                       NSTextStorageDelegate> {
+  uint64_t identifier_;
+  volatile uint64_t version_;
+
   KTextView* textView_; // Owned by NSScrollView which is our view_
   __weak NSUndoManager *undoManager_; // Owned by textView_
   BOOL isDirty_;
   NSStringEncoding textEncoding_;
 
-  KSourceHighlighterPtr sourceHighlighter_;
-  BOOL highlightingEnabled_;
-  HSemaphore highlightSem_;
-
-  // Current language
-  NSString const *langId_;
+  // Abstract Syntax Tree
+  kod::ASTPtr ast_;
 
   // Mapped line breaks. Provides number of lines and a mapping from line number
   // to actual character offset. The location of each range denotes the start
@@ -44,37 +39,62 @@ extern NSString *const KDocumentDidLoadDataNotification;
   // Meta ruler (nil if not shown)
   __weak KMetaRulerView *metaRulerView_;
 
-  // Timestamp of last edit (in microseconds). 0 if never edited.
-  uint64_t lastEditTimestamp_;
-
   // Internal state
   hatomic_flags_t stateFlags_;
-  NSRange lastEditedHighlightStateRange_;
-  __weak KSourceHighlightState *lastEditedHighlightState_;
-  int64_t highlightWaitBackOffNSec_; // nanoseconds
-  NSNumber *activeNodeTextEditedInvocationRTag_;
 }
 
 @property(assign, nonatomic) BOOL isDirty;
-@property(assign, nonatomic) BOOL highlightingEnabled;
 @property BOOL hasMetaRuler;
 @property(readonly) BOOL canSaveDocument;
 @property(readonly) BOOL hasRemoteSource;
-@property(assign, nonatomic) NSStringEncoding textEncoding;
+@property(assign) NSStringEncoding textEncoding;
 @property(readonly) KBrowserWindowController* windowController;
 @property(readonly) NSMutableParagraphStyle *paragraphStyle; // compound
-@property(retain, nonatomic) NSString *langId;
-@property(readonly, nonatomic) KTextView* textView;
-@property(readonly, nonatomic) KScrollView* scrollView;
-@property(readonly, nonatomic) KClipView* clipView;
 
-@property(readonly, nonatomic) NSUInteger lineCount;
-@property(readonly, nonatomic) NSUInteger charCountOfLastLine;
+@property(readonly) KTextView* textView;
+@property(readonly) KScrollView* scrollView;
+@property(readonly) KClipView* clipView;
 
-// Tab identifier
-@property(readonly, nonatomic) NSUInteger identifier;
+@property(readonly) NSUInteger lineCount;
+@property(readonly) NSUInteger charCountOfLastLine;
 
-// Text contents
+
+// An opaque value which identifies this document. It's guaranteed to be unique
+// during a session (between starting and terminating Kod.app).
+@property(readonly) uint64_t identifier;
+
+
+/*!
+ * Monotonically incrementing version number which changes for each edit.
+ * This number is only unique within this document and during its opened
+ * life-cycle (that is, when closing and again opening a document, it is reset).
+ *
+ * -- Internal usage --
+ *
+ * Incrementing the version and reading the new value:
+ *    uint64_t version = h_atomic_inc(&version_);
+ *
+ * Incrementing the version and reading the previous value:
+ *    uint64_t oldVersion = h_atomic_inc_and_return_prev(&version_);
+ *
+ * Reading the current version can be done by simply reading the value of
+ * version_ since each h_atomic_inc-call issues a full memory barrier, thus any
+ * concurrent reads will synchronize to either complete or hold.
+ */
+@property(readonly) uint64_t version;
+
+
+@property(readonly, assign) kod::ASTPtr ast;
+@property(readonly, assign) kod::ASTNodePtr astRootNode;
+
+
+// A Uniform Type Identifier for the current contents
+@property(retain) NSString *type;
+- (void)setTypeFromPathExtension:(NSString*)pathExtension;
+- (void)setTypeFromMIMEType:(NSString*)mimeType;
+
+
+// Text contents (returns a reference when read, and makes a copy when written)
 @property(copy) NSString *text;
 
 // alias of fileURL
@@ -87,25 +107,15 @@ extern NSString *const KDocumentDidLoadDataNotification;
 @property(readonly) BOOL isVirgin;
 
 
-+ (NSFont*)defaultFont;
 - (void)setIconBasedOnContents;
-
-- (void)guessLanguageBasedOnUTI:(NSString*)uti textContent:(NSString*)text;
 
 // actions
 - (IBAction)debugDumpAttributesAtCursor:(id)sender;
+- (IBAction)debugUpdateASTViewer:(id)sender;
 - (IBAction)selectNextElement:(id)sender;
 - (IBAction)selectPreviousElement:(id)sender;
 - (IBAction)toggleMetaRuler:(id)sender;
 
-- (BOOL)setNeedsHighlightingOfCompleteDocument;
-- (BOOL)highlightCompleteDocumentInBackgroundIfQueued;
-- (BOOL)highlightCompleteDocumentInBackground;
-
-- (BOOL)deferHighlightTextStorage:(NSTextStorage*)textStorage
-                          inRange:(NSRange)range;
-
-- (void)clearHighlighting;
 - (void)refreshStyle;
 
 - (void)styleDidChange:(NSNotification*)notification;
@@ -128,10 +138,6 @@ extern NSString *const KDocumentDidLoadDataNotification;
  * current selection.
  */
 - (NSRange)lineRangeForCurrentSelection;
-
-- (BOOL)isNewLine:(NSUInteger)lineNumber;
-
-
 
 // These are called by readFromURL:ofType:error:
 

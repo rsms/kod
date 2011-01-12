@@ -1,0 +1,4 @@
+@interface KASTOutlineView : NSOutlineView {
+}
+
+@end

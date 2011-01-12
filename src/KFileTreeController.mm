@@ -105,6 +105,12 @@ static NSString *kNameColumnId = @"name";
                                          error:error];
   if (!urls) return nil;
 
+  // Sort the filenames using Finder-like locale-sensitive comparison
+  urls = [urls sortedArrayUsingComparator:^(id url1, id url2) {
+    return [[url1 lastPathComponent] localizedStandardCompare:
+        [url2 lastPathComponent]];
+  }];
+
   KFileTreeNodeData *nodeData =
       [KFileTreeNodeData fileTreeNodeDataWithPath:path];
   nodeData.container = YES;

@@ -5,7 +5,6 @@
 #import "common.h"
 #import "KKodURLHandler.h"
 #import "KFileURLHandler.h"
-#import "KLangMap.h"
 #import "kconf.h"
 #import "kod_version.h"
 #import "KDocumentController.h"
@@ -62,9 +61,9 @@
   tab.isEditable = NO;
 
   // guess langId
-  tab.langId = [[KLangMap sharedLangMap] langIdForSourceURL:fileURL
+  /*tab.langId = [[KLangMap sharedLangMap] langIdForSourceURL:fileURL
                                                     withUTI:nil
-                                       consideringFirstLine:nil];
+                                       consideringFirstLine:nil];*/
 
   // delegate reading to the file url handler
   [fileURLHandler readURL:fileURL

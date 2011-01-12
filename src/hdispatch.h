@@ -41,6 +41,15 @@
     [__arpool drain]; \
   })
 
+// for complex blocks
+#define K_DISPATCH_BG_ASYNC_BEGIN \
+  dispatch_async(dispatch_get_global_queue(0,0),^{ \
+    NSAutoreleasePool *__arpool = [NSAutoreleasePool new];
+    // user code here
+#define K_DISPATCH_BG_ASYNC_END \
+    [__arpool drain]; \
+  })
+
 inline static void h_dispatch_async_main(dispatch_block_t block) {
   block = [block copy];
   dispatch_async(dispatch_get_main_queue(), ^{

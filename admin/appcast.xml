@@ -28,5 +28,16 @@
         sparkle:dsaSignature="MCwCFC++p/0AxofCO025TX9Xj7OCUVPYAhRzIZ0SF+P4n4bXiO6C3T9NS8gV+A=="
       />
     </item>
+    <item>
+      <title>Version 0.0.3</title>
+      <pubDate>Wed, 12 Jan 2011 00:13:45 +0100</pubDate>
+      <enclosure
+        url="http://kodapp.com/dist/kod-0.0.3.zip"
+        sparkle:version="0.0.3"
+        type="application/octet-stream"
+        length="7407747"
+        sparkle:dsaSignature="MC0CFGs80e8b16+Skb5oluo5IsmkqbxjAhUAjLdyJjG9uRt0X4cfVapB6gMyEqc="
+      />
+    </item>
   </channel>
 </rss>

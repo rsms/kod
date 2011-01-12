@@ -17,11 +17,10 @@ xcuserdata
 *.moved-aside
 
 # Dependencies
-/deps/srchilight/include
-/deps/srchilight/upstream-lang
 /deps/bwtoolkit/build
 
 # Kod Specific
 /src/kod_version.h
 /website/public/config.php
 /node-kod/build
+/xcconfig/base-local.xcconfig

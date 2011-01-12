@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #import "NSCharacterSet-kod.h"
-#import "hobjc.h"
+#import "hcommon.h"
 
 @implementation NSCharacterSet (Kod)
 
@@ -14,7 +14,7 @@ static NSCharacterSet * gSlashCharacterSet_;
   if (!gWhitespaceAndCommaCharacterSet_) {
     NSCharacterSet *cs =
         [NSCharacterSet characterSetWithCharactersInString:@", "];
-    [h_objc_swap(&gWhitespaceAndCommaCharacterSet_, [cs retain]) release];
+    h_casid(&gWhitespaceAndCommaCharacterSet_, cs);
   }
   return gWhitespaceAndCommaCharacterSet_;
 }
@@ -23,7 +23,7 @@ static NSCharacterSet * gSlashCharacterSet_;
   if (!gSlashCharacterSet_) {
     NSCharacterSet *cs =
         [NSCharacterSet characterSetWithCharactersInString:@"/"];
-    [h_objc_swap(&gSlashCharacterSet_, [cs retain]) release];
+    h_casid(&gSlashCharacterSet_, cs);
   }
   return gSlashCharacterSet_;
 }

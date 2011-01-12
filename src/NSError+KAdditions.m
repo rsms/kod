@@ -29,6 +29,7 @@ static NSString *KErrorDomain = nil; // TODO: centralize this
   va_copy(dest, src);
   va_end(src);
   NSString *msg = [[NSString alloc] initWithFormat:format arguments:dest];
+  [msg autorelease];
   return [NSError kodErrorWithDescription:msg code:code];
 }
 
@@ -38,6 +39,7 @@ static NSString *KErrorDomain = nil; // TODO: centralize this
   va_copy(dest, src);
   va_end(src);
   NSString *msg = [[NSString alloc] initWithFormat:format arguments:dest];
+  [msg autorelease];
   return [NSError kodErrorWithDescription:msg code:0];
 }
 

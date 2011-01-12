@@ -19,6 +19,10 @@ static KMachService *gSharedInstance = nil;
   if (!gSharedInstance) {
     gSharedInstance =
         [[self alloc] initWithMachPortName:@K_SHARED_SERVICE_PORT_NAME];
+    if (!gSharedInstance) {
+      WLOG("error: failed to initialize shared KMachService -- are you"
+           " running more than one Kod.app instance?");
+    }
   }
   return gSharedInstance;
 }
@@ -30,9 +34,8 @@ static KMachService *gSharedInstance = nil;
   connection_ = [[NSConnection serviceConnectionWithName:portName
                                               rootObject:self] retain];
   if (!connection_) {
-    WLOG("error: failed to initialize mach port %@ for receiving", portName);
     [self release];
-    self = nil;
+    return nil;
   } else {
     DLOG("%@ opened", self);
   }

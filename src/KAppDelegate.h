@@ -8,6 +8,7 @@
 
 @interface KAppDelegate : NSObject <NSApplicationDelegate> {
   IBOutlet SUUpdater *sparkleUpdater_;
+  IBOutlet NSMenu *syntaxModeMenu_;
   KTerminalUsageWindowController *terminalUsageWindowController_;
 }
 
@@ -15,8 +16,5 @@
 - (IBAction)newDocument:(id)sender;  // "New tab"
 - (IBAction)displayTerminalUsage:(id)sender;
 - (IBAction)displayAbout:(id)sender;
-
-/*-(void)openDocumentInWindow:(KBrowserWindowController*)windowController
-                     sender:(id)sender;*/
 
 @end

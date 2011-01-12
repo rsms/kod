@@ -4,12 +4,21 @@
 
 #import "common.h"
 #import "KHTTPURLHandler.h"
+#import "NSStringICUAdditions.h"
 
 @implementation KHTTPURLHandler
 
 
 - (BOOL)canReadURL:(NSURL*)url {
-  return [[url scheme] caseInsensitiveCompare:@"http"] == NSOrderedSame;
+  NSString *scheme = [url scheme];
+  if (scheme) {
+    if (scheme.length == 5) {
+      return [scheme caseInsensitiveCompare:@"https"] == NSOrderedSame;
+    } else if (scheme.length == 4) {
+      return [scheme caseInsensitiveCompare:@"http"] == NSOrderedSame;
+    }
+  }
+  return NO;
 }
 
 

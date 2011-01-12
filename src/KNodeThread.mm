@@ -39,7 +39,7 @@ static void _KPrepareNode(EV_P_ ev_prepare *watcher, int revents) {
 
 - (id)init {
   if (!(self = [super init])) return nil;
-  [self setName:@"se.hunch.kod.node"];
+  [self setName:@"se.hunch.kod.nodejs"];
   return self;
 }
 
@@ -50,12 +50,14 @@ static void _KPrepareNode(EV_P_ ev_prepare *watcher, int revents) {
   // args
   const char *argv[] = {NULL,"","",NULL};
   argv[0] = [[kconf_bundle() executablePath] UTF8String];
-  #if !NDEBUG
-  argv[1] = "--expose-gc";
-  argv[2] = "--trace-gc";
-  static const int argc = 4;
-  #else
-  static const int argc = 2;
+  int argc = 2;
+  #if !NDEBUG || K_DEBUG_V8_EXPOSE_GC
+    argv[1] = "--expose-gc";
+    argc++;
+    #if K_DEBUG_V8_TRACE_GC
+      argv[2] = "--trace-gc";
+      argc++;
+    #endif
   #endif
   argv[argc-1] = [[kconf_res_url(@"main.js") path] UTF8String];
   

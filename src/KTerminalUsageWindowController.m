@@ -26,22 +26,36 @@
     @"/bin",
     nil
   };
+
   NSFileManager *fm = [NSFileManager defaultManager];
   NSString *possiblePath;
   NSUInteger i = 0;
   NSString *homeDir = [NSHomeDirectory() stringByAppendingString:@"/"];
-  while ((possiblePath = possiblePaths[i++])) {
-    possiblePath = [self _canonicalizePath:possiblePath isDirectory:YES];
-    BOOL isDir;
-    if ([fm fileExistsAtPath:possiblePath isDirectory:&isDir] && isDir) {
-      NSString *binPath = possiblePath;
-      if ([binPath hasPrefix:homeDir]) {
-        binPath = [@"~/" stringByAppendingString:
-            [binPath substringFromIndex:homeDir.length]];
+  NSString *binPath = [kconf_url(@"cli/symlink/url", nil) path];
+
+  if (binPath) {
+    binPath = [binPath stringByDeletingLastPathComponent];
+  } else {
+    while ((possiblePath = possiblePaths[i++])) {
+      possiblePath = [self _canonicalizePath:possiblePath isDirectory:YES];
+      BOOL isDir;
+      if ([fm fileExistsAtPath:possiblePath isDirectory:&isDir] && isDir) {
+        binPath = possiblePath;
+        break;
       }
-      [binPathTextField_ setStringValue:binPath];
-      break;
     }
+  }
+
+  if (binPath) {
+    if (binPath.length == homeDir.length-1 &&  [homeDir hasPrefix:binPath]) {
+      // case: binPath="/Users/john", homeDir="/Users/john/"
+      binPath = @"~";
+    } else if ([binPath hasPrefix:homeDir]) {
+      // case: binPath="/users/john/foo/bin", homeDir="/Users/john/"
+      binPath = [@"~/" stringByAppendingString:
+                 [binPath substringFromIndex:homeDir.length]];
+    }
+    [binPathTextField_ setStringValue:binPath];
   }
 }
 
@@ -52,8 +66,7 @@
   NSBundle *bundle = kconf_bundle();
 
   // build dst path
-  NSString *dstPath =
-      [[bundle sharedSupportPath] stringByAppendingPathComponent:@"kod"];
+  NSString *dstPath = [kconf_support_url(@"kod") path];
   kassert([fm fileExistsAtPath:dstPath]);
 
   NSString *binPath = [binPathTextField_ stringValue];
@@ -82,7 +95,7 @@
 
   // remove existing file if found
   NSString *existingLinkDst = [fm destinationOfSymbolicLinkAtPath:linkPath
-                                                            error:&error];
+                                                            error:nil];
   if (existingLinkDst) {
     existingLinkDst = [self _canonicalizePath:existingLinkDst isDirectory:NO];
     if ([existingLinkDst isEqualToString:linkPath]) {
@@ -103,15 +116,14 @@
     [binPathTextField_ setEnabled:NO];
     [cancelButton_ setEnabled:NO];
     [commitButton_ setEnabled:NO];
-    WLOG("sudo ln -s '%@' '%@'", dstPath, linkPath);
+    WLOG("sudo /bin/ln -fs '%@' '%@'", dstPath, linkPath);
     [KSudo execute:@"/bin/ln"
-         arguments:[NSArray arrayWithObjects:@"-s", dstPath, linkPath, nil]
+         arguments:[NSArray arrayWithObjects:@"-fs", dstPath, linkPath, nil]
           callback:^(NSError *err, NSData *output){
       [binPathTextField_ setEnabled:YES];
       [cancelButton_ setEnabled:YES];
       [commitButton_ setEnabled:YES];
       if (err) {
-        //if ([err ] != -60006)
         NSInteger authCancelledOSError = -60006; // subject to endian bug?!
         if (![[err domain] isEqualToString:NSOSStatusErrorDomain] ||
             [err code] != authCancelledOSError) {
@@ -120,11 +132,12 @@
         } else {
           DLOG("authorization request aborted by user");
         }
-        return;
+      } else {
+        kconf_set_url(@"cli/symlink/url", [NSURL fileURLWithPath:linkPath]);
+        DLOG("sudo ln appear to have succeeded (we currently are unable to test"
+             " return status, but are working on it)");
+        [self close];
       }
-      DLOG("sudo ln appear to have succeeded (we currently are unable to test "
-           "return status, but are working on it)");
-      [self close];
     }];
   } else {
     // create symbolic link
@@ -135,7 +148,7 @@
       DLOG("error: %@", error);
       [NSApp presentError:error];
     } else {
-      // done
+      kconf_set_url(@"cli/symlink/url", [NSURL fileURLWithPath:linkPath]);
       [self close];
     }
   }

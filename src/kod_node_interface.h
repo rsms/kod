@@ -23,16 +23,17 @@ void KNodeInitNode(v8::Handle<v8::Object> kodModule);
 extern void KNodePerformInNode(KNodePerformBlock block);
 extern void KNodePerformInNode(KNodeIOEntry *entry);
 
+/*!
+ * Invoke |fun| on |target| passing |argc| number of arguments in |argv|.
+ * If |arg0| is set, that value will be used as the first argument and |argc|
+ * increased by 1.
+ */
+v8::Handle<v8::Value> KNodeCallFunction(v8::Handle<v8::Object> target,
+                                        v8::Handle<v8::Function> fun,
+                                        int argc, id *argv,
+                                        v8::Local<v8::Value> *arg0=NULL);
+
 // Invoke a named exported function in node
-bool KNodeInvokeExposedJSFunction(const char *name,
-                                  int argc,
-                                  v8::Handle<v8::Value> argv[]);
-
-bool KNodeInvokeExposedJSFunction(const char *functionName,
-                                  int argc,
-                                  v8::Handle<v8::Value> argv[],
-                                  KNodeCallbackBlock callback);
-
 bool KNodeInvokeExposedJSFunction(const char *functionName,
                                   NSArray *args,
                                   KNodeCallbackBlock callback);
@@ -125,8 +126,9 @@ class KNodeEventIOEntry : public KNodeIOEntry {
   virtual ~KNodeEventIOEntry();
   void perform();
  protected:
+  char *name_;
   int argc_;
-  v8::Persistent<v8::Value> *argv_;
+  id *argv_;
 };
 
 

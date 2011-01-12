@@ -106,20 +106,15 @@ class HUnorderedMapObjC : public HUnorderedMap<K, T> {
 #endif  // __OBJC__
 
 
-// You can define this as 0 to disable boost support
-#ifndef H_UNORDERED_MAP_WITH_BOOST
-#define H_UNORDERED_MAP_WITH_BOOST 1
-#endif
-
-#if H_UNORDERED_MAP_WITH_BOOST
-#import <boost/shared_ptr.hpp>
+#include <tr1/memory>
 /**
- * Unordered map which holds C++ heap objects in boost::shared_ptr's
+ * Unordered map which holds C++ heap objects in std::tr1::shared_ptr's
  */
 template<typename K, typename T>
-class HUnorderedMapSharedPtr : public HUnorderedMap<K, boost::shared_ptr<T> > {
+class HUnorderedMapSharedPtr : public HUnorderedMap<K,
+                                                    std::tr1::shared_ptr<T> > {
  public:
-  typedef typename boost::shared_ptr<T> value_type;
+  typedef typename std::tr1::shared_ptr<T> value_type;
   typedef typename std::tr1::unordered_map<K, value_type> map_type;
   typedef typename map_type::value_type entry_type;
   typedef typename map_type::const_iterator const_iterator;
@@ -153,7 +148,6 @@ class HUnorderedMapSharedPtr : public HUnorderedMap<K, boost::shared_ptr<T> > {
     _HSLScope(this->spinlock_); return getValue(key);
   }
 };
-#endif  // H_UNORDERED_MAP_WITH_BOOST
 
 
 #undef _HSLScope

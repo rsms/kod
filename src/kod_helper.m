@@ -188,10 +188,10 @@
   static unsigned long long nextId = 0;
   if (optNoWaitOpen_) return nil;
   NSNumber *key = [NSNumber numberWithUnsignedLongLong:nextId++];
-  id val = [NSNull null];
+  id callbackVal = [NSNull null];
   if (callback)
-    val = [callback copy];
-  [asyncWaitQueue_ setObject:callback forKey:key];
+    callbackVal = [[callback copy] autorelease];
+  [asyncWaitQueue_ setObject:callbackVal forKey:key];
   return key;
 }
 
@@ -200,11 +200,8 @@
   id val = [asyncWaitQueue_ objectForKey:key];
   if (val) {
     [asyncWaitQueue_ removeObjectForKey:key];
-    if (val == [NSNull null]) {
+    if (val == [NSNull null])
       val = nil;
-    } else {
-      [val autorelease]; // callback block
-    }
   }
   return val;
 }

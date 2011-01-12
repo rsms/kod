@@ -5,7 +5,10 @@
 // Commonly used headers
 #import <node.h>           // includes v8.h, ev.h, eio.h, sys/types.h, etc
 #import <node_events.h>    // EventEmitter
+
+#ifdef __OBJC__
 #import <Cocoa/Cocoa.h>
+#endif
 
 // -----------------------------------------------------------------------------
 // Constants
@@ -45,11 +48,11 @@
 #endif  // !NDEBUG
 
 // Throwing exceptions
-#define JS_THROW(t, s) ThrowException(Exception::t(String::New(s)))
-#define JS_THROWF(tmpl, ...) {\
+#define KN_THROW(t, s) ThrowException(Exception::t(String::New(s)))
+#define KN_THROWF(tmpl, ...) {\
   char msg[1024];\
   snprintf(msg, sizeof(msg), tmpl, __VA_ARGS__);\
-  JS_THROW(msg);\
+  KN_THROW(msg);\
 }
 
 // Creates a new UTF-8 C string from a Value.

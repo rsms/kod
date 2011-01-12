@@ -67,6 +67,17 @@ static void InputQueueNotification(EV_P_ ev_async *watcher, int revents) {
 }
 
 
+static void _freePersistentArgs(int argc, Persistent<Value> *argv) {
+  for (int i=0; i<argc; ++i) {
+    Persistent<Value> v = argv[i];
+    if (v.IsEmpty()) continue;
+    v.Dispose();
+    v.Clear();
+  }
+  if (argv) delete argv;
+}
+
+
 KNodeBlockFun::KNodeBlockFun(KNodeFunctionBlock block) {
   block_ = [block copy];
   Local<FunctionTemplate> t =
@@ -95,9 +106,9 @@ v8::Handle<Value> KNodeBlockFun::InvocationProxy(const Arguments& args) {
 }
 
 
-bool KNodeInvokeExposedJSFunction(const char *name,
-                                  int argc,
-                                  v8::Handle<v8::Value> argv[]) {
+static bool _invokeExposedJSFunction(const char *name,
+                                     int argc,
+                                     v8::Handle<v8::Value> argv[]) {
   Local<Value> v = (*kExposedFunctions)->Get(String::New(name));
   if (!v->IsFunction())
     return false;
@@ -108,9 +119,44 @@ bool KNodeInvokeExposedJSFunction(const char *name,
 }
 
 
+v8::Handle<v8::Value> KNodeCallFunction(v8::Handle<Object> target,
+                                        v8::Handle<Function> fun,
+                                        int argc, id *objc_argv,
+                                        v8::Local<Value> *arg0/*=NULL*/) {
+  v8::HandleScope scope;
+
+  // increment arg count if we got a firstArgAsString
+  if (arg0)
+    ++argc;
+
+  // allocate list of arguments
+  Local<Value> *argv = new Local<Value>[argc];
+
+  // add firstArgAsString
+  if (arg0)
+    argv[0] = *arg0;
+
+  // add all objc args
+  int i = arg0 ? 1 : 0, L = argc;
+  for (; i<L; ++i) {
+    id arg = objc_argv[i-(arg0 ? 1 : 0)];
+    if (arg) {
+      argv[i] = Local<Value>::New([arg v8Value]);
+    } else {
+      argv[i] = *v8::Null();
+    }
+  }
+
+  // invoke function
+  Local<Value> ret = fun->Call(target, argc, argv);
+  delete argv;
+
+  return scope.Close(ret);
+}
+
+
 bool KNodeInvokeExposedJSFunction(const char *functionName,
-                                  int argc,
-                                  v8::Handle<v8::Value> argv[],
+                                  NSArray *args,
                                   KNodeCallbackBlock callback) {
   // call from kod-land
   //DLOG("[knode] 1 calling node from kod");
@@ -143,20 +189,22 @@ bool KNodeInvokeExposedJSFunction(const char *functionName,
     });
 
     // invoke the block function
-    v8::TryCatch tryCatch;
-    v8::Local<v8::Value> fun = blockFun->function();
+    TryCatch tryCatch;
+    Local<Value> fun = blockFun->function();
     bool didFindAndCallFun;
-    if (argc > 0) {
-      v8::Handle<v8::Value> *argv2 = new v8::Handle<v8::Value>[argc+1];
-      for (int i = 1; i<argc; ++i)
-        argv2[i] = argv[i];
-      argv2[0] = fun;
-      didFindAndCallFun =
-          KNodeInvokeExposedJSFunction(functionName, argc+1, argv2);
-      delete argv2;
+    NSUInteger argc = args ? args.count : 0;
+    if (argc != 0) {
+      Local<Value> *argv = new Local<Value>[argc+1];
+      argv[0] = fun;
+      for (NSUInteger i = 0; i<argc; ++i) {
+        argv[i+1] = [[args objectAtIndex:i] v8Value];
+      }
+      didFindAndCallFun = _invokeExposedJSFunction(functionName, argc+1, argv);
+      delete argv;
     } else {
-      didFindAndCallFun = KNodeInvokeExposedJSFunction(functionName, 1, &fun);
+      didFindAndCallFun = _invokeExposedJSFunction(functionName, 1, &fun);
     }
+
     NSError *error = nil;
     if (tryCatch.HasCaught()) {
       error = [NSError nodeErrorWithTryCatch:tryCatch];
@@ -176,23 +224,8 @@ bool KNodeInvokeExposedJSFunction(const char *functionName,
 
 
 bool KNodeInvokeExposedJSFunction(const char *functionName,
-                                  NSArray *args,
                                   KNodeCallbackBlock callback) {
-  v8::HandleScope scope;
-  int argc = 0;
-  v8::Handle<v8::Value> *argv = NULL;
-  if (args && (argc = args.count)) {
-    argv = new v8::Handle<v8::Value>[argc];
-    for (NSUInteger i = 0; i<argc; ++i)
-      argv[i] = [[args objectAtIndex:i] v8Value];
-  }
-  return KNodeInvokeExposedJSFunction(functionName, argc, argv, callback);
-}
-
-
-bool KNodeInvokeExposedJSFunction(const char *functionName,
-                                  KNodeCallbackBlock callback) {
-  return KNodeInvokeExposedJSFunction(functionName, 0, NULL, callback);
+  return KNodeInvokeExposedJSFunction(functionName, nil, callback);
 }
 
 
@@ -290,16 +323,7 @@ KNodeInvocationIOEntry::~KNodeInvocationIOEntry() {
     target_.Dispose();
     target_.Clear();
   }
-  if (argv_) {
-    for (int i=0; i<argc_; ++i) {
-      v8::Persistent<v8::Value> v = argv_[i];
-      if (v.IsEmpty()) continue;
-      v.Dispose();
-      v.Clear();
-    }
-    delete argv_;
-    argv_ = NULL;
-  }
+  _freePersistentArgs(argc_, argv_);
   if (funcName_) {
     free(funcName_);
   }
@@ -325,28 +349,22 @@ void KNodeInvocationIOEntry::perform() {
 // ---------------------------------------------------------------------------
 
 KNodeEventIOEntry::KNodeEventIOEntry(const char *name, int argc, id *argv) {
-  v8::HandleScope scope;
-  argc_ = argc + 1;
-  argv_ = new Persistent<Value>[argc];
-  argv_[0] = Persistent<Value>::New(String::NewSymbol(name));
-  for (int i = 1; i<argc_; ++i) {
-    //DLOG("argv[%d] => %@", i, argv[i-1]);
-    argv_[i] = Persistent<Value>::New([argv[i-1] v8Value]);
+  kassert(name != NULL);
+  name_ = strdup(name);
+  argc_ = argc;
+  argv_ = new id[argc];
+  for (int i = 0; i<argc_; ++i) {
+    argv_[i] = [argv[i] retain];
   }
 }
 
 
 KNodeEventIOEntry::~KNodeEventIOEntry() {
-  if (argv_) {
-    for (int i=0; i<argc_; ++i) {
-      v8::Persistent<v8::Value> v = argv_[i];
-      if (v.IsEmpty()) continue;
-      v.Dispose();
-      v.Clear();
-    }
-    delete argv_;
-    argv_ = NULL;
+  for (int i = 0; i<argc_; ++i) {
+    [argv_[i] release];
   }
+  delete argv_; argv_ = NULL;
+  free(name_); name_ = NULL;
 }
 
 
@@ -356,8 +374,9 @@ void KNodeEventIOEntry::perform() {
   if (!gKodNodeModule.IsEmpty()) {
     Local<Value> v = gKodNodeModule->Get(String::New("emit"));
     if (v->IsFunction()) {
-      Local<Function> fun = Local<Function>::Cast(v);
-      Local<Value> ret = fun->Call(gKodNodeModule, argc_, argv_);
+      Local<Value> eventName = Local<Value>::New(String::NewSymbol(name_));
+      KNodeCallFunction(gKodNodeModule, Local<Function>::Cast(v),
+                        argc_, argv_, &eventName);
     }
   }
   KNodeIOEntry::perform();

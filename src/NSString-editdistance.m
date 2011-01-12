@@ -1,5 +1,5 @@
 
-/* Derived from GNU diff 2.7, analyze.c et al.
+/* Inspired by GNU diff etc
 
    The basic idea is to consider two vectors as similar if, when
    transforming the first vector into the second vector through a
@@ -145,8 +145,8 @@ static void diag(int xoff, int xlim, int yoff, int ylim,
            x < xlim && y < ylim && (xv[x] == yv[y]);
            x++, y++)
         continue;
-      if (x - x0 > SNAKE_LIMIT)
-        big_snake = true;
+      //if (x - x0 > SNAKE_LIMIT)
+      //  big_snake = true;
       fd[d] = x;
       if (odd && bmin <= d && d <= bmax && bd[d] <= x)
       {
@@ -178,8 +178,8 @@ static void diag(int xoff, int xlim, int yoff, int ylim,
            xoff < x && yoff < y && (xv[x - 1] == yv[y - 1]);
            x--, y--)
         continue;
-      if (x0 - x > SNAKE_LIMIT)
-        big_snake = true;
+      //if (x0 - x > SNAKE_LIMIT)
+      //  big_snake = true;
       bd[d] = x;
       if (!odd && fmin <= d && d <= fmax && x <= fd[d])
       {
@@ -283,10 +283,10 @@ static void diag(int xoff, int xlim, int yoff, int ylim,
      and report halfway between our best results so far.  */
     if (c >= ctxt->too_expensive)
     {
-      int fxybest;
-      int fxbest;
-      int bxybest;
-      int bxbest;
+      int fxybest = 0;
+      int fxbest = 0;
+      int bxybest = 0;
+      int bxbest = 0;
 
       /* Find forward diagonal that maximizes X + Y.  */
       fxybest = -1;

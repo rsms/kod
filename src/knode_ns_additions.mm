@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "knode_ns_additions.h"
+#import "ExternalUTF16String.h"
 
 #import <err.h>
 #import <node_buffer.h>
@@ -199,17 +200,6 @@ Persistent<Function> BuildContext::indexOf;
 }
 @end
 
-@implementation NSString (v8)
-- (Local<Value>)v8Value {
-  HandleScope scope;
-  return scope.Close(String::New([self UTF8String]));
-}
-+ (NSString*)stringWithV8String:(Local<String>)str {
-  String::Utf8Value utf8(str);
-  return [NSString stringWithUTF8String:*utf8];
-}
-@end
-
 @implementation NSNull (v8)
 - (Local<Value>)v8Value {
   HandleScope scope;
@@ -267,6 +257,29 @@ Persistent<Function> BuildContext::indexOf;
 }
 @end
 
+// ----------------------------------------------------------------------------
+
+@implementation NSString (v8)
+
+- (Local<Value>)v8Value {
+  HandleScope scope;
+
+  // Note: For a custom NSString class where we have access to the underlying
+  // characters, we can use an ExternalStringResource to avoid doing any
+  // copies at all:
+  //String::NewExternal(ExternalStringResource* resource);
+
+  return scope.Close(String::NewExternal(new kod::ExternalUTF16String(self)));
+}
+
++ (NSString*)stringWithV8String:(Local<String>)str {
+  String::Utf8Value utf8(str);
+  return [NSString stringWithUTF8String:*utf8];
+}
+
+@end
+
+// ----------------------------------------------------------------------------
 
 @implementation NSData (node)
 - (Local<Value>)v8Value {
