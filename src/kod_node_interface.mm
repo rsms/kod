@@ -5,6 +5,7 @@
 #import "common.h"
 #import "kod_node_interface.h"
 #import "knode_ns_additions.h"
+#import "ExternalUTF16String.h"
 
 #import <node.h>
 #import <ev.h>
@@ -27,8 +28,12 @@ void DummyFunction() { }
 // queue with entries of type KNodeIOEntry*
 static OSQueueHead KNodeIOInputQueue;
 
+// queue with entries of type KNodeParseEntry*
+static OSQueueHead KNodeParseQueue;
+
 // ev notifier
 static ev_async KNodeIOInputQueueNotifier;
+static ev_async KNodeParseQueueNotifier;
 
 // maps mathod names to functions
 static v8::Persistent<v8::Object> *kExposedFunctions = NULL;
@@ -41,8 +46,9 @@ Persistent<Object> gKodNodeModule;
 
 // ----------------------
 
+
 // Triggered when there are stuff on inputQueue_
-static void InputQueueNotification(EV_P_ ev_async *watcher, int revents) {
+static void _QueueNotification(OSQueueHead *queue, ev_async *watcher, int revents) {
   HandleScope scope;
   //NSLog(@"InputQueueNotification");
 
@@ -52,7 +58,7 @@ static void InputQueueNotification(EV_P_ ev_async *watcher, int revents) {
   int i = 0;
   KNodeIOEntry* entry;
   while ( (entry = (KNodeIOEntry*)OSAtomicDequeue(
-           &KNodeIOInputQueue, cxx_offsetof(KNodeIOEntry, next_)))
+           queue, cxx_offsetof(KNodeIOEntry, next_)))
           && (i < KNODE_MAX_DEQUEUE) ) {
     //NSLog(@"dequeued KNodeIOEntry@%p", entry);
     entries[i++] = entry;
@@ -64,6 +70,18 @@ static void InputQueueNotification(EV_P_ ev_async *watcher, int revents) {
     entry->perform();
     // Note: |entry| is invalid beyond this point as it probably deleted itself
   }
+}
+
+
+// Triggered when there are stuff on inputQueue_
+static void InputQueueNotification(EV_P_ ev_async *watcher, int revents) {
+  _QueueNotification(&KNodeIOInputQueue, watcher, revents);
+}
+
+// Triggered when there are stuff on inputQueue_
+static void ParseQueueNotification(EV_P_ ev_async *watcher, int revents) {
+  //NSLog(@"ParseQueueNotification");
+  _QueueNotification(&KNodeParseQueue, watcher, revents);
 }
 
 
@@ -231,7 +249,7 @@ bool KNodeInvokeExposedJSFunction(const char *functionName,
 
 bool KNodeEmitEventv(const char *eventName, int argc, id *argv) {
   KNodeEventIOEntry *entry = new KNodeEventIOEntry(eventName, argc, argv);
-  KNodePerformInNode(entry);
+  KNodeEnqueueIOEntry(entry);
 }
 
 
@@ -256,26 +274,85 @@ void KNodeInitNode(v8::Handle<Object> kodModule) {
       kodModule->Get(String::New("exposedFunctions"))->ToObject();
   kExposedFunctions = KNodePersistentObjectCreate(exposedFunctions);
 
-  // setup notifier
+  // setup notifiers
   KNodeIOInputQueueNotifier.data = NULL;
   ev_async_init(&KNodeIOInputQueueNotifier, &InputQueueNotification);
   ev_async_start(EV_DEFAULT_UC_ &KNodeIOInputQueueNotifier);
+  KNodeParseQueueNotifier.data = NULL;
+  ev_async_init(&KNodeParseQueueNotifier, &ParseQueueNotification);
+  ev_async_start(EV_DEFAULT_UC_ &KNodeParseQueueNotifier);
 
   // stuff might have been queued before we initialized, so trigger a dequeue
   ev_async_send(EV_DEFAULT_UC_ &KNodeIOInputQueueNotifier);
+  ev_async_send(EV_DEFAULT_UC_ &KNodeParseQueueNotifier);
 }
 
 
-void KNodePerformInNode(KNodeIOEntry *entry) {
-  OSAtomicEnqueue(&KNodeIOInputQueue, entry, cxx_offsetof(KNodeIOEntry, next_));
-  ev_async_send(EV_DEFAULT_UC_ &KNodeIOInputQueueNotifier);
+static void _KNodeEnqueueEntry(OSQueueHead *queue, ev_async *asyncWatcher,
+                               KNodeIOEntry *entry) {
+  OSAtomicEnqueue(queue, entry, cxx_offsetof(KNodeIOEntry, next_));
+  ev_async_send(EV_DEFAULT_UC_ asyncWatcher);
+}
+
+
+void KNodeEnqueueIOEntry(KNodeIOEntry *entry) {
+  _KNodeEnqueueEntry(&KNodeIOInputQueue, &KNodeIOInputQueueNotifier, entry);
+}
+
+
+//#define DEBUG_KNodeEnqueueParseEntry 1
+
+void KNodeEnqueueParseEntry(KNodeParseEntry *newEntry) {
+  // dequeue any pending parse entries
+  KNodeParseEntry* prevEntry;
+  while ( (prevEntry = (KNodeParseEntry*)OSAtomicDequeue(
+           &KNodeParseQueue, cxx_offsetof(KNodeParseEntry, next_))) ) {
+
+    #if DEBUG_KNodeEnqueueParseEntry
+    NSLog(@"---> prev: {source:'%@', index:%lu, changeDelta:%ld}",
+          prevEntry->source()->weakNSString(NO),
+          prevEntry->modificationIndex(), prevEntry->changeDelta());
+
+    NSLog(@"---> curr: {source:'%@', index:%lu, changeDelta:%ld}",
+          newEntry->source()->weakNSString(NO),
+          newEntry->modificationIndex(), newEntry->changeDelta());
+    #endif
+
+    if (!newEntry->mergeWith(prevEntry)) {
+      // Note: If we ever support more than one queued entry, this needs to be
+      // fixed
+      NSLog(@"DISCARD");
+      delete newEntry;
+      delete prevEntry;
+      return;
+    }
+
+    // merged into newEntry
+    delete prevEntry;
+
+    #if DEBUG_KNodeEnqueueParseEntry
+    NSLog(@"---> merged:  modificationIndex: %lu, changeDelta: %ld",
+          newEntry->modificationIndex(), newEntry->changeDelta());
+    #endif
+  }
+
+  #if DEBUG_KNodeEnqueueParseEntry
+  NSLog(@"---> final:  modificationIndex: %lu, changeDelta: %ld",
+        newEntry->modificationIndex(), newEntry->changeDelta());
+
+  NSLog(@"---> final source chunk: '%@'", [newEntry->source()->weakNSString(NO)
+              substringWithRange:NSMakeRange(newEntry->modificationIndex(),
+         newEntry->changeDelta() > 0 ? newEntry->changeDelta() : 0)]);
+  #endif
+
+  _KNodeEnqueueEntry(&KNodeParseQueue, &KNodeParseQueueNotifier, newEntry);
 }
 
 
 void KNodePerformInNode(KNodePerformBlock block) {
   KNodeIOEntry *entry =
       new KNodeTransactionalIOEntry(block, dispatch_get_current_queue());
-  KNodePerformInNode(entry);
+  KNodeEnqueueIOEntry(entry);
 }
 
 

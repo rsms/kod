@@ -142,6 +142,7 @@
 		3AC2D4A71298D8050066B586 /* KTextStorage.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3AC2D4A61298D8050066B586 /* KTextStorage.mm */; };
 		3AC2D74012998D590066B586 /* CSS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3AE5EB871292DB5C00B17C4F /* CSS.framework */; };
 		3AC6ECCD12C8E07D00C8DBFC /* ChromiumTabs.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3AC6ECC412C8E05B00C8DBFC /* ChromiumTabs.framework */; };
+		3AC866C412DE69360077673C /* KNodeParseEntry.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3AC866C312DE69360077673C /* KNodeParseEntry.mm */; };
 		3AE5E5171290955000B17C4F /* kod.icns in Resources */ = {isa = PBXBuildFile; fileRef = 3AE5E5161290955000B17C4F /* kod.icns */; };
 		3AE5E9A3129180CB00B17C4F /* CSS.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 3AE5E8B312915ABA00B17C4F /* CSS.framework */; };
 		3AE5ECB61292F7B800B17C4F /* KThread.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3AE5ECB51292F7B800B17C4F /* KThread.mm */; };
@@ -486,6 +487,8 @@
 		3ABF541E12A5DC6F0020233C /* KClipView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KClipView.m; sourceTree = "<group>"; };
 		3AC2D4A51298D8050066B586 /* KTextStorage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KTextStorage.h; sourceTree = "<group>"; };
 		3AC2D4A61298D8050066B586 /* KTextStorage.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KTextStorage.mm; sourceTree = "<group>"; };
+		3AC866C212DE69360077673C /* KNodeParseEntry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KNodeParseEntry.h; sourceTree = "<group>"; };
+		3AC866C312DE69360077673C /* KNodeParseEntry.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KNodeParseEntry.mm; sourceTree = "<group>"; };
 		3AE5E5161290955000B17C4F /* kod.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = kod.icns; path = icon/kod.icns; sourceTree = "<group>"; };
 		3AE5E8A912915ABA00B17C4F /* CSS.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = CSS.xcodeproj; path = "deps/libcss/cocoa-framework/CSS.xcodeproj"; sourceTree = "<group>"; };
 		3AE5EA551292B2D000B17C4F /* kconf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = kconf.h; sourceTree = "<group>"; };
@@ -640,6 +643,8 @@
 				3AB57E0512CA634C00E528B1 /* kod_node_interface.mm */,
 				3AB57EAB12CA725A00E528B1 /* knode_ns_additions.h */,
 				3AB57EAC12CA725A00E528B1 /* knode_ns_additions.mm */,
+				3AC866C212DE69360077673C /* KNodeParseEntry.h */,
+				3AC866C312DE69360077673C /* KNodeParseEntry.mm */,
 				3AA91F2112CA43DE00132A25 /* KNodeThread.h */,
 				3AA91F2212CA43DE00132A25 /* KNodeThread.mm */,
 				3A366A6F12CB86CA00257AE6 /* kod module */,
@@ -1349,6 +1354,7 @@
 				3A37B39D12DA2C5000ED811C /* KASTViewerWindowController.mm in Sources */,
 				3A37B4A812DA416E00ED811C /* ASTNode.mm in Sources */,
 				3A37B54712DA48E500ED811C /* KASTOutlineView.m in Sources */,
+				3AC866C412DE69360077673C /* KNodeParseEntry.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

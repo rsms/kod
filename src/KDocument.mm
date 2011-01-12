@@ -1324,17 +1324,17 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
   // Record change properties
   krusage_begin(rusage, "Retrieve changes from text storage");
   NSRange editedRange = [textStorage editedRange];
-  int changeDelta = [textStorage changeInLength];
+  NSInteger changeDelta = [textStorage changeInLength];
 
   // Export a copy of our current text state into V8 which will be governed by
   // the V8 GC.
   krusage_sample(rusage, "Copy document text to V8 string");
-  kod::ExternalUTF16String *exportedText =
+  kod::ExternalUTF16String *source =
       new kod::ExternalUTF16String(textStorage.string);
 
   //fprintf(stderr, "[main -> nodejs] parse()\n");
   krusage_sample(rusage, "Calling into nodejs");
-  KNodePerformInNode(^(KNodeReturnBlock returnCallback){
+  KNodeEnqueueParseEntry(new KNodeParseEntry(editedRange.location, changeDelta, source, ^{
     // we are now in the nodejs thread
     v8::HandleScope scope;
 
@@ -1349,7 +1349,7 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
     if (!parseV.IsEmpty() && parseV->IsFunction()) {
       // build arguments
       v8::Local<v8::Value> argv[] = {
-        v8::String::NewExternal(exportedText),
+        v8::String::NewExternal(source),
         // Note that we convert ints to v8::Number with doubles since
         // v8::Integer is currently limited to 32-bit precision when created.
         // As soon as the v8::Integer::New accepts a 64-bit integer we can use
@@ -1395,14 +1395,14 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
         // replace/update ast root
         ast_->setRootNode(astRoot);
         //DLOG("AST: %@", [self _inspectASTTree:astRoot]);
-        K_DISPATCH_MAIN_ASYNC({ [self debugUpdateASTViewer:self]; });
+        K_DISPATCH_BG_ASYNC({ [self debugUpdateASTViewer:self]; });
       }
 
       // free memory used by the temporary copy of our text
-      exportedText->clear();
+      source->clear();
 
     } else DLOG("no parse() function available for document");
-  });
+  }));
 }
 
 

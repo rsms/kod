@@ -231,9 +231,9 @@ PlainTextParser.prototype.parse = function (parseTask) {
   }
 
   // dump the AST (warning -- might be VERY SLOW)
-  console.log(util.inspect(parentNode, 0, 10));
+  console.log(util.inspect(rootNode, 0, 10));
 
-  return parentNode;
+  return rootNode;
 };
 
 // TODO: clean up this mess and make a ./util.js package with universal

@@ -42,7 +42,7 @@ static char kPersistentWrapperKey = 'a';
       // clear the represented object, but only if it's self
       if (h_atomic_cas(&(p->representedObject_), self, nil)) {
         // queue object for being totally cleared
-        KNodePerformInNode(
+        KNodeEnqueueIOEntry(
             new KNodeInvocationIOEntry(*pobj, "onProxyTargetDeleted"));
       }
       pobj->Dispose();

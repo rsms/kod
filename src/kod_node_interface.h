@@ -8,6 +8,8 @@
 
 class KNodeIOEntry;
 class KNodeBlockFun;
+class KNodeParseEntry;
+namespace kod { class ExternalUTF16String; }
 
 typedef void (^KNodeCallbackBlock)(NSError *err, NSArray *args);
 typedef void (^KNodeReturnBlock)(KNodeCallbackBlock, NSError*, NSArray*);
@@ -20,8 +22,9 @@ extern v8::Persistent<v8::Object> gKodNodeModule;
 void KNodeInitNode(v8::Handle<v8::Object> kodModule);
 
 // perform |block| in the node runtime
-extern void KNodePerformInNode(KNodePerformBlock block);
-extern void KNodePerformInNode(KNodeIOEntry *entry);
+void KNodePerformInNode(KNodePerformBlock block);
+void KNodeEnqueueIOEntry(KNodeIOEntry *entry);
+void KNodeEnqueueParseEntry(KNodeParseEntry *entry);
 
 /*!
  * Invoke |fun| on |target| passing |argc| number of arguments in |argv|.
@@ -67,6 +70,10 @@ class KNodeIOEntry {
 };
 
 
+// Parse entry
+#import "KNodeParseEntry.h"
+
+
 // Invocation transaction I/O queue entry
 class KNodeTransactionalIOEntry : public KNodeIOEntry {
  public:
@@ -94,7 +101,6 @@ class KNodeTransactionalIOEntry : public KNodeIOEntry {
     KNodeIOEntry::perform();
   }
 
-  KNodeIOEntry *next_;
  protected:
   KNodePerformBlock performBlock_;
   dispatch_queue_t returnDispatchQueue_;
