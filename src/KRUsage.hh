@@ -1,11 +1,6 @@
-/*
- *  KRUsage.hh
- *  kod
- *
- *  Created by Rasmus Andersson on 2010-11-23.
- *  Copyright 2010 __MyCompanyName__. All rights reserved.
- *
- */
+// Copyright (c) 2010-2011, Rasmus Andersson. All rights reserved.
+// Use of this source code is governed by a MIT-style license that can be
+// found in the LICENSE file.
 
 class KRUsage {
  public:
