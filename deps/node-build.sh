@@ -1,6 +1,15 @@
 #!/bin/bash
 cd "$(dirname $0)/node"
 
+# synthesize Xcode env vars when running on our own
+if [ "$CONFIGURATION_BUILD_DIR" = "" ]; then
+  # TODO: query xcodebuild for the active build style
+  BUILD_STYLE=Debug
+  PRODUCT_NAME=nodejs
+  CONFIGURATION_BUILD_DIR=../../build/$BUILD_STYLE
+  ARCHS=x64
+fi
+
 # Build dir. e.g. "/Users/rasmus/src/kod/build/Debug"
 NODE_BUILD_DIR="${CONFIGURATION_BUILD_DIR}/${PRODUCT_NAME}"
 NODE_LIBNODE_PRODUCT="${NODE_BUILD_DIR}/libnode.a"
