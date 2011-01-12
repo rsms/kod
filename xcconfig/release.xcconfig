@@ -1,4 +1,4 @@
-#include "base.xcconfig"
+#include "./base.xcconfig"
 
 VALID_ARCHS = i386 x86_64
 DEPLOYMENT_POSTPROCESSING = YES

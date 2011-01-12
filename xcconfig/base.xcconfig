@@ -35,4 +35,4 @@ GCC_SYMBOLS_PRIVATE_EXTERN = NO
 GCC_INLINES_ARE_PRIVATE_EXTERN = NO
 ONLY_ACTIVE_ARCH = NO
 
-#include "base-local.xcconfig"
+#include "./base-local.xcconfig"
