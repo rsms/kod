@@ -45,7 +45,6 @@
 		3A37B54712DA48E500ED811C /* KASTOutlineView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A37B54612DA48E500ED811C /* KASTOutlineView.m */; };
 		3A40F92F12AFF21A007B5879 /* main.js in Resources */ = {isa = PBXBuildFile; fileRef = 3A40F92E12AFF21A007B5879 /* main.js */; };
 		3A4CB3E112B1872300B45858 /* NSString-data.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A4CB3E012B1872300B45858 /* NSString-data.m */; };
-		3A4D50ED1282E40300B06EEB /* NSString-utf8-range-conv.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A4D50EC1282E40300B06EEB /* NSString-utf8-range-conv.m */; };
 		3A4F478512CFA83900301464 /* KWordDictionary.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A4F478412CFA83900301464 /* KWordDictionary.mm */; };
 		3A5107CB12C1233900AAC1D5 /* KMachService.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A5107CA12C1233900AAC1D5 /* KMachService.mm */; };
 		3A51081712C139B800AAC1D5 /* kod_helper.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A5107EB12C1351500AAC1D5 /* kod_helper.m */; };
@@ -305,8 +304,6 @@
 		3A4450C512D68E4800036EF0 /* sudden_termination.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = sudden_termination.h; path = core/sudden_termination.h; sourceTree = "<group>"; };
 		3A4CB3DF12B1872300B45858 /* NSString-data.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString-data.h"; sourceTree = "<group>"; };
 		3A4CB3E012B1872300B45858 /* NSString-data.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString-data.m"; sourceTree = "<group>"; };
-		3A4D50EB1282E40300B06EEB /* NSString-utf8-range-conv.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString-utf8-range-conv.h"; sourceTree = "<group>"; };
-		3A4D50EC1282E40300B06EEB /* NSString-utf8-range-conv.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString-utf8-range-conv.m"; sourceTree = "<group>"; };
 		3A4F478312CFA83900301464 /* KWordDictionary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KWordDictionary.h; sourceTree = "<group>"; };
 		3A4F478412CFA83900301464 /* KWordDictionary.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KWordDictionary.mm; sourceTree = "<group>"; };
 		3A5107C912C1233900AAC1D5 /* KMachService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KMachService.h; sourceTree = "<group>"; };
@@ -570,8 +567,6 @@
 			children = (
 				3A74A4D1129FF6E000BB5503 /* HUTF8MappedUTF16String.h */,
 				3A74A4D2129FF6E000BB5503 /* HUTF8MappedUTF16String.mm */,
-				3A4D50EB1282E40300B06EEB /* NSString-utf8-range-conv.h */,
-				3A4D50EC1282E40300B06EEB /* NSString-utf8-range-conv.m */,
 				3A159310128B581E00339E6E /* NSString-ranges.h */,
 				3A159311128B581E00339E6E /* NSString-ranges.m */,
 				3A159369128B619800339E6E /* NSString-intern.h */,
@@ -1269,7 +1264,6 @@
 				3A9293CC1229ED4C00DA7E43 /* KDocumentController.mm in Sources */,
 				3A25E4B71281AE3700B6A33E /* KStyleElement.mm in Sources */,
 				3A25E6101281CFEF00B6A33E /* NSColor-web.m in Sources */,
-				3A4D50ED1282E40300B06EEB /* NSString-utf8-range-conv.m in Sources */,
 				3A7E71801286F44D00D85E4C /* KFileOutlineView.mm in Sources */,
 				3A7E71831286F54A00D85E4C /* KFileTextFieldCell.mm in Sources */,
 				3A7E71901286F71100D85E4C /* KFileTreeNodeData.mm in Sources */,
