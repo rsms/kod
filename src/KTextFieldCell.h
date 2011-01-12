@@ -1,3 +1,8 @@
+// Copyright (c) 2010-2011, Rasmus Andersson. All rights reserved.
+// Use of this source code is governed by a MIT-style license that can be
+// found in the LICENSE file.
+
+
 // KTextFieldCell customizes the look of the standard Cocoa text field.
 // The border and focus ring are modified, as is the font baseline.  Subclasses
 // can override |drawInteriorWithFrame:inView:| to provide custom drawing for
