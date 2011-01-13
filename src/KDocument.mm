@@ -610,6 +610,49 @@ static NSString* _kDefaultTitle = @"Untitled";
 }
 
 
+- (NSString*)_inspectASTTree:(kod::ASTNodePtr&)astNode {
+  if (!astNode.get())
+    return @"<null>";
+  NSMutableString *str = [NSMutableString stringWithFormat:
+      @"{ kind:\"%@\", sourceRange:%@",
+      astNode->kind()->weakNSString(),
+      NSStringFromRange(astNode->sourceRange())];
+
+  if (!astNode->childNodes().empty()) {
+    [str appendFormat:@", childNodes: ["];
+    std::vector<kod::ASTNodePtr>::iterator it = astNode->childNodes().begin();
+    std::vector<kod::ASTNodePtr>::iterator endit = astNode->childNodes().end();
+    for ( ; it < endit; ++it ) {
+      [str appendString:[self _inspectASTTree:*it]];
+    }
+    [str appendFormat:@"]"];
+  }
+
+  [str appendString:@"},"];
+  return str;
+}
+
+
+- (void)ASTWasUpdated:(kod::ASTNodePtr)astRoot
+       basedOnVersion:(uint64_t)version
+           parseEntry:(KNodeParseEntry*)parseEntry {
+  DLOG("%@ ASTWasUpdated:basedOnVersion: %llu (current version: %llu)",
+       self, version, version_);
+
+  // TODO(rsms): verify version -- when results arrive for an old version,
+  // re-issue the edit or something. We need to apply magic Brain Power here...
+  // Until then, we simply discard an old AST and wait a few moment more until a
+  // newer AST arrives.
+
+  if (version == version_) {
+    // replace/update ast root
+    ast_->setRootNode(astRoot);
+    //DLOG("AST: %@", [self _inspectASTTree:astRoot]);
+    K_DISPATCH_MAIN_ASYNC({ [self debugUpdateASTViewer:self]; });
+  }
+}
+
+
 #pragma mark -
 #pragma mark Node.js
 
@@ -1290,29 +1333,6 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
 
 
 
-- (NSString*)_inspectASTTree:(kod::ASTNodePtr&)astNode {
-  if (!astNode.get())
-    return @"<null>";
-  NSMutableString *str = [NSMutableString stringWithFormat:
-      @"{ kind:\"%@\", sourceRange:%@",
-      astNode->kind()->weakNSString(),
-      NSStringFromRange(astNode->sourceRange())];
-
-  if (!astNode->childNodes().empty()) {
-    [str appendFormat:@", childNodes: ["];
-    std::vector<kod::ASTNodePtr>::iterator it = astNode->childNodes().begin();
-    std::vector<kod::ASTNodePtr>::iterator endit = astNode->childNodes().end();
-    for ( ; it < endit; ++it ) {
-      [str appendString:[self _inspectASTTree:*it]];
-    }
-    [str appendFormat:@"]"];
-  }
-
-  [str appendString:@"},"];
-  return str;
-}
-
-
 // invoked after an editing occured, but before it's been committed
 // Has the nasty side effect of losing the selection if applying attributes
 - (void)textStorageWillProcessEditing:(NSNotification *)notification {
@@ -1326,83 +1346,9 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
   NSRange editedRange = [textStorage editedRange];
   NSInteger changeDelta = [textStorage changeInLength];
 
-  // Export a copy of our current text state into V8 which will be governed by
-  // the V8 GC.
-  krusage_sample(rusage, "Copy document text to V8 string");
-  kod::ExternalUTF16String *source =
-      new kod::ExternalUTF16String(textStorage.string);
-
-  //fprintf(stderr, "[main -> nodejs] parse()\n");
-  krusage_sample(rusage, "Calling into nodejs");
-  KNodeEnqueueParseEntry(new KNodeParseEntry(editedRange.location, changeDelta, source, ^{
-    // we are now in the nodejs thread
-    v8::HandleScope scope;
-
-    krusage_sample(rusage, "Parsing");
-
-    // get the v8 KDocument
-    v8::Local<v8::Object> doc = [self v8Value]->ToObject();
-
-    // find the parse function
-    v8::Local<v8::Value> parseV = doc->Get(v8::String::New("parse"));
-    //kassert(!parseV.IsEmpty());
-    if (!parseV.IsEmpty() && parseV->IsFunction()) {
-      // build arguments
-      v8::Local<v8::Value> argv[] = {
-        v8::String::NewExternal(source),
-        // Note that we convert ints to v8::Number with doubles since
-        // v8::Integer is currently limited to 32-bit precision when created.
-        // As soon as the v8::Integer::New accepts a 64-bit integer we can use
-        // that instead.
-        v8::Number::New((double)editedRange.location),
-        v8::Number::New((double)changeDelta)
-      };
-      static const int argc = sizeof(argv) / sizeof(argv[0]);
-
-      v8::TryCatch tryCatch;
-
-      // call function
-      v8::Local<v8::Value> returnValue =
-          v8::Local<v8::Function>::Cast(parseV)->Call(doc, argc, argv);
-
-      // check for error
-      NSError *error = nil;
-      if (tryCatch.HasCaught()) {
-        v8::String::Utf8Value trace(tryCatch.StackTrace());
-        const char *msg = NULL;
-        if (trace.length() > 0) {
-          msg = *trace;
-        } else {
-          msg = "(Unspecified exception)";
-        }
-        NSAutoreleasePool *pool = [NSAutoreleasePool new];
-        h_atomic_barrier();
-        WLOG("Error while executing parser for %@: %s", self, msg);
-        [pool drain];
-      } else {
-        // check results
-        kassert(!returnValue.IsEmpty());
-        kassert(returnValue->IsObject());
-
-        // unwrap AST root object
-        kod::ASTNodePtr astRoot =
-            kod::ASTNodeWrapper::UnwrapNode(returnValue->ToObject());
-        kassert(astRoot.get() != NULL);
-
-        // present rusage report
-        krusage_end(rusage, "Parser returned", "[rusage] ");
-
-        // replace/update ast root
-        ast_->setRootNode(astRoot);
-        //DLOG("AST: %@", [self _inspectASTTree:astRoot]);
-        K_DISPATCH_BG_ASYNC({ [self debugUpdateASTViewer:self]; });
-      }
-
-      // free memory used by the temporary copy of our text
-      source->clear();
-
-    } else DLOG("no parse() function available for document");
-  }));
+  // enqeue edit to be handled by the text parser system
+  KNodeEnqueueParseEntry(new KNodeParseEntry(editedRange.location,
+                                             changeDelta, self));
 }
 
 

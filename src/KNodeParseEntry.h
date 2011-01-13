@@ -4,27 +4,17 @@
 
 #import "kod_node_interface.h"
 
+@class KDocument;
+
 class KNodeParseEntry : public KNodeIOEntry {
  public:
   KNodeParseEntry(NSUInteger modificationIndex,
                   NSInteger changeDelta,
-                  kod::ExternalUTF16String *source,
-                  dispatch_block_t block)
-      : modificationIndex_(modificationIndex)
-      , changeDelta_(changeDelta) {
-    block_ = [block copy];
-    source_ = source;
-  }
+                  KDocument *document);
 
-  virtual ~KNodeParseEntry() {
-    [block_ release];
-  }
+  virtual ~KNodeParseEntry();
 
-  void perform() {
-    block_();
-    KNodeIOEntry::perform();
-  }
-
+  void perform();
   bool mergeWith(KNodeParseEntry *olderEntry);
 
   NSUInteger modificationIndex() const { return modificationIndex_; };
@@ -34,9 +24,12 @@ class KNodeParseEntry : public KNodeIOEntry {
   NSInteger &changeDelta() { return changeDelta_; };
 
   kod::ExternalUTF16String *source() const { return source_; };
+  kod::ExternalUTF16String *source(bool create);
+
+  KDocument *document() const { return document_; };
 
  protected:
-  dispatch_block_t block_;
+  KDocument *document_;
   NSUInteger modificationIndex_;
   NSInteger changeDelta_;
   kod::ExternalUTF16String *source_;

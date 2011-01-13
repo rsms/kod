@@ -11,6 +11,8 @@
 @class KBrowser, KStyle, KBrowserWindowController, KScrollView, KMetaRulerView;
 @class KTextView, KClipView, KURLHandler;
 
+class KNodeParseEntry;
+
 // notifications
 extern NSString *const KDocumentDidLoadDataNotification;
 
@@ -117,8 +119,12 @@ extern NSString *const KDocumentDidLoadDataNotification;
 - (IBAction)toggleMetaRuler:(id)sender;
 
 - (void)refreshStyle;
-
 - (void)styleDidChange:(NSNotification*)notification;
+
+- (void)ASTWasUpdated:(kod::ASTNodePtr)astRoot
+       basedOnVersion:(uint64_t)version
+           parseEntry:(KNodeParseEntry*)parseEntry;
+
 - (void)textStorageDidProcessEditing:(NSNotification*)notification;
 
 // Retrieve line number (first line is 1) for character |location|

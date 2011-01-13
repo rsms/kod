@@ -310,11 +310,11 @@ void KNodeEnqueueParseEntry(KNodeParseEntry *newEntry) {
 
     #if DEBUG_KNodeEnqueueParseEntry
     NSLog(@"---> prev: {source:'%@', index:%lu, changeDelta:%ld}",
-          prevEntry->source()->weakNSString(NO),
+          prevEntry->source(true)->weakNSString(NO),
           prevEntry->modificationIndex(), prevEntry->changeDelta());
 
     NSLog(@"---> curr: {source:'%@', index:%lu, changeDelta:%ld}",
-          newEntry->source()->weakNSString(NO),
+          newEntry->source(true)->weakNSString(NO),
           newEntry->modificationIndex(), newEntry->changeDelta());
     #endif
 
@@ -340,7 +340,8 @@ void KNodeEnqueueParseEntry(KNodeParseEntry *newEntry) {
   NSLog(@"---> final:  modificationIndex: %lu, changeDelta: %ld",
         newEntry->modificationIndex(), newEntry->changeDelta());
 
-  NSLog(@"---> final source chunk: '%@'", [newEntry->source()->weakNSString(NO)
+  NSString *sourceStr = newEntry->source(true)->weakNSString(NO);
+  NSLog(@"---> final source chunk: '%@'", [sourceStr
               substringWithRange:NSMakeRange(newEntry->modificationIndex(),
          newEntry->changeDelta() > 0 ? newEntry->changeDelta() : 0)]);
   #endif
