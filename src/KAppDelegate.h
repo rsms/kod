@@ -10,11 +10,13 @@
   IBOutlet SUUpdater *sparkleUpdater_;
   IBOutlet NSMenu *syntaxModeMenu_;
   KTerminalUsageWindowController *terminalUsageWindowController_;
+  NSWindow *backDrop;
 }
 
 - (IBAction)newWindow:(id)sender;
 - (IBAction)newDocument:(id)sender;  // "New tab"
 - (IBAction)displayTerminalUsage:(id)sender;
 - (IBAction)displayAbout:(id)sender;
+- (IBAction)coverBackground:(id)sender;
 
 @end
