@@ -76,6 +76,7 @@ As mentioned earlier in this article, we prefer that you send a [*pull request*]
 5. Send a pull request to the upstream repository's owner by visiting your repository's site at github (i.e. https://github.com/yourusername/kod) and press the "Pull Request" button. Here's a good guide on pull requests: <http://help.github.com/pull-requests/>
 
 **Use one topic branch per feature** -- don't mix different kinds of patches in the same branch. Instead, merge them all together into your master branch (or develop everything in your master and then cherry-pick-and-merge into the different topic branches). Git provides for an extremely flexible workflow, which in many ways causes more confusion than it helps you when new to collaborative software development. The guides provided by GitHub at <http://help.github.com/> are a really good starting point and reference.
+If you are fixing a ticket, a convenient way to name the branch is to use the URL slug from the bug tracker, like this: `git checkout -tb 53-feature-manually-select-language`.
 
 
 #### Contributor License Agreement
