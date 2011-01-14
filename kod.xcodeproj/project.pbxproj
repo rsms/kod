@@ -31,6 +31,7 @@
 		3A15936B128B619800339E6E /* NSString-intern.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A15936A128B619800339E6E /* NSString-intern.m */; };
 		3A15949F128B83F100339E6E /* NSString-cpp.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A15949E128B83F100339E6E /* NSString-cpp.mm */; };
 		3A159685128C432800339E6E /* KStyle.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A159684128C432800339E6E /* KStyle.mm */; };
+		3A1A4A8712E0A6EF00887625 /* KWindowBackgroundCoverView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A1A4A8612E0A6EF00887625 /* KWindowBackgroundCoverView.m */; };
 		3A24231712CB9A2100522D81 /* kod in Copy nodelib */ = {isa = PBXBuildFile; fileRef = 3A24231112CB99FF00522D81 /* kod */; };
 		3A25E4B71281AE3700B6A33E /* KStyleElement.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A25E4B61281AE3700B6A33E /* KStyleElement.mm */; };
 		3A25E6101281CFEF00B6A33E /* NSColor-web.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A25E60F1281CFEF00B6A33E /* NSColor-web.m */; };
@@ -278,6 +279,8 @@
 		3A159684128C432800339E6E /* KStyle.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KStyle.mm; sourceTree = "<group>"; };
 		3A15968A128C501C00339E6E /* HSemaphore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HSemaphore.h; sourceTree = "<group>"; };
 		3A1596E5128C607700339E6E /* hobjc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = hobjc.h; sourceTree = "<group>"; };
+		3A1A4A8512E0A6EF00887625 /* KWindowBackgroundCoverView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KWindowBackgroundCoverView.h; sourceTree = "<group>"; };
+		3A1A4A8612E0A6EF00887625 /* KWindowBackgroundCoverView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KWindowBackgroundCoverView.m; sourceTree = "<group>"; };
 		3A24231112CB99FF00522D81 /* kod */ = {isa = PBXFileReference; lastKnownFileType = folder; name = kod; path = "node-module/kod"; sourceTree = "<group>"; };
 		3A25E47A1281A6A200B6A33E /* libboost_regex-mt.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libboost_regex-mt.dylib"; path = "deps/srchilight/libboost_regex-mt.dylib"; sourceTree = "<group>"; };
 		3A25E47C1281A6A700B6A33E /* libsource-highlight.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libsource-highlight.dylib"; path = "deps/srchilight/libsource-highlight.dylib"; sourceTree = "<group>"; };
@@ -757,6 +760,8 @@
 				3AF39D1B12BE8C2400FC534A /* shared-dispatch-queues.c */,
 				3A928C14122714E800DA7E43 /* KAppDelegate.h */,
 				3A928C15122714E800DA7E43 /* KAppDelegate.mm */,
+				3A1A4A8512E0A6EF00887625 /* KWindowBackgroundCoverView.h */,
+				3A1A4A8612E0A6EF00887625 /* KWindowBackgroundCoverView.m */,
 				3A928C17122714E800DA7E43 /* KBrowser.h */,
 				3A928C18122714E800DA7E43 /* KBrowser.mm */,
 				3A9292971229D31200DA7E43 /* KBrowserWindowController.h */,
@@ -1355,6 +1360,7 @@
 				3A37B4A812DA416E00ED811C /* ASTNode.mm in Sources */,
 				3A37B54712DA48E500ED811C /* KASTOutlineView.m in Sources */,
 				3AC866C412DE69360077673C /* KNodeParseEntry.mm in Sources */,
+				3A1A4A8712E0A6EF00887625 /* KWindowBackgroundCoverView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

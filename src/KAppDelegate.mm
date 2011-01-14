@@ -15,32 +15,13 @@
 #import "KMachService.h"
 #import "KSudo.h"
 #import "KNodeThread.h"
+#import "KWindowBackgroundCoverView.h"
 
 #import <Sparkle/SUUpdater.h>
 
 #if K_WITH_F_SCRIPT
 #import <FScript/FScript.h>
 #endif
-
-@interface UnclutterView : NSView
-{
-}
-@end
-
-@implementation UnclutterView
-- (BOOL)shouldDelayWindowOrderingForEvent:(NSEvent *)theEvent; 
-{
-  return YES;
-}
-- (BOOL)acceptsFirstMouse:(NSEvent *)theEvent; 
-{
-  return YES; 
-}
-- (void)mouseDown:(NSEvent *)theEvent; 
-{
-  [NSApp preventWindowOrdering]; 
-}
-@end
 
 
 @implementation KAppDelegate
@@ -161,6 +142,44 @@
   NSURL *url = [NSURL URLWithString:@"kod:about"];
   [[KDocumentController kodController] openDocumentsWithContentsOfURL:url
                                                              callback:nil];
+}
+
+
+- (IBAction)coverBackground:(id)sender {
+  NSArray *orderedWindows = [[NSApplication sharedApplication] orderedWindows];
+  NSIndexSet *indexes = [orderedWindows indexesOfObjectsPassingTest:
+                         ^ BOOL (id obj, NSUInteger idx, BOOL *stop) {
+                           NSWindow *win = (NSWindow*)obj;
+                           return [win isVisible];
+                         }];
+  
+  if (backDrop) {
+    if ([sender state] == NSOnState) {
+      [sender setState:NSOffState];
+      [backDrop orderOut:nil];
+    } else if (indexes.count > 0) {
+      NSWindow *backWin = [orderedWindows objectAtIndex:[indexes lastIndex]];
+      [backDrop orderWindow:NSWindowBelow relativeTo:[backWin windowNumber]];
+      [sender setState:NSOnState];
+    }
+  } else {
+    if (indexes.count > 0) {
+      NSRect windowRect = [[NSScreen mainScreen] frame];
+      backDrop = [[NSWindow alloc] initWithContentRect:windowRect 
+                                             styleMask:NSBorderlessWindowMask
+                                               backing:NSBackingStoreBuffered 
+                                                 defer:NO];
+      NSView *view = [[KWindowBackgroundCoverView alloc] initWithFrame:windowRect];
+      [[backDrop contentView] addSubview:view];
+      [backDrop setCollectionBehavior:NSWindowCollectionBehaviorIgnoresCycle];
+      [backDrop setBackgroundColor:[NSColor blackColor]];
+      [backDrop setHidesOnDeactivate:YES]; // Deactivate? 
+      [backDrop setHasShadow:NO];
+      NSWindow *backWin = [orderedWindows objectAtIndex:[indexes lastIndex]];
+      [backDrop orderWindow:NSWindowBelow relativeTo:[backWin windowNumber]];
+      [sender setState:NSOnState];
+    }
+  }
 }
 
 
@@ -373,44 +392,6 @@
   }
 
   //[pboard clearContents];
-}
-
-- (IBAction)coverBackground:(id)sender
-{
-  NSArray *orderedWindows = [[NSApplication sharedApplication] orderedWindows];
-  NSIndexSet *indexes = [orderedWindows indexesOfObjectsPassingTest:
-                         ^ BOOL (id obj, NSUInteger idx, BOOL *stop) {
-                           NSWindow *win = (NSWindow*)obj;
-                           return [win isVisible];
-                         }];
-  
-  if (backDrop) {
-    if ([sender state] == NSOnState) {
-      [sender setState:NSOffState];
-      [backDrop orderOut:nil];
-    } else if (indexes.count > 0) {
-      NSWindow *backWin = [orderedWindows objectAtIndex:[indexes lastIndex]];
-      [backDrop orderWindow:NSWindowBelow relativeTo:[backWin windowNumber]];
-      [sender setState:NSOnState];
-    }
-  } else {
-    if (indexes.count > 0) {
-      NSRect windowRect = [[NSScreen mainScreen] frame];
-      backDrop = [[NSWindow alloc] initWithContentRect:windowRect 
-                                             styleMask:NSBorderlessWindowMask
-                                               backing:NSBackingStoreBuffered 
-                                                 defer:NO];
-      NSView *view = [[UnclutterView alloc] initWithFrame:windowRect];
-      [[backDrop contentView] addSubview:view];
-      [backDrop setCollectionBehavior:NSWindowCollectionBehaviorIgnoresCycle];
-      [backDrop setBackgroundColor:[NSColor blackColor]];
-      //[backDrop setHidesOnDeactivate:YES]; // Activate this? -TBD-
-      [backDrop setHasShadow:NO];
-      NSWindow *backWin = [orderedWindows objectAtIndex:[indexes lastIndex]];
-      [backDrop orderWindow:NSWindowBelow relativeTo:[backWin windowNumber]];
-      [sender setState:NSOnState];
-    }
-  }
 }
 
 @end
