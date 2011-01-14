@@ -11,4 +11,5 @@
 - Christian Eager <ceager@gmail.com>
 - Agostino Carandente <aragost+kod@gmail.com>
 - Reed Stoner <kaltekar@gmail.com>
+- Aleksandr Kostyutchenko <kossnocorp@gmail.com>
 - Edward Patel <edward.patel@gmail.com>
