@@ -9,8 +9,9 @@
 @interface KAppDelegate : NSObject <NSApplicationDelegate> {
   IBOutlet SUUpdater *sparkleUpdater_;
   IBOutlet NSMenu *syntaxModeMenu_;
+  IBOutlet NSMenuItem *coverBackgroundMenuItem_;
   KTerminalUsageWindowController *terminalUsageWindowController_;
-  NSWindow *backDrop;
+  NSWindow *backgroundCoverWindow_;
 }
 
 - (IBAction)newWindow:(id)sender;
@@ -18,5 +19,7 @@
 - (IBAction)displayTerminalUsage:(id)sender;
 - (IBAction)displayAbout:(id)sender;
 - (IBAction)coverBackground:(id)sender;
+
+- (void)createBackgroundCoverWindow;
 
 @end

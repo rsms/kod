@@ -36,6 +36,14 @@
   [sparkleUpdater_ setUpdateCheckInterval:3600.0];
   [sparkleUpdater_ setFeedURL:[NSURL URLWithString:
       @"http://kodapp.com/appcast.xml"]];
+
+  // Background cover configuration
+  BOOL isCoverWindowActive = kconf_bool(@"window/backgroundCover/enabled", NO);
+  if (isCoverWindowActive) {
+    [coverBackgroundMenuItem_ setState:NSOnState];
+    [self createBackgroundCoverWindow];
+    [backgroundCoverWindow_ orderFront:nil];
+  }
 }
 
 #pragma mark -
@@ -92,6 +100,23 @@
       }
     });
   }
+}
+
+
+- (void)createBackgroundCoverWindow {
+  if (backgroundCoverWindow_) 
+    return;
+  NSRect windowRect = [[NSScreen mainScreen] frame];
+  backgroundCoverWindow_ = [[NSWindow alloc] initWithContentRect:windowRect 
+                                                       styleMask:NSBorderlessWindowMask
+                                                         backing:NSBackingStoreBuffered 
+                                                           defer:NO];
+  NSView *view = [[KWindowBackgroundCoverView alloc] initWithFrame:windowRect];
+  [[backgroundCoverWindow_ contentView] addSubview:view];
+  [backgroundCoverWindow_ setCollectionBehavior:NSWindowCollectionBehaviorIgnoresCycle];
+  [backgroundCoverWindow_ setBackgroundColor:[NSColor blackColor]];
+  // [backDrop setHidesOnDeactivate:YES]; // Activate? 
+  [backgroundCoverWindow_ setHasShadow:NO];
 }
 
 
@@ -153,32 +178,32 @@
                            return [win isVisible];
                          }];
   
-  if (backDrop) {
+  if (backgroundCoverWindow_) {
     if ([sender state] == NSOnState) {
       [sender setState:NSOffState];
-      [backDrop orderOut:nil];
-    } else if (indexes.count > 0) {
-      NSWindow *backWin = [orderedWindows objectAtIndex:[indexes lastIndex]];
-      [backDrop orderWindow:NSWindowBelow relativeTo:[backWin windowNumber]];
+      [backgroundCoverWindow_ orderOut:nil];
+      kconf_set_bool(@"window/backgroundCover/enabled", NO);
+    } else {
+      [self createBackgroundCoverWindow];
+      if (indexes.count > 0) {
+        NSWindow *backWin = [orderedWindows objectAtIndex:[indexes lastIndex]];
+        [backgroundCoverWindow_ orderWindow:NSWindowBelow relativeTo:[backWin windowNumber]];
+      } else { 
+        [backgroundCoverWindow_ orderFront:nil];
+      }
       [sender setState:NSOnState];
+      kconf_set_bool(@"window/backgroundCover/enabled", YES);
     }
   } else {
+    [self createBackgroundCoverWindow];
     if (indexes.count > 0) {
-      NSRect windowRect = [[NSScreen mainScreen] frame];
-      backDrop = [[NSWindow alloc] initWithContentRect:windowRect 
-                                             styleMask:NSBorderlessWindowMask
-                                               backing:NSBackingStoreBuffered 
-                                                 defer:NO];
-      NSView *view = [[KWindowBackgroundCoverView alloc] initWithFrame:windowRect];
-      [[backDrop contentView] addSubview:view];
-      [backDrop setCollectionBehavior:NSWindowCollectionBehaviorIgnoresCycle];
-      [backDrop setBackgroundColor:[NSColor blackColor]];
-      [backDrop setHidesOnDeactivate:YES]; // Deactivate? 
-      [backDrop setHasShadow:NO];
       NSWindow *backWin = [orderedWindows objectAtIndex:[indexes lastIndex]];
-      [backDrop orderWindow:NSWindowBelow relativeTo:[backWin windowNumber]];
-      [sender setState:NSOnState];
+      [backgroundCoverWindow_ orderWindow:NSWindowBelow relativeTo:[backWin windowNumber]];
+    } else { 
+      [backgroundCoverWindow_ orderFront:nil];
     }
+    [sender setState:NSOnState];
+    kconf_set_bool(@"window/backgroundCover/enabled", YES);
   }
 }
 
