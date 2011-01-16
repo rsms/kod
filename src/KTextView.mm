@@ -90,6 +90,21 @@ static CGFloat kTextContainerYOffset = 0.0;
 }
 
 
+#pragma mark -
+#pragma mark Drawing
+
+
+- (void)drawRect:(NSRect)dirtyRect {
+  [super drawRect:dirtyRect];
+  [[NSColor colorWithCalibratedRed:0.75
+                             green:0.75
+                              blue:0.75
+                             alpha:1.0] set];
+  [NSBezierPath setDefaultLineWidth:0.5];
+  [NSBezierPath strokeLineFromPoint:CGPointMake(distanceTo80chars, 0)
+                            toPoint:CGPointMake(distanceTo80chars, self.frame.size.height)];
+}
+
 
 #pragma mark -
 #pragma mark Properties
@@ -155,6 +170,14 @@ static CGFloat kTextContainerYOffset = 0.0;
   // font
   if (style.baseFont)
     [self setFont:style.baseFont];
+
+  // calculate the 80 chars limit
+  NSMutableAttributedString *string = [[NSMutableAttributedString alloc] initWithString:@"0"];
+  [string setAttributes:[NSDictionary dictionaryWithObject:style.baseFont
+                                                    forKey:NSFontAttributeName] 
+                  range:NSMakeRange(0, 1)];
+  NSRect rect = [string boundingRectWithSize:NSMakeSize(0, 0) options:NSStringDrawingOneShot];
+  distanceTo80chars = rect.size.width*80 + kTextContainerInset.width/2.0; // Not completly sure about the div with 2(?)
 
   // body/document
   CSSStyle *bodyStyle = [style styleForElementName:@"body"];
