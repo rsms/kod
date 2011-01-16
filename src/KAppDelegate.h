@@ -9,6 +9,7 @@
 @interface KAppDelegate : NSObject <NSApplicationDelegate> {
   IBOutlet SUUpdater *sparkleUpdater_;
   IBOutlet NSMenu *syntaxModeMenu_;
+  IBOutlet NSMenuItem *show80charsMenuItem_;
   IBOutlet NSMenuItem *coverBackgroundMenuItem_;
   KTerminalUsageWindowController *terminalUsageWindowController_;
   NSWindow *backgroundCoverWindow_;
@@ -18,8 +19,9 @@
 - (IBAction)newDocument:(id)sender;  // "New tab"
 - (IBAction)displayTerminalUsage:(id)sender;
 - (IBAction)displayAbout:(id)sender;
+- (IBAction)show80charsGuide:(id)sender;
 - (IBAction)coverBackground:(id)sender;
 
-- (void)createBackgroundCoverWindow;
+- (void)_createBackgroundCoverWindow;
 
 @end

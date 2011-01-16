@@ -96,15 +96,15 @@ static CGFloat kTextContainerYOffset = 0.0;
 
 - (void)drawRect:(NSRect)dirtyRect {
   [super drawRect:dirtyRect];
-  [[NSColor colorWithCalibratedRed:0.75
-                             green:0.75
-                              blue:0.75
-                             alpha:1.0] set];
-  [NSBezierPath setDefaultLineWidth:0.5];
-  [NSBezierPath strokeLineFromPoint:CGPointMake(distanceTo80chars, 0)
-                            toPoint:CGPointMake(distanceTo80chars, self.frame.size.height)];
-}
-
+  if (distanceTo80chars > 0) {
+    [[NSColor colorWithCalibratedRed:0.3
+                               green:0.3
+                                blue:0.3
+                               alpha:0.6] set];
+    [NSBezierPath strokeLineFromPoint:CGPointMake(distanceTo80chars, 0)
+                              toPoint:CGPointMake(distanceTo80chars, self.frame.size.height)];
+  }
+}  
 
 #pragma mark -
 #pragma mark Properties
@@ -172,13 +172,19 @@ static CGFloat kTextContainerYOffset = 0.0;
     [self setFont:style.baseFont];
 
   // calculate the 80 chars limit
-  NSMutableAttributedString *string = [[NSMutableAttributedString alloc] initWithString:@"0"];
-  [string setAttributes:[NSDictionary dictionaryWithObject:style.baseFont
-                                                    forKey:NSFontAttributeName] 
-                  range:NSMakeRange(0, 1)];
-  NSRect rect = [string boundingRectWithSize:NSMakeSize(0, 0) options:NSStringDrawingOneShot];
-  distanceTo80chars = rect.size.width*80 + kTextContainerInset.width/2.0; // Not completly sure about the div with 2(?)
-
+  if (kconf_bool(@"window/80charsGuide/enabled", NO)) {
+    NSMutableAttributedString *string = [[NSMutableAttributedString alloc] initWithString:@"0"];
+    [string setAttributes:[NSDictionary dictionaryWithObject:style.baseFont
+                                                      forKey:NSFontAttributeName] 
+                    range:NSMakeRange(0, 1)];
+    NSRect rect = [string boundingRectWithSize:NSMakeSize(0, 0) options:NSStringDrawingOneShot];
+    distanceTo80chars = rect.size.width*80 + 
+                        kTextContainerInset.width/2.0 +  // Not completly sure about the div with 2(?)
+                        0.5;     // This will make the line only one pixel wide due to apple "grid" view
+  } else {
+    distanceTo80chars = 0; 
+  }
+  
   // body/document
   CSSStyle *bodyStyle = [style styleForElementName:@"body"];
   NSColor *bgColor = bodyStyle ? bodyStyle.backgroundColor : nil;

@@ -27,8 +27,6 @@
 @implementation KAppDelegate
 
 
-
-
 - (void)awakeFromNib {
   // Sparkle configuration
   [sparkleUpdater_ setAutomaticallyChecksForUpdates:YES];
@@ -41,10 +39,17 @@
   BOOL isCoverWindowActive = kconf_bool(@"window/backgroundCover/enabled", NO);
   if (isCoverWindowActive) {
     [coverBackgroundMenuItem_ setState:NSOnState];
-    [self createBackgroundCoverWindow];
+    [self _createBackgroundCoverWindow];
     [backgroundCoverWindow_ orderFront:nil];
+  } else {
+    [coverBackgroundMenuItem_ setState:NSOffState];
   }
+
+  // activate 80 chars limit configuration
+  BOOL is80charsGuideActive = kconf_bool(@"window/80charsGuide/enabled", NO);
+  [show80charsMenuItem_ setState:is80charsGuideActive ? NSOnState : NSOffState];
 }
+
 
 #pragma mark -
 #pragma mark Internal
@@ -103,7 +108,7 @@
 }
 
 
-- (void)createBackgroundCoverWindow {
+- (void)_createBackgroundCoverWindow {
   if (backgroundCoverWindow_) 
     return;
   NSRect windowRect = [[NSScreen mainScreen] frame];
@@ -170,6 +175,19 @@
 }
 
 
+- (IBAction)show80charsGuide:(id)sender {
+  if ([sender state] == NSOnState) {
+    [sender setState:NSOffState];
+    kconf_set_bool(@"window/80charsGuide/enabled", NO);
+  } else {
+    [sender setState:NSOnState];
+    kconf_set_bool(@"window/80charsGuide/enabled", YES);
+  }
+  NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
+  [nc postNotificationName:KStyleDidChangeNotification object:[KStyle sharedStyle]];
+}
+
+
 - (IBAction)coverBackground:(id)sender {
   NSArray *orderedWindows = [[NSApplication sharedApplication] orderedWindows];
   NSIndexSet *indexes = [orderedWindows indexesOfObjectsPassingTest:
@@ -184,7 +202,7 @@
       [backgroundCoverWindow_ orderOut:nil];
       kconf_set_bool(@"window/backgroundCover/enabled", NO);
     } else {
-      [self createBackgroundCoverWindow];
+      [self _createBackgroundCoverWindow];
       if (indexes.count > 0) {
         NSWindow *backWin = [orderedWindows objectAtIndex:[indexes lastIndex]];
         [backgroundCoverWindow_ orderWindow:NSWindowBelow relativeTo:[backWin windowNumber]];
@@ -195,7 +213,7 @@
       kconf_set_bool(@"window/backgroundCover/enabled", YES);
     }
   } else {
-    [self createBackgroundCoverWindow];
+    [self _createBackgroundCoverWindow];
     if (indexes.count > 0) {
       NSWindow *backWin = [orderedWindows objectAtIndex:[indexes lastIndex]];
       [backgroundCoverWindow_ orderWindow:NSWindowBelow relativeTo:[backWin windowNumber]];
