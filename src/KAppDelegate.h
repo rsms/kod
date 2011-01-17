@@ -19,7 +19,7 @@
 - (IBAction)newDocument:(id)sender;  // "New tab"
 - (IBAction)displayTerminalUsage:(id)sender;
 - (IBAction)displayAbout:(id)sender;
-- (IBAction)show80charsGuide:(id)sender;
+- (IBAction)showColumnGuide:(id)sender;
 - (IBAction)coverBackground:(id)sender;
 
 - (void)_createBackgroundCoverWindow;
