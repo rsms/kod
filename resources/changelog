@@ -1,3 +1,11 @@
+0000-00-00  0.0.4
+
+ * [NEW] Added a feature where a "borderless" window is put behind Kod which
+   covers any other windows which are below Kod's window level.
+
+ * [NEW] Added the ability to display a column guide line, available from the
+   "View" menu.
+
 
 2011-01-11  0.0.3
 
@@ -58,11 +66,11 @@
  * [NEW] Writing to files now support asynchronous or synchronous (blocking the
    UI) operation. To use synchronous saving of local files, set the defaults key
    "KFileURLHandler/write/async" to "NO". Writing is now based on URL handlers.
-   
+
  * [FIXED] Writing files no longer reset file mode. Ticket 16
- 
+
  * [NEW] Changelog accessible through kod:changelog
- 
+
  * [FIXED] Saving a file with a different type causes syntax type to be
    reconsidered. Ticket 21
 

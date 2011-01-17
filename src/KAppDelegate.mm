@@ -46,8 +46,8 @@
   }
 
   // activate 80 chars limit configuration
-  BOOL is80charsGuideActive = kconf_bool(@"window/80charsGuide/enabled", NO);
-  [show80charsMenuItem_ setState:is80charsGuideActive ? NSOnState : NSOffState];
+  BOOL usingColumnGuide = kconf_double(@"window/columnGuide/enabled", NO);
+  [show80charsMenuItem_ setState:usingColumnGuide ? NSOnState : NSOffState];
 }
 
 
@@ -109,18 +109,18 @@
 
 
 - (void)_createBackgroundCoverWindow {
-  if (backgroundCoverWindow_) 
+  if (backgroundCoverWindow_)
     return;
   NSRect windowRect = [[NSScreen mainScreen] frame];
-  backgroundCoverWindow_ = [[NSWindow alloc] initWithContentRect:windowRect 
+  backgroundCoverWindow_ = [[NSWindow alloc] initWithContentRect:windowRect
                                                        styleMask:NSBorderlessWindowMask
-                                                         backing:NSBackingStoreBuffered 
+                                                         backing:NSBackingStoreBuffered
                                                            defer:NO];
   NSView *view = [[KWindowBackgroundCoverView alloc] initWithFrame:windowRect];
   [[backgroundCoverWindow_ contentView] addSubview:view];
   [backgroundCoverWindow_ setCollectionBehavior:NSWindowCollectionBehaviorIgnoresCycle];
   [backgroundCoverWindow_ setBackgroundColor:[NSColor blackColor]];
-  // [backDrop setHidesOnDeactivate:YES]; // Activate? 
+  // [backDrop setHidesOnDeactivate:YES]; // Activate?
   [backgroundCoverWindow_ setHasShadow:NO];
 }
 
@@ -175,16 +175,14 @@
 }
 
 
-- (IBAction)show80charsGuide:(id)sender {
+- (IBAction)showColumnGuide:(id)sender {
   if ([sender state] == NSOnState) {
     [sender setState:NSOffState];
-    kconf_set_bool(@"window/80charsGuide/enabled", NO);
+    kconf_set_bool(@"window/columnGuide/enabled", NO);
   } else {
     [sender setState:NSOnState];
-    kconf_set_bool(@"window/80charsGuide/enabled", YES);
+    kconf_set_bool(@"window/columnGuide/enabled", YES);
   }
-  NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
-  [nc postNotificationName:KStyleDidChangeNotification object:[KStyle sharedStyle]];
 }
 
 
@@ -195,7 +193,7 @@
                            NSWindow *win = (NSWindow*)obj;
                            return [win isVisible];
                          }];
-  
+
   if (backgroundCoverWindow_) {
     if ([sender state] == NSOnState) {
       [sender setState:NSOffState];
@@ -206,7 +204,7 @@
       if (indexes.count > 0) {
         NSWindow *backWin = [orderedWindows objectAtIndex:[indexes lastIndex]];
         [backgroundCoverWindow_ orderWindow:NSWindowBelow relativeTo:[backWin windowNumber]];
-      } else { 
+      } else {
         [backgroundCoverWindow_ orderFront:nil];
       }
       [sender setState:NSOnState];
@@ -217,7 +215,7 @@
     if (indexes.count > 0) {
       NSWindow *backWin = [orderedWindows objectAtIndex:[indexes lastIndex]];
       [backgroundCoverWindow_ orderWindow:NSWindowBelow relativeTo:[backWin windowNumber]];
-    } else { 
+    } else {
       [backgroundCoverWindow_ orderFront:nil];
     }
     [sender setState:NSOnState];

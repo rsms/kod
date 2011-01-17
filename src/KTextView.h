@@ -16,9 +16,9 @@
   // kconf value "editor/text/indentation" (defaults to 2xSP)
   NSString *indentationString_;
 
-  // 80 chars guide line distance to be drawn
-  float distanceTo80chars;
-  
+  // Column guide (vertical line) position
+  CGFloat columnGuidePosition_;
+
   // Frequency counts of all words (e.g. used for autocomplete)
   KWordDictionary *wordDictionary_;
 }
