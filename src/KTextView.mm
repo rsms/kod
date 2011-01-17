@@ -106,6 +106,27 @@ static CGFloat kTextContainerYOffset = 0.0;
   }
 }  
 
+
+#pragma mark -
+#pragma mark Printing
+
+
+- (void)print:(id)sender {
+  NSString *tmpPath = [NSString stringWithFormat:@"/tmp/%@", self.document.displayName];
+  NSString *tmpPathPS = [NSString stringWithFormat:@"%@.ps", tmpPath];
+  NSString *enscriptCommand = [NSString stringWithFormat:@"enscript --newline=n --tabsize=4 -X mac --header='|$n|$D $C' -E -jr -2 -o \"%@\" \"%@\"", tmpPathPS, tmpPath];
+  NSString *deleteCommand = [NSString stringWithFormat:@"rm \"%@\"", tmpPathPS];
+  NSString *openCommand = [NSString stringWithFormat:@"open \"%@\"", tmpPathPS];
+  [self.string writeToFile:tmpPath
+                atomically:NO
+                  encoding:NSMacOSRomanStringEncoding // enscript doesn't support UTF8...yet
+                     error:nil];
+  system([deleteCommand cStringUsingEncoding:NSUTF8StringEncoding]);
+  system([enscriptCommand cStringUsingEncoding:NSUTF8StringEncoding]);
+  system([openCommand cStringUsingEncoding:NSUTF8StringEncoding]);
+}
+
+
 #pragma mark -
 #pragma mark Properties
 
@@ -749,5 +770,6 @@ static CGFloat kTextContainerYOffset = 0.0;
                                         inText:text
                                     countLimit:100];
 }
+
 
 @end
