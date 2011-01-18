@@ -61,7 +61,14 @@ shouldMakeNewConnection:(NSConnection *)newConnnection {
 }
 
 
-- (void)openURLs:(NSArray*)urlStrings callback:(NSInvocation*)callback {
+- (void)openURLs:(NSArray*)urlStrings closeCallbacks:(NSArray *)closeCallbacks
+                                  errorCallback:(NSInvocation *)errorCallback {
+  if ((closeCallbacks != nil) && (urlStrings.count != closeCallbacks.count)) {
+    NSError *err = [NSError kodErrorWithFormat:@"URLs array items count"
+      " does not match the close callbacks count"];
+    [errorCallback invokeKMachServiceCallbackWithArgument:err];
+    return;
+  }
   NSMutableArray *absoluteURLs =
       [NSMutableArray arrayWithCapacity:[urlStrings count]];
   for (NSString *url in urlStrings) {
@@ -76,8 +83,9 @@ shouldMakeNewConnection:(NSConnection *)newConnnection {
   kassert(documentController != nil);
   [documentController openDocumentsWithContentsOfURLs:absoluteURLs
                        nonExistingFilesAsNewDocuments:YES
-                                             callback:^(NSError *err){
-    [callback invokeKMachServiceCallbackWithArgument:err];
+                                       closeCallbacks:closeCallbacks
+                                             callback:^(NSError *err) {
+    [errorCallback invokeKMachServiceCallbackWithArgument:err];
   }];
 }
 
@@ -96,7 +104,8 @@ shouldMakeNewConnection:(NSConnection *)newConnnection {
 
 - (void)openNewDocumentWithData:(NSData*)data
                          ofType:(NSString*)typeName
-                       callback:(NSInvocation*)callback {
+                  closeCallback:(NSInvocation*)closeCallback
+                  errorCallback:(NSInvocation*)errorCallback {
   DLOG("%@ openNewDocumentWithData", self);
   
   KDocumentController *documentController = [KDocumentController kodController];
@@ -118,8 +127,8 @@ shouldMakeNewConnection:(NSConnection *)newConnnection {
   }
 
   // invoke callback
-  if (callback)
-    [callback invokeKMachServiceCallbackWithArgument:error];
+  if (errorCallback)
+    [errorCallback invokeKMachServiceCallbackWithArgument:error];
 
   /*
   TODO(rsms): Pass the file descriptor by kernel FD delegation using sendmsg.

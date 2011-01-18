@@ -48,12 +48,24 @@ withWindowController:(KBrowserWindowController*)windowController
                    withWindowController:(KBrowserWindowController*)windowController
                                priority:(long)priority
          nonExistingFilesAsNewDocuments:(BOOL)newDocForNewURLs
+                         closeCallbacks:(NSArray*)closeCallbacks
                                callback:(void(^)(NSError*))callback;
+
+- (void)openDocumentsWithContentsOfURLs:(NSArray*)urls
+                  withWindowController:(KBrowserWindowController*)windowController
+                              priority:(long)priority
+        nonExistingFilesAsNewDocuments:(BOOL)newDocForNewURLs
+                              callback:(void(^)(NSError*))callback;
 
 // Open |urls| in frontmost window with high priority
 - (void)openDocumentsWithContentsOfURLs:(NSArray*)urls
          nonExistingFilesAsNewDocuments:(BOOL)newDocForNewURLs
+                         closeCallbacks:(NSArray*)closeCallbacks
                                callback:(void(^)(NSError*))callback;
+
+- (void)openDocumentsWithContentsOfURLs:(NSArray*)urls
+        nonExistingFilesAsNewDocuments:(BOOL)newDocForNewURLs
+                              callback:(void(^)(NSError*))callback;
 
 // Open |urls| in frontmost window with high priority
 - (void)openDocumentsWithContentsOfURLs:(NSArray*)urls

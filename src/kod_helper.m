@@ -63,12 +63,13 @@
   */
   struct option long_options[] = {
     {"nowait-open", no_argument, &optNoWaitOpen_, 1},
+    {"wait", no_argument, &optWaitForDocumentClose, 1},
     {"kod-app", required_argument, 0, 0},
     {"version", no_argument, 0, 0},
     {"help", no_argument, 0, 0},
     {0, 0, 0, 0}
   };
-  static const char *short_options = "nh";
+  static const char *short_options = "nhw";
   int c;
   while (1) {
     int option_index = 0;
@@ -91,6 +92,9 @@
       }
       case 'n':
         optNoWaitOpen_ = 1;
+        break;
+      case 'w':
+        optWaitForDocumentClose = 1;
         break;
       case '?':
         [self printUsageAndExit:1];
@@ -260,8 +264,12 @@
   
   DLOG("reading stdin [%d] until EOF...", [fh fileDescriptor]);
   NSData *data = [fh readDataToEndOfFile];
-  [kodService_ openNewDocumentWithData:data ofType:nil callback:
-      [self registerCallback:^(NSError *err){
+  [kodService_ openNewDocumentWithData:data 
+                                ofType:nil 
+                         closeCallback:[self registerCallback:^(void) {
+    DLOG("close callback for piped document executed.");
+  }]
+                         errorCallback:[self registerCallback:^(NSError *err) {
     DLOG("openNewDocumentWithData callback executed. err: %@", err);
   }]];
 }
@@ -270,10 +278,22 @@
 - (void)openAnyURLs {
   if (!URLsToOpen_ || URLsToOpen_.count == 0) return;
   DLOG("invoking openURLs:");
-  [kodService_ openURLs:URLsToOpen_ callback:[self registerCallback:
-  ^(NSError *err){
+  NSInvocation *errorCallback = [self registerCallback:^(NSError *err) {
     DLOG("openAnyURLs callback executed. err: %@", err);
-  }]];
+  }];
+  NSMutableArray *closeCallbacks = nil;
+  if (optWaitForDocumentClose) {
+    closeCallbacks = [NSMutableArray arrayWithCapacity:[URLsToOpen_ count]];
+    for (NSString *url in URLsToOpen_) {
+      NSInvocation *closeCallback = nil;
+      closeCallback = [self registerCallback:^{
+        DLOG("document close callback executed.");
+      }];
+      [closeCallbacks addObject:closeCallback];
+    }
+  }
+  [kodService_ openURLs:URLsToOpen_ closeCallbacks:closeCallbacks
+                                     errorCallback:errorCallback];
 }
 
 

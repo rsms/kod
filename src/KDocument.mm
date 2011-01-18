@@ -26,6 +26,7 @@
 #import "node-module/ASTNodeWrapper.h"
 #import "KASTViewerWindowController.h"
 #import "KASTViewerController.h"
+#import "KMachService-NSInvocation.h"
 
 #import "NSImage-kod.h"
 #import "CIImage-kod.h"
@@ -88,7 +89,8 @@ static uint64_t KDocumentNextIdentifier() {
 
 @synthesize textEncoding = textEncoding_,
             textView = textView_,
-            ast = ast_;
+            ast = ast_,
+            closeCallback = closeCallback_;
 
 static NSImage* _kDefaultIcon = nil;
 static NSString* _kDefaultTitle = @"Untitled";
@@ -174,6 +176,8 @@ static NSString* _kDefaultTitle = @"Untitled";
 
   // register as text storage delegate
   textView_.textStorage.delegate = self;
+  
+  closeCallback_ = nil;
 
   return self;
 }
@@ -560,6 +564,8 @@ static NSString* _kDefaultTitle = @"Untitled";
   }
   [[NSDocumentController sharedDocumentController] removeDocument:self];
   [[NSNotificationCenter defaultCenter] removeObserver:self];
+  
+  [closeCallback_ invokeKMachServiceCallbackWithArgument:nil];
 }
 
 
