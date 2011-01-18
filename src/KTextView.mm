@@ -18,6 +18,7 @@
 static NSSize kTextContainerInset = (NSSize){6.0, 4.0}; // {(LR),(TB)}
 static CGFloat kTextContainerXOffset = -8.0;
 static CGFloat kTextContainerYOffset = 0.0;
+static NSColor *kColumnGuideColor = nil, *kColumnGuideBackgroundColor = nil;
 
 
 @interface KTextView (Private)
@@ -95,13 +96,33 @@ static CGFloat kTextContainerYOffset = 0.0;
 
 
 - (void)drawRect:(NSRect)dirtyRect {
+  // Note(rsms): This method is called _several times for each text edit_ and
+  // thus need to be cheap (as in "fast" or "high performance")
   [super drawRect:dirtyRect];
-  if (columnGuidePosition_ > 0.0) {
-    [[NSColor colorWithCalibratedRed:0.3 green:0.3 blue:0.3 alpha:0.6] set];
-    CGPoint srcPoint = CGPointMake(columnGuidePosition_, 0);
-    CGPoint dstPoint = CGPointMake(columnGuidePosition_,
-                                   self.frame.size.height);
-    [NSBezierPath strokeLineFromPoint:srcPoint toPoint:dstPoint];
+  if (columnGuidePosition_ > 0.0 &&
+      (kColumnGuideColor || kColumnGuideBackgroundColor)) {
+    // read the visibleRect height of the parent clip view (so to avoid
+    // drawing our full height)
+    NSClipView *clipView = (NSClipView*)self.superview;
+    kassert(clipView && [clipView isKindOfClass:[NSClipView class]]);
+    NSRect visibleRect = clipView.documentRect;
+
+    // background color?
+    if (kColumnGuideBackgroundColor) {
+      visibleRect.origin.x = columnGuidePosition_;
+      [kColumnGuideBackgroundColor set];
+      NSRectFill(visibleRect);
+    }
+
+    // border color?
+    if (kColumnGuideColor) {
+      [kColumnGuideColor set];
+      CGPoint srcPoint = CGPointMake(columnGuidePosition_, 0.0);
+      CGPoint dstPoint = CGPointMake(columnGuidePosition_,
+                                     visibleRect.size.height);
+      [NSBezierPath setDefaultLineWidth:1.0];
+      [NSBezierPath strokeLineFromPoint:srcPoint toPoint:dstPoint];
+    }
   }
 }
 
@@ -206,38 +227,54 @@ static CGFloat kTextContainerYOffset = 0.0;
 
   // body/document
   CSSStyle *bodyStyle = [style styleForElementName:@"body"];
-  NSColor *bgColor = bodyStyle ? bodyStyle.backgroundColor : nil;
-  if (bgColor) {
-    [self setBackgroundColor:bgColor];
+  NSColor *color = bodyStyle ? bodyStyle.backgroundColor : nil;
+  if (color) {
+    [self setBackgroundColor:color];
   } else {
     [self setBackgroundColor:[NSColor colorWithCalibratedWhite:0.1 alpha:1.0]];
   }
-  NSColor *textColor = bodyStyle.color;
-  if (textColor) {
-    [self setTextColor:textColor];
+  color = bodyStyle.color;
+  if (color) {
+    [self setTextColor:color];
   } else {
     [self setTextColor:[NSColor colorWithCalibratedWhite:0.9 alpha:1.0]];
   }
 
   // caret
   CSSStyle *caretStyle = [style styleForElementName:@"caret"];
-  NSColor *caretColor = caretStyle ? caretStyle.color : nil;
-  if (caretColor) {
-    [self setInsertionPointColor:caretColor];
+  color = caretStyle ? caretStyle.color : nil;
+  if (color) {
+    [self setInsertionPointColor:color];
   } else {
     [self setInsertionPointColor:[NSColor redColor]];
   }
 
-  // selection color
+  // selection
   CSSStyle *selectedStyle = [style styleForElementName:@"selection"];
-  bgColor = selectedStyle ? selectedStyle.backgroundColor : nil;
-  if (!bgColor) {
-    bgColor =
+  color = selectedStyle ? selectedStyle.backgroundColor : nil;
+  if (!color) {
+    color =
         [NSColor colorWithCalibratedRed:0.12 green:0.18 blue:0.27 alpha:1.0];
   }
   [self setSelectedTextAttributes:
-      [NSDictionary dictionaryWithObject:bgColor
+      [NSDictionary dictionaryWithObject:color
                                   forKey:NSBackgroundColorAttributeName]];
+
+  // column guide
+  // Note: this is shared among all KTextView instances
+  CSSStyle *columnGuideStyle = [style styleForElementName:@"column-guide"];
+  // color
+  color = columnGuideStyle ? columnGuideStyle.color : nil;
+  if (!color) {
+    // fall back to default color which works for most backgrounds
+    color = [NSColor colorWithCalibratedWhite:0.5 alpha:0.3];
+  }
+  h_casid(&kColumnGuideColor, color);
+  // background color
+  color = columnGuideStyle ? columnGuideStyle.backgroundColor : nil;
+  if (color && [color isEqual:[self backgroundColor]])
+    color = nil;
+  h_casid(&kColumnGuideBackgroundColor, color);
 }
 
 
