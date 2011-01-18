@@ -155,6 +155,15 @@
   [splitView_ toggleCollapse:sender];
 }
 
+- (IBAction)toggleAutoSaveOnLosingFocus:(id)sender {
+  NSMenuItem *menuItem = (NSMenuItem*) sender;
+  if([menuItem state] == NSOffState) {
+    [menuItem setState:NSOnState];
+  } else {
+    [menuItem setState:NSOffState];
+  }
+  kconf_set_bool(@"editor/save/onlosefocus", [menuItem state] == NSOnState);
+}
 
 - (IBAction)reloadStyle:(id)sender {
   [[KStyle sharedStyle] reload];
@@ -251,6 +260,9 @@
       [item setState:!statusBarController_.isHidden];
       return YES;
     }
+  } else if (item.action == @selector(toggleAutoSaveOnLosingFocus:)) {
+    [item setState: kconf_bool(@"editor/save/onlosefocus", NO)];
+    return YES;
   } else {
     y = [super validateMenuItem:item];
     #if 0

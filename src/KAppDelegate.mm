@@ -329,6 +329,20 @@
   // TODO: terminate node thread
 }
 
+- (void)applicationWillResignActive:(NSNotification *)notification {
+  DLOG("Not Active Anymore");
+  if(kconf_bool(@"editor/save/onlosefocus", NO)) {
+    DLOG("Saving Documents");
+    KDocumentController* controller = [KDocumentController kodController];
+    NSArray* documents = controller.documents;
+    for(KDocument* document in documents) {
+      if ([document isDirty] && [document canQuietlySaveDocument]) {
+        [document saveDocument:nil];
+      }
+    }
+  }
+}
+
 
 - (void)application:(NSApplication *)sender openFiles:(NSArray *)filenames {
   //DLOG("application:openFiles:%@", filenames);

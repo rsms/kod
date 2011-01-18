@@ -28,6 +28,7 @@
 - (IBAction)toggleSplitView:(id)sender;
 - (IBAction)reloadStyle:(id)sender;
 - (IBAction)goToLine:(id)sender;
+- (IBAction)toggleAutoSaveOnLosingFocus:(id)sender;
 
 - (BOOL)openFileDirectoryAtURL:(NSURL *)absoluteURL error:(NSError **)outError;
 
