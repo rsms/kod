@@ -117,8 +117,8 @@ static NSColor *kColumnGuideColor = nil, *kColumnGuideBackgroundColor = nil;
     // border color?
     if (kColumnGuideColor) {
       [kColumnGuideColor set];
-      CGPoint srcPoint = CGPointMake(columnGuidePosition_, 0.0);
-      CGPoint dstPoint = CGPointMake(columnGuidePosition_,
+      NSPoint srcPoint = NSMakePoint(columnGuidePosition_, 0.0);
+      NSPoint dstPoint = NSMakePoint(columnGuidePosition_,
                                      visibleRect.size.height);
       [NSBezierPath setDefaultLineWidth:1.0];
       [NSBezierPath strokeLineFromPoint:srcPoint toPoint:dstPoint];
