@@ -1627,11 +1627,18 @@ finishedReadingURL:(NSURL*)url
 
 // Returns true to indicate a saveDocument: message is allowed, saving the
 // document to it's current URL
-- (BOOL)canSaveDocument {
+- (BOOL)canQuietlySaveDocument {
   NSURL *url = self.fileURL;
   KURLHandler *urlHandler =
-      [[KDocumentController kodController] urlHandlerForURL:url];
-  return ( (urlHandler && [urlHandler canWriteURL:url]) || !url );
+  [[KDocumentController kodController] urlHandlerForURL:url];
+  return ( (urlHandler && [urlHandler canWriteURL:url]) );
+}
+
+// Returns true to indicate a saveDocument: message is allowed, saving the
+// document to it's current URL or that it's OK save to a new file
+- (BOOL)canSaveDocument {
+  NSURL *url = self.fileURL;
+  return ( [self canQuietlySaveDocument] || !url );
 }
 
 

@@ -48,6 +48,7 @@ extern NSString *const KDocumentWillCloseNotification;
 
 @property(assign, nonatomic) BOOL isDirty;
 @property BOOL hasMetaRuler;
+@property(readonly) BOOL canQuietlySaveDocument;
 @property(readonly) BOOL canSaveDocument;
 @property(readonly) BOOL hasRemoteSource;
 @property(assign) NSStringEncoding textEncoding;
