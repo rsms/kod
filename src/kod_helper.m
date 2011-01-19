@@ -37,6 +37,7 @@
       @"usage: %@ [options] [<file-or-url> ..]\n"
        "options:\n"
        "  -n --nowait-open  Don't wait for Kod.app to open all documents.\n"
+       "  -w --wait         Wait until all opened document has been closed.\n"
        "  --kod-app <path>  Communicate with Kod.app at <path>.\n"
        "  -h --help         Display this help message and exit.\n"
        "  --version         Display version info and exit.\n",
@@ -261,11 +262,11 @@
   FILE *f = freopen(NULL, "rb", stdin);
   NSFileHandle *fh =
       [[[NSFileHandle alloc] initWithFileDescriptor:fileno(f)] autorelease];
-  
+
   DLOG("reading stdin [%d] until EOF...", [fh fileDescriptor]);
   NSData *data = [fh readDataToEndOfFile];
-  [kodService_ openNewDocumentWithData:data 
-                                ofType:nil 
+  [kodService_ openNewDocumentWithData:data
+                                ofType:nil
                          closeCallback:[self registerCallback:^(void) {
     DLOG("close callback for piped document executed.");
   }]
@@ -340,7 +341,7 @@ int main(int argc, char *argv[]) {
 
   // make sure kod is launched, or launch kod and block until launched
   [program findKodAppAndStartIfNeeded:NO];
-  
+
   // connect to Kod.app
   NSError *error;
   if (![program connectToKod:&error timeout:30.0]) {
@@ -357,7 +358,7 @@ int main(int argc, char *argv[]) {
   // take any appropriate action based on parsed arguments and other state
   @try {
     [program takeAppropriateAction];
-    
+
     // block until done (this causes the runloop to run if needed)
     [program waitUntilDone];
   } @catch (NSException *e) {
