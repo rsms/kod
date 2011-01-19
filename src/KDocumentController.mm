@@ -10,6 +10,7 @@
 #import "KFileURLHandler.h"
 #import "KHTTPURLHandler.h"
 #import "KKodURLHandler.h"
+#import "KMachService.h"
 #import "HEventEmitter.h"
 #import "kconf.h"
 #import "kod_node_interface.h"
@@ -102,6 +103,21 @@
                                priority:(long)priority
          nonExistingFilesAsNewDocuments:(BOOL)newDocForNewURLs
                                callback:(void(^)(NSError*))callback {
+  [self openDocumentsWithContentsOfURLs:urls
+                   withWindowController:windowController
+                               priority:priority
+         nonExistingFilesAsNewDocuments:newDocForNewURLs
+                         closeCallbacks:nil
+                               callback:callback];
+}
+
+
+- (void)openDocumentsWithContentsOfURLs:(NSArray*)urls
+                withWindowController:(KBrowserWindowController*)windowController
+                               priority:(long)priority
+         nonExistingFilesAsNewDocuments:(BOOL)newDocForNewURLs
+                         closeCallbacks:(NSArray*)closeCallbacks
+                               callback:(void(^)(NSError*))callback {
   DLOG("openDocumentsWithContentsOfURLs:%@", urls);
   // countdown
   NSUInteger i = urls ? urls.count : 0;
@@ -175,6 +191,11 @@
       if (doc) doc.url = url;
       if (countdown) countdown(error);
       if (!doc) [windowController presentError:error];
+      else if (closeCallbacks != nil) {
+        NSInvocation *closeCallback = 
+            [closeCallbacks objectAtIndex:[urls indexOfObject:url]];
+        doc.closeCallback = closeCallback;
+      }
     } else {
       url = [url copy];
       dispatch_async(dispatchQueue, ^{
@@ -185,6 +206,11 @@
                                            groupWithSiblings:YES
                  /* display last document opened: */ display:index==0
                                                        error:&error];
+        if (doc && closeCallbacks != nil) {
+          NSInvocation *closeCallback = 
+              [closeCallbacks objectAtIndex:[urls indexOfObject:url]];
+          doc.closeCallback = closeCallback;
+        }
         if (doc && doc.isLoading) {
           if (countdown) {
             [doc on:@"load" call:^(KDocument *doc2){
@@ -206,6 +232,17 @@
 - (void)openDocumentsWithContentsOfURLs:(NSArray*)urls
          nonExistingFilesAsNewDocuments:(BOOL)newDocForNewURLs
                                callback:(void(^)(NSError*))callback {
+  [self openDocumentsWithContentsOfURLs:urls
+         nonExistingFilesAsNewDocuments:newDocForNewURLs
+                         closeCallbacks:nil
+                               callback:callback];
+                                   
+}
+
+- (void)openDocumentsWithContentsOfURLs:(NSArray*)urls
+         nonExistingFilesAsNewDocuments:(BOOL)newDocForNewURLs
+                         closeCallbacks:(NSArray*)closeCallbacks
+                               callback:(void(^)(NSError*))callback {
   // open the documents in the frontmost window controller
   KBrowserWindowController *windowController = (KBrowserWindowController *)
     [KBrowserWindowController mainBrowserWindowController];
@@ -213,6 +250,7 @@
                    withWindowController:windowController
                                priority:DISPATCH_QUEUE_PRIORITY_HIGH
          nonExistingFilesAsNewDocuments:(BOOL)newDocForNewURLs
+                         closeCallbacks:closeCallbacks
                                callback:callback];
 }
 

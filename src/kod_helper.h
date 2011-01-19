@@ -14,6 +14,7 @@
   NSMutableDictionary *asyncWaitQueue_;
   BOOL forceReadStdin_; // true if a "-" is passed in argv
   int optNoWaitOpen_; // 1 if -n or --nowait-open
+  int optWaitForDocumentClose; // 1 if -w or --wait
 }
 
 @property(readonly) NSRunningApplication *kodApp;
