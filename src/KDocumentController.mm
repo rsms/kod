@@ -82,7 +82,7 @@
 
 
 - (KDocument*)_documentForURL:(NSURL*)absoluteURL
-                  makeKeyIfFound:(BOOL)makeKeyIfFound {
+               makeKeyIfFound:(BOOL)makeKeyIfFound {
   // check if |url| is already open
   KDocument *tab = (KDocument *)[self documentForURL:absoluteURL];
   if (makeKeyIfFound) {
@@ -101,7 +101,7 @@
                 withWindowController:(KBrowserWindowController*)windowController
                                priority:(long)priority
          nonExistingFilesAsNewDocuments:(BOOL)newDocForNewURLs
-                               callback:(void(^)(NSError*))callback {
+                               callback:(void(^)(NSError*,NSArray*))callback {
   DLOG("openDocumentsWithContentsOfURLs:%@", urls);
   // countdown
   NSUInteger i = urls ? urls.count : 0;
@@ -110,7 +110,7 @@
   if (i == 0) {
     if (callback) {
       NSError *error = [NSError kodErrorWithFormat:@"Empty list of URLs"];
-      callback(error);
+      callback(error, [NSArray array]);
     }
     return;
   }
@@ -122,17 +122,20 @@
   // callback countdown
   kassert(i < INT32_MAX);
   __block int32_t callbackCountdown = i;
-  __block void(^countdown)(NSError*) = nil;
+  __block void(^countdown)(NSError*,KDocument*) = nil;
+  __block NSMutableArray *openedDocuments = nil;
   if (callback) {
+    openedDocuments = [[NSMutableArray alloc] initWithCapacity:urls.count];
     callback = [callback copy];
-    countdown = [^(NSError *err){
+    countdown = [^(NSError *err, KDocument *doc){
       //NSLog(@"countdown %@", (id)countdown);
+      if (doc) [openedDocuments addObject:doc];
       if (h_atomic_dec(&callbackCountdown) == 0) {
-        callback(err);
+        callback(err, [openedDocuments autorelease]);
         [callback release];
         [countdown release];
       } else if (err && h_atomic_cas(&callbackCountdown, callbackCountdown, 0)){
-        callback(err);
+        callback(err, [openedDocuments autorelease]);
         [callback release];
         [countdown release];
       }
@@ -149,14 +152,15 @@
     KDocument *alreadyOpenTab = [self _documentForURL:url
                                        makeKeyIfFound:index==0];
     if (alreadyOpenTab) {
-      if (countdown) countdown(nil);
+      if (countdown)
+        countdown(nil, alreadyOpenTab);
     } else if ([url isFileURL] &&
                [fm fileExistsAtPath:[url path] isDirectory:&directory] &&
                directory) {
       // Special case: open a directory
       NSError *error = nil;
       BOOL ok = [windowController openFileDirectoryAtURL:url error:&error];
-      if (countdown) countdown(error);
+      if (countdown) countdown(error, nil);
       if (!ok) [windowController presentError:error];
     } else if (newDocForNewURLs && [url isFileURL] &&
                ![fm fileExistsAtPath:[url path]]) {
@@ -173,7 +177,7 @@
         } withWindowController:windowController display:index==0 error:&error];
 
       if (doc) doc.url = url;
-      if (countdown) countdown(error);
+      if (countdown) countdown(error, doc);
       if (!doc) [windowController presentError:error];
     } else {
       url = [url copy];
@@ -188,12 +192,12 @@
         if (doc && doc.isLoading) {
           if (countdown) {
             [doc on:@"load" call:^(KDocument *doc2){
-              countdown(error);
+              countdown(error, doc);
               return YES; // remove ourselves from listeners
             }];
           }
         } else if (countdown) {
-          countdown(error);
+          countdown(error, doc);
         }
         if (!doc) [windowController presentError:error];
         [pool drain];
@@ -205,7 +209,7 @@
 
 - (void)openDocumentsWithContentsOfURLs:(NSArray*)urls
          nonExistingFilesAsNewDocuments:(BOOL)newDocForNewURLs
-                               callback:(void(^)(NSError*))callback {
+                               callback:(void(^)(NSError*,NSArray*))callback {
   // open the documents in the frontmost window controller
   KBrowserWindowController *windowController = (KBrowserWindowController *)
     [KBrowserWindowController mainBrowserWindowController];
@@ -218,7 +222,7 @@
 
 
 - (void)openDocumentsWithContentsOfURLs:(NSArray*)urls
-                               callback:(void(^)(NSError*))callback {
+                               callback:(void(^)(NSError*,NSArray*))callback {
   [self openDocumentsWithContentsOfURLs:urls
          nonExistingFilesAsNewDocuments:NO
                                callback:callback];
@@ -226,7 +230,7 @@
 
 
 - (void)openDocumentsWithContentsOfURL:(NSURL*)url
-                              callback:(void(^)(NSError*))callback {
+                              callback:(void(^)(NSError*,NSArray*))callback {
   [self openDocumentsWithContentsOfURLs:[NSArray arrayWithObject:url]
                                callback:callback];
 }

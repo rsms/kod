@@ -37,6 +37,7 @@
       @"usage: %@ [options] [<file-or-url> ..]\n"
        "options:\n"
        "  -n --nowait-open  Don't wait for Kod.app to open all documents.\n"
+       "  -w --wait         Wait until all opened document has been closed.\n"
        "  --kod-app <path>  Communicate with Kod.app at <path>.\n"
        "  -h --help         Display this help message and exit.\n"
        "  --version         Display version info and exit.\n",
@@ -63,12 +64,13 @@
   */
   struct option long_options[] = {
     {"nowait-open", no_argument, &optNoWaitOpen_, 1},
+    {"wait", no_argument, &optWaitForDocumentClose, 1},
     {"kod-app", required_argument, 0, 0},
     {"version", no_argument, 0, 0},
     {"help", no_argument, 0, 0},
     {0, 0, 0, 0}
   };
-  static const char *short_options = "nh";
+  static const char *short_options = "nhw";
   int c;
   while (1) {
     int option_index = 0;
@@ -91,6 +93,9 @@
       }
       case 'n':
         optNoWaitOpen_ = 1;
+        break;
+      case 'w':
+        optWaitForDocumentClose = 1;
         break;
       case '?':
         [self printUsageAndExit:1];
@@ -257,23 +262,54 @@
   FILE *f = freopen(NULL, "rb", stdin);
   NSFileHandle *fh =
       [[[NSFileHandle alloc] initWithFileDescriptor:fileno(f)] autorelease];
-  
+
+  // create close callback if needed
+  NSInvocation *closeCallback = nil;
+  if (optWaitForDocumentClose) {
+    closeCallback = [self registerCallback:^(NSURL *url) {
+      DLOG("close callback for stdin executed with final url %@", url);
+      printf("-\t%s\n", url ? [[url description] UTF8String] : "");
+    }];
+  }
+
   DLOG("reading stdin [%d] until EOF...", [fh fileDescriptor]);
   NSData *data = [fh readDataToEndOfFile];
-  [kodService_ openNewDocumentWithData:data ofType:nil callback:
-      [self registerCallback:^(NSError *err){
+  [kodService_ openNewDocumentWithData:data
+                                ofType:nil
+                          openCallback:[self registerCallback:^(NSError *err) {
     DLOG("openNewDocumentWithData callback executed. err: %@", err);
-  }]];
+  }]
+                         closeCallback:closeCallback];
 }
 
 
 - (void)openAnyURLs {
   if (!URLsToOpen_ || URLsToOpen_.count == 0) return;
   DLOG("invoking openURLs:");
-  [kodService_ openURLs:URLsToOpen_ callback:[self registerCallback:
-  ^(NSError *err){
+  NSInvocation *errorCallback = [self registerCallback:^(NSError *err) {
     DLOG("openAnyURLs callback executed. err: %@", err);
-  }]];
+  }];
+
+  // create close callbacks if needed
+  NSMutableArray *closeCallbacks = nil;
+  if (optWaitForDocumentClose) {
+    closeCallbacks = [NSMutableArray arrayWithCapacity:URLsToOpen_.count];
+    NSUInteger i, count = URLsToOpen_.count;
+    for (i = 0; i < count; ++i) {
+      NSURL *requestedURL = [URLsToOpen_ objectAtIndex:i];
+      [closeCallbacks addObject:[self registerCallback:^(NSURL *url){
+        DLOG("close callback executed with final url: %@", url);
+        NSString *urlstr =
+            url ? ([url isFileURL] ? [url path] : [url description]) : nil;
+        printf("%s\t%s\n", [[requestedURL description] UTF8String],
+               urlstr ? [urlstr UTF8String] : "");
+      }]];
+    }
+  }
+
+  [kodService_ openURLs:URLsToOpen_
+           openCallback:errorCallback
+         closeCallbacks:closeCallbacks];
 }
 
 
@@ -320,7 +356,7 @@ int main(int argc, char *argv[]) {
 
   // make sure kod is launched, or launch kod and block until launched
   [program findKodAppAndStartIfNeeded:NO];
-  
+
   // connect to Kod.app
   NSError *error;
   if (![program connectToKod:&error timeout:30.0]) {
@@ -337,7 +373,7 @@ int main(int argc, char *argv[]) {
   // take any appropriate action based on parsed arguments and other state
   @try {
     [program takeAppropriateAction];
-    
+
     // block until done (this causes the runloop to run if needed)
     [program waitUntilDone];
   } @catch (NSException *e) {

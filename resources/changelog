@@ -6,6 +6,9 @@
  * [NEW] Added the ability to display a column guide line, available from the
    "View" menu.
 
+ * [NEW] The kod CLI helper takes a new argument "--wait" which if given makes
+   the CLI wait until all documents that was requested has been closed.
+
 
 2011-01-11  0.0.3
 

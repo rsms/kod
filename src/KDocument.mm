@@ -26,6 +26,7 @@
 #import "node-module/ASTNodeWrapper.h"
 #import "KASTViewerWindowController.h"
 #import "KASTViewerController.h"
+#import "KMachService-NSInvocation.h"
 
 #import "NSImage-kod.h"
 #import "CIImage-kod.h"
@@ -56,7 +57,8 @@ static const uint8_t kEditChangeStatusUserAlteredText = 2;
 // notifications
 NSString *const KDocumentDidLoadDataNotification =
               @"KDocumentDidLoadDataNotification";
-
+NSString *const KDocumentWillCloseNotification =
+              @"KDocumentWillCloseNotification";
 
 static NSString *_NSStringFromRangeArray(std::vector<NSRange> &lineToRangeVec,
                                          NSString *string) {
@@ -547,9 +549,13 @@ static NSString* _kDefaultTitle = @"Untitled";
 
 - (void)tabWillCloseInBrowser:(CTBrowser*)browser atIndex:(NSInteger)index {
   NSNumber *ident = [NSNumber numberWithUnsignedInteger:self.identifier];
+
   KNodeEmitEvent("closeDocument", self, ident, nil);
   // TODO(rsms): emit "close" event in nodejs on our v8 wrapper object instead
   // of the kod module.
+
+  [self post:KDocumentWillCloseNotification];
+  [self emitEvent:@"close" argument:self];
 
   [super tabWillCloseInBrowser:browser atIndex:index];
 
