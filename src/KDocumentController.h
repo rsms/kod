@@ -45,35 +45,23 @@ withWindowController:(KBrowserWindowController*)windowController
 // edit distance (groupWithSiblings:YES). Only the last tab opened will be
 // brought to foreground and become first responder.
 - (void)openDocumentsWithContentsOfURLs:(NSArray*)urls
-                   withWindowController:(KBrowserWindowController*)windowController
+                withWindowController:(KBrowserWindowController*)windowController
                                priority:(long)priority
          nonExistingFilesAsNewDocuments:(BOOL)newDocForNewURLs
-                         closeCallbacks:(NSArray*)closeCallbacks
-                               callback:(void(^)(NSError*))callback;
-
-- (void)openDocumentsWithContentsOfURLs:(NSArray*)urls
-                  withWindowController:(KBrowserWindowController*)windowController
-                              priority:(long)priority
-        nonExistingFilesAsNewDocuments:(BOOL)newDocForNewURLs
-                              callback:(void(^)(NSError*))callback;
+                               callback:(void(^)(NSError*,NSArray*))callback;
 
 // Open |urls| in frontmost window with high priority
 - (void)openDocumentsWithContentsOfURLs:(NSArray*)urls
          nonExistingFilesAsNewDocuments:(BOOL)newDocForNewURLs
-                         closeCallbacks:(NSArray*)closeCallbacks
-                               callback:(void(^)(NSError*))callback;
-
-- (void)openDocumentsWithContentsOfURLs:(NSArray*)urls
-        nonExistingFilesAsNewDocuments:(BOOL)newDocForNewURLs
-                              callback:(void(^)(NSError*))callback;
+                               callback:(void(^)(NSError*,NSArray*))callback;
 
 // Open |urls| in frontmost window with high priority
 - (void)openDocumentsWithContentsOfURLs:(NSArray*)urls
-                               callback:(void(^)(NSError*))callback;
+                               callback:(void(^)(NSError*,NSArray*))callback;
 
 // Open |url| in frontmost window with high priority
 - (void)openDocumentsWithContentsOfURL:(NSURL*)url
-                              callback:(void(^)(NSError*))callback;
+                              callback:(void(^)(NSError*,NSArray*))callback;
 
 // --------------------------------------------------------------------
 // lower level openers which run in the current thread

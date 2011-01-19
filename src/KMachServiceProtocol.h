@@ -6,13 +6,13 @@
 
 @protocol KMachServiceProtocol
 
-- (void)openURLs:(NSArray*)absoluteURLStrings 
-  closeCallbacks:(NSArray*)closeCallbacks
-   errorCallback:(NSInvocation*)errorCallback;
+- (void)openURLs:(NSArray*)absoluteURLStrings
+    openCallback:(NSInvocation*)openCallback
+  closeCallbacks:(NSArray*)closeCallbacks;
 
 - (void)openNewDocumentWithData:(NSData*)data
                          ofType:(NSString*)typeName
-                  closeCallback:(NSInvocation*)callback
-                  errorCallback:(NSInvocation*)callback;
+                   openCallback:(NSInvocation*)openCallback
+                  closeCallback:(NSInvocation*)closeCallback;
 
 @end

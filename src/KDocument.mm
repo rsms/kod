@@ -57,7 +57,8 @@ static const uint8_t kEditChangeStatusUserAlteredText = 2;
 // notifications
 NSString *const KDocumentDidLoadDataNotification =
               @"KDocumentDidLoadDataNotification";
-
+NSString *const KDocumentWillCloseNotification =
+              @"KDocumentWillCloseNotification";
 
 static NSString *_NSStringFromRangeArray(std::vector<NSRange> &lineToRangeVec,
                                          NSString *string) {
@@ -89,8 +90,7 @@ static uint64_t KDocumentNextIdentifier() {
 
 @synthesize textEncoding = textEncoding_,
             textView = textView_,
-            ast = ast_,
-            closeCallback = closeCallback_;
+            ast = ast_;
 
 static NSImage* _kDefaultIcon = nil;
 static NSString* _kDefaultTitle = @"Untitled";
@@ -176,8 +176,6 @@ static NSString* _kDefaultTitle = @"Untitled";
 
   // register as text storage delegate
   textView_.textStorage.delegate = self;
-  
-  closeCallback_ = nil;
 
   return self;
 }
@@ -551,9 +549,13 @@ static NSString* _kDefaultTitle = @"Untitled";
 
 - (void)tabWillCloseInBrowser:(CTBrowser*)browser atIndex:(NSInteger)index {
   NSNumber *ident = [NSNumber numberWithUnsignedInteger:self.identifier];
+
   KNodeEmitEvent("closeDocument", self, ident, nil);
   // TODO(rsms): emit "close" event in nodejs on our v8 wrapper object instead
   // of the kod module.
+
+  [self post:KDocumentWillCloseNotification];
+  [self emitEvent:@"close" argument:self];
 
   [super tabWillCloseInBrowser:browser atIndex:index];
 
@@ -564,8 +566,6 @@ static NSString* _kDefaultTitle = @"Untitled";
   }
   [[NSDocumentController sharedDocumentController] removeDocument:self];
   [[NSNotificationCenter defaultCenter] removeObserver:self];
-  
-  [closeCallback_ invokeKMachServiceCallbackWithArgument:nil];
 }
 
 

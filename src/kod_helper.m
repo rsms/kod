@@ -263,16 +263,23 @@
   NSFileHandle *fh =
       [[[NSFileHandle alloc] initWithFileDescriptor:fileno(f)] autorelease];
 
+  // create close callback if needed
+  NSInvocation *closeCallback = nil;
+  if (optWaitForDocumentClose) {
+    closeCallback = [self registerCallback:^(NSURL *url) {
+      DLOG("close callback for stdin executed with final url %@", url);
+      printf("-\t%s\n", url ? [[url description] UTF8String] : "");
+    }];
+  }
+
   DLOG("reading stdin [%d] until EOF...", [fh fileDescriptor]);
   NSData *data = [fh readDataToEndOfFile];
   [kodService_ openNewDocumentWithData:data
                                 ofType:nil
-                         closeCallback:[self registerCallback:^(void) {
-    DLOG("close callback for piped document executed.");
-  }]
-                         errorCallback:[self registerCallback:^(NSError *err) {
+                          openCallback:[self registerCallback:^(NSError *err) {
     DLOG("openNewDocumentWithData callback executed. err: %@", err);
-  }]];
+  }]
+                         closeCallback:closeCallback];
 }
 
 
@@ -282,19 +289,27 @@
   NSInvocation *errorCallback = [self registerCallback:^(NSError *err) {
     DLOG("openAnyURLs callback executed. err: %@", err);
   }];
+
+  // create close callbacks if needed
   NSMutableArray *closeCallbacks = nil;
   if (optWaitForDocumentClose) {
-    closeCallbacks = [NSMutableArray arrayWithCapacity:[URLsToOpen_ count]];
-    for (NSString *url in URLsToOpen_) {
-      NSInvocation *closeCallback = nil;
-      closeCallback = [self registerCallback:^{
-        DLOG("document close callback executed.");
-      }];
-      [closeCallbacks addObject:closeCallback];
+    closeCallbacks = [NSMutableArray arrayWithCapacity:URLsToOpen_.count];
+    NSUInteger i, count = URLsToOpen_.count;
+    for (i = 0; i < count; ++i) {
+      NSURL *requestedURL = [URLsToOpen_ objectAtIndex:i];
+      [closeCallbacks addObject:[self registerCallback:^(NSURL *url){
+        DLOG("close callback executed with final url: %@", url);
+        NSString *urlstr =
+            url ? ([url isFileURL] ? [url path] : [url description]) : nil;
+        printf("%s\t%s\n", [[requestedURL description] UTF8String],
+               urlstr ? [urlstr UTF8String] : "");
+      }]];
     }
   }
-  [kodService_ openURLs:URLsToOpen_ closeCallbacks:closeCallbacks
-                                     errorCallback:errorCallback];
+
+  [kodService_ openURLs:URLsToOpen_
+           openCallback:errorCallback
+         closeCallbacks:closeCallbacks];
 }
 
 

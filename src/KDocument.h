@@ -15,6 +15,7 @@ class KNodeParseEntry;
 
 // notifications
 extern NSString *const KDocumentDidLoadDataNotification;
+extern NSString *const KDocumentWillCloseNotification;
 
 // This class represents a tab. In this example application a tab contains a
 // simple scrollable text area.
@@ -43,8 +44,6 @@ extern NSString *const KDocumentDidLoadDataNotification;
 
   // Internal state
   hatomic_flags_t stateFlags_;
-  
-  NSInvocation *closeCallback_;
 }
 
 @property(assign, nonatomic) BOOL isDirty;
@@ -66,8 +65,6 @@ extern NSString *const KDocumentDidLoadDataNotification;
 // An opaque value which identifies this document. It's guaranteed to be unique
 // during a session (between starting and terminating Kod.app).
 @property(readonly) uint64_t identifier;
-
-@property(retain) NSInvocation *closeCallback;
 
 /*!
  * Monotonically incrementing version number which changes for each edit.

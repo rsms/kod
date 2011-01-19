@@ -39,7 +39,7 @@ static KMachService *gSharedInstance = nil;
   } else {
     DLOG("%@ opened", self);
   }
-  
+
   fileHandleWaitQueue_ = [NSMutableDictionary new];
 
   return self;
@@ -61,14 +61,9 @@ shouldMakeNewConnection:(NSConnection *)newConnnection {
 }
 
 
-- (void)openURLs:(NSArray*)urlStrings closeCallbacks:(NSArray *)closeCallbacks
-                                  errorCallback:(NSInvocation *)errorCallback {
-  if ((closeCallbacks != nil) && (urlStrings.count != closeCallbacks.count)) {
-    NSError *err = [NSError kodErrorWithFormat:@"URLs array items count"
-      " does not match the close callbacks count"];
-    [errorCallback invokeKMachServiceCallbackWithArgument:err];
-    return;
-  }
+- (void)openURLs:(NSArray*)urlStrings
+    openCallback:(NSInvocation*)openCallback
+  closeCallbacks:(NSArray*)closeCallbacks {
   NSMutableArray *absoluteURLs =
       [NSMutableArray arrayWithCapacity:[urlStrings count]];
   for (NSString *url in urlStrings) {
@@ -83,10 +78,28 @@ shouldMakeNewConnection:(NSConnection *)newConnnection {
   kassert(documentController != nil);
   [documentController openDocumentsWithContentsOfURLs:absoluteURLs
                        nonExistingFilesAsNewDocuments:YES
-                                       closeCallbacks:closeCallbacks
-                                             callback:^(NSError *err) {
-    [errorCallback invokeKMachServiceCallbackWithArgument:err];
-  }];
+                                             callback:
+    ^(NSError *err, NSArray *openedDocs) {
+      // register close callbacks
+      // TODO: handle program termination -- register for the
+      // NSApplicationWillTerminate notification and invoke all close callbacks
+      // which remains.
+      if (closeCallbacks) {
+        NSUInteger i, count = [openedDocs count];
+        for (i = 0; i < count; i++) {
+          KDocument *doc = [openedDocs objectAtIndex:i];
+          kassert([doc isKindOfClass:[KDocument class]]);
+          NSInvocation *closeCallback = [closeCallbacks objectAtIndex:i];
+          kassert([closeCallback isKindOfClass:[NSInvocation class]]);
+          [doc on:@"close" call:^(KDocument *doc){
+            [closeCallback invokeKMachServiceCallbackWithArgument:doc.url];
+          }];
+        }
+      }
+      // TODO: handle the case when we get closeCallbacks and an error occured
+      // when opening files.
+      [openCallback invokeKMachServiceCallbackWithArgument:err];
+    }];
 }
 
 
@@ -104,10 +117,10 @@ shouldMakeNewConnection:(NSConnection *)newConnnection {
 
 - (void)openNewDocumentWithData:(NSData*)data
                          ofType:(NSString*)typeName
-                  closeCallback:(NSInvocation*)closeCallback
-                  errorCallback:(NSInvocation*)errorCallback {
+                   openCallback:(NSInvocation*)openCallback
+                  closeCallback:(NSInvocation*)closeCallback {
   DLOG("%@ openNewDocumentWithData", self);
-  
+
   KDocumentController *documentController = [KDocumentController kodController];
   kassert(documentController != nil);
 
@@ -124,11 +137,19 @@ shouldMakeNewConnection:(NSConnection *)newConnnection {
   if (!document) {
     WLOG("failed to open an untitled document: %@", error);
     K_DISPATCH_MAIN_ASYNC({ [documentController presentError:error]; });
+  } else if (closeCallback) {
+    // register close callback
+    // TODO: handle program termination -- register for the
+    // NSApplicationWillTerminate notification and invoke all close callbacks
+    // which remains.
+    [document on:@"close" call:^(KDocument *doc){
+      [closeCallback invokeKMachServiceCallbackWithArgument:doc.url];
+    }];
   }
 
   // invoke callback
-  if (errorCallback)
-    [errorCallback invokeKMachServiceCallbackWithArgument:error];
+  if (openCallback)
+    [openCallback invokeKMachServiceCallbackWithArgument:error];
 
   /*
   TODO(rsms): Pass the file descriptor by kernel FD delegation using sendmsg.
