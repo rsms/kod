@@ -231,7 +231,7 @@ PlainTextParser.prototype.parse = function (parseTask) {
   }
 
   // dump the AST (warning -- might be VERY SLOW)
-  console.log(util.inspect(rootNode, 0, 10));
+  if (debug) console.log(util.inspect(rootNode, 0, 10));
 
   return rootNode;
 };
@@ -240,12 +240,4 @@ PlainTextParser.prototype.parse = function (parseTask) {
 // tokenization and grammar support functions
 
 // Run a sample of the plain text parser when this module is run directly
-if (module.id == '.') {
-  //debug = true;
-  //var source = require('fs').readFileSync('/Users/rasmus/src/kod/resources/about.md', 'utf8');
-  source = 'hello from the\ninternets 98 years old\n\nwhat do you think?';
-  var time = new Date;
-  var ast = textparser.Parser.simulate('public.text', source, 0, source.length);
-  time = (new Date)-time;
-  console.log('Real time spent: '+time+'ms');
-}
+if (module.id == '.') process.exit(require('./plaintext.test').run());
