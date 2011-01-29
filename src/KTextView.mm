@@ -10,6 +10,7 @@
 #import "HEventEmitter.h"
 #import "KWordDictionary.h"
 #import "KStyle.h"
+#import "KInputBindings.h"
 #import "virtual_key_codes.h"
 #import "kconf.h"
 #import "common.h"
@@ -362,7 +363,29 @@ static NSColor *kColumnGuideColor = nil, *kColumnGuideBackgroundColor = nil;
 #pragma mark Keyboard events
 
 
+// return nil for "I handled this"
+- (NSEvent*)filterInputEvent:(NSEvent*)event {
+  DLOG("input event: %@", event);
+
+  static BOOL debugDidSet = NO;
+  if (!debugDidSet) {
+    debugDidSet = YES;
+    KInputBindings::set("A-r",
+        new KSelectorInputAction(@selector(increaseIndentation)));
+  }
+  KInputAction *action = KInputBindings::get(event);
+  DLOG("input action -> %p", action);
+  if (action && action->perform(self))
+    return nil;
+
+  return event;
+}
+
+
 - (void)keyDown:(NSEvent*)event {
+  event = [self filterInputEvent:event];
+  if (!event) return;
+
   unsigned short keyCode = event.keyCode;
   if (keyCode == kVK_Tab && tabControlsIndentationLevel_) {
     NSUInteger modifiers = [event modifierFlags];
