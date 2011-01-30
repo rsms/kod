@@ -107,12 +107,6 @@ static NSString *gDefaultElementSymbol;
   // Base element symbol
   gDefaultElementSymbol = [[@"body" internedString] retain];
 
-  // Trigger creation of base stylesheet
-  [KStyle baseStylesheet];
-
-  // The shared style is empty by default
-  gSharedStyle_ = [[KStyle alloc] init];
-
   // Note: Loading of the default stylesheet is done by KAppDelegate in main()
   //       branch.
 
@@ -125,26 +119,31 @@ static NSString *gDefaultElementSymbol;
 
 
 + (KStyle*)sharedStyle {
+  if (!gSharedStyle_)
+    h_casid(&gSharedStyle_, [[[self alloc] init] autorelease]);
   return gSharedStyle_;
+}
+
+// IMPORTANT: data should not contain any @imports or the effect is undefined
++ (CSSStylesheet*)createBaseStylesheetWithData:(NSData*)data {
+  kassert(gBaseStylesheet_ == nil);
+  if (!data) data = [@"body { color:white; background-color:black; }"
+                     dataUsingEncoding:NSUTF8StringEncoding];
+  gBaseStylesheet_ = [[CSSStylesheet alloc] initWithURL:nil];
+  __block NSError *error = nil;
+  [gBaseStylesheet_ loadData:data withCallback:^(NSError *err) {
+    error = err;
+  }];
+  // since there are no imports, callback is not deferred
+  if (error) {
+    [gBaseStylesheet_ release];
+    gBaseStylesheet_ = nil;
+    [NSApp presentError:error];
+  }
 }
 
 
 + (CSSStylesheet*)baseStylesheet {
-  if (!gBaseStylesheet_) {
-    NSData *data = [@"body { color:white; background-color:black; }"
-                    dataUsingEncoding:NSUTF8StringEncoding];
-    gBaseStylesheet_ = [[CSSStylesheet alloc] initWithURL:nil];
-    __block NSError *error = nil;
-    [gBaseStylesheet_ loadData:data withCallback:^(NSError *err) {
-      error = err;
-    }];
-    // since there are no imports, callback is not deferred
-    if (error) {
-      [gBaseStylesheet_ release];
-      gBaseStylesheet_ = nil;
-      [NSApp presentError:error];
-    }
-  }
   return gBaseStylesheet_;
 }
 

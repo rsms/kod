@@ -236,17 +236,6 @@
   // Register ourselves as service provider
   [NSApp setServicesProvider:self];
 
-  // Start loading default style
-  NSURL *builtinURL = kconf_res_url(@"style/default.css");
-  // Note: This setting is deprecated and should be removed in a future version:
-  builtinURL = kconf_url(@"style/current/url", builtinURL);
-  NSURL *url = kconf_url(@"style/url", builtinURL);
-  if (url) {
-    [[KStyle sharedStyle] loadFromURL:url withCallback:^(NSError *error) {
-      if (error) [NSApp presentError:error];
-    }];
-  }
-
   // Register URL handler
   NSAppleEventManager *aem = [NSAppleEventManager sharedAppleEventManager];
   [aem setEventHandler:self
@@ -265,6 +254,28 @@
 
   // Start Mach service
   [KMachService sharedService];
+
+  // Load built-in base style sync
+  NSError *error = nil;
+  NSURL *builtinURL = kconf_res_url(@"style/default.css");
+  NSData *baseStyleData = [NSData dataWithContentsOfURL:builtinURL
+                                                options:NSDataReadingMapped
+                                                  error:&error];
+  if (!baseStyleData) {
+    // Note: createBaseStylesheetWithData: accepts a nil argument in which case
+    // a minimal hard-coded style sheet is used. This is safe but will look like
+    // crap.
+    WLOG("failed to read %@: %@", builtinURL, error);
+  }
+  [KStyle createBaseStylesheetWithData:baseStyleData];
+
+  // Load user-defined stylesheet
+  NSURL *url = kconf_url(@"style/url", nil);
+  if (url && ![url isEqual:builtinURL]) {
+    [[KStyle sharedStyle] loadFromURL:url withCallback:^(NSError *error) {
+      if (error) [NSApp presentError:error];
+    }];
+  }
 }
 
 

@@ -40,6 +40,7 @@ extern NSString * const KStyleDidChangeNotification;
 
 /// The shared style
 + (KStyle*)sharedStyle;
++ (CSSStylesheet*)createBaseStylesheetWithData:(NSData*)data;
 + (CSSStylesheet*)baseStylesheet;
 
 #pragma mark -
