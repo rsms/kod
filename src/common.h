@@ -163,20 +163,6 @@ static inline void *k_swapptr(void * volatile *dst, void *src) {
   return old;
 }
 
-// format a string showing which bits are set
-#if NDEBUG
-#define debug_bits32(a) NULL
-#else
-static inline const char *debug_bits32(int32_t a) {
-  int i;
-  static char buf[33] = {0};
-  for (i = 31 ; i >= 0 ; --i) {
-    buf[31-i] = ((a & (1 << i)) == 0) ? '.' : '1';
-  }
-  return buf;
-}
-#endif
-
 #import "hatomic_flags.h"
 #import "hdispatch.h"
 #import "hcommon.h"

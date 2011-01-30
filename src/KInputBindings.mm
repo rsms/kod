@@ -1,124 +1,192 @@
 #import "KInputBindings.h"
 #import "common.h"
+#include "dec2bin.h"
 
-HUnorderedMapSharedPtr<std::string, KInputAction> KInputBindings::bindings_;
+#define K_UC_ISFNKEY(c) ((c) >= 0xF700 && (c) <= 0xF8FF)
+
+KInputBindings::Map KInputBindings::bindings_[KInputBindings::MaxLevel];
+
+static NSDictionary *gFuncKeyNamesToUnicodePoints = nil;
+
+static void __attribute__((constructor)) __init() {
+  NSAutoreleasePool *pool = [NSAutoreleasePool new];
+  gFuncKeyNamesToUnicodePoints = [[NSDictionary alloc] initWithObjectsAndKeys:
+    [NSNumber numberWithShort:NSUpArrowFunctionKey], @"up",
+    [NSNumber numberWithShort:NSDownArrowFunctionKey], @"down",
+    [NSNumber numberWithShort:NSLeftArrowFunctionKey], @"left",
+    [NSNumber numberWithShort:NSRightArrowFunctionKey], @"right",
+    [NSNumber numberWithShort:NSF1FunctionKey], @"f1",
+    [NSNumber numberWithShort:NSF2FunctionKey], @"f2",
+    [NSNumber numberWithShort:NSF3FunctionKey], @"f3",
+    [NSNumber numberWithShort:NSF4FunctionKey], @"f4",
+    [NSNumber numberWithShort:NSF5FunctionKey], @"f5",
+    [NSNumber numberWithShort:NSF6FunctionKey], @"f6",
+    [NSNumber numberWithShort:NSF7FunctionKey], @"f7",
+    [NSNumber numberWithShort:NSF8FunctionKey], @"f8",
+    [NSNumber numberWithShort:NSF9FunctionKey], @"f9",
+    [NSNumber numberWithShort:NSF10FunctionKey], @"f10",
+    [NSNumber numberWithShort:NSF11FunctionKey], @"f11",
+    [NSNumber numberWithShort:NSF12FunctionKey], @"f12",
+    [NSNumber numberWithShort:NSF13FunctionKey], @"f13",
+    [NSNumber numberWithShort:NSF14FunctionKey], @"f14",
+    [NSNumber numberWithShort:NSF15FunctionKey], @"f15",
+    [NSNumber numberWithShort:NSF16FunctionKey], @"f16",
+    [NSNumber numberWithShort:NSF17FunctionKey], @"f17",
+    [NSNumber numberWithShort:NSF18FunctionKey], @"f18",
+    [NSNumber numberWithShort:NSF19FunctionKey], @"f19",
+    [NSNumber numberWithShort:NSF20FunctionKey], @"f20",
+    [NSNumber numberWithShort:NSF21FunctionKey], @"f21",
+    [NSNumber numberWithShort:NSF22FunctionKey], @"f22",
+    [NSNumber numberWithShort:NSF23FunctionKey], @"f23",
+    [NSNumber numberWithShort:NSF24FunctionKey], @"f24",
+    [NSNumber numberWithShort:NSF25FunctionKey], @"f25",
+    [NSNumber numberWithShort:NSF26FunctionKey], @"f26",
+    [NSNumber numberWithShort:NSF27FunctionKey], @"f27",
+    [NSNumber numberWithShort:NSF28FunctionKey], @"f28",
+    [NSNumber numberWithShort:NSF29FunctionKey], @"f29",
+    [NSNumber numberWithShort:NSF30FunctionKey], @"f30",
+    [NSNumber numberWithShort:NSF31FunctionKey], @"f31",
+    [NSNumber numberWithShort:NSF32FunctionKey], @"f32",
+    [NSNumber numberWithShort:NSF33FunctionKey], @"f33",
+    [NSNumber numberWithShort:NSF34FunctionKey], @"f34",
+    [NSNumber numberWithShort:NSF35FunctionKey], @"f35",
+    [NSNumber numberWithShort:NSInsertFunctionKey], @"insert",
+    [NSNumber numberWithShort:NSDeleteFunctionKey], @"del",
+    [NSNumber numberWithShort:NSHomeFunctionKey], @"home",
+    [NSNumber numberWithShort:NSBeginFunctionKey], @"begin",
+    [NSNumber numberWithShort:NSEndFunctionKey], @"end",
+    [NSNumber numberWithShort:NSPageUpFunctionKey], @"pageup",
+    [NSNumber numberWithShort:NSPageDownFunctionKey], @"pagedown",
+    [NSNumber numberWithShort:NSPrintScreenFunctionKey], @"printscreen",
+    [NSNumber numberWithShort:NSScrollLockFunctionKey], @"scrollock",
+    [NSNumber numberWithShort:NSPauseFunctionKey], @"pause",
+    [NSNumber numberWithShort:NSSysReqFunctionKey], @"sysreq",
+    [NSNumber numberWithShort:NSBreakFunctionKey], @"break",
+    [NSNumber numberWithShort:NSResetFunctionKey], @"reset",
+    [NSNumber numberWithShort:NSStopFunctionKey], @"stop",
+    [NSNumber numberWithShort:NSMenuFunctionKey], @"menu",
+    [NSNumber numberWithShort:NSUserFunctionKey], @"user",
+    [NSNumber numberWithShort:NSSystemFunctionKey], @"system",
+    [NSNumber numberWithShort:NSPrintFunctionKey], @"print",
+    [NSNumber numberWithShort:NSClearLineFunctionKey], @"clearline",
+    [NSNumber numberWithShort:NSClearDisplayFunctionKey], @"cleardisplay",
+    [NSNumber numberWithShort:NSInsertLineFunctionKey], @"insertline",
+    [NSNumber numberWithShort:NSDeleteLineFunctionKey], @"deleteline",
+    [NSNumber numberWithShort:NSInsertCharFunctionKey], @"insertchar",
+    [NSNumber numberWithShort:NSDeleteCharFunctionKey], @"deletechar",
+    [NSNumber numberWithShort:NSPrevFunctionKey], @"prev",
+    [NSNumber numberWithShort:NSNextFunctionKey], @"next",
+    [NSNumber numberWithShort:NSSelectFunctionKey], @"select",
+    [NSNumber numberWithShort:NSExecuteFunctionKey], @"execute",
+    [NSNumber numberWithShort:NSUndoFunctionKey], @"undo",
+    [NSNumber numberWithShort:NSRedoFunctionKey], @"redo",
+    [NSNumber numberWithShort:NSFindFunctionKey], @"find",
+    [NSNumber numberWithShort:NSHelpFunctionKey], @"help",
+    [NSNumber numberWithShort:NSModeSwitchFunctionKey], @"modeswitch",
+    nil];
+  [pool drain];
+}
 
 
-KInputAction *KInputBindings::get(NSEvent *event) {
-  // we only handle key events (for now)
-  NSEventType t = event.type;
-  if (t != NSKeyDown && t != NSKeyUp) return NULL;
-
-  std::string seq;
-  NSUInteger modifiers = [event modifierFlags];
-  NSString *chars = [event charactersIgnoringModifiers];
-  NSString *charsLower = nil;
-  unichar functionKeyChar = 0;
-  // TODO: support more than one key
-
-  if (chars.length != 0) {
-    unichar ch = [chars characterAtIndex:0];
-    if (ch >= 0xF700 && ch <= 0xF8FF) {
-      functionKeyChar = ch;
-      modifiers &= ~NSFunctionKeyMask;
-    } else {
-      chars = [chars substringToIndex:1];
-      charsLower = [chars lowercaseString];
-      if (![chars isEqualToString:charsLower])
-        modifiers |= NSShiftKeyMask;
+uint64_t KInputBindings::parseSequence(NSString *seq) {
+  uint64_t key = 0;
+  static const int ucbufSize = 512;
+  unichar ucbuf[ucbufSize];
+  int charoffs = 16;
+  NSRange r = NSMakeRange(0, MIN([seq length], ucbufSize));
+  [seq getCharacters:ucbuf range:r];
+  for (NSUInteger i=0; i<r.length; ++i) {
+    unichar c = ucbuf[i];
+    if (isupper(c)) {
+      switch (c) {
+        case 'A': key |= (NSAlternateKeyMask >> 16); break;
+        case 'C': key |= (NSControlKeyMask >> 16); break;
+        case 'F': key |= (NSFunctionKeyMask >> 16); break;
+        case 'H': key |= (NSHelpKeyMask >> 16); break;
+        case 'L': key |= (NSAlphaShiftKeyMask >> 16); break;
+        case 'M': key |= (NSCommandKeyMask >> 16); break;
+        case 'N': key |= (NSNumericPadKeyMask >> 16); break;
+        case 'S': key |= (NSShiftKeyMask >> 16); break;
+        default: break;
+      }
+      //DLOG("key ->\n%s", dec2bin(key, 64));
+    } else if (c != '-') {
+      if (c == '<') {
+        // read named function key
+        NSUInteger x = i;
+        c = 0;
+        for (x; x<r.length; ++x) {
+          if (ucbuf[x] == '>') {
+            NSString *funcname =
+                [seq substringWithRange:NSMakeRange(i+1, x-(i+1))];
+            //DLOG("funcname -> '%@'", funcname);
+            NSNumber *n = [gFuncKeyNamesToUnicodePoints objectForKey:funcname];
+            if (n) {
+              c = [n shortValue];
+              //if (c == NSRightArrowFunctionKey)
+              //  DLOG("c = NSRightArrowFunctionKey");
+            }
+            break;
+          }
+        }
+        if (c == 0)
+          return 0; // malformed input
+        i = x;
+      }
+      if (charoffs <= 48) {
+        /*DLOG("c << charoffs  (%u << %d)", c, charoffs);
+        if (K_UC_ISFNKEY(c)) {
+          DLOG("c is a function key char");
+        }*/
+        key |= ((uint64_t)c) << charoffs;
+        charoffs += 16;
+        //DLOG("key ->\n%s", dec2bin(key, 64));
+      } // else there are too many chars which we just skip
     }
   }
+  //DLOG("return key ->\n%s", dec2bin(key, 64));
+  return key;
+}
 
-  if (modifiers & NSAlternateKeyMask)  seq += "A-";
-  if (modifiers & NSControlKeyMask)    seq += "C-";
-  if (modifiers & NSFunctionKeyMask)   seq += "F-";
-  if (modifiers & NSHelpKeyMask)       seq += "H-";
-  if (modifiers & NSAlphaShiftKeyMask) seq += "L-";
-  if (modifiers & NSCommandKeyMask)    seq += "M-";
-  if (modifiers & NSNumericPadKeyMask) seq += "N-";
-  if (modifiers & NSShiftKeyMask)      seq += "S-";
 
-  if (charsLower) {
-    seq += [charsLower UTF8String];
-  } else if (functionKeyChar) {
-    switch (functionKeyChar) {
-      case NSUpArrowFunctionKey: seq += "<up>"; break;
-      case NSDownArrowFunctionKey: seq += "<down>"; break;
-      case NSLeftArrowFunctionKey: seq += "<left>"; break;
-      case NSRightArrowFunctionKey: seq += "<right>"; break;
-      case NSF1FunctionKey: seq += "<f1>"; break;
-      case NSF2FunctionKey: seq += "<f2>"; break;
-      case NSF3FunctionKey: seq += "<f3>"; break;
-      case NSF4FunctionKey: seq += "<f4>"; break;
-      case NSF5FunctionKey: seq += "<f5>"; break;
-      case NSF6FunctionKey: seq += "<f6>"; break;
-      case NSF7FunctionKey: seq += "<f7>"; break;
-      case NSF8FunctionKey: seq += "<f8>"; break;
-      case NSF9FunctionKey: seq += "<f9>"; break;
-      case NSF10FunctionKey: seq += "<f10>"; break;
-      case NSF11FunctionKey: seq += "<f11>"; break;
-      case NSF12FunctionKey: seq += "<f12>"; break;
-      case NSF13FunctionKey: seq += "<f13>"; break;
-      case NSF14FunctionKey: seq += "<f14>"; break;
-      case NSF15FunctionKey: seq += "<f15>"; break;
-      case NSF16FunctionKey: seq += "<f16>"; break;
-      case NSF17FunctionKey: seq += "<f17>"; break;
-      case NSF18FunctionKey: seq += "<f18>"; break;
-      case NSF19FunctionKey: seq += "<f19>"; break;
-      case NSF20FunctionKey: seq += "<f20>"; break;
-      case NSF21FunctionKey: seq += "<f21>"; break;
-      case NSF22FunctionKey: seq += "<f22>"; break;
-      case NSF23FunctionKey: seq += "<f23>"; break;
-      case NSF24FunctionKey: seq += "<f24>"; break;
-      case NSF25FunctionKey: seq += "<f25>"; break;
-      case NSF26FunctionKey: seq += "<f26>"; break;
-      case NSF27FunctionKey: seq += "<f27>"; break;
-      case NSF28FunctionKey: seq += "<f28>"; break;
-      case NSF29FunctionKey: seq += "<f29>"; break;
-      case NSF30FunctionKey: seq += "<f30>"; break;
-      case NSF31FunctionKey: seq += "<f31>"; break;
-      case NSF32FunctionKey: seq += "<f32>"; break;
-      case NSF33FunctionKey: seq += "<f33>"; break;
-      case NSF34FunctionKey: seq += "<f34>"; break;
-      case NSF35FunctionKey: seq += "<f35>"; break;
-      case NSInsertFunctionKey: seq += "<insert>"; break;
-      case NSDeleteFunctionKey: seq += "<del>"; break;
-      case NSHomeFunctionKey: seq += "<home>"; break;
-      case NSBeginFunctionKey: seq += "<begin>"; break;
-      case NSEndFunctionKey: seq += "<end>"; break;
-      case NSPageUpFunctionKey: seq += "<pageup>"; break;
-      case NSPageDownFunctionKey: seq += "<pagedown>"; break;
-      case NSPrintScreenFunctionKey: seq += "<printscreen>"; break;
-      case NSScrollLockFunctionKey: seq += "<scrollock>"; break;
-      case NSPauseFunctionKey: seq += "<pause>"; break;
-      case NSSysReqFunctionKey: seq += "<sysreq>"; break;
-      case NSBreakFunctionKey: seq += "<break>"; break;
-      case NSResetFunctionKey: seq += "<reset>"; break;
-      case NSStopFunctionKey: seq += "<stop>"; break;
-      case NSMenuFunctionKey: seq += "<menu>"; break;
-      case NSUserFunctionKey: seq += "<user>"; break;
-      case NSSystemFunctionKey: seq += "<system>"; break;
-      case NSPrintFunctionKey: seq += "<print>"; break;
-      case NSClearLineFunctionKey: seq += "<clearline>"; break;
-      case NSClearDisplayFunctionKey: seq += "<cleardisplay>"; break;
-      case NSInsertLineFunctionKey: seq += "<insertline>"; break;
-      case NSDeleteLineFunctionKey: seq += "<deleteline>"; break;
-      case NSInsertCharFunctionKey: seq += "<insertchar>"; break;
-      case NSDeleteCharFunctionKey: seq += "<deletechar>"; break;
-      case NSPrevFunctionKey: seq += "<prev>"; break;
-      case NSNextFunctionKey: seq += "<next>"; break;
-      case NSSelectFunctionKey: seq += "<select>"; break;
-      case NSExecuteFunctionKey: seq += "<execute>"; break;
-      case NSUndoFunctionKey: seq += "<undo>"; break;
-      case NSRedoFunctionKey: seq += "<redo>"; break;
-      case NSFindFunctionKey: seq += "<find>"; break;
-      case NSHelpFunctionKey: seq += "<help>"; break;
-      case NSModeSwitchFunctionKey: seq += "<modeswitch>"; break;
-      default: break;
-    }
+BOOL KInputBindings::set(Level level, NSString *seqs, KInputAction *action) {
+  for (NSString *seq in [seqs componentsSeparatedByString:@" "]) {
+    uint64_t key = parseSequence(seq);
+    // TODO: support more than one sequence
+    if (key) {
+      set(level, key, action);
+      return YES;
+    } else break;
   }
+  return NO;
+}
 
-  DLOG("seq: '%s'", seq.c_str());
 
-  return get(seq);
+KInputAction *KInputBindings::get(Level level, NSString *seqs) {
+  for (NSString *seq in [seqs componentsSeparatedByString:@" "]) {
+    uint64_t key = parseSequence(seq);
+    // TODO: support more than one sequence
+    if (key) {
+      return get(level, key);
+    } else break;
+  }
+  return nil;
+}
+
+
+size_t KInputBindings::remove(uint64_t key) {
+  size_t count = 0;
+  for (int level=MaxLevel; --level >= 0; )
+    count += bindings_[level].eraseSync(key);
+  return count;
+}
+
+
+void KInputBindings::clear(Level level) {
+  if (level < MaxLevel) {
+    bindings_[level].clearSync();
+  } else {
+    for (int level=MaxLevel; --level >= 0; )
+      bindings_[level].clearSync();
+  }
 }

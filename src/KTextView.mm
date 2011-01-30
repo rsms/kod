@@ -365,15 +365,15 @@ static NSColor *kColumnGuideColor = nil, *kColumnGuideBackgroundColor = nil;
 
 // return nil for "I handled this"
 - (NSEvent*)filterInputEvent:(NSEvent*)event {
-  DLOG("input event: %@", event);
 
-  static BOOL debugDidSet = NO;
-  if (!debugDidSet) {
-    debugDidSet = YES;
-    KInputBindings::set("A-r",
+  // XXX bind alt+rightwardsarrow to "indent"
+  static BOOL debugDidSet = NO; if (!debugDidSet) { debugDidSet = YES;
+    KInputBindings::set(KInputBindings::TextEditorLevel, @"A-<right>",
         new KSelectorInputAction(@selector(increaseIndentation)));
   }
-  KInputAction *action = KInputBindings::get(event);
+  KInputAction *action =
+      KInputBindings::get(KInputBindings::TextEditorLevel, event);
+  DLOG("input event: %@ -- %@", [event kodInputBindingDescription], event);
   DLOG("input action -> %p", action);
   if (action && action->perform(self))
     return nil;

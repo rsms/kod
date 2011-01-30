@@ -136,6 +136,8 @@
 		3AB97DA612B2A00F00F4ADB2 /* BWCustomView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AB97DA512B2A00F00F4ADB2 /* BWCustomView.m */; };
 		3AB97DAC12B2A02300F4ADB2 /* NSApplication+BWAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AB97DA812B2A02300F4ADB2 /* NSApplication+BWAdditions.m */; };
 		3AB97DAD12B2A02300F4ADB2 /* NSWindow+BWAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AB97DAB12B2A02300F4ADB2 /* NSWindow+BWAdditions.m */; };
+		3ABAEFB012F5C781001E4A36 /* dec2bin.c in Sources */ = {isa = PBXBuildFile; fileRef = 3ABAEFAF12F5C781001E4A36 /* dec2bin.c */; };
+		3ABAF0A112F5DFA1001E4A36 /* NSEvent-kod.m in Sources */ = {isa = PBXBuildFile; fileRef = 3ABAF0A012F5DFA1001E4A36 /* NSEvent-kod.m */; };
 		3ABF49C012A450660020233C /* NSView-kod.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3ABF49BF12A450660020233C /* NSView-kod.mm */; };
 		3ABF4C6D12A48E7D0020233C /* NSData-kod.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3ABF4C6C12A48E7D0020233C /* NSData-kod.mm */; };
 		3ABF4F3E12A55AFC0020233C /* NSString-editdistance.m in Sources */ = {isa = PBXBuildFile; fileRef = 3ABF4F3D12A55AFC0020233C /* NSString-editdistance.m */; };
@@ -480,6 +482,10 @@
 		3AB97DA912B2A02300F4ADB2 /* NSCustomView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NSCustomView.h; path = deps/bwtoolkit/NSCustomView.h; sourceTree = SOURCE_ROOT; };
 		3AB97DAA12B2A02300F4ADB2 /* NSWindow+BWAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSWindow+BWAdditions.h"; path = "deps/bwtoolkit/NSWindow+BWAdditions.h"; sourceTree = SOURCE_ROOT; };
 		3AB97DAB12B2A02300F4ADB2 /* NSWindow+BWAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSWindow+BWAdditions.m"; path = "deps/bwtoolkit/NSWindow+BWAdditions.m"; sourceTree = SOURCE_ROOT; };
+		3ABAEFAE12F5C781001E4A36 /* dec2bin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = dec2bin.h; sourceTree = "<group>"; };
+		3ABAEFAF12F5C781001E4A36 /* dec2bin.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = dec2bin.c; sourceTree = "<group>"; };
+		3ABAF09F12F5DFA1001E4A36 /* NSEvent-kod.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSEvent-kod.h"; sourceTree = "<group>"; };
+		3ABAF0A012F5DFA1001E4A36 /* NSEvent-kod.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSEvent-kod.m"; sourceTree = "<group>"; };
 		3ABF483812A406AF0020233C /* hdispatch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = hdispatch.h; sourceTree = "<group>"; };
 		3ABF49BE12A450660020233C /* NSView-kod.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSView-kod.h"; sourceTree = "<group>"; };
 		3ABF49BF12A450660020233C /* NSView-kod.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = "NSView-kod.mm"; sourceTree = "<group>"; };
@@ -611,6 +617,8 @@
 				3A510C4A12C2ADCB00AAC1D5 /* kfs.m */,
 				3AF3A0A312BF7F6400FC534A /* KAnimation.h */,
 				3AF3A0A412BF7F6400FC534A /* KAnimation.m */,
+				3ABAEFAE12F5C781001E4A36 /* dec2bin.h */,
+				3ABAEFAF12F5C781001E4A36 /* dec2bin.c */,
 			);
 			name = Helpers;
 			sourceTree = "<group>";
@@ -778,6 +786,8 @@
 				3A92911A1229B96A00DA7E43 /* KDocument.mm */,
 				3AC2D4A51298D8050066B586 /* KTextStorage.h */,
 				3AC2D4A61298D8050066B586 /* KTextStorage.mm */,
+				3A7D86AC12F45EF6005740FF /* KInputBindings.h */,
+				3A7D86AD12F45EF6005740FF /* KInputBindings.mm */,
 				3AA8133812C36B390085F086 /* URL handlers */,
 				3AA819AF12C549490085F086 /* Crash reporting */,
 				3A5107C812C1231700AAC1D5 /* kod helper */,
@@ -933,8 +943,6 @@
 		3ABF539712A5D5360020233C /* Main views */ = {
 			isa = PBXGroup;
 			children = (
-				3A7D86AC12F45EF6005740FF /* KInputBindings.h */,
-				3A7D86AD12F45EF6005740FF /* KInputBindings.mm */,
 				3A7D866712F43392005740FF /* KWindow.h */,
 				3A7D866812F43392005740FF /* KWindow.mm */,
 				3ABF539412A5D52F0020233C /* KSplitView.h */,
@@ -1025,6 +1033,8 @@
 				3AA81B2312C62D270085F086 /* CIImage-kod.m */,
 				3AA81B2512C62D6A0085F086 /* NSImage-kod.h */,
 				3AA81B2612C62D6A0085F086 /* NSImage-kod.m */,
+				3ABAF09F12F5DFA1001E4A36 /* NSEvent-kod.h */,
+				3ABAF0A012F5DFA1001E4A36 /* NSEvent-kod.m */,
 			);
 			name = "NS categories";
 			sourceTree = "<group>";
@@ -1373,6 +1383,8 @@
 				3A1A4A8712E0A6EF00887625 /* KWindowBackgroundCoverView.m in Sources */,
 				3A7D866912F43392005740FF /* KWindow.mm in Sources */,
 				3A7D86AE12F45EF6005740FF /* KInputBindings.mm in Sources */,
+				3ABAEFB012F5C781001E4A36 /* dec2bin.c in Sources */,
+				3ABAF0A112F5DFA1001E4A36 /* NSEvent-kod.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

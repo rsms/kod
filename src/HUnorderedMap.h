@@ -49,10 +49,13 @@ class HUnorderedMap {
 
   virtual ~HUnorderedMap() { }
 
+  // reference to the underlying tr1 unordered_map
   inline map_type &map() { return map_; }
 
+  // adding entries
   inline void insert(K key, T value) { map_.insert(entry_type(key, value)); }
 
+  // locating entries
   inline iterator find(K key) { return map_.find(key); }
   inline const_iterator find(K key) const { return map_.find(key); }
   inline iterator findSync(K key) {
@@ -60,17 +63,37 @@ class HUnorderedMap {
     return map_.find(key);
   }
 
+  // removing specific entries
+  inline iterator erase(iterator where) { return map_.erase(where); }
+  inline iterator erase(iterator first, iterator last) {
+    return map_.erase(first, last);
+  }
+  inline size_t erase(const K& key) { return map_.erase(key); }
+  iterator eraseSync(iterator where) {
+    _HSLScope(spinlock_);
+    return erase(where);
+  }
+  iterator eraseSync(iterator first, iterator last) {
+    _HSLScope(spinlock_);
+    return erase(first, last);
+  }
+  size_t eraseSync(const K& key) { _HSLScope(spinlock_); return erase(key); }
+
+  // removing all entries
+  void clear() { map_.clear(); }
+  void clearSync() { _HSLScope(spinlock_); clear(); }
+
+  // swapping this map with another map
   inline void swap(map_type& other) { map_.swap(other.map_); }
   inline void swapSync(map_type& other) { _HSLScope(spinlock_); swap(other); }
 
+  // counting entries
   inline size_t size() const { return map_.size(); }
   inline size_t sizeSync() const { _HSLScope(spinlock_); return size(); }
 
+  // testing for empty-ness
   bool empty() const { return size() == 0; }
   bool emptySync() const { return sizeSync() == 0; }
-
-  void clear() { map_.clear(); }
-  void clearSync() { _HSLScope(spinlock_); clear(); }
 };
 
 
