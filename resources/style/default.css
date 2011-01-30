@@ -1,13 +1,17 @@
 /*
  * This is the default style of Kod. If you wish to modify this to your liking,
- * make a copy and put it in ~/.kod/mystyle.css then tell Kod where to find it
+ * create a new stylesheet in ~/.kod/mystyle.css then tell Kod where to find it
  * by setting a configuration key:
  *
  *  $ defaults write se.hunch.kod style/url ~/.kod/mystyle.css
  *
- * You might need to restart Kod for changes to take effect. Then, simply open
- * your ~/.kod/mystyle.css in Kod -- when edited and saved Kod will
- * automatically reload the style, thus you see the effect of your alterations.
+ * You need to restart Kod for changes to take effect. Then, simply open your
+ * ~/.kod/mystyle.css in Kod. This stylesheet will override the built-in default
+ * style.
+ *
+ * When edited and saved in Kod, Kod will automatically reload the style,
+ * thus you see the effect of your alterations. Note that this "auto-reloading"
+ * only works when editing the stylesheet in Kod.
  */
 body {
   font-family: "M+ 1m", monospace;
