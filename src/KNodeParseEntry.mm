@@ -5,9 +5,10 @@
 #import "KNodeParseEntry.h"
 #import "KDocument.h"
 #import "knode_ns_additions.h"
-#import "ASTNode.h"
+#import "ASTNode.hh"
 #import "ASTNodeWrapper.h"
 #import "common.h"
+#import "ExternalUTF16String.h"
 
 // set to 1 to enable resource usage sampling and logging
 #define KOD_WITH_K_RUSAGE 1

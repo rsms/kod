@@ -6,7 +6,7 @@
 #define KOD_NODE_AST_NODE_WRAPPER_H_
 
 #include <node.h>
-#include "../ASTNode.h"
+#include "../ASTNode.hh"
 
 namespace kod {
 

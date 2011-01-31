@@ -3,7 +3,7 @@ ONLY_ACTIVE_ARCH = YES
 GCC_VERSION = com.apple.compilers.llvm.clang.1_0
 INSTALL_PATH = $(HOME)/Applications
 MACOSX_DEPLOYMENT_TARGET = 10.6
-OTHER_LDFLAGS = -framework Foundation -framework AppKit -lv8 -lnode
+OTHER_LDFLAGS = -framework Foundation -framework AppKit -lv8 -lnode -lgazelle
 LD_RUNPATH_SEARCH_PATHS = @loader_path/../Frameworks
 INFOPLIST_FILE = resources/Info.plist
 ALWAYS_SEARCH_USER_PATHS = NO
@@ -14,12 +14,15 @@ NODE_PREPROCESSOR_DEFINITIONS = _LARGEFILE_SOURCE _FILE_OFFSET_BITS=64 _GNU_SOUR
 NODE_HEADER_SEARCH_PATHS = "$(KOD_DEPS)/node/src" "$(KOD_DEPS)/node/deps/v8/include" "$(KOD_DEPS)/node/deps/libeio" "$(KOD_DEPS)/node/deps/libev"
 NODE_LIBRARY_SEARCH_PATHS = "$(CONFIGURATION_BUILD_DIR)/nodejs"
 
+GAZELLE_HEADER_SEARCH_PATHS = "$(KOD_DEPS)/gazelle/runtime/include"
+GAZELLE_LIBRARY_SEARCH_PATHS = "$(CONFIGURATION_BUILD_DIR)/gazelle"
+
 LIBCSS_HEADER_SEARCH_PATHS = "deps/libcss/cocoa-framework/build/$(BUILD_STYLE)/CSS.framework/Headers"
 
 // Note: values can not wrap lines
 FRAMEWORK_SEARCH_PATHS = $(inherited) "$(SRCROOT)" "$(KOD_DEPS)/chromium-tabs/build/$(BUILD_STYLE)" "$(KOD_DEPS)/libcss/cocoa-framework/build/$(BUILD_STYLE)" "$(KOD_DEPS)"
-HEADER_SEARCH_PATHS = "$(SRCROOT)/src/ICU/include" $(NODE_HEADER_SEARCH_PATHS)  $(LIBCSS_HEADER_SEARCH_PATHS)
-LIBRARY_SEARCH_PATHS = $(inherited) $(NODE_LIBRARY_SEARCH_PATHS)
+HEADER_SEARCH_PATHS = "$(SRCROOT)/src/ICU/include" $(NODE_HEADER_SEARCH_PATHS)  $(LIBCSS_HEADER_SEARCH_PATHS) $(GAZELLE_HEADER_SEARCH_PATHS)
+LIBRARY_SEARCH_PATHS = $(inherited) $(NODE_LIBRARY_SEARCH_PATHS) $(GAZELLE_LIBRARY_SEARCH_PATHS)
 
 BASE_PREPROCESSOR_DEFINITIONS = $(NODE_PREPROCESSOR_DEFINITIONS)
 

@@ -113,7 +113,7 @@ static NSString* _kDefaultTitle = @"Untitled";
   identifier_ = KDocumentNextIdentifier();
 
   // Initialize ast_
-  ast_.reset(new kod::AST);
+  ast_.reset(new kod::AST(self));
 
   // Default title and icon
   self.title = _kDefaultTitle;
@@ -619,10 +619,12 @@ static NSString* _kDefaultTitle = @"Untitled";
 - (NSString*)_inspectASTTree:(kod::ASTNodePtr&)astNode {
   if (!astNode.get())
     return @"<null>";
+  NSRange sourceRange = astNode->sourceRange();
   NSMutableString *str = [NSMutableString stringWithFormat:
-      @"{ kind:\"%@\", sourceRange:%@",
-      astNode->kind()->weakNSString(),
-      NSStringFromRange(astNode->sourceRange())];
+      @"{ kind:\"%s\", sourceRange:[%lu, %lu]",
+      //astNode->kind()->weakNSString(),
+      astNode->ruleName(),
+      sourceRange.location, sourceRange.length];
 
   if (!astNode->childNodes().empty()) {
     [str appendFormat:@", childNodes: ["];
@@ -1352,9 +1354,13 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
   NSRange editedRange = [textStorage editedRange];
   NSInteger changeDelta = [textStorage changeInLength];
 
+  //ast_->parseEdit(editedRange.location, changeDelta);
+  ast_->parse();
+
+
   // enqeue edit to be handled by the text parser system
-  KNodeEnqueueParseEntry(new KNodeParseEntry(editedRange.location,
-                                             changeDelta, self));
+  //KNodeEnqueueParseEntry(new KNodeParseEntry(editedRange.location,
+  //                                           changeDelta, self));
 }
 
 

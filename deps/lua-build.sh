@@ -37,7 +37,6 @@ fi
 
 # Exit cleanly if everything is up-to-date
 if [ $IS_DIRTY -eq 0 ]; then
-  echo "Up to date"
   exit 0
 fi
 

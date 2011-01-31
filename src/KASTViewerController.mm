@@ -129,7 +129,8 @@ objectValueForTableColumn:(NSTableColumn *)tableColumn
            byItem:(id)item {
   ASTNodePtrObjCWrapper *nodeData = [item representedObject];
   if ([tableColumn.identifier isEqualToString:@"kind"]) {
-    return nodeData->ptr->kind()->weakNSString();
+    //return nodeData->ptr->kind()->weakNSString();
+    return [NSString stringWithUTF8String:nodeData->ptr->ruleName()];
   } else if ([tableColumn.identifier isEqualToString:@"sourceRange"]) {
     return [NSString stringWithFormat:@"%lu, %lu",
             nodeData->ptr->sourceRange().location,

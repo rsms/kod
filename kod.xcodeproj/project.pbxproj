@@ -42,7 +42,6 @@
 		3A37B39412DA2A4200ED811C /* ast-viewer.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3A37B39312DA2A4200ED811C /* ast-viewer.xib */; };
 		3A37B39812DA2AB600ED811C /* KASTViewerController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A37B39712DA2AB600ED811C /* KASTViewerController.mm */; };
 		3A37B39D12DA2C5000ED811C /* KASTViewerWindowController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A37B39C12DA2C5000ED811C /* KASTViewerWindowController.mm */; };
-		3A37B4A812DA416E00ED811C /* ASTNode.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A37B4A712DA416E00ED811C /* ASTNode.mm */; };
 		3A37B54712DA48E500ED811C /* KASTOutlineView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A37B54612DA48E500ED811C /* KASTOutlineView.m */; };
 		3A40F92F12AFF21A007B5879 /* main.js in Resources */ = {isa = PBXBuildFile; fileRef = 3A40F92E12AFF21A007B5879 /* main.js */; };
 		3A4CB3E112B1872300B45858 /* NSString-data.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A4CB3E012B1872300B45858 /* NSString-data.m */; };
@@ -85,6 +84,10 @@
 		3A841180129D5CAE00F4A36D /* KTextField.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A84117F129D5CAE00F4A36D /* KTextField.mm */; };
 		3A841183129D5D5C00F4A36D /* KTextFieldCell.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A841182129D5D5C00F4A36D /* KTextFieldCell.mm */; };
 		3A8411C2129D615800F4A36D /* KAutocompleteTextFieldCell.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A8411C1129D615800F4A36D /* KAutocompleteTextFieldCell.mm */; };
+		3A8D37DA12F6DF92007666FC /* ASTNode.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A8D37D612F6DF92007666FC /* ASTNode.mm */; };
+		3A8D37DB12F6DF92007666FC /* ASTParser.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A8D37D812F6DF92007666FC /* ASTParser.mm */; };
+		3A8D383212F6E995007666FC /* AST.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A8D383112F6E995007666FC /* AST.mm */; };
+		3A8D385F12F6EEFC007666FC /* libgazelle.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A8D385E12F6EEFC007666FC /* libgazelle.a */; };
 		3A9291181229B93C00DA7E43 /* Toolbar.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3A9291171229B93C00DA7E43 /* Toolbar.xib */; };
 		3A92911B1229B96A00DA7E43 /* KDocument.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A92911A1229B96A00DA7E43 /* KDocument.mm */; };
 		3A92911E1229B9D500DA7E43 /* KToolbarController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A92911D1229B9D500DA7E43 /* KToolbarController.mm */; };
@@ -173,6 +176,20 @@
 			proxyType = 1;
 			remoteGlobalIDString = 3A5107F712C135A200AAC1D5;
 			remoteInfo = kod_helper;
+		};
+		3A8D37BF12F6DDC2007666FC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 3A928BEF1227143800DA7E43 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 3A8D377E12F6D0CA007666FC /* lua */;
+			remoteInfo = lua;
+		};
+		3A8D37C512F6DE8F007666FC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 3A928BEF1227143800DA7E43 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 3A8D377012F6CA88007666FC /* gazelle */;
+			remoteInfo = gazelle;
 		};
 		3AAA9FB612BFC8900079F079 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -286,8 +303,6 @@
 		3A1A4A8512E0A6EF00887625 /* KWindowBackgroundCoverView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KWindowBackgroundCoverView.h; sourceTree = "<group>"; };
 		3A1A4A8612E0A6EF00887625 /* KWindowBackgroundCoverView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KWindowBackgroundCoverView.m; sourceTree = "<group>"; };
 		3A24231112CB99FF00522D81 /* kod */ = {isa = PBXFileReference; lastKnownFileType = folder; name = kod; path = "node-module/kod"; sourceTree = "<group>"; };
-		3A25E47A1281A6A200B6A33E /* libboost_regex-mt.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libboost_regex-mt.dylib"; path = "deps/srchilight/libboost_regex-mt.dylib"; sourceTree = "<group>"; };
-		3A25E47C1281A6A700B6A33E /* libsource-highlight.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libsource-highlight.dylib"; path = "deps/srchilight/libsource-highlight.dylib"; sourceTree = "<group>"; };
 		3A25E4B51281AE3700B6A33E /* KStyleElement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KStyleElement.h; sourceTree = "<group>"; };
 		3A25E4B61281AE3700B6A33E /* KStyleElement.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KStyleElement.mm; sourceTree = "<group>"; };
 		3A25E60E1281CFEF00B6A33E /* NSColor-web.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSColor-web.h"; sourceTree = "<group>"; };
@@ -298,14 +313,12 @@
 		3A366A8312CB873D00257AE6 /* node_kod.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = node_kod.mm; path = "node-module/node_kod.mm"; sourceTree = "<group>"; };
 		3A37B0E412D9508B00ED811C /* ASTNodeWrapper.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = ASTNodeWrapper.mm; path = "node-module/ASTNodeWrapper.mm"; sourceTree = "<group>"; };
 		3A37B0E512D9508B00ED811C /* ASTNodeWrapper.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; fileEncoding = 4; name = ASTNodeWrapper.h; path = "node-module/ASTNodeWrapper.h"; sourceTree = "<group>"; };
-		3A37B10F12D9592900ED811C /* ASTNode.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; fileEncoding = 4; path = ASTNode.h; sourceTree = "<group>"; };
 		3A37B2AD12D9895600ED811C /* AST.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; fileEncoding = 4; path = AST.h; sourceTree = "<group>"; };
 		3A37B39312DA2A4200ED811C /* ast-viewer.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "ast-viewer.xib"; path = "resources/ast-viewer.xib"; sourceTree = SOURCE_ROOT; };
 		3A37B39612DA2AB600ED811C /* KASTViewerController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KASTViewerController.h; sourceTree = "<group>"; };
 		3A37B39712DA2AB600ED811C /* KASTViewerController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KASTViewerController.mm; sourceTree = "<group>"; };
 		3A37B39B12DA2C5000ED811C /* KASTViewerWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KASTViewerWindowController.h; sourceTree = "<group>"; };
 		3A37B39C12DA2C5000ED811C /* KASTViewerWindowController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KASTViewerWindowController.mm; sourceTree = "<group>"; };
-		3A37B4A712DA416E00ED811C /* ASTNode.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ASTNode.mm; sourceTree = "<group>"; };
 		3A37B54512DA48E500ED811C /* KASTOutlineView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KASTOutlineView.h; sourceTree = "<group>"; };
 		3A37B54612DA48E500ED811C /* KASTOutlineView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KASTOutlineView.m; sourceTree = "<group>"; };
 		3A40F92E12AFF21A007B5879 /* main.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = main.js; sourceTree = "<group>"; };
@@ -391,6 +404,13 @@
 		3A841182129D5D5C00F4A36D /* KTextFieldCell.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KTextFieldCell.mm; sourceTree = "<group>"; };
 		3A8411C0129D615800F4A36D /* KAutocompleteTextFieldCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KAutocompleteTextFieldCell.h; sourceTree = "<group>"; };
 		3A8411C1129D615800F4A36D /* KAutocompleteTextFieldCell.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KAutocompleteTextFieldCell.mm; sourceTree = "<group>"; };
+		3A8D37D612F6DF92007666FC /* ASTNode.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ASTNode.mm; sourceTree = "<group>"; };
+		3A8D37D712F6DF92007666FC /* ASTNode.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ASTNode.hh; sourceTree = "<group>"; };
+		3A8D37D812F6DF92007666FC /* ASTParser.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ASTParser.mm; sourceTree = "<group>"; };
+		3A8D37D912F6DF92007666FC /* ASTParser.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ASTParser.hh; sourceTree = "<group>"; };
+		3A8D380F12F6E53F007666FC /* Grammar.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Grammar.hh; sourceTree = "<group>"; };
+		3A8D383112F6E995007666FC /* AST.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AST.mm; sourceTree = "<group>"; };
+		3A8D385E12F6EEFC007666FC /* libgazelle.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libgazelle.a; path = build/Debug/gazelle/libgazelle.a; sourceTree = "<group>"; };
 		3A928C14122714E800DA7E43 /* KAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KAppDelegate.h; sourceTree = "<group>"; };
 		3A928C15122714E800DA7E43 /* KAppDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KAppDelegate.mm; sourceTree = "<group>"; };
 		3A928C16122714E800DA7E43 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -547,6 +567,7 @@
 				3AA91F3612CA469100132A25 /* libdl.dylib in Frameworks */,
 				3AA91F3812CA469B00132A25 /* libz.dylib in Frameworks */,
 				3AA91F3C12CA46B200132A25 /* libssl.dylib in Frameworks */,
+				3A8D385F12F6EEFC007666FC /* libgazelle.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -674,8 +695,12 @@
 			children = (
 				3A37B39212DA29F000ED811C /* AST viewer */,
 				3A37B2AD12D9895600ED811C /* AST.h */,
-				3A37B10F12D9592900ED811C /* ASTNode.h */,
-				3A37B4A712DA416E00ED811C /* ASTNode.mm */,
+				3A8D383112F6E995007666FC /* AST.mm */,
+				3A8D380F12F6E53F007666FC /* Grammar.hh */,
+				3A8D37D712F6DF92007666FC /* ASTNode.hh */,
+				3A8D37D612F6DF92007666FC /* ASTNode.mm */,
+				3A8D37D912F6DF92007666FC /* ASTParser.hh */,
+				3A8D37D812F6DF92007666FC /* ASTParser.mm */,
 				3A4F478312CFA83900301464 /* KWordDictionary.h */,
 				3A4F478412CFA83900301464 /* KWordDictionary.mm */,
 			);
@@ -752,6 +777,7 @@
 		3A928BED1227143800DA7E43 = {
 			isa = PBXGroup;
 			children = (
+				3A8D385E12F6EEFC007666FC /* libgazelle.a */,
 				3AE5E8A912915ABA00B17C4F /* CSS.xcodeproj */,
 				3A92916A1229BDAA00DA7E43 /* chromium-tabs.xcodeproj */,
 				3A928C13122714E800DA7E43 /* src */,
@@ -834,8 +860,6 @@
 			isa = PBXGroup;
 			children = (
 				3AAA9F4112BFB7B50079F079 /* Sparkle.framework */,
-				3A25E47A1281A6A200B6A33E /* libboost_regex-mt.dylib */,
-				3A25E47C1281A6A700B6A33E /* libsource-highlight.dylib */,
 				3A158AFE128A0A3700339E6E /* libicucore.dylib */,
 				3AE5EB871292DB5C00B17C4F /* CSS.framework */,
 				3ABF537912A5D0D80020233C /* FScript.framework */,
@@ -1090,9 +1114,10 @@
 			buildConfigurationList = 3A8D377912F6CAB6007666FC /* Build configuration list for PBXLegacyTarget "gazelle" */;
 			buildPhases = (
 			);
-			buildToolPath = /usr/bin/make;
+			buildToolPath = "../gazelle-build.sh";
 			buildWorkingDirectory = "$(SRCROOT)/deps/gazelle";
 			dependencies = (
+				3A8D37C012F6DDC2007666FC /* PBXTargetDependency */,
 			);
 			name = gazelle;
 			passBuildSettingsInEnvironment = 1;
@@ -1151,6 +1176,7 @@
 				3A510B3212C26C3E00AAC1D5 /* PBXTargetDependency */,
 				3AC6ECD612C8E09A00C8DBFC /* PBXTargetDependency */,
 				3A4455CA12D7B16900036EF0 /* PBXTargetDependency */,
+				3A8D37C612F6DE8F007666FC /* PBXTargetDependency */,
 			);
 			name = Kod;
 			productName = Kod;
@@ -1407,7 +1433,6 @@
 				3A37B0E612D9508B00ED811C /* ASTNodeWrapper.mm in Sources */,
 				3A37B39812DA2AB600ED811C /* KASTViewerController.mm in Sources */,
 				3A37B39D12DA2C5000ED811C /* KASTViewerWindowController.mm in Sources */,
-				3A37B4A812DA416E00ED811C /* ASTNode.mm in Sources */,
 				3A37B54712DA48E500ED811C /* KASTOutlineView.m in Sources */,
 				3AC866C412DE69360077673C /* KNodeParseEntry.mm in Sources */,
 				3A1A4A8712E0A6EF00887625 /* KWindowBackgroundCoverView.m in Sources */,
@@ -1415,6 +1440,9 @@
 				3A7D86AE12F45EF6005740FF /* KInputBindings.mm in Sources */,
 				3ABAEFB012F5C781001E4A36 /* dec2bin.c in Sources */,
 				3ABAF0A112F5DFA1001E4A36 /* NSEvent-kod.m in Sources */,
+				3A8D37DA12F6DF92007666FC /* ASTNode.mm in Sources */,
+				3A8D37DB12F6DF92007666FC /* ASTParser.mm in Sources */,
+				3A8D383212F6E995007666FC /* AST.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1430,6 +1458,16 @@
 			isa = PBXTargetDependency;
 			target = 3A5107F712C135A200AAC1D5 /* kod_helper */;
 			targetProxy = 3A510B3112C26C3E00AAC1D5 /* PBXContainerItemProxy */;
+		};
+		3A8D37C012F6DDC2007666FC /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 3A8D377E12F6D0CA007666FC /* lua */;
+			targetProxy = 3A8D37BF12F6DDC2007666FC /* PBXContainerItemProxy */;
+		};
+		3A8D37C612F6DE8F007666FC /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 3A8D377012F6CA88007666FC /* gazelle */;
+			targetProxy = 3A8D37C512F6DE8F007666FC /* PBXContainerItemProxy */;
 		};
 		3AAA9FB712BFC8900079F079 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -1522,6 +1560,7 @@
 		3A8D377112F6CA89007666FC /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = gazelle;
 			};
 			name = Debug;
@@ -1537,6 +1576,7 @@
 		3A8D377F12F6D0CA007666FC /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = lua;
 			};
 			name = Debug;
@@ -1569,6 +1609,10 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 3AA91E5D12C95CC000132A25 /* debug.xcconfig */;
 			buildSettings = {
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/build/Debug/gazelle\"",
+				);
 			};
 			name = Debug;
 		};
@@ -1576,6 +1620,10 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 3AA91E5E12C95CC000132A25 /* release.xcconfig */;
 			buildSettings = {
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/build/Debug/gazelle\"",
+				);
 			};
 			name = Release;
 		};

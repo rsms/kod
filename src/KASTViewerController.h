@@ -2,7 +2,7 @@
 // Use of this source code is governed by a MIT-style license that can be
 // found in the LICENSE file.
 
-#include "ASTNode.h"
+#include "ASTNode.hh"
 
 // Important note: This uses a highly inefficient implementation and is only
 // meant to be used for debugging and development

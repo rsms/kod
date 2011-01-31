@@ -51,8 +51,8 @@ v8::Handle<Value> ASTNodeWrapper::New(const Arguments& args) {
     int len = s->Length();
     uint16_t *ubuf = new uint16_t[len];
     len = s->Write(ubuf, 0, len);
-    p->node_->kind() =
-        ExternalUTF16StringPtr(new ExternalUTF16String(ubuf, len));
+    //p->node_->kind() =
+    //    ExternalUTF16StringPtr(new ExternalUTF16String(ubuf, len));
 
     // sourceLocation and sourceLength
     if (args.Length() > 1)
