@@ -1084,6 +1084,34 @@
 			passBuildSettingsInEnvironment = 1;
 			productName = nodejs;
 		};
+		3A8D377012F6CA88007666FC /* gazelle */ = {
+			isa = PBXLegacyTarget;
+			buildArgumentsString = "$(ACTION)";
+			buildConfigurationList = 3A8D377912F6CAB6007666FC /* Build configuration list for PBXLegacyTarget "gazelle" */;
+			buildPhases = (
+			);
+			buildToolPath = /usr/bin/make;
+			buildWorkingDirectory = "$(SRCROOT)/deps/gazelle";
+			dependencies = (
+			);
+			name = gazelle;
+			passBuildSettingsInEnvironment = 1;
+			productName = gazelle;
+		};
+		3A8D377E12F6D0CA007666FC /* lua */ = {
+			isa = PBXLegacyTarget;
+			buildArgumentsString = "$(ACTION)";
+			buildConfigurationList = 3A8D378712F6D0EC007666FC /* Build configuration list for PBXLegacyTarget "lua" */;
+			buildPhases = (
+			);
+			buildToolPath = "../lua-build.sh";
+			buildWorkingDirectory = "$(SRCROOT)/deps/lua";
+			dependencies = (
+			);
+			name = lua;
+			passBuildSettingsInEnvironment = 1;
+			productName = lua;
+		};
 /* End PBXLegacyTarget section */
 
 /* Begin PBXNativeTarget section */
@@ -1161,8 +1189,10 @@
 			targets = (
 				3A928C1F1227151800DA7E43 /* Kod */,
 				3A5107F712C135A200AAC1D5 /* kod_helper */,
-				3A44552012D786AC00036EF0 /* nodejs */,
 				3AAA9FB312BFC8890079F079 /* Distribute */,
+				3A44552012D786AC00036EF0 /* nodejs */,
+				3A8D377E12F6D0CA007666FC /* lua */,
+				3A8D377012F6CA88007666FC /* gazelle */,
 			);
 		};
 /* End PBXProject section */
@@ -1489,6 +1519,36 @@
 			};
 			name = Release;
 		};
+		3A8D377112F6CA89007666FC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = gazelle;
+			};
+			name = Debug;
+		};
+		3A8D377212F6CA89007666FC /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = gazelle;
+				VALID_ARCHS = "x86_64 i386";
+			};
+			name = Release;
+		};
+		3A8D377F12F6D0CA007666FC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = lua;
+			};
+			name = Debug;
+		};
+		3A8D378012F6D0CA007666FC /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = lua;
+				VALID_ARCHS = "x86_64 i386";
+			};
+			name = Release;
+		};
 		3A928BF01227143800DA7E43 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -1557,6 +1617,24 @@
 			buildConfigurations = (
 				3A5107FA12C135A200AAC1D5 /* Debug */,
 				3A5107FB12C135A200AAC1D5 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		3A8D377912F6CAB6007666FC /* Build configuration list for PBXLegacyTarget "gazelle" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3A8D377112F6CA89007666FC /* Debug */,
+				3A8D377212F6CA89007666FC /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		3A8D378712F6D0EC007666FC /* Build configuration list for PBXLegacyTarget "lua" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3A8D377F12F6D0CA007666FC /* Debug */,
+				3A8D378012F6D0CA007666FC /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

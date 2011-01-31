@@ -2,10 +2,14 @@
 .DS_Store
 ._*
 *.o
+*.a
 *.dylib
 * copy.*
 .lock-wscript
 *.node
+*.gz
+*.tar
+*.tgz
 
 # XCode
 build/*
@@ -24,3 +28,7 @@ xcuserdata
 /website/public/config.php
 /node-kod/build
 /xcconfig/base-local.xcconfig
+
+# deps/lua
+deps/lua/src/lua
+deps/lua/src/luac
