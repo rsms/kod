@@ -10,3 +10,6 @@
 [submodule "deps/chromium-tabs"]
 	path = deps/chromium-tabs
 	url = https://github.com/rsms/chromium-tabs.git
+[submodule "deps/gazelle"]
+	path = deps/gazelle
+	url = https://github.com/rsms/gazelle.git
