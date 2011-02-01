@@ -4,6 +4,7 @@
 
 #import "KDocument.h"
 #import "AST.h"
+#import "kconf.h"
 
 using namespace kod;
 
@@ -15,7 +16,8 @@ AST::AST(KDocument *document)
   // xxx fixme
   grammar_.reset(new Grammar("JSON"));
   parser_.reset(new ASTParser());
-  if (grammar_->loadFile("/Users/rasmus/src/gazelle/test2/json.gzc")) {
+  const char *grammarFile = [[kconf_res_url(@"json.gzc") path] UTF8String];
+  if (grammar_->loadFile(grammarFile)) {
     parser_->setGrammar(grammar_.get());
   } else {
     WLOG("failed to load grammar");
@@ -24,6 +26,8 @@ AST::AST(KDocument *document)
 
 
 bool AST::parse() {
+  if (!grammar_->grammar())
+    return false;
   parser_->reset();
   parser_->setGrammar(grammar_.get());
 
@@ -50,6 +54,10 @@ bool AST::parseEdit(NSUInteger changeLocation, long changeDelta) {
   // if a full parse is needed, take the "quick" route
   if (needFullParse_)
     return parse();
+
+  // bail unless we have a valid grammar
+  if (!grammar_->grammar())
+    return false;
 
   // find affected node
   NSRange mrange =
@@ -110,6 +118,7 @@ KParseStatus AST::status() {
     case GZL_STATUS_ERROR:
     case GZL_STATUS_PREMATURE_EOF_ERROR:
     case GZL_STATUS_CANCELLED:
+    case GZL_STATUS_BAD_GRAMMAR:
       return KParseStatusBroken;
     default:
       return KParseStatusUnknown;

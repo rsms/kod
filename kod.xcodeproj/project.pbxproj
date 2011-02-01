@@ -25,6 +25,8 @@
 		3A1007CD12F81838003CA014 /* KParseStatusDecoration.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3A1007CC12F81838003CA014 /* KParseStatusDecoration.mm */; };
 		3A1007DC12F819D6003CA014 /* parse-status-broken.png in Resources */ = {isa = PBXBuildFile; fileRef = 3A1007DA12F819D6003CA014 /* parse-status-broken.png */; };
 		3A1007DD12F819D6003CA014 /* parse-status-ok.png in Resources */ = {isa = PBXBuildFile; fileRef = 3A1007DB12F819D6003CA014 /* parse-status-ok.png */; };
+		3A1009EB12F85442003CA014 /* json.gzc in Resources */ = {isa = PBXBuildFile; fileRef = 3A1009E912F85442003CA014 /* json.gzc */; };
+		3A1009EC12F85442003CA014 /* json.gzl in Resources */ = {isa = PBXBuildFile; fileRef = 3A1009EA12F85442003CA014 /* json.gzl */; };
 		3A158ADB128A09D300339E6E /* ICUMatcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A158AD5128A09D300339E6E /* ICUMatcher.m */; };
 		3A158ADC128A09D300339E6E /* ICUPattern.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A158AD7128A09D300339E6E /* ICUPattern.m */; };
 		3A158ADE128A09D300339E6E /* NSStringICUAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A158ADA128A09D300339E6E /* NSStringICUAdditions.m */; };
@@ -288,6 +290,8 @@
 		3A1007CC12F81838003CA014 /* KParseStatusDecoration.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KParseStatusDecoration.mm; sourceTree = "<group>"; };
 		3A1007DA12F819D6003CA014 /* parse-status-broken.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "parse-status-broken.png"; sourceTree = "<group>"; };
 		3A1007DB12F819D6003CA014 /* parse-status-ok.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "parse-status-ok.png"; sourceTree = "<group>"; };
+		3A1009E912F85442003CA014 /* json.gzc */ = {isa = PBXFileReference; lastKnownFileType = file; path = json.gzc; sourceTree = "<group>"; };
+		3A1009EA12F85442003CA014 /* json.gzl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = json.gzl; sourceTree = "<group>"; };
 		3A158AD4128A09D300339E6E /* ICUMatcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ICUMatcher.h; sourceTree = "<group>"; };
 		3A158AD5128A09D300339E6E /* ICUMatcher.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ICUMatcher.m; sourceTree = "<group>"; };
 		3A158AD6128A09D300339E6E /* ICUPattern.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ICUPattern.h; sourceTree = "<group>"; };
@@ -858,6 +862,8 @@
 		3A928C19122714EE00DA7E43 /* resources */ = {
 			isa = PBXGroup;
 			children = (
+				3A1009E912F85442003CA014 /* json.gzc */,
+				3A1009EA12F85442003CA014 /* json.gzl */,
 				3AE5E5161290955000B17C4F /* kod.icns */,
 				3AAA9F6512BFBB010079F079 /* dsa_pub.pem */,
 				3AA8142612C390CE0085F086 /* about.md */,
@@ -1302,6 +1308,8 @@
 				3A37B39412DA2A4200ED811C /* ast-viewer.xib in Resources */,
 				3A1007DC12F819D6003CA014 /* parse-status-broken.png in Resources */,
 				3A1007DD12F819D6003CA014 /* parse-status-ok.png in Resources */,
+				3A1009EB12F85442003CA014 /* json.gzc in Resources */,
+				3A1009EC12F85442003CA014 /* json.gzl in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

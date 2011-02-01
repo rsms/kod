@@ -226,6 +226,7 @@ const char *ASTParser::gazelleStatusString(gzl_status status) {
     case GZL_STATUS_IO_ERROR: return "GZL_STATUS_IO_ERROR";
     case GZL_STATUS_PREMATURE_EOF_ERROR:
       return "GZL_STATUS_PREMATURE_EOF_ERROR";
+    case GZL_STATUS_BAD_GRAMMAR: return "GZL_STATUS_BAD_GRAMMAR";
     default: return "unknown";
   }
 }

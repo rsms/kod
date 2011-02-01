@@ -1,0 +1,26 @@
+
+// Grammar for JSON, as defined at json.org.
+
+@start container;
+
+container -> object | array;
+
+object   -> "{" pair *(,) "}";
+pair     -> string ":" value;
+array    -> "[" value *(,) "]";
+
+string     -> '"' ( .chars=/[^\\"]+/
+                  | .unicode_char=/\\u ([0-9A-Fa-f]{4})/
+                  | .backslash_char=/\\[ntbr"\/\\]/ )
+              '"';
+
+number   -> .sign="-"?
+            .integer=/ 0 | ([1-9][0-9]*) /
+            .decimal=/ \. [0-9]+ /?
+            .exponent=/ [eE] [+-]? [0-9]+ /? ;
+
+value    -> string | number | "true" | "false" | "null" | object | array;
+
+whitespace -> .whitespace_str=/[\r\n\s\t]+/;
+
+@allow whitespace object ... number, string;
