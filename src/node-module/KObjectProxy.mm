@@ -32,6 +32,8 @@ static char kPersistentWrapperKey = 'a';
 @implementation _KObjectProxyShelf
 - (void)_KObjectProxy_dealloc_associations {
   //DLOG("_KObjectProxy_dealloc_associations for %p", self);
+  // TODO: assert that we are running in the nodejs thread, or we need to
+  // defer this to that thread since v8 will crash and burn unless so.
 
   // clear wrapper
   NSValue *v = objc_getAssociatedObject(self, &kPersistentWrapperKey);

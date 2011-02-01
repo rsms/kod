@@ -1358,7 +1358,7 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
 
   // Increment our version
   [self willChangeValueForKey:@"version"];
-  h_atomic_inc(&version_);
+  uint64_t version = h_atomic_inc(&version_);
   [self didChangeValueForKey:@"version"];
 
   // range that was affected by the edit
@@ -1381,6 +1381,36 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
                                           recursed:NO];
     });
   }
+
+  // emit event in node-land
+  KNodePerformInNode(^(KNodeReturnBlock returnCallback){
+    v8::HandleScope scope;
+    v8::Local<v8::Object> doc = [self v8Value]->ToObject();
+    // TODO: refactor this to be reusable for emitting events on any object
+    v8::Local<v8::Value> emitV = doc->Get(v8::String::New("emit"));
+    if (!emitV.IsEmpty() && emitV->IsFunction()) {
+      v8::Local<v8::Value> argv[] = {
+        v8::String::New("edit"),
+        v8::Number::New((double)version),
+        v8::Number::New((double)editedRange.location),
+        v8::Integer::New(changeInLength)
+      };
+      static const int argc = sizeof(argv) / sizeof(argv[0]);
+      v8::TryCatch tryCatch;
+      v8::Local<v8::Value> returnValue =
+          v8::Local<v8::Function>::Cast(emitV)->Call(doc, argc, argv);
+      NSError *error = nil;
+      if (tryCatch.HasCaught()) {
+        v8::String::Utf8Value trace(tryCatch.StackTrace());
+        NSAutoreleasePool *pool1 = [NSAutoreleasePool new];
+        WLOG("Error while emitting event '%s' on %@: %s", "edit", self,
+             *trace ? *trace : "(no trace)");
+        [pool1 drain];
+      }
+    }
+    // must be called since this takes care of releasing some resources
+    returnCallback(nil, nil, nil);
+  });
 
   // we do not process edits when we are loading
   if (isLoading_) return;

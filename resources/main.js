@@ -64,6 +64,27 @@ kod.on('openDocument', function(document) {
   //console.log('openDocument: '+ util.inspect(document, 0, 4));
   console.log('openDocument: #'+document.identifier+' '+document.type+
               ' '+(document.url || '*new*'));
+
+  // example of registering for the "edit" event, emitted after each edit to
+  // a document.
+  /*document.on('edit', function(version, location, changeDelta) {
+    console.log(this+':edit -> %j', {
+      version:version, location:location, changeDelta:changeDelta});
+    // if we are to manipulate the text, we need to compare versions since
+    // these things happen concurrently. Here, we wrap a "p" character in < & >:
+    if (document.version == version && changeDelta == 1) {
+      var text = document.text;
+      var changedChar = text.substr(location, 1);
+      if (changedChar == "p") {
+        document.text = text.substr(0,location)+'<'+changedChar+'>'+
+                        text.substr(location+1);
+        if (document.version != version+1) {
+          console.log("another edit happened while we where running. "+
+                      "The effect is undefined from our perspective.");
+        }
+      }
+    }
+  })*/
 });
 
 // example event listener for the "activateDocument" event, emitted when a
