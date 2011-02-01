@@ -8,6 +8,7 @@ namespace kod {
 
 
 ASTNode::~ASTNode() {
+  fprintf(stderr, "ASTNode '%s' DEALLOC\n", ruleName_);
   if (parserState_) {
     gzl_free_parse_state(parserState_);
     parserState_ = NULL;
@@ -130,11 +131,11 @@ void ASTNode::_inspect(std::string &str, int depth, bool deep) {
            depth*2, "",
            ruleName(), sourceRange().location, sourceRange().length);
   str.append(buf);
-  if (parserState_) {
+  /*if (parserState_) {
     snprintf(buf, sizeof(buf)-1, ", snapshot: { offset:%zu, stackSize: %d } ",
              parserState_->offset.byte, parserState_->parse_stack_len);
     str.append(buf);
-  }
+  }*/
   if (!childNodes().empty()) {
     if (!deep) {
       snprintf(buf, sizeof(buf)-1, ", childNodes: (%zu) },",

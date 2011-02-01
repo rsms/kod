@@ -2,9 +2,9 @@
 
 #define DEBUG_PARSER 0
 #if DEBUG_PARSER
-  #define DLOG(fmt, ...) fprintf(stderr, fmt "\n", ##__VA_ARGS__ );
+  #define PARSER_DLOG(fmt, ...) fprintf(stderr, fmt "\n", ##__VA_ARGS__ );
 #else
-  #define DLOG(fmt, ...) ((void)0)
+  #define PARSER_DLOG(fmt, ...) ((void)0)
 #endif
 
 //inline static int MIN(int a, int b) { return (a < b) ? a : b; }
@@ -19,7 +19,7 @@ void ASTParser::onWillStartRule(gzl_rtn *frame,
   // Note: This will be cleared for leaves (nodes w/o children) on a successful
   // pop.
   //gzl_parse_state *parserStateCopy1_ = gzl_dup_parse_state(state());
-  //currentASTNode_->copyParseState(state());
+  //currentNode_->copyParseState(state());
 }
 
 
@@ -30,6 +30,8 @@ void ASTParser::onDidStartRule(gzl_rtn_frame *frame, const char *name) {
   size_t currLocation = ((gzl_parse_stack_frame*)frame)->start_offset.byte;
   NSUInteger relativeLocation = currLocation - prevLocation;
 
+  PARSER_DLOG(">>%*s start rule '%s'", (stackDepth()-1)*2, "", name);
+
   // include the char which started the rule
   //if (relativeLocation) --relativeLocation;
   pushASTNode(new ASTNode(name, relativeLocation));
@@ -38,64 +40,72 @@ void ASTParser::onDidStartRule(gzl_rtn_frame *frame, const char *name) {
   // Note: This will be cleared for leaves (nodes w/o children) on a successful
   // pop.
   /*if (parserStateCopy1_) {
-    currentASTNode_->setParseState(parserStateCopy1_);
+    currentNode_->setParseState(parserStateCopy1_);
     parserStateCopy1_ = NULL;
   }*/
-  //currentASTNode_->copyParseState(state());
+  //currentNode_->copyParseState(state());
 
-  //DLOG("pushed AST node \"%s\" at {%lu, ...}", currentASTNode_->ruleName(),
-  //     currentASTNode_->sourceRange().location);
-
-  DLOG(">>%*s start rule '%s'", (stackDepth()-1)*2, "", name);
+  //PARSER_DLOG("pushed AST node \"%s\" at {%lu, ...}", currentNode_->ruleName(),
+  //     currentNode_->sourceRange().location);
 }
 
 
-void ASTParser::onEndRule(gzl_rtn_frame *frame, const char *name) {
+void ASTParser::onWillEndRule(gzl_rtn_frame *frame, const char *name) {
   // update current node's range
-  assert(currentASTNode_.get() != NULL);
-  bool isRoot = !currentASTNode_->parentNode().get();
+  /*assert(currentNode_.get() != NULL);
+  bool isRoot = !currentNode_->parentNode().get();
 
   if (!isRoot) {
-    currentASTNode_->parentNode()->sourceRange().length =
-      currentASTNode_->sourceRange().location +
-      currentASTNode_->sourceRange().length;
+    currentNode_->parentNode()->sourceRange().length =
+      currentNode_->sourceRange().location +
+      currentNode_->sourceRange().length;
   }
 
-  /*if (currentASTNode_->sourceRange().length == 0) {
-    currentASTNode_->sourceRange().length =
-        state()->offset.byte - stackFrameAt(0)->start_offset.byte;
-  }*/
+  //if (!currentNode_->childNodes().empty())
+  //currentNode_->copyParseState(state());
 
-  // if the node does not have any children, discard the saved state
-  //if (currentASTNode_->childNodes().empty()) {
-  //  currentASTNode_->clearParseState();
-  //}
-
-  //if (!currentASTNode_->childNodes().empty())
-  currentASTNode_->copyParseState(state());
+  PARSER_DLOG(">>%*s end rule '%s'", (stackDepth()-1)*2, "", name);
 
   // pop the node
-  //DLOG("pop AST node \"%s\" at {%lu, %lu}", currentASTNode_->ruleName(),
-  //     currentASTNode_->sourceRange().location,
-  //     currentASTNode_->sourceRange().length);
-  popASTNode();
+  //PARSER_DLOG("pop AST node \"%s\" at {%lu, %lu}", currentNode_->ruleName(),
+  //     currentNode_->sourceRange().location,
+  //     currentNode_->sourceRange().length);
+  popASTNode();*/
+}
 
-  DLOG(">>%*s end rule '%s'", (stackDepth()-1)*2, "", name);
+
+void ASTParser::onDidEndRule(gzl_rtn_frame *parentFrame, const char *name) {
+  // update current node's range
+  assert(currentNode_.get() != NULL);
+  bool isRoot = !currentNode_->parentNode().get();
+
+  if (!isRoot) {
+    currentNode_->parentNode()->sourceRange().length =
+      currentNode_->sourceRange().location +
+      currentNode_->sourceRange().length;
+  }
+
+  PARSER_DLOG(">>%*s end rule '%s'", (stackDepth()-1)*2, "", name);
+
+  //if (!currentNode_->childNodes().empty())
+  currentNode_->copyParseState(state());
+
+  popASTNode();
 }
 
 
 void ASTParser::onTerminal(gzl_terminal *terminal) {
-  DLOG(">>%*s terminal '%s'", stackDepth()*2, "", terminal->name);
-  if (currentASTNode_.get()) {
-    currentASTNode_->sourceRange().length =
+  PARSER_DLOG(">>%*s terminal '%s'", stackDepth()*2, "", terminal->name);
+  if (currentNode_.get()) {
+    currentNode_->sourceRange().length =
       state()->offset.byte - stackFrameAt(0)->start_offset.byte;
-    //printf("set len: %lu\n", currentASTNode_->sourceRange().length);
+    //printf("set len: %lu\n", currentNode_->sourceRange().length);
   }
 }
 
 
 void ASTParser::onUnknownTransitionError(int ch) {
-  DLOG("error: unknown transition from character '%c' at input:%zu:%zu[%zu]",
+  PARSER_DLOG("error: unknown transition from character '%c' at input:%zu:%zu[%zu]",
        ch, line(), column(), offset());
 }
 
@@ -122,9 +132,9 @@ static void _unwindAndGuessLength(ASTNode *node, NSUInteger &totalLength) {
 void ASTParser::onUnexpectedTerminalError(gzl_terminal *terminal) {
   // TODO: as this will abort parsing, we need to unwind the tree and apply
   // best-effort range lengths. This is an incomplete implementation:
-  if (rootASTNode_->sourceRange().length == 0) {
+  if (rootNode_->sourceRange().length == 0) {
     NSUInteger totalLength = state()->offset.byte;
-    _unwindAndGuessLength(rootASTNode_.get(), totalLength);
+    _unwindAndGuessLength(rootNode_.get(), totalLength);
 
     // it's not really possible to unwind the stack right now since it requires
     // running the parse tree heuristics which really should be handled by
@@ -163,7 +173,7 @@ void ASTParser::onUnexpectedTerminalError(gzl_terminal *terminal) {
   int error_offset = terminal->offset.byte - start_offset;
   char *source_line = (char*)malloc((len+1)*sizeof(char));
   memcpy(source_line, p, len);
-  DLOG("error: unexpected terminal '%s' -- aborting (input:%zu:%zu[%zu])\n"
+  PARSER_DLOG("error: unexpected terminal '%s' -- aborting (input:%zu:%zu[%zu])\n"
        "  %s\n"
        "  %*s",
        terminal->name,
@@ -172,6 +182,21 @@ void ASTParser::onUnexpectedTerminalError(gzl_terminal *terminal) {
        error_offset, "^");
   free(source_line);
 #endif  // DEBUG_PARSER
+}
+
+
+void ASTParser::pushASTNode(ASTNode *node) {
+  ASTNodePtr nodeptr(node);
+  node->parentNode() = currentNode_;
+  if (explicitNextChildNodeIndex_ != NSNotFound) {
+    //fprintf(stderr, "push: currentNode_ => %s\n", currentNode_->inspect(false).c_str()); fsync(STDERR_FILENO); fflush(stderr);
+    assert(currentNode_->childNodes().size() > explicitNextChildNodeIndex_);
+    currentNode_->childNodes()[explicitNextChildNodeIndex_] = nodeptr;
+    explicitNextChildNodeIndex_ = NSNotFound;
+  } else {
+    currentNode_->childNodes().push_back(nodeptr);
+  }
+  currentNode_ = nodeptr;
 }
 
 

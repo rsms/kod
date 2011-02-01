@@ -120,9 +120,9 @@ void KNodeParseEntry::perform() {
       krusage_sample(rusage, "Parser returned");
 
       // inform the document that the AST changed
-      [document_ ASTWasUpdated:astRoot
+      /*[document_ ASTWasUpdated:astRoot
                 basedOnVersion:version
-                    parseEntry:this];
+                    parseEntry:this];*/
     }
 
   } else DLOG("no parse() function available for document");

@@ -11,6 +11,8 @@
 namespace kod {
 
 class Grammar : public gazelle::Grammar {
+ public:
+  explicit Grammar(const char *name=NULL) : gazelle::Grammar(name) {}
 };
 
 typedef std::tr1::shared_ptr<Grammar> GrammarPtr;

@@ -41,9 +41,6 @@ extern NSString *const KDocumentWillCloseNotification;
 
   // Meta ruler (nil if not shown)
   __weak KMetaRulerView *metaRulerView_;
-
-  // Internal state
-  hatomic_flags_t stateFlags_;
 }
 
 @property(assign, nonatomic) BOOL isDirty;
@@ -86,8 +83,8 @@ extern NSString *const KDocumentWillCloseNotification;
 @property(readonly) uint64_t version;
 
 
-@property(readonly, assign) kod::ASTPtr ast;
-@property(readonly, assign) kod::ASTNodePtr astRootNode;
+@property(readonly) kod::ASTPtr &ast;
+@property(readonly) kod::ASTNodePtr &astRootNode;
 
 
 // A Uniform Type Identifier for the current contents
@@ -121,9 +118,7 @@ extern NSString *const KDocumentWillCloseNotification;
 - (void)refreshStyle;
 - (void)styleDidChange:(NSNotification*)notification;
 
-- (void)ASTWasUpdated:(kod::ASTNodePtr)astRoot
-       basedOnVersion:(uint64_t)version
-           parseEntry:(KNodeParseEntry*)parseEntry;
+- (void)ASTWasUpdated;
 
 - (void)textStorageDidProcessEditing:(NSNotification*)notification;
 

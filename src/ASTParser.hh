@@ -14,23 +14,19 @@ class ASTParser : public gazelle::Parser {
   size_t sourceLen_;
 
   // Current AST node
-  ASTNodePtr currentASTNode_;
-  ASTNodePtr rootASTNode_;
+  ASTNodePtr currentNode_;
+  ASTNodePtr rootNode_;
 
   NSUInteger explicitNextChildNodeIndex_;
 
  public:
 
-  ASTParser() : explicitNextChildNodeIndex_(NSNotFound) { reset(); }
-  /*ASTParser(gazelle::Grammar *grammar) : explicitNextChildNodeIndex_(NSNotFound) {
-    reset();
-
-  }*/
+  explicit ASTParser() : explicitNextChildNodeIndex_(NSNotFound) { reset(); }
   virtual ~ASTParser() {}
 
   void reset() {
-    rootASTNode_.reset(new ASTNode("root", 0));
-    currentASTNode_ = rootASTNode_;
+    rootNode_.reset(new ASTNode("root", 0));
+    currentNode_ = rootNode_;
     setState(gzl_alloc_parse_state());
   }
 
@@ -43,29 +39,20 @@ class ASTParser : public gazelle::Parser {
     explicitNextChildNodeIndex_ = nextChildNodeIndex;
   }
 
-  void pushASTNode(ASTNode *node) {
-    ASTNodePtr nodeptr(node);
-    node->parentNode() = currentASTNode_;
-    if (explicitNextChildNodeIndex_ != NSNotFound) {
-      currentASTNode_->childNodes()[explicitNextChildNodeIndex_] = nodeptr;
-      explicitNextChildNodeIndex_ = NSNotFound;
-    } else {
-      currentASTNode_->childNodes().push_back(nodeptr);
-    }
-    currentASTNode_ = nodeptr;
-  }
+  void pushASTNode(ASTNode *node);
 
   void popASTNode() {
-    //assert(currentASTNode_->parentNode().get());
-    currentASTNode_ = currentASTNode_->parentNode();
+    //assert(currentNode_->parentNode().get());
+    currentNode_ = currentNode_->parentNode();
   }
 
-  ASTNodePtr &currentASTNode() { return currentASTNode_; }
-  ASTNodePtr &rootASTNode() { return rootASTNode_; }
+  ASTNodePtr &currentNode() { return currentNode_; }
+  ASTNodePtr &rootNode() { return rootNode_; }
 
   void onWillStartRule(gzl_rtn *frame, const char *name, gzl_offset *offset);
   void onDidStartRule(gzl_rtn_frame *frame, const char *name);
-  void onEndRule(gzl_rtn_frame *frame, const char *name);
+  void onWillEndRule(gzl_rtn_frame *frame, const char *name);
+  void onDidEndRule(gzl_rtn_frame *frame, const char *name);
   void onTerminal(gzl_terminal *terminal);
   void onUnknownTransitionError(int ch);
   void onUnexpectedTerminalError(gzl_terminal *terminal);

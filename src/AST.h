@@ -14,6 +14,12 @@
 #include <string>
 #include <tr1/memory>
 
+typedef enum {
+  KParseStatusUnknown = 0,
+  KParseStatusOK,
+  KParseStatusBroken,
+} KParseStatus;
+
 @class KDocument;
 
 namespace kod {
@@ -23,24 +29,23 @@ class AST {
   explicit AST(KDocument *document=NULL);
   ~AST() {}
 
-  const ASTNodePtr &rootNode() const { return rootNode_; }
-  bool setRootNode(ASTNodePtr rootNode) {
-    // TODO(rsms): using CAS or spinlock
-    h_atomic_barrier();
-    rootNode_ = rootNode;
-  }
+  ASTNodePtr &rootNode() const { return parser_->rootNode(); }
 
   bool parse();
   bool parseEdit(NSUInteger changeLocation, long changeDelta);
+
+  KParseStatus status();
+
+  bool isOpenEnded() {
+    return parser_->currentNode().get() != parser_->rootNode().get();
+  }
 
  protected:
   KDocument *document_; // weak, owns us
   ASTParserPtr parser_;
   GrammarPtr grammar_;
-  ASTNodePtr rootNode_;
-
-  // state
-  bool isOpenEnded_;
+  bool needFullParse_;
+  gzl_status status_;
 };
 
 typedef std::tr1::shared_ptr<AST> ASTPtr;

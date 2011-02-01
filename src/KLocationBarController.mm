@@ -5,9 +5,10 @@
 #import "KLocationBarController.h"
 #import "KBrowserWindowController.h"
 #import "KDocumentController.h"
+#import "KDocument.h"
 #import <ChromiumTabs/ChromiumTabs.h>
 #import "virtual_key_codes.h"
-#import "KModeTextFieldDecoration.h"
+#import "KParseStatusDecoration.h"
 #import "KAutocompleteTextFieldCell.h"
 
 @implementation KLocationBarController
@@ -18,10 +19,9 @@
     textField_.delegate = self;
 
     // mode decoration
-    //KModeTextFieldDecoration *modeDecoration =
-    //    [[KModeTextFieldDecoration alloc] initWithName:@"C++"];
-    //KAutocompleteTextFieldCell *cell = (KAutocompleteTextFieldCell*)atf.cell;
-    //[cell addRightDecoration:modeDecoration];
+    parseStatusDecoration_ = [KParseStatusDecoration new];
+    KAutocompleteTextFieldCell *cell = (KAutocompleteTextFieldCell*)atf.cell;
+    [cell addRightDecoration:parseStatusDecoration_];
   }
   return self;
 }
@@ -30,6 +30,7 @@
 - (void)dealloc {
   h_casid(&currentContents_, nil);
   [originalAttributedStringValue_ release];
+  [parseStatusDecoration_ release];
   [super dealloc];
 }
 
@@ -133,9 +134,22 @@
 
 
 - (void)contentsDidChange:(CTTabContents*)contents {
-  h_casid(&currentContents_, contents);
+  if (!h_casid(&currentContents_, contents))
+    return;
   [self recordStateWithContents:contents];
 }
+
+
+// called when the current contents changed (KDocument version changed)
+- (void)contentsDidChange {
+  if (!currentContents_) return;
+  KDocument *doc = (KDocument*)currentContents_;
+  // Note: For some weeeeird reason, accessing doc.ast->status() directly
+  // causes shared_ptr to _release and free_ the AST object.
+  parseStatusDecoration_.status = [doc ast]->status();
+  //DLOG("parseStatusDecoration_.status -> %d", parseStatusDecoration_.status);
+}
+
 
 #pragma mark -
 #pragma mark KAutocompleteTextFieldDelegate protocol

@@ -42,4 +42,7 @@
 - (void)updateLayoutForSplitView;
 - (IBAction)selectPathInControl:(id)sender;
 
+// called when the current contents changed (KDocument version changed)
+- (void)contentsDidChange;
+
 @end

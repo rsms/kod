@@ -373,8 +373,8 @@ static NSColor *kColumnGuideColor = nil, *kColumnGuideBackgroundColor = nil;
   }
   KInputAction *action =
       KInputBindings::get(KInputBindings::TextEditorLevel, event);
-  DLOG("input event: %@ -- %@", [event kodInputBindingDescription], event);
-  DLOG("input action -> %p", action);
+  //DLOG("input event: %@ -- %@", [event kodInputBindingDescription], event);
+  //DLOG("input action -> %p", action);
   if (action && action->perform(self))
     return nil;
 

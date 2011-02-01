@@ -129,7 +129,7 @@ static const CGFloat kLeftMarginWhenNoSidebar = 4.0;
 
 
 - (void)setCurrentContents:(CTTabContents*)contents {
-  static NSString * const keys[] = {@"fileURL", nil};
+  static NSString * const keys[] = {@"fileURL", @"version", nil};
   if (contents == currentContents_) return;
   NSString *key;
   for (int i=0; (key = keys[i++]); ) {
@@ -141,6 +141,12 @@ static const CGFloat kLeftMarginWhenNoSidebar = 4.0;
   currentContents_ = contents;
   [self updateURLFromCurrentContents];
   [locationBarController_ contentsDidChange:contents];
+}
+
+
+- (void)contentsDidChange {
+  [self updateURLFromCurrentContents];
+  [locationBarController_ contentsDidChange];
 }
 
 
@@ -163,8 +169,9 @@ static const CGFloat kLeftMarginWhenNoSidebar = 4.0;
   //DLOG(">>>>>>>> observeValueForKeyPath:%@ --> %@", keyPath, change);
   if ([keyPath isEqual:@"fileURL"]) {
     [self updateURLFromCurrentContents];
-  } else if ([keyPath isEqual:@"title"]) {
-    DLOG("received change of title %@", change);
+  } else if ([keyPath isEqual:@"version"]) {
+    //DLOG("version changed %@", change);
+    [self contentsDidChange];
   }
   // be sure to call the super implementation
   // if the superclass implements it (which it currently doesn't)

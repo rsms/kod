@@ -41,14 +41,6 @@
 - (void)_updateForDocumentEdited:(BOOL)arg1;
 @end
 
-// used in stateFlags_
-enum {
-  kCompleteHighlightingIsQueued = HATOMIC_FLAG_MIN,
-  kCompleteHighlightingIsProcessing,
-  kHighlightingIsProcessing,
-  kTestStorageEditingIsProcessing,
-};
-
 // used by lastEditChangedTextStatus_
 static const uint8_t kEditChangeStatusUnknown = 0;
 static const uint8_t kEditChangeStatusUserUnalteredText = 1;
@@ -89,8 +81,7 @@ static uint64_t KDocumentNextIdentifier() {
 @implementation KDocument
 
 @synthesize textEncoding = textEncoding_,
-            textView = textView_,
-            ast = ast_;
+            textView = textView_;
 
 static NSImage* _kDefaultIcon = nil;
 static NSString* _kDefaultTitle = @"Untitled";
@@ -514,8 +505,13 @@ static NSString* _kDefaultTitle = @"Untitled";
 }
 
 
-- (kod::ASTNodePtr)astRootNode {
+- (kod::ASTPtr&)ast { return ast_; }
+
+
+- (kod::ASTNodePtr&)astRootNode {
   kassert(ast_.get() != NULL);
+  DLOG("ast_->status() -> %d", ast_->status());
+  DLOG("ast_->isOpenEnded() -> %d", ast_->isOpenEnded());
   return ast_->rootNode();
 }
 
@@ -641,23 +637,9 @@ static NSString* _kDefaultTitle = @"Untitled";
 }
 
 
-- (void)ASTWasUpdated:(kod::ASTNodePtr)astRoot
-       basedOnVersion:(uint64_t)version
-           parseEntry:(KNodeParseEntry*)parseEntry {
-  DLOG("%@ ASTWasUpdated:basedOnVersion: %llu (current version: %llu)",
-       self, version, version_);
-
-  // TODO(rsms): verify version -- when results arrive for an old version,
-  // re-issue the edit or something. We need to apply magic Brain Power here...
-  // Until then, we simply discard an old AST and wait a few moment more until a
-  // newer AST arrives.
-
-  if (version == version_) {
-    // replace/update ast root
-    ast_->setRootNode(astRoot);
-    //DLOG("AST: %@", [self _inspectASTTree:astRoot]);
-    K_DISPATCH_MAIN_ASYNC({ [self debugUpdateASTViewer:self]; });
-  }
+- (void)ASTWasUpdated {
+  DLOG("%@ ASTWasUpdated", self);
+  K_DISPATCH_MAIN_ASYNC({ [self debugUpdateASTViewer:self]; });
 }
 
 
@@ -1354,9 +1336,8 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
   NSRange editedRange = [textStorage editedRange];
   NSInteger changeDelta = [textStorage changeInLength];
 
-  //ast_->parseEdit(editedRange.location, changeDelta);
-  ast_->parse();
-
+  ast_->parseEdit(editedRange.location, changeDelta);
+  //ast_->parse();
 
   // enqeue edit to be handled by the text parser system
   //KNodeEnqueueParseEntry(new KNodeParseEntry(editedRange.location,
@@ -1376,7 +1357,9 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
   }
 
   // Increment our version
+  [self willChangeValueForKey:@"version"];
   h_atomic_inc(&version_);
+  [self didChangeValueForKey:@"version"];
 
   // range that was affected by the edit
   NSRange editedRange = [textStorage editedRange];
