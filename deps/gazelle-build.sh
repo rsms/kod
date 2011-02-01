@@ -29,7 +29,9 @@ fi
 
 # check if a build product exists and is up-to-date
 # TODO: check each product based on ARCHS
-if [ .git/HEAD -nt "${LIBGZ_PRODUCT}" ]; then
+if [ .git/HEAD -nt "${LIBGZ_PRODUCT}" ] ||
+   [ "$(find runtime \! -name '*.o' -newer "${LIBGZ_PRODUCT}")" != "" ]
+then
   IS_DIRTY=1
 fi
 
