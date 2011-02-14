@@ -31,4 +31,5 @@
 
 - (BOOL)openFileDirectoryAtURL:(NSURL *)absoluteURL error:(NSError **)outError;
 
+- (BOOL)reopenDirectoryIfOpen;
 @end

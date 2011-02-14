@@ -157,7 +157,6 @@ static NSString *kNameColumnId = @"name";
   });
 }*/
 
-
 #pragma mark -
 #pragma mark NSOutlineViewDataSource methods
 

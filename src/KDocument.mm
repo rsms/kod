@@ -1742,6 +1742,10 @@ finishedReadingURL:(NSURL*)url
       // TODO(rsms): guess syntax/language
     }
 
+    // We need to reload the file tree in the sidebar, because we may have
+    // created a new file (if it was "saved as").
+    [self.windowController reopenDirectoryIfOpen];
+
     // unfreeze tab
     if (tabWasEditable)
       self.isEditable = YES;
