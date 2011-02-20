@@ -34,6 +34,8 @@
                     browser:(CTBrowser*)browser {
   self = [super initWithWindowNibPath:windowNibPath browser:browser];
 
+  oldWindowSize = [[self window] frame];
+
   // Setup file tree view
   [fileOutlineView_ registerForDraggedTypes:
       [NSArray arrayWithObjects:NSFilenamesPboardType, NSURLPboardType, nil]];
@@ -155,11 +157,34 @@
   [splitView_ toggleCollapse:sender];
 }
 
+- (IBAction)toggleFullscreen:(id)sender; {
+
+	if (isFullscreen == NO) {
+		
+		// Hide MenuBar only if the window, which is resizing is actually on the [[NSScreen screens] objectAtIndex:0] 
+		// (the screen that shows the menubar)
+		if ([[[self window] screen] isEqual:[[NSScreen screens] objectAtIndex:0]]) {
+			[NSMenu setMenuBarVisible:NO];
+		}
+			[[self window] setFrame:[[self window] frameRectForContentRect:[[[self window] screen] frame]]
+										display:YES
+										animate:YES];
+		
+			[sender setTitle:@"Exit Full Screen"];
+			isFullscreen = YES;
+		
+	 }
+	else {
+		[NSMenu setMenuBarVisible:YES];
+		[[self window] setFrame:oldWindowSize display:YES animate:YES];
+		[sender setTitle:@"Enter Full Screen"];
+		isFullscreen = NO;
+	}
+}
 
 - (IBAction)reloadStyle:(id)sender {
   [[KStyle sharedStyle] reload];
 }
-
 
 - (IBAction)goToLine:(id)sender {
   if (goToLinePopUp_) return;

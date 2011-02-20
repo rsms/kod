@@ -15,12 +15,14 @@
 
   NSInteger goToLineLastValue_;
   KPopUp *goToLinePopUp_; // non-nil while active
+	
+	BOOL isFullscreen;
+	NSRect oldWindowSize;
 }
 
 @property(readonly) NSSplitView *verticalSplitView;
 @property(readonly) CGFloat statusBarHeight;
 
-// TODO: fullscreen
 // implement lockBarVisibilityForOwner... and friends (see chromium source)
 
 - (IBAction)focusLocationBar:(id)sender;
@@ -28,6 +30,7 @@
 - (IBAction)toggleSplitView:(id)sender;
 - (IBAction)reloadStyle:(id)sender;
 - (IBAction)goToLine:(id)sender;
+- (IBAction)toggleFullscreen:(id)sender;
 
 - (BOOL)openFileDirectoryAtURL:(NSURL *)absoluteURL error:(NSError **)outError;
 
