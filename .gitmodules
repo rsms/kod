@@ -6,7 +6,7 @@
 	url = https://github.com/rsms/hunch-cocoa.git
 [submodule "deps/node"]
 	path = deps/node
-	url = https://github.com/ry/node.git
+	url = https://github.com/joyent/node.git
 [submodule "deps/chromium-tabs"]
 	path = deps/chromium-tabs
 	url = https://github.com/rsms/chromium-tabs.git
