@@ -52,7 +52,7 @@ for arch in $ARCHS; do
   # build, thus we do not paralellize make.
   CFLAGS="-arch $arch -g -I../lua/src" \
   CPPFLAGS="-arch $arch -g -I../lua/src" \
-  LDFLAGS="-arch $arch \"-L${BUILT_PRODUCTS_DIR}/lua\"" \
+  LDFLAGS="-arch $arch \"-L${BUILT_PRODUCTS_DIR:-../../build/${BUILD_STYLE}}/lua\"" \
     make
   
   mv -vf gzlc gzlc-$arch
