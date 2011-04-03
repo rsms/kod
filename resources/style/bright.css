@@ -1,27 +1,41 @@
-body { background-color:white; color: black; }
+body {
+    font-family: "M+ 1m", monospace;
+    font-size: 11px;
+    background-color:#DFDFDF;
+    color: #131313;
+}
 
-/* the color for context lines (when specified with line ranges) */
-context {  color: #444; }
-linenum { color: #444; }
+caret { color: #00A2E8; }
+selection { background-color: #BBBBBB; }
+column-guide { color: #444; /*background: #333;*/ }
 
-/* common elements */
-keyword { color: #009; }
-type { color: lightsalmon; }
+metaruler {
+    color: #666;
+    background: #DFDFDF;
+    border-right: 2px solid #DFDFDF;
+    font-size: 11px;
+}
+
+keyword { color: #50bfef; }
+type { color: #f68e01; }
 usertype { color: #CAC059; }
 classname { color: #eb7962; }
-string { color:#9aca7e; background-color:#212A24; }
-specialchar { color: #C0D164; background-color:#2B2F26; }
-regexp { color: #FFB14B; background-color:#342C22; }
-comment { color: #666; font-style: italic; }
-number { color: #C969B6; }
+string { color: #23e738; background-color: #badfc3; }
+specialchar { color: #abcf9e; background-color: #dbdbdf; }
+regexp { color: #f68e01; background-color: #dfbc8f; }
+comment { color: #666; }
+number { color: #ff40ab;  }
 preproc { color: #9C8B7C; }
-symbol { color: #A19DBF; }
-function { color: #85FFDF; background-color: #1F2B31; }
-cbracket { color: #ddd; }
+symbol { color: #787691; }
+function { color: #2fcfcb; background-color: #bbdfd9; }
+cbracket { color: #131313; }
 todo { color: #946B57; font-weight: bold; }
 
 /* Internet related */
-url { color: #77B5FF; text-decoration: underline; }
+url {
+    color: #77B5FF; text-decoration: underline;
+    cursor: pointer;
+}
 
 /* other elements for ChangeLog and Log files */
 date { color: #F09C9F; font-weight: bold; }
@@ -30,26 +44,28 @@ ip, name { color: #8CB194; }
 
 /* for Prolog, Perl, lang */
 variable { color: #cda869; }
-italics { color: #3C7E5B; font-style: italic; }
-bold { color: #3C7E5B; font-weight: bold; }
+italics { text-decoration: underline; font-style: italic; }
+bold { color: #fff; font-weight: bold; }
 
-/* for LaTeX */
+/* for LaTeX, markdown, etc */
 underline { color: #3C7E5B; text-decoration: underline; }
-fixed { color: #73C976; }
+fixed { color: #ccd0f6; background-color: #2c2c2c; }
 argument, optionalargument { color: #9194BB; }
 math { color: orange; }
 bibtex { color: #8D86EE; }
+h1,h2,h3,h4,h5,h6 { color: #f68e01; }
+ul, ol { color: yellow; }
 
 /* for diffs */
-oldfile { color: #f7bfb6; background-color:#42201C; }
-newfile { color: #cff7bf; background-color:#13340C; }
-difflines { color: white; background-color:#3D96DE; }
+oldfile { background-color:#df444d; }
+newfile { background-color:#6ddf63; }
+difflines { background-color:#44d2df; }
 
 /* for css */
-selector { color: #cda869; }
-property { color: #c4af75; }
-value { color: #f9ed97; }
+selector { color: #f6143e; }
+property { color: #f60091; }
+value { color: #f68e01; }
 
 /* for Oz, Erlang, etc */
-atom { color: orange; }
+atom { color: #f68e01; }
 meta { font-style: italic; }
