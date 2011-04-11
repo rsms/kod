@@ -2,7 +2,7 @@
 
 
 
-body {
+/* body {
     font-family: "M+ 1m", monospace;
     font-size: 11px;
     background-color: #002B36;
@@ -11,12 +11,30 @@ body {
 
 caret { color: #657B83; }
 selection { background-color: #073642; }
-column-guide { color: #657B83; /*background: #333;*/ }
+column-guide { color: #657B83; }
 
 metaruler {
     color: #586E75;
     background: #073642;
     border-right: 2px solid #002B36;
+    font-size: 11px;
+} */
+
+body {
+    font-family: "M+ 1m", monospace;
+    font-size: 11px;
+    background-color: #FDF6E3;
+    color: #839496;
+}
+
+caret { color: #657B83; }
+selection { background-color: #EEE8D5; }
+column-guide { color: #657B83; }
+
+metaruler {
+    color: #93A1A1;
+    background: #EEE8D5;
+    border-right: 2px solid #FDF6E3;
     font-size: 11px;
 }
 
@@ -26,11 +44,11 @@ classname { color: #6C71C4; }
 string { color: #2AA198; }
 specialchar { color: #DC322F; }
 regexp { color: #CB4B16; }
-comment { color: #586E75; }
+comment { color: #93A1A1; }
 number { color: #D33682;  }
 preproc { color: #859900; }
 function { color: #B58900; }
-cbracket, symbol { color: #586E75; }
+cbracket, symbol { color: #93A1A1; }
 todo { color: #B58900; font-weight: bold; }
 
 /* Internet related */
@@ -51,7 +69,7 @@ bold { font-weight: bold; }
 /* for LaTeX, markdown, etc */
 underline { text-decoration: underline; }
 fixed { color: #268BD2; }
-argument, optionalargument { color: #586E75; }
+argument, optionalargument { color: #93A1A1; }
 math { color: #CB4B16; }
 bibtex { color: #6C71C4; }
 h1,h2,h3,h4,h5,h6 { color: #CB4B16; }
