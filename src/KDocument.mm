@@ -623,19 +623,17 @@ static void _exploreNode(NSTextStorage *textStorage,
   NSRange sourceRange = node->sourceRange();
   sourceRange.location += offset;
 
-  // CSS style (version 1)
-  //KStyleElement *style = [[KStyle sharedStyle] styleElementForSymbol:ruleName];
-  //DLOG("style: %@ -> KStyleElement@%p (%@)",
-  //     ruleName, style, [ruleNamePath componentsJoinedByString:@" > "]);
-  //style->applyAttributes(textStorage, sourceRange);
-
-  // CSS style (version 2)
+  // CSS style
   KStyle *style = [KStyle sharedStyle];
   CSSStyle *cssStyle = [style styleForASTNode:node.get()];
   KStyleElement *styleElement =
     new KStyleElement(node->ruleNameString(), cssStyle, style);
   // TODO: cache styleElement on node?
-  styleElement->applyAttributes(textStorage, sourceRange);
+  @try {
+    styleElement->applyAttributes(textStorage, sourceRange, true);
+  } @catch (NSException *e) {
+    WLOG("%@", e);
+  }
   delete styleElement;
 
   // Dig down into child nodes
@@ -1377,11 +1375,6 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
     return;
   }
 
-  // Increment our version
-  [self willChangeValueForKey:@"version"];
-  uint64_t version = h_atomic_inc(&version_);
-  [self didChangeValueForKey:@"version"];
-
   // range that was affected by the edit
   NSRange editedRange = [textStorage editedRange];
 
@@ -1396,6 +1389,12 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
       ast_->parseEdit(NSNotFound, 0);
     }
   }
+
+  // Increment our version. This need to happen after parseEdit since this will
+  // trigger UI updates (e.g. update KParseStatusDecoration)
+  [self willChangeValueForKey:@"version"];
+  uint64_t version = h_atomic_inc(&version_);
+  [self didChangeValueForKey:@"version"];
 
   // update lineToRangeVec_ (need to run in main)
   if ([NSThread isMainThread]) {

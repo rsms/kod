@@ -137,6 +137,7 @@
   if (!h_casid(&currentContents_, contents))
     return;
   [self recordStateWithContents:contents];
+  [self contentsDidChange];
 }
 
 

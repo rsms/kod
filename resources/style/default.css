@@ -89,5 +89,5 @@ meta { font-style: italic; }
 
 /* CSS v2 tests */
 value > string { color: red; }
-body.json value > string { color: yellow; }
+object.json > pair > value > string { color: yellow; }
 array.json value > string { color: #ffaa22; }
