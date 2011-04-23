@@ -632,7 +632,7 @@ static void _exploreNode(NSTextStorage *textStorage,
   @try {
     styleElement->applyAttributes(textStorage, sourceRange, true);
   } @catch (NSException *e) {
-    WLOG("%@", e);
+    WLOG("%@\n%@", e, [[e callStackSymbols] componentsJoinedByString:@"\n"]);
   }
   delete styleElement;
 
