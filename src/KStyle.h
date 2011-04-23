@@ -8,6 +8,10 @@
 #import <libkern/OSAtomic.h>
 #import <CSS/CSS.h>
 
+#ifdef __cplusplus
+#import "ASTNode.hh"
+#endif
+
 @class KStyle;
 
 extern NSString * const KStyleDidChangeNotification;
@@ -34,6 +38,7 @@ extern NSString * const KStyleDidChangeNotification;
 @property(readonly) NSURL *url;
 @property(readonly, nonatomic) NSFont* baseFont;
 @property(readonly, nonatomic) NSFontDescriptor* baseFontDescriptor;
+@property(readonly) CSSContext* cssContext;
 
 #pragma mark -
 #pragma mark Getting shared instances
@@ -73,6 +78,11 @@ extern NSString * const KStyleDidChangeNotification;
  *       implied by any of the class methods, but not init methods).
  */
 - (KStyleElement*)styleElementForSymbol:(NSString*)symbol;
+
+#ifdef __cplusplus
+/// CSS style for an AST node
+- (CSSStyle*)styleForASTNode:(kod::ASTNode*)astNode;
+#endif
 
 /// Return the default element for this style ("body")
 @property(readonly) KStyleElement *defaultStyleElement;

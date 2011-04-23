@@ -580,7 +580,8 @@ static NSString* _kDefaultTitle = @"Untitled";
   });
 
   if (kconf_bool(@"debug/astviewer/enabled", YES)) {
-    K_DISPATCH_MAIN_ASYNC({ [self debugUpdateASTViewer:self]; });
+    if ([NSThread isMainThread]) { [self debugUpdateASTViewer:self]; }
+    else { K_DISPATCH_MAIN_ASYNC({ [self debugUpdateASTViewer:self]; }); }
   }
 
   KNodeEmitEvent("activateDocument", self, nil);
@@ -616,24 +617,33 @@ static NSString* _kDefaultTitle = @"Untitled";
 
 static void _exploreNode(NSTextStorage *textStorage,
                          ASTNodePtr node,
-                         NSUInteger offset) {
-  NSString *ruleName = [NSString stringWithUTF8String:node->ruleName()];
-  KStyleElement *style = [[KStyle sharedStyle] styleElementForSymbol:ruleName];
-  DLOG("style: %@ -> KStyleElement@%p", ruleName, style);
-
+                         NSUInteger offset,
+                         NSUInteger depth) {
   // Efficiently calculate absolute source range
   NSRange sourceRange = node->sourceRange();
   sourceRange.location += offset;
 
-  // Apply attributes to source range
-  style->applyAttributes(textStorage, sourceRange);
+  // CSS style (version 1)
+  //KStyleElement *style = [[KStyle sharedStyle] styleElementForSymbol:ruleName];
+  //DLOG("style: %@ -> KStyleElement@%p (%@)",
+  //     ruleName, style, [ruleNamePath componentsJoinedByString:@" > "]);
+  //style->applyAttributes(textStorage, sourceRange);
+
+  // CSS style (version 2)
+  KStyle *style = [KStyle sharedStyle];
+  CSSStyle *cssStyle = [style styleForASTNode:node.get()];
+  KStyleElement *styleElement =
+    new KStyleElement(node->ruleNameString(), cssStyle, style);
+  // TODO: cache styleElement on node?
+  styleElement->applyAttributes(textStorage, sourceRange);
+  delete styleElement;
 
   // Dig down into child nodes
   if (!node->childNodes().empty()) {
     std::vector<ASTNodePtr>::iterator it = node->childNodes().begin();
     std::vector<ASTNodePtr>::iterator endit = node->childNodes().end();
     for ( ; it < endit; ++it ) {
-      _exploreNode(textStorage, *it, sourceRange.location);
+      _exploreNode(textStorage, *it, sourceRange.location, depth+1);
     }
   }
 }
@@ -641,21 +651,20 @@ static void _exploreNode(NSTextStorage *textStorage,
 
 - (void)ASTWasUpdatedForSourceRange:(NSRange)affectedSourceRange
                                node:(ASTNodePtr)node {
-  DLOG("%@ ASTWasUpdatedForSourceRange:%@", self,
-       NSStringFromRange(affectedSourceRange));
+  DLOG("%@ ASTWasUpdatedForSourceRange:%@ (%@)", self,
+       NSStringFromRange(affectedSourceRange),
+       [node->ruleNamePath() componentsJoinedByString:@"/"]);
 
   if (kconf_bool(@"debug/astviewer/enabled", YES)) {
-    K_DISPATCH_MAIN_ASYNC({ [self debugUpdateASTViewer:self]; });
+    if ([NSThread isMainThread]) { [self debugUpdateASTViewer:self]; }
+    else { K_DISPATCH_MAIN_ASYNC({ [self debugUpdateASTViewer:self]; }); }
   }
 
   NSTextStorage *textStorage = textView_.textStorage;
   NSUInteger offset = node->absoluteSourceRange().location;
 
-  // stack path = node->path() -- ruleName-s
-  // pass path to _exploreNode
-
   [textStorage beginEditing];
-  _exploreNode(textStorage, node, offset);
+  _exploreNode(textStorage, node, offset, 0);
   [textStorage endEditing];
 }
 

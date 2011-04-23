@@ -13,8 +13,8 @@ AST::AST(KDocument *document)
     : document_(document)
     , status_(GZL_STATUS_OK)
     , needFullParse_(true) {
-  // xxx fixme
-  grammar_.reset(new Grammar("JSON"));
+  // TODO FIXME: shouldn't be hard-coded to JSON
+  grammar_.reset(new Grammar("json", "JSON"));
   parser_.reset(new ASTParser());
   const char *grammarFile = [[kconf_res_url(@"json.gzc") path] UTF8String];
   if (grammar_->loadFile(grammarFile)) {

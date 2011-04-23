@@ -86,3 +86,7 @@ value { color: #f9ed97; }
 /* for Oz, Erlang, etc */
 atom { color: orange; }
 meta { font-style: italic; }
+
+/* CSS v2 tests */
+value > string { color: red; }
+body.json value > string { color: yellow; }

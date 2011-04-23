@@ -3,13 +3,20 @@
 // found in the LICENSE file.
 
 #include "ASTNode.hh"
+#include "ASTParser.hh"
+#include "Grammar.hh"
 
 namespace kod {
 
 
 ASTNode::~ASTNode() {
-  //fprintf(stderr, "ASTNode '%s' DEALLOC\n", ruleName_);
+  //DLOG(@"ASTNode '%@' DEALLOC", ruleName_);
+  if (ruleName_) {
+    lwc_string_unref(ruleName_);
+    ruleName_ = NULL;
+  }
   clearParseState();
+  parser_ = NULL;
 }
 
 
@@ -53,6 +60,20 @@ NSRange ASTNode::absoluteSourceRange() {
       range.location += parentRange.location;
   }
   return range;
+}
+
+
+static void _ruleNamePath(ASTNode *node, NSMutableArray *ruleNamePath) {
+  ASTNode *parentNode = node->parentNode().get();
+  if (parentNode)
+    _ruleNamePath(parentNode, ruleNamePath);
+  [ruleNamePath addObject:node->ruleNameString()];
+}
+
+NSMutableArray *ASTNode::ruleNamePath() {
+  NSMutableArray *ruleNamePath = [NSMutableArray array];
+  _ruleNamePath(this, ruleNamePath);
+  return ruleNamePath;
 }
 
 
@@ -117,6 +138,13 @@ ASTNode *ASTNode::findAffectedBranch(NSRange &mrange,
 }
 
 
+lwc_string *ASTNode::grammarIdentifier() {
+  if (parser_ && parser_->grammar())
+    return ((kod::Grammar*)parser_->grammar())->identifier();
+  return NULL;
+}
+
+
 void ASTNode::_inspect(std::string &str, int depth, bool deep) {
   char buf[512];
   snprintf(buf, sizeof(buf)-1, "%*snull\n", depth*2, "");
@@ -124,7 +152,8 @@ void ASTNode::_inspect(std::string &str, int depth, bool deep) {
            "%s%*s{ rule: \"%s\", sourceRange: [%lu, %lu]",
            depth ? "\n":"",
            depth*2, "",
-           ruleName(), sourceRange().location, sourceRange().length);
+           [ruleNameString() UTF8String],
+           sourceRange().location, sourceRange().length);
   str.append(buf);
   /*if (parserState_) {
     snprintf(buf, sizeof(buf)-1, ", snapshot: { offset:%zu, stackSize: %d } ",

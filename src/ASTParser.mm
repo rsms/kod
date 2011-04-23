@@ -34,7 +34,7 @@ void ASTParser::onDidStartRule(gzl_rtn_frame *frame, const char *name) {
 
   // include the char which started the rule
   //if (relativeLocation) --relativeLocation;
-  pushASTNode(new ASTNode(name, relativeLocation));
+  pushASTNode(new ASTNode(name, relativeLocation, this));
 
   // Save a snapshot of the current state in the node.
   // Note: This will be cleared for leaves (nodes w/o children) on a successful
