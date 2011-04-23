@@ -11,6 +11,7 @@
 #import <unistd.h>
 #import <stdlib.h>
 #import <stdio.h>
+#import <stdbool.h>
 #import <string.h>
 
 // Foundation is nice to have
@@ -106,6 +107,8 @@ const char *k_strrstr(const char *string, const char *find);
 #ifdef __cplusplus
 }
 #endif
+
+inline bool k_isnan(double x) { return (x != x); }
 
 
 #define DLOG_RANGE(r, str) do { \

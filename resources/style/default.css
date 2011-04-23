@@ -23,7 +23,7 @@ body {
 /* color of the caret and selection range */
 caret { color: #ff3319; }
 selection { background-color: #2F3F52; }
-column-guide { color: #444; /*background: #333;*/ }
+column-guide { color: #444; /*width:4px; background: #333;*/ }
 
 /* the color for context lines (when specified with line ranges) */
 metaruler {
@@ -90,3 +90,4 @@ meta { font-style: italic; }
 /* CSS v2 tests */
 value > string { color: red; }
 body.json value > string { color: yellow; }
+array.json value > string { color: #ffaa22; }

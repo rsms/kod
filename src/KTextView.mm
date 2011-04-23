@@ -2,7 +2,6 @@
 // Use of this source code is governed by a MIT-style license that can be
 // found in the LICENSE file.
 
-
 #import "KTextView.h"
 #import "KStyleElement.h"
 #import "KScroller.h"
@@ -20,6 +19,7 @@ static NSSize kTextContainerInset = (NSSize){6.0, 4.0}; // {(LR),(TB)}
 static CGFloat kTextContainerXOffset = -8.0;
 static CGFloat kTextContainerYOffset = 0.0;
 static NSColor *kColumnGuideColor = nil, *kColumnGuideBackgroundColor = nil;
+static CGFloat kColumnGuideWidth = 1.0;
 
 
 @interface KTextView (Private)
@@ -121,7 +121,7 @@ static NSColor *kColumnGuideColor = nil, *kColumnGuideBackgroundColor = nil;
       NSPoint srcPoint = NSMakePoint(columnGuidePosition_, 0.0);
       NSPoint dstPoint = NSMakePoint(columnGuidePosition_,
                                      visibleRect.size.height);
-      [NSBezierPath setDefaultLineWidth:1.0];
+      [NSBezierPath setDefaultLineWidth:kColumnGuideWidth];
       [NSBezierPath strokeLineFromPoint:srcPoint toPoint:dstPoint];
     }
   }
@@ -276,6 +276,10 @@ static NSColor *kColumnGuideColor = nil, *kColumnGuideBackgroundColor = nil;
   if (color && [color isEqual:[self backgroundColor]])
     color = nil;
   h_casid(&kColumnGuideBackgroundColor, color);
+  // width
+  kColumnGuideWidth = columnGuideStyle ? columnGuideStyle.width : 1.0;
+  if (k_isnan(kColumnGuideWidth) || kColumnGuideWidth < 1.0)
+    kColumnGuideWidth = 1.0;
 }
 
 
