@@ -8,11 +8,8 @@ namespace kod {
 
 
 ASTNode::~ASTNode() {
-  fprintf(stderr, "ASTNode '%s' DEALLOC\n", ruleName_);
-  if (parserState_) {
-    gzl_free_parse_state(parserState_);
-    parserState_ = NULL;
-  }
+  //fprintf(stderr, "ASTNode '%s' DEALLOC\n", ruleName_);
+  clearParseState();
 }
 
 
@@ -47,13 +44,11 @@ void ASTNode::clearParseState() {
 
 
 NSRange ASTNode::absoluteSourceRange() {
-  //DLOG("absoluteSourceRange: '%@' [%u, %u]", kind_->weakNSString(),
-  //     sourceLocation_, sourceLength_);
   if (sourceRange_.location == NSNotFound)
     return sourceRange_;
   NSRange range = sourceRange_;
   if (parentNode_.get()) {
-    NSRange &parentRange = parentNode_->sourceRange();
+    NSRange parentRange = parentNode_->absoluteSourceRange();
     if (parentRange.location != NSNotFound)
       range.location += parentRange.location;
   }

@@ -46,7 +46,8 @@ bool AST::parse() {
   needFullParse_ = false;
   lastAffectedNode_ = parser_->rootNode();
 
-  [document_ ASTWasUpdatedForSourceRange:NSMakeRange(0, text.length)];
+  [document_ ASTWasUpdatedForSourceRange:NSMakeRange(0, text.length)
+                                    node:lastAffectedNode_];
   return true;
 }
 
@@ -69,10 +70,10 @@ bool AST::parseEdit(NSUInteger changeLocation, long changeDelta) {
   ASTNode *continueAtNode = NULL;
   ASTNode *affectedNode =
       parser_->rootNode()->findAffectedBranch(mrange,
-                                                 0,
-                                                 &continueAtSourceLocation,
-                                                 &continueAtNode,
-                                                 &affectedParentOffset);
+                                              0,
+                                              &continueAtSourceLocation,
+                                              &continueAtNode,
+                                              &affectedParentOffset);
   if (!continueAtNode)
     return parse(); // FIXME
   // TODO: logic instead of assertions
@@ -111,7 +112,9 @@ bool AST::parseEdit(NSUInteger changeLocation, long changeDelta) {
   if (isOpenEnded())
     affectedSourceRange.length = text.length - affectedSourceRange.location;
 
-  [document_ ASTWasUpdatedForSourceRange:affectedSourceRange];
+  ASTNodePtr affectedNodePtr(affectedNode);
+  [document_ ASTWasUpdatedForSourceRange:affectedSourceRange
+                                    node:affectedNodePtr];
   return true;
 }
 

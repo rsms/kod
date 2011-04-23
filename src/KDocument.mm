@@ -579,8 +579,9 @@ static NSString* _kDefaultTitle = @"Untitled";
     self.clipView.allowsScrolling = YES;
   });
 
-  // XXX FIXME TEMP DEBUG ...
-  [self debugUpdateASTViewer:self];
+  if (kconf_bool(@"debug/astviewer/enabled", YES)) {
+    K_DISPATCH_MAIN_ASYNC({ [self debugUpdateASTViewer:self]; });
+  }
 
   KNodeEmitEvent("activateDocument", self, nil);
 }
@@ -614,22 +615,47 @@ static NSString* _kDefaultTitle = @"Untitled";
 
 
 static void _exploreNode(NSTextStorage *textStorage,
-                         ASTNodePtr node) {
+                         ASTNodePtr node,
+                         NSUInteger offset) {
   NSString *ruleName = [NSString stringWithUTF8String:node->ruleName()];
-  DLOG("ruleName: %@", ruleName);
   KStyleElement *style = [[KStyle sharedStyle] styleElementForSymbol:ruleName];
-  DLOG("style: KStyleElement@%p", style);
+  DLOG("style: %@ -> KStyleElement@%p", ruleName, style);
+
+  // Efficiently calculate absolute source range
+  NSRange sourceRange = node->sourceRange();
+  sourceRange.location += offset;
+
+  // Apply attributes to source range
+  style->applyAttributes(textStorage, sourceRange);
+
+  // Dig down into child nodes
+  if (!node->childNodes().empty()) {
+    std::vector<ASTNodePtr>::iterator it = node->childNodes().begin();
+    std::vector<ASTNodePtr>::iterator endit = node->childNodes().end();
+    for ( ; it < endit; ++it ) {
+      _exploreNode(textStorage, *it, sourceRange.location);
+    }
+  }
 }
 
 
-- (void)ASTWasUpdatedForSourceRange:(NSRange)affectedSourceRange {
+- (void)ASTWasUpdatedForSourceRange:(NSRange)affectedSourceRange
+                               node:(ASTNodePtr)node {
   DLOG("%@ ASTWasUpdatedForSourceRange:%@", self,
        NSStringFromRange(affectedSourceRange));
-  K_DISPATCH_MAIN_ASYNC({ [self debugUpdateASTViewer:self]; });
+
+  if (kconf_bool(@"debug/astviewer/enabled", YES)) {
+    K_DISPATCH_MAIN_ASYNC({ [self debugUpdateASTViewer:self]; });
+  }
 
   NSTextStorage *textStorage = textView_.textStorage;
+  NSUInteger offset = node->absoluteSourceRange().location;
+
+  // stack path = node->path() -- ruleName-s
+  // pass path to _exploreNode
+
   [textStorage beginEditing];
-  _exploreNode(textStorage, ast_->rootNode());
+  _exploreNode(textStorage, node, offset);
   [textStorage endEditing];
 }
 
