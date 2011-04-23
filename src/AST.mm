@@ -54,7 +54,7 @@ bool AST::parse() {
 
 bool AST::parseEdit(NSUInteger changeLocation, long changeDelta) {
   // if a full parse is needed, take the "quick" route
-  if (needFullParse_)
+  if (needFullParse_ || changeLocation == NSNotFound)
     return parse();
 
   // bail unless we have a valid grammar

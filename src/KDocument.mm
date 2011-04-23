@@ -1351,7 +1351,7 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
 
 // invoked after an editing occured, but before it's been committed
 // Has the nasty side effect of losing the selection if applying attributes
-- (void)textStorageWillProcessEditing:(NSNotification *)notification {
+/*- (void)textStorageWillProcessEditing:(NSNotification *)notification {
   NSTextStorage *textStorage = [notification object];
 
   if (!(textStorage.editedMask & NSTextStorageEditedCharacters))
@@ -1363,7 +1363,7 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
 
   // parse edit
   ast_->parseEdit(editedRange.location, changeDelta);
-}
+}*/
 
 
 // invoked after an editing occured which has just been committed
@@ -1386,19 +1386,28 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
   NSRange editedRange = [textStorage editedRange];
 
   // length delta of the edit (i.e. negative for deletions)
-  int changeInLength = [textStorage changeInLength];
+  NSInteger changeDelta = [textStorage changeInLength];
+
+  // parse edit and apply style
+  if (kconf_bool(@"astparser/enabled", YES)) {
+    if (kconf_bool(@"experimental/astparser/incremental", NO)) {
+      ast_->parseEdit(editedRange.location, changeDelta);
+    } else {
+      ast_->parseEdit(NSNotFound, 0);
+    }
+  }
 
   // update lineToRangeVec_ (need to run in main)
   if ([NSThread isMainThread]) {
     [self _updateLinesToRangesInfoForTextStorage:textStorage
                                          inRange:editedRange
-                                     changeDelta:changeInLength
+                                     changeDelta:changeDelta
                                         recursed:NO];
   } else {
     K_DISPATCH_MAIN_ASYNC({
       [self _updateLinesToRangesInfoForTextStorage:textStorage
                                            inRange:editedRange
-                                       changeDelta:changeInLength
+                                       changeDelta:changeDelta
                                           recursed:NO];
     });
   }
@@ -1414,7 +1423,7 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
         v8::String::New("edit"),
         v8::Number::New((double)version),
         v8::Number::New((double)editedRange.location),
-        v8::Integer::New(changeInLength)
+        v8::Integer::New(changeDelta)
       };
       static const int argc = sizeof(argv) / sizeof(argv[0]);
       v8::TryCatch tryCatch;
@@ -1442,8 +1451,8 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
   DLOG_RANGE(editedRange, textStorage.string);
   #endif
 
-  DLOG("editedRange: %@, changeInLength: %d, wasInUndoRedo: %@, editedMask: %d",
-       NSStringFromRange(editedRange), changeInLength,
+  DLOG("editedRange: %@, changeDelta: %d, wasInUndoRedo: %@, editedMask: %d",
+       NSStringFromRange(editedRange), changeDelta,
        wasInUndoRedo ? @"YES":@"NO", textStorage.editedMask);
 
   #if 0
