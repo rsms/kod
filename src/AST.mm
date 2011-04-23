@@ -44,8 +44,9 @@ bool AST::parse() {
   //DLOG("AST:\n%s", parser_->rootNode()->inspect().c_str());
 
   needFullParse_ = false;
+  lastAffectedNode_ = parser_->rootNode();
 
-  [document_ ASTWasUpdated];
+  [document_ ASTWasUpdatedForSourceRange:NSMakeRange(0, text.length)];
   return true;
 }
 
@@ -105,7 +106,12 @@ bool AST::parseEdit(NSUInteger changeLocation, long changeDelta) {
   DLOG("isOpenEnded: %d", isOpenEnded());
   //DLOG("AST:\n%s\n", parser_->rootNode()->inspect().c_str());
 
-  [document_ ASTWasUpdated];
+  lastAffectedNode_.reset(affectedNode);
+  NSRange affectedSourceRange = affectedNode->sourceRange();
+  if (isOpenEnded())
+    affectedSourceRange.length = text.length - affectedSourceRange.location;
+
+  [document_ ASTWasUpdatedForSourceRange:affectedSourceRange];
   return true;
 }
 

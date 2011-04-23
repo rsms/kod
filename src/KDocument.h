@@ -118,7 +118,7 @@ extern NSString *const KDocumentWillCloseNotification;
 - (void)refreshStyle;
 - (void)styleDidChange:(NSNotification*)notification;
 
-- (void)ASTWasUpdated;
+- (void)ASTWasUpdatedForSourceRange:(NSRange)affectedSourceRange;
 
 - (void)textStorageDidProcessEditing:(NSNotification*)notification;
 

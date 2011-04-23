@@ -30,6 +30,7 @@ class AST {
   ~AST() {}
 
   ASTNodePtr &rootNode() const { return parser_->rootNode(); }
+  ASTNodePtr &lastAffectedNode() { return lastAffectedNode_; }
 
   bool parse();
   bool parseEdit(NSUInteger changeLocation, long changeDelta);
@@ -43,6 +44,7 @@ class AST {
  protected:
   KDocument *document_; // weak, owns us
   ASTParserPtr parser_;
+  ASTNodePtr lastAffectedNode_;
   GrammarPtr grammar_;
   bool needFullParse_;
   gzl_status status_;

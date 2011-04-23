@@ -35,6 +35,7 @@
 #define KOD_WITH_K_RUSAGE 1
 #import "KRUsage.hh"
 
+using namespace kod;
 
 // Hate to use this, but we need to travel around the world if we don't
 @interface NSDocument (Private)
@@ -612,34 +613,24 @@ static NSString* _kDefaultTitle = @"Untitled";
 }
 
 
-- (NSString*)_inspectASTTree:(kod::ASTNodePtr&)astNode {
-  if (!astNode.get())
-    return @"<null>";
-  NSRange sourceRange = astNode->sourceRange();
-  NSMutableString *str = [NSMutableString stringWithFormat:
-      @"{ kind:\"%s\", sourceRange:[%lu, %lu]",
-      //astNode->kind()->weakNSString(),
-      astNode->ruleName(),
-      sourceRange.location, sourceRange.length];
-
-  if (!astNode->childNodes().empty()) {
-    [str appendFormat:@", childNodes: ["];
-    std::vector<kod::ASTNodePtr>::iterator it = astNode->childNodes().begin();
-    std::vector<kod::ASTNodePtr>::iterator endit = astNode->childNodes().end();
-    for ( ; it < endit; ++it ) {
-      [str appendString:[self _inspectASTTree:*it]];
-    }
-    [str appendFormat:@"]"];
-  }
-
-  [str appendString:@"},"];
-  return str;
+static void _exploreNode(NSTextStorage *textStorage,
+                         ASTNodePtr node) {
+  NSString *ruleName = [NSString stringWithUTF8String:node->ruleName()];
+  DLOG("ruleName: %@", ruleName);
+  KStyleElement *style = [[KStyle sharedStyle] styleElementForSymbol:ruleName];
+  DLOG("style: KStyleElement@%p", style);
 }
 
 
-- (void)ASTWasUpdated {
-  DLOG("%@ ASTWasUpdated", self);
+- (void)ASTWasUpdatedForSourceRange:(NSRange)affectedSourceRange {
+  DLOG("%@ ASTWasUpdatedForSourceRange:%@", self,
+       NSStringFromRange(affectedSourceRange));
   K_DISPATCH_MAIN_ASYNC({ [self debugUpdateASTViewer:self]; });
+
+  NSTextStorage *textStorage = textView_.textStorage;
+  [textStorage beginEditing];
+  _exploreNode(textStorage, ast_->rootNode());
+  [textStorage endEditing];
 }
 
 
@@ -1332,16 +1323,11 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
     return;
 
   // Record change properties
-  krusage_begin(rusage, "Retrieve changes from text storage");
   NSRange editedRange = [textStorage editedRange];
   NSInteger changeDelta = [textStorage changeInLength];
 
+  // parse edit
   ast_->parseEdit(editedRange.location, changeDelta);
-  //ast_->parse();
-
-  // enqeue edit to be handled by the text parser system
-  //KNodeEnqueueParseEntry(new KNodeParseEntry(editedRange.location,
-  //                                           changeDelta, self));
 }
 
 
