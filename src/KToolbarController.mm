@@ -114,13 +114,7 @@ static const CGFloat kLeftMarginWhenNoSidebar = 4.0;
   if (!url) {
     [locationBarTextField_ setStringValue:@""];
   } else if ([url isFileURL]) {
-    NSString *path = [url path];
-    NSString *homePath = NSHomeDirectory();
-    NSRange prefixRange = NSMakeRange(0, homePath.length);
-    path = [path stringByReplacingOccurrencesOfString:homePath
-                                           withString:@"~"
-                                              options:NSLiteralSearch
-                                                range:prefixRange];
+    NSString *path = [[url path] stringByAbbreviatingWithTildeInPath];
     [locationBarTextField_ setStringValue:path];
   } else {
     [locationBarTextField_ setStringValue:[url description]];
