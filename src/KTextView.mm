@@ -370,10 +370,12 @@ static CGFloat kColumnGuideWidth = 1.0;
 // return nil for "I handled this"
 - (NSEvent*)filterInputEvent:(NSEvent*)event {
 
-  // XXX bind alt+rightwardsarrow to "indent"
+  // Bind cmd+] and cmd+[ to indent and de-indent, respectively.
   static BOOL debugDidSet = NO; if (!debugDidSet) { debugDidSet = YES;
-    KInputBindings::set(KInputBindings::TextEditorLevel, @"A-<right>",
+    KInputBindings::set(KInputBindings::TextEditorLevel, @"M-]",
         new KSelectorInputAction(@selector(increaseIndentation)));
+    KInputBindings::set(KInputBindings::TextEditorLevel, @"M-[",
+        new KSelectorInputAction(@selector(decreaseIndentation)));
   }
   KInputAction *action =
       KInputBindings::get(KInputBindings::TextEditorLevel, event);
