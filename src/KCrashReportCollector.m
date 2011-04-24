@@ -134,7 +134,7 @@
                                       alternateButton:@"Forget"
                                           otherButton:nil
                             informativeTextWithFormat:
-      @"Oops. Looks like Kod crashed earlier. Would you please like to send"
+      @"Oops. Looks like Kod crashed earlier. Would you please like to send "
        "us the crash report so Kod can be improved?"];
   //[alertBox setIcon:[NSImage imageNamed:@"crash-reporter.png"]];
 
