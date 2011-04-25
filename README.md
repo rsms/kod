@@ -6,7 +6,7 @@ If you want to use Kod, simply download the latest "stable" version from [http:/
 
 - General info: <http://kodapp.com/>
 - Discussion forum: <http://groups.google.com/group/kod-app>
-- Issue tracking and bug reporting: <http://kodapp.com/support/>
+- Support (bugs): <http://kodapp.com/support/>
 - Mainline source code: <https://github.com/rsms/kod>
 - Twitter: [@kod_app](http://twitter.com/kod_app)
 - IRC: [irc://irc.freenode.net/#kod](irc://irc.freenode.net/#kod)

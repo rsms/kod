@@ -35,6 +35,7 @@
 #define KOD_WITH_K_RUSAGE 1
 #import "KRUsage.hh"
 
+using namespace kod;
 
 // Hate to use this, but we need to travel around the world if we don't
 @interface NSDocument (Private)
@@ -578,8 +579,10 @@ static NSString* _kDefaultTitle = @"Untitled";
     self.clipView.allowsScrolling = YES;
   });
 
-  // XXX FIXME TEMP DEBUG ...
-  [self debugUpdateASTViewer:self];
+  if (kconf_bool(@"debug/astviewer/enabled", YES)) {
+    if ([NSThread isMainThread]) { [self debugUpdateASTViewer:self]; }
+    else { K_DISPATCH_MAIN_ASYNC({ [self debugUpdateASTViewer:self]; }); }
+  }
 
   KNodeEmitEvent("activateDocument", self, nil);
 }
@@ -612,34 +615,55 @@ static NSString* _kDefaultTitle = @"Untitled";
 }
 
 
-- (NSString*)_inspectASTTree:(kod::ASTNodePtr&)astNode {
-  if (!astNode.get())
-    return @"<null>";
-  NSRange sourceRange = astNode->sourceRange();
-  NSMutableString *str = [NSMutableString stringWithFormat:
-      @"{ kind:\"%s\", sourceRange:[%lu, %lu]",
-      //astNode->kind()->weakNSString(),
-      astNode->ruleName(),
-      sourceRange.location, sourceRange.length];
+static void _exploreNode(NSTextStorage *textStorage,
+                         ASTNodePtr node,
+                         NSUInteger offset,
+                         NSUInteger depth) {
+  // Efficiently calculate absolute source range
+  NSRange sourceRange = node->sourceRange();
+  sourceRange.location += offset;
 
-  if (!astNode->childNodes().empty()) {
-    [str appendFormat:@", childNodes: ["];
-    std::vector<kod::ASTNodePtr>::iterator it = astNode->childNodes().begin();
-    std::vector<kod::ASTNodePtr>::iterator endit = astNode->childNodes().end();
-    for ( ; it < endit; ++it ) {
-      [str appendString:[self _inspectASTTree:*it]];
-    }
-    [str appendFormat:@"]"];
+  // CSS style
+  KStyle *style = [KStyle sharedStyle];
+  CSSStyle *cssStyle = [style styleForASTNode:node.get()];
+  KStyleElement *styleElement =
+    new KStyleElement(node->ruleNameString(), cssStyle, style);
+  // TODO: cache styleElement on node?
+  @try {
+    styleElement->applyAttributes(textStorage, sourceRange, true);
+  } @catch (NSException *e) {
+    WLOG("%@\n%@", e, [[e callStackSymbols] componentsJoinedByString:@"\n"]);
   }
+  delete styleElement;
 
-  [str appendString:@"},"];
-  return str;
+  // Dig down into child nodes
+  if (!node->childNodes().empty()) {
+    std::vector<ASTNodePtr>::iterator it = node->childNodes().begin();
+    std::vector<ASTNodePtr>::iterator endit = node->childNodes().end();
+    for ( ; it < endit; ++it ) {
+      _exploreNode(textStorage, *it, sourceRange.location, depth+1);
+    }
+  }
 }
 
 
-- (void)ASTWasUpdated {
-  DLOG("%@ ASTWasUpdated", self);
-  K_DISPATCH_MAIN_ASYNC({ [self debugUpdateASTViewer:self]; });
+- (void)ASTWasUpdatedForSourceRange:(NSRange)affectedSourceRange
+                               node:(ASTNodePtr)node {
+  DLOG("%@ ASTWasUpdatedForSourceRange:%@ (%@)", self,
+       NSStringFromRange(affectedSourceRange),
+       [node->ruleNamePath() componentsJoinedByString:@"/"]);
+
+  if (kconf_bool(@"debug/astviewer/enabled", YES)) {
+    if ([NSThread isMainThread]) { [self debugUpdateASTViewer:self]; }
+    else { K_DISPATCH_MAIN_ASYNC({ [self debugUpdateASTViewer:self]; }); }
+  }
+
+  NSTextStorage *textStorage = textView_.textStorage;
+  NSUInteger offset = node->absoluteSourceRange().location;
+
+  [textStorage beginEditing];
+  _exploreNode(textStorage, node, offset, 0);
+  [textStorage endEditing];
 }
 
 
@@ -1325,24 +1349,19 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
 
 // invoked after an editing occured, but before it's been committed
 // Has the nasty side effect of losing the selection if applying attributes
-- (void)textStorageWillProcessEditing:(NSNotification *)notification {
+/*- (void)textStorageWillProcessEditing:(NSNotification *)notification {
   NSTextStorage *textStorage = [notification object];
 
   if (!(textStorage.editedMask & NSTextStorageEditedCharacters))
     return;
 
   // Record change properties
-  krusage_begin(rusage, "Retrieve changes from text storage");
   NSRange editedRange = [textStorage editedRange];
   NSInteger changeDelta = [textStorage changeInLength];
 
+  // parse edit
   ast_->parseEdit(editedRange.location, changeDelta);
-  //ast_->parse();
-
-  // enqeue edit to be handled by the text parser system
-  //KNodeEnqueueParseEntry(new KNodeParseEntry(editedRange.location,
-  //                                           changeDelta, self));
-}
+}*/
 
 
 // invoked after an editing occured which has just been committed
@@ -1356,28 +1375,38 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
     return;
   }
 
-  // Increment our version
-  [self willChangeValueForKey:@"version"];
-  uint64_t version = h_atomic_inc(&version_);
-  [self didChangeValueForKey:@"version"];
-
   // range that was affected by the edit
   NSRange editedRange = [textStorage editedRange];
 
   // length delta of the edit (i.e. negative for deletions)
-  int changeInLength = [textStorage changeInLength];
+  NSInteger changeDelta = [textStorage changeInLength];
+
+  // parse edit and apply style
+  if (kconf_bool(@"astparser/enabled", YES)) {
+    if (kconf_bool(@"experimental/astparser/incremental", NO)) {
+      ast_->parseEdit(editedRange.location, changeDelta);
+    } else {
+      ast_->parseEdit(NSNotFound, 0);
+    }
+  }
+
+  // Increment our version. This need to happen after parseEdit since this will
+  // trigger UI updates (e.g. update KParseStatusDecoration)
+  [self willChangeValueForKey:@"version"];
+  uint64_t version = h_atomic_inc(&version_);
+  [self didChangeValueForKey:@"version"];
 
   // update lineToRangeVec_ (need to run in main)
   if ([NSThread isMainThread]) {
     [self _updateLinesToRangesInfoForTextStorage:textStorage
                                          inRange:editedRange
-                                     changeDelta:changeInLength
+                                     changeDelta:changeDelta
                                         recursed:NO];
   } else {
     K_DISPATCH_MAIN_ASYNC({
       [self _updateLinesToRangesInfoForTextStorage:textStorage
                                            inRange:editedRange
-                                       changeDelta:changeInLength
+                                       changeDelta:changeDelta
                                           recursed:NO];
     });
   }
@@ -1393,7 +1422,7 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
         v8::String::New("edit"),
         v8::Number::New((double)version),
         v8::Number::New((double)editedRange.location),
-        v8::Integer::New(changeInLength)
+        v8::Integer::New(changeDelta)
       };
       static const int argc = sizeof(argv) / sizeof(argv[0]);
       v8::TryCatch tryCatch;
@@ -1421,8 +1450,8 @@ static void _lb_offset_ranges(std::vector<NSRange> &lineToRangeVec,
   DLOG_RANGE(editedRange, textStorage.string);
   #endif
 
-  DLOG("editedRange: %@, changeInLength: %d, wasInUndoRedo: %@, editedMask: %d",
-       NSStringFromRange(editedRange), changeInLength,
+  DLOG("editedRange: %@, changeDelta: %d, wasInUndoRedo: %@, editedMask: %d",
+       NSStringFromRange(editedRange), changeDelta,
        wasInUndoRedo ? @"YES":@"NO", textStorage.editedMask);
 
   #if 0

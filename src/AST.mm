@@ -13,8 +13,8 @@ AST::AST(KDocument *document)
     : document_(document)
     , status_(GZL_STATUS_OK)
     , needFullParse_(true) {
-  // xxx fixme
-  grammar_.reset(new Grammar("JSON"));
+  // TODO FIXME: shouldn't be hard-coded to JSON
+  grammar_.reset(new Grammar("json", "JSON"));
   parser_.reset(new ASTParser());
   const char *grammarFile = [[kconf_res_url(@"json.gzc") path] UTF8String];
   if (grammar_->loadFile(grammarFile)) {
@@ -44,15 +44,17 @@ bool AST::parse() {
   //DLOG("AST:\n%s", parser_->rootNode()->inspect().c_str());
 
   needFullParse_ = false;
+  lastAffectedNode_ = parser_->rootNode();
 
-  [document_ ASTWasUpdated];
+  [document_ ASTWasUpdatedForSourceRange:NSMakeRange(0, text.length)
+                                    node:lastAffectedNode_];
   return true;
 }
 
 
 bool AST::parseEdit(NSUInteger changeLocation, long changeDelta) {
   // if a full parse is needed, take the "quick" route
-  if (needFullParse_)
+  if (needFullParse_ || changeLocation == NSNotFound)
     return parse();
 
   // bail unless we have a valid grammar
@@ -68,10 +70,10 @@ bool AST::parseEdit(NSUInteger changeLocation, long changeDelta) {
   ASTNode *continueAtNode = NULL;
   ASTNode *affectedNode =
       parser_->rootNode()->findAffectedBranch(mrange,
-                                                 0,
-                                                 &continueAtSourceLocation,
-                                                 &continueAtNode,
-                                                 &affectedParentOffset);
+                                              0,
+                                              &continueAtSourceLocation,
+                                              &continueAtNode,
+                                              &affectedParentOffset);
   if (!continueAtNode)
     return parse(); // FIXME
   // TODO: logic instead of assertions
@@ -105,7 +107,14 @@ bool AST::parseEdit(NSUInteger changeLocation, long changeDelta) {
   DLOG("isOpenEnded: %d", isOpenEnded());
   //DLOG("AST:\n%s\n", parser_->rootNode()->inspect().c_str());
 
-  [document_ ASTWasUpdated];
+  lastAffectedNode_.reset(affectedNode);
+  NSRange affectedSourceRange = affectedNode->sourceRange();
+  if (isOpenEnded())
+    affectedSourceRange.length = text.length - affectedSourceRange.location;
+
+  ASTNodePtr affectedNodePtr(affectedNode);
+  [document_ ASTWasUpdatedForSourceRange:affectedSourceRange
+                                    node:affectedNodePtr];
   return true;
 }
 

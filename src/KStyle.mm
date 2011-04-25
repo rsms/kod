@@ -6,8 +6,14 @@
 #import "KThread.h"
 #import "kconf.h"
 #import "common.h"
+#import "ASTNode.hh"
+
+using namespace kod;
 
 NSString * const KStyleDidChangeNotification = @"KStyleDidChangeNotification";
+
+// -----------------------
+// Version 1 CSS handlers
 
 static lwc_string *kBodyLWCString;
 
@@ -49,6 +55,112 @@ static css_error css_parent_node(void *pw, void *n, void **parent) {
   return CSS_OK;
 }
 
+// -----------------------
+// Version 2 CSS handlers
+
+// CSS select handler functions
+static css_error css_node_name2(void *pw, void *n, lwc_string **name) {
+  ASTNode *node = (ASTNode *)n;
+  *name = lwc_string_ref(node->ruleName());
+  //fprintf(stderr, "{%s} ", [node->ruleNameString() UTF8String]);
+  return CSS_OK;
+}
+
+static css_error css_node_has_name2(void *pw, void *n, lwc_string *name,
+                                    bool *match) {
+  // Called directly after css_node_name2 to confirm the name. Always true.
+  *match = 1;
+  /*ASTNode *node = (ASTNode *)n;
+  lwc_string_caseless_isequal(node->ruleName(), name, match);
+  fprintf(stderr, " <hasname %s => %s> ", [node->ruleName() UTF8String],
+          (*match) ? "Y" : "N");
+  //assert(result == lwc_error_ok);*/
+  return CSS_OK;
+}
+
+static css_error css_node_classes2(void *pw, void *n, lwc_string ***classes,
+                                   uint32_t *n_classes) {
+  ASTNode *node = (ASTNode *)n;
+  lwc_string *grammarIdentifier = node->grammarIdentifier();
+  if (grammarIdentifier) {
+    *classes = (lwc_string **)realloc(NULL, sizeof(lwc_string **));
+    if (*classes == NULL)
+			return CSS_NOMEM;
+		*(classes[0]) = lwc_string_ref(grammarIdentifier);
+		*n_classes = 1;
+  } else {
+    *classes = NULL;
+    *n_classes = 0;
+  }
+	return CSS_OK;
+}
+
+static css_error css_node_has_class2(void *pw, void *n, lwc_string *name,
+                                     bool *match) {
+  ASTNode *node = (ASTNode *)n;
+  lwc_string *grammarIdentifier = node->grammarIdentifier();
+
+	// Classes are case-sensitive in HTML
+	*match = (name == grammarIdentifier) ? true : false;
+
+  return CSS_OK;
+}
+
+static css_error css_parent_node2(void *pw, void *n, void **parent) {
+  ASTNode *node = (ASTNode *)n;
+  *parent = node->parentNode().get();
+  //fprintf(stderr, "(^%s) ",
+  //        (*parent) ? [node->parentNode()->ruleNameString() UTF8String] : "");
+  return CSS_OK;
+}
+
+static css_error css_named_ancestor_node2(void *pw, void *n, lwc_string *name,
+                                          void **ancestor) {
+  ASTNode *node = (ASTNode *)n;
+
+	while ( (node = node->parentNode().get()) ) {
+		bool match;
+		assert(lwc_string_caseless_isequal(name, node->ruleName(), &match)
+           == lwc_error_ok);
+		if (match == true)
+			break;
+	}
+
+	*ancestor = (void*)node;
+  //fprintf(stderr, "(A %s) ",
+  //        node ? [node->ruleNameString() UTF8String] : "nil");
+
+	return CSS_OK;
+}
+
+static css_error css_named_parent_node2(void *pw, void *n, lwc_string *name,
+                                        void **parent) {
+	ASTNode *node = (ASTNode *)n;
+  ASTNode *parentNode = node->parentNode().get();
+
+	*parent = NULL;
+	if (parentNode) {
+		bool match;
+		assert(lwc_string_caseless_isequal(name, parentNode->ruleName(), &match)
+           == lwc_error_ok);
+		if (match == true)
+			*parent = (void*)parentNode;
+    //fprintf(stderr, "(? \"%*s\" %c= \"%*s\") ",
+    //        (int)(lwc_string_length(name)), lwc_string_data(name),
+    //        (match == true) ? '=' : '!',
+    //        (int)(lwc_string_length(parentNode->ruleName())),
+    //        lwc_string_data(parentNode->ruleName())
+    //       );
+	}
+
+	return CSS_OK;
+}
+
+
+
+// ----------
+// used by both version 1 and 2
+
 static css_error ua_default_for_property(void *pw, uint32_t property,
                                          css_hint *hint) {
   if (property == CSS_PROP_COLOR) {
@@ -79,10 +191,13 @@ static css_error ua_default_for_property(void *pw, uint32_t property,
 
 @implementation KStyle
 
+@synthesize cssContext = cssContext_;
+
 #pragma mark -
 #pragma mark Module construction
 
 static css_select_handler gCSSHandler;
+static css_select_handler gCSSHandler2;
 
 static CSSStylesheet* gBaseStylesheet_ = nil;
 
@@ -103,6 +218,17 @@ static NSString *gDefaultElementSymbol;
   gCSSHandler.node_has_class = &css_node_has_class;
   gCSSHandler.parent_node = &css_parent_node;
   gCSSHandler.ua_default_for_property = &ua_default_for_property;
+
+  // CSS select handler version 2
+  CSSSelectHandlerInitToBase(&gCSSHandler2);
+  gCSSHandler2.node_name = &css_node_name2;
+  gCSSHandler2.node_has_name = &css_node_has_name2;
+  gCSSHandler2.node_classes = &css_node_classes2;
+  gCSSHandler2.node_has_class = &css_node_has_class2;
+  gCSSHandler2.named_ancestor_node = &css_named_ancestor_node2;
+  gCSSHandler2.parent_node = &css_parent_node2;
+  gCSSHandler2.named_parent_node = &css_named_parent_node2;
+  gCSSHandler2.ua_default_for_property = &ua_default_for_property;
 
   // Base element symbol
   gDefaultElementSymbol = [[@"body" internedString] retain];
@@ -325,6 +451,21 @@ static NSString *gDefaultElementSymbol;
 
 #pragma mark -
 #pragma mark Getting style elements
+
+
+- (CSSStyle*)styleForASTNode:(ASTNode*)astNode {
+  kassert(cssContext_ != nil);
+  CSSStyle *style = nil;
+  //fprintf(stderr, "QUERY ");
+  style = [CSSStyle selectStyleForObject:astNode
+                               inContext:cssContext_
+                           pseudoElement:0
+                                   media:CSS_MEDIA_SCREEN
+                             inlineStyle:nil
+                            usingHandler:&gCSSHandler2];
+  //fprintf(stderr, " ENDQUERY.\n");
+  return style;
+}
 
 
 /// Return the style element for symbolic key

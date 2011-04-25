@@ -25,7 +25,7 @@ class ASTParser : public gazelle::Parser {
   virtual ~ASTParser() {}
 
   void reset() {
-    rootNode_.reset(new ASTNode("root", 0));
+    rootNode_.reset(new ASTNode("body", 0, this));
     currentNode_ = rootNode_;
     setState(gzl_alloc_parse_state());
   }

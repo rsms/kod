@@ -44,6 +44,7 @@
 
 // Returns the tooltip for this decoration, return |nil| for no tooltip.
 - (NSString*)toolTip {
+  // TODO: NSLocalizedString
   switch (status_) {
     case KParseStatusOK:
       return @"The document was successfully parsed";

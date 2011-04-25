@@ -8,11 +8,30 @@
 #include <gazelle/Grammar.hh>
 #include <tr1/memory>
 
+#import <CSS/CSS.h>
+
 namespace kod {
 
 class Grammar : public gazelle::Grammar {
  public:
-  explicit Grammar(const char *name=NULL) : gazelle::Grammar(name) {}
+  explicit Grammar(const char *identifier=NULL, const char *name=NULL)
+      : gazelle::Grammar(name) {
+    identifier_ = NULL;
+    if (identifier)
+      lwc_intern_string(identifier, strlen(identifier), &identifier_);
+  }
+
+  virtual ~Grammar() {
+    if (identifier_) {
+      lwc_string_unref(identifier_);
+      identifier_ = NULL;
+    }
+  }
+
+  lwc_string *identifier() { return identifier_; }
+
+ protected:
+  lwc_string *identifier_;
 };
 
 typedef std::tr1::shared_ptr<Grammar> GrammarPtr;
