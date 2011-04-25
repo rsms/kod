@@ -83,8 +83,8 @@ extern NSString *const KDocumentWillCloseNotification;
 @property(readonly) uint64_t version;
 
 
-@property(readonly) kod::ASTPtr &ast;
-@property(readonly) kod::ASTNodePtr &astRootNode;
+-(kod::ASTPtr&)ast;
+-(kod::ASTNodePtr&)astRootNode;
 
 
 // A Uniform Type Identifier for the current contents
