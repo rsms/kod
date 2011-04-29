@@ -579,7 +579,7 @@ static NSString* _kDefaultTitle = @"Untitled";
     self.clipView.allowsScrolling = YES;
   });
 
-  if (kconf_bool(@"debug/astviewer/enabled", YES)) {
+  if (kconf_bool(@"debug/astviewer/enabled", NO)) {
     if ([NSThread isMainThread]) { [self debugUpdateASTViewer:self]; }
     else { K_DISPATCH_MAIN_ASYNC({ [self debugUpdateASTViewer:self]; }); }
   }
@@ -653,7 +653,9 @@ static void _exploreNode(NSTextStorage *textStorage,
        NSStringFromRange(affectedSourceRange),
        [node->ruleNamePath() componentsJoinedByString:@"/"]);
 
-  if (kconf_bool(@"debug/astviewer/enabled", YES)) {
+  if (kconf_bool(@"debug/astviewer/enabled", NO)) {
+    // BUG: Crash: going down this call branch when built with Xcode 4.0
+    // (crashes in shared pointer when iterating ast nodes)
     if ([NSThread isMainThread]) { [self debugUpdateASTViewer:self]; }
     else { K_DISPATCH_MAIN_ASYNC({ [self debugUpdateASTViewer:self]; }); }
   }
