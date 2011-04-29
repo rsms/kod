@@ -153,7 +153,6 @@
 		3ABF541012A5DB1D0020233C /* KTextView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3ABF540F12A5DB1D0020233C /* KTextView.mm */; };
 		3ABF541F12A5DC6F0020233C /* KClipView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3ABF541E12A5DC6F0020233C /* KClipView.m */; };
 		3AC2D4A71298D8050066B586 /* KTextStorage.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3AC2D4A61298D8050066B586 /* KTextStorage.mm */; };
-		3AC2D74012998D590066B586 /* CSS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3AE5EB871292DB5C00B17C4F /* CSS.framework */; };
 		3AC6ECCD12C8E07D00C8DBFC /* ChromiumTabs.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3AC6ECC412C8E05B00C8DBFC /* ChromiumTabs.framework */; };
 		3AC866C412DE69360077673C /* KNodeParseEntry.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3AC866C312DE69360077673C /* KNodeParseEntry.mm */; };
 		3AE5E5171290955000B17C4F /* kod.icns in Resources */ = {isa = PBXBuildFile; fileRef = 3AE5E5161290955000B17C4F /* kod.icns */; };
@@ -165,6 +164,7 @@
 		3AF39DB212BE9C8A00FC534A /* KPopUp.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AF39DB112BE9C8A00FC534A /* KPopUp.m */; };
 		3AF39DE212BEC15E00FC534A /* KPopUpContentView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AF39DE112BEC15E00FC534A /* KPopUpContentView.m */; };
 		3AF3A0A512BF7F6400FC534A /* KAnimation.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AF3A0A412BF7F6400FC534A /* KAnimation.m */; };
+		6A5C071613662AE90063FED9 /* CSS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6A5C071513662AE90063FED9 /* CSS.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -553,6 +553,7 @@
 		3AF39DE112BEC15E00FC534A /* KPopUpContentView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KPopUpContentView.m; sourceTree = "<group>"; };
 		3AF3A0A312BF7F6400FC534A /* KAnimation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KAnimation.h; sourceTree = "<group>"; };
 		3AF3A0A412BF7F6400FC534A /* KAnimation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KAnimation.m; sourceTree = "<group>"; };
+		6A5C071513662AE90063FED9 /* CSS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = CSS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -568,7 +569,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				3AC6ECCD12C8E07D00C8DBFC /* ChromiumTabs.framework in Frameworks */,
-				3AC2D74012998D590066B586 /* CSS.framework in Frameworks */,
+				6A5C071613662AE90063FED9 /* CSS.framework in Frameworks */,
 				3A158AFF128A0A3700339E6E /* libicucore.dylib in Frameworks */,
 				3AAA9F4212BFB7B50079F079 /* Sparkle.framework in Frameworks */,
 				3A510BEA12C2927A00AAC1D5 /* Security.framework in Frameworks */,
@@ -811,6 +812,7 @@
 			isa = PBXGroup;
 			children = (
 				3A8D385E12F6EEFC007666FC /* libgazelle.a */,
+				6A5C071513662AE90063FED9 /* CSS.framework */,
 				3AE5E8A912915ABA00B17C4F /* CSS.xcodeproj */,
 				3A92916A1229BDAA00DA7E43 /* chromium-tabs.xcodeproj */,
 				3A928C13122714E800DA7E43 /* src */,
