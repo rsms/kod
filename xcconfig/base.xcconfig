@@ -17,7 +17,7 @@ NODE_LIBRARY_SEARCH_PATHS = "$(CONFIGURATION_BUILD_DIR)/nodejs"
 GAZELLE_HEADER_SEARCH_PATHS = "$(KOD_DEPS)/gazelle/runtime/include"
 GAZELLE_LIBRARY_SEARCH_PATHS = "$(CONFIGURATION_BUILD_DIR)/gazelle"
 
-LIBCSS_HEADER_SEARCH_PATHS = "deps/libcss/cocoa-framework/build/$(BUILD_STYLE)/CSS.framework/Headers"
+LIBCSS_HEADER_SEARCH_PATHS = "deps/libcss/cocoa-framework/build/$(BUILD_STYLE)/CSS.framework/Headers" "deps/libcss/include"
 
 // Note: values can not wrap lines
 FRAMEWORK_SEARCH_PATHS = $(inherited) "$(SRCROOT)" "$(KOD_DEPS)/chromium-tabs/build/$(BUILD_STYLE)" "$(KOD_DEPS)/libcss/cocoa-framework/build/$(BUILD_STYLE)" "$(KOD_DEPS)"
