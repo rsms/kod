@@ -67,7 +67,7 @@
 								</object>
 								<object class="NSMenuItem" id="609285721">
 									<reference key="NSMenu" ref="110575045"/>
-									<string key="NSTitle">Check for updates...</string>
+									<string key="NSTitle">Check For Updates</string>
 									<string key="NSKeyEquiv"/>
 									<int key="NSMnemonicLoc">2147483647</int>
 									<reference key="NSOnImage" ref="35465992"/>
@@ -123,7 +123,7 @@
 								</object>
 								<object class="NSMenuItem" id="342932134">
 									<reference key="NSMenu" ref="110575045"/>
-									<string key="NSTitle">Hide others</string>
+									<string key="NSTitle">Hide Others</string>
 									<string key="NSKeyEquiv">h</string>
 									<int key="NSKeyEquivModMask">1572864</int>
 									<int key="NSMnemonicLoc">2147483647</int>
@@ -132,7 +132,7 @@
 								</object>
 								<object class="NSMenuItem" id="908899353">
 									<reference key="NSMenu" ref="110575045"/>
-									<string key="NSTitle">Show all</string>
+									<string key="NSTitle">Show All</string>
 									<string key="NSKeyEquiv"/>
 									<int key="NSKeyEquivModMask">1048576</int>
 									<int key="NSMnemonicLoc">2147483647</int>
@@ -178,7 +178,7 @@
 								<bool key="EncodedWithXMLCoder">YES</bool>
 								<object class="NSMenuItem" id="705341025">
 									<reference key="NSMenu" ref="720053764"/>
-									<string key="NSTitle">New tab</string>
+									<string key="NSTitle">New Tab</string>
 									<string key="NSKeyEquiv">t</string>
 									<int key="NSKeyEquivModMask">1048576</int>
 									<int key="NSMnemonicLoc">2147483647</int>
@@ -188,7 +188,7 @@
 								</object>
 								<object class="NSMenuItem" id="1033903501">
 									<reference key="NSMenu" ref="720053764"/>
-									<string key="NSTitle">New window</string>
+									<string key="NSTitle">New Window</string>
 									<string key="NSKeyEquiv">n</string>
 									<int key="NSKeyEquivModMask">1048576</int>
 									<int key="NSMnemonicLoc">2147483647</int>
@@ -198,7 +198,7 @@
 								</object>
 								<object class="NSMenuItem" id="722745758">
 									<reference key="NSMenu" ref="720053764"/>
-									<string key="NSTitle">Open file…</string>
+									<string key="NSTitle">Open File…</string>
 									<string key="NSKeyEquiv">o</string>
 									<int key="NSKeyEquivModMask">1048576</int>
 									<int key="NSMnemonicLoc">2147483647</int>
@@ -207,7 +207,7 @@
 								</object>
 								<object class="NSMenuItem" id="673920164">
 									<reference key="NSMenu" ref="720053764"/>
-									<string key="NSTitle">Open location…</string>
+									<string key="NSTitle">Open Location…</string>
 									<string key="NSKeyEquiv">l</string>
 									<int key="NSKeyEquivModMask">1048576</int>
 									<int key="NSMnemonicLoc">2147483647</int>
@@ -216,7 +216,7 @@
 								</object>
 								<object class="NSMenuItem" id="1025936716">
 									<reference key="NSMenu" ref="720053764"/>
-									<string key="NSTitle">Open recent</string>
+									<string key="NSTitle">Open Recent</string>
 									<string key="NSKeyEquiv"/>
 									<int key="NSKeyEquivModMask">1048576</int>
 									<int key="NSMnemonicLoc">2147483647</int>
@@ -224,7 +224,7 @@
 									<reference key="NSMixedImage" ref="502551668"/>
 									<string key="NSAction">submenuAction:</string>
 									<object class="NSMenu" key="NSSubmenu" id="1065607017">
-										<string key="NSTitle">Open recent</string>
+										<string key="NSTitle">Open Recent</string>
 										<object class="NSMutableArray" key="NSMenuItems">
 											<bool key="EncodedWithXMLCoder">YES</bool>
 											<object class="NSMenuItem" id="759406840">
@@ -253,7 +253,7 @@
 								</object>
 								<object class="NSMenuItem" id="1059789893">
 									<reference key="NSMenu" ref="720053764"/>
-									<string key="NSTitle">Close window</string>
+									<string key="NSTitle">Close Window</string>
 									<string key="NSKeyEquiv">W</string>
 									<int key="NSKeyEquivModMask">1048576</int>
 									<int key="NSMnemonicLoc">2147483647</int>
@@ -263,7 +263,7 @@
 								</object>
 								<object class="NSMenuItem" id="776162233">
 									<reference key="NSMenu" ref="720053764"/>
-									<string key="NSTitle">Close tab</string>
+									<string key="NSTitle">Close Tab</string>
 									<string key="NSKeyEquiv">w</string>
 									<int key="NSKeyEquivModMask">1048576</int>
 									<int key="NSMnemonicLoc">2147483647</int>
@@ -293,7 +293,7 @@
 								</object>
 								<object class="NSMenuItem" id="117038363">
 									<reference key="NSMenu" ref="720053764"/>
-									<string key="NSTitle">Save as…</string>
+									<string key="NSTitle">Save As…</string>
 									<string key="NSKeyEquiv">S</string>
 									<int key="NSKeyEquivModMask">1179648</int>
 									<int key="NSMnemonicLoc">2147483647</int>
@@ -302,7 +302,7 @@
 								</object>
 								<object class="NSMenuItem" id="903204042">
 									<reference key="NSMenu" ref="720053764"/>
-									<string key="NSTitle">Save all</string>
+									<string key="NSTitle">Save All</string>
 									<string key="NSKeyEquiv">S</string>
 									<int key="NSKeyEquivModMask">1179648</int>
 									<int key="NSMnemonicLoc">2147483647</int>
@@ -311,7 +311,7 @@
 								</object>
 								<object class="NSMenuItem" id="579971712">
 									<reference key="NSMenu" ref="720053764"/>
-									<string key="NSTitle">Revert to saved</string>
+									<string key="NSTitle">Revert To Saved</string>
 									<string key="NSKeyEquiv">R</string>
 									<int key="NSKeyEquivModMask">1048576</int>
 									<int key="NSMnemonicLoc">2147483647</int>
@@ -331,7 +331,7 @@
 								</object>
 								<object class="NSMenuItem" id="294629803">
 									<reference key="NSMenu" ref="720053764"/>
-									<string key="NSTitle">Page setup...</string>
+									<string key="NSTitle">Page Setup...</string>
 									<string key="NSKeyEquiv">P</string>
 									<int key="NSKeyEquivModMask">1179648</int>
 									<int key="NSMnemonicLoc">2147483647</int>
@@ -442,7 +442,7 @@
 								</object>
 								<object class="NSMenuItem" id="583158037">
 									<reference key="NSMenu" ref="789758025"/>
-									<string key="NSTitle">Select all</string>
+									<string key="NSTitle">Select All</string>
 									<string key="NSKeyEquiv">a</string>
 									<int key="NSKeyEquivModMask">1048576</int>
 									<int key="NSMnemonicLoc">2147483647</int>
@@ -451,7 +451,7 @@
 								</object>
 								<object class="NSMenuItem" id="625342615">
 									<reference key="NSMenu" ref="789758025"/>
-									<string key="NSTitle">Select next element</string>
+									<string key="NSTitle">Select Next Element</string>
 									<string key="NSKeyEquiv"></string>
 									<int key="NSKeyEquivModMask">1572864</int>
 									<int key="NSMnemonicLoc">2147483647</int>
@@ -460,7 +460,7 @@
 								</object>
 								<object class="NSMenuItem" id="628635582">
 									<reference key="NSMenu" ref="789758025"/>
-									<string key="NSTitle">Select previous element</string>
+									<string key="NSTitle">Select Previous Element</string>
 									<string key="NSKeyEquiv"></string>
 									<int key="NSKeyEquivModMask">1572864</int>
 									<int key="NSMnemonicLoc">2147483647</int>
@@ -503,7 +503,7 @@
 											</object>
 											<object class="NSMenuItem" id="326711663">
 												<reference key="NSMenu" ref="963351320"/>
-												<string key="NSTitle">Find next</string>
+												<string key="NSTitle">Find Next</string>
 												<string key="NSKeyEquiv">g</string>
 												<int key="NSKeyEquivModMask">1048576</int>
 												<int key="NSMnemonicLoc">2147483647</int>
@@ -513,7 +513,7 @@
 											</object>
 											<object class="NSMenuItem" id="270902937">
 												<reference key="NSMenu" ref="963351320"/>
-												<string key="NSTitle">Find previous</string>
+												<string key="NSTitle">Find Previous</string>
 												<string key="NSKeyEquiv">G</string>
 												<int key="NSKeyEquivModMask">1179648</int>
 												<int key="NSMnemonicLoc">2147483647</int>
@@ -523,7 +523,7 @@
 											</object>
 											<object class="NSMenuItem" id="159080638">
 												<reference key="NSMenu" ref="963351320"/>
-												<string key="NSTitle">Use selection for find</string>
+												<string key="NSTitle">Use Selection For Find</string>
 												<string key="NSKeyEquiv">e</string>
 												<int key="NSKeyEquivModMask">1048576</int>
 												<int key="NSMnemonicLoc">2147483647</int>
@@ -533,7 +533,7 @@
 											</object>
 											<object class="NSMenuItem" id="88285865">
 												<reference key="NSMenu" ref="963351320"/>
-												<string key="NSTitle">Jump to selection</string>
+												<string key="NSTitle">Jump to Selection</string>
 												<string key="NSKeyEquiv">j</string>
 												<int key="NSKeyEquivModMask">1048576</int>
 												<int key="NSMnemonicLoc">2147483647</int>
@@ -545,7 +545,7 @@
 								</object>
 								<object class="NSMenuItem" id="972420730">
 									<reference key="NSMenu" ref="789758025"/>
-									<string key="NSTitle">Spelling and grammar</string>
+									<string key="NSTitle">Spelling and Grammar</string>
 									<string key="NSKeyEquiv"/>
 									<int key="NSKeyEquivModMask">1048576</int>
 									<int key="NSMnemonicLoc">2147483647</int>
@@ -553,12 +553,12 @@
 									<reference key="NSMixedImage" ref="502551668"/>
 									<string key="NSAction">submenuAction:</string>
 									<object class="NSMenu" key="NSSubmenu" id="769623530">
-										<string key="NSTitle">Spelling and grammar</string>
+										<string key="NSTitle">Spelling and Grammar</string>
 										<object class="NSMutableArray" key="NSMenuItems">
 											<bool key="EncodedWithXMLCoder">YES</bool>
 											<object class="NSMenuItem" id="679648819">
 												<reference key="NSMenu" ref="769623530"/>
-												<string key="NSTitle">Show spelling and grammar</string>
+												<string key="NSTitle">Show Spelling and Grammar</string>
 												<string key="NSKeyEquiv">:</string>
 												<int key="NSKeyEquivModMask">1048576</int>
 												<int key="NSMnemonicLoc">2147483647</int>
@@ -567,7 +567,7 @@
 											</object>
 											<object class="NSMenuItem" id="96193923">
 												<reference key="NSMenu" ref="769623530"/>
-												<string key="NSTitle">Check document now</string>
+												<string key="NSTitle">Check Document Now</string>
 												<string key="NSKeyEquiv">;</string>
 												<int key="NSKeyEquivModMask">1048576</int>
 												<int key="NSMnemonicLoc">2147483647</int>
@@ -586,7 +586,7 @@
 											</object>
 											<object class="NSMenuItem" id="948374510">
 												<reference key="NSMenu" ref="769623530"/>
-												<string key="NSTitle">Check spelling while typing</string>
+												<string key="NSTitle">Check Spelling While Typing</string>
 												<string key="NSKeyEquiv"/>
 												<int key="NSKeyEquivModMask">1048576</int>
 												<int key="NSMnemonicLoc">2147483647</int>
@@ -595,7 +595,7 @@
 											</object>
 											<object class="NSMenuItem" id="967646866">
 												<reference key="NSMenu" ref="769623530"/>
-												<string key="NSTitle">Check grammar with spelling</string>
+												<string key="NSTitle">Check Grammar With Spelling</string>
 												<string key="NSKeyEquiv"/>
 												<int key="NSKeyEquivModMask">1048576</int>
 												<int key="NSMnemonicLoc">2147483647</int>
@@ -604,7 +604,7 @@
 											</object>
 											<object class="NSMenuItem" id="795346622">
 												<reference key="NSMenu" ref="769623530"/>
-												<string key="NSTitle">Correct spelling automatically</string>
+												<string key="NSTitle">Correct Spelling Automatically</string>
 												<string key="NSKeyEquiv"/>
 												<int key="NSMnemonicLoc">2147483647</int>
 												<reference key="NSOnImage" ref="35465992"/>
@@ -628,7 +628,7 @@
 											<bool key="EncodedWithXMLCoder">YES</bool>
 											<object class="NSMenuItem" id="65139061">
 												<reference key="NSMenu" ref="698887838"/>
-												<string key="NSTitle">Show substitutions</string>
+												<string key="NSTitle">Show Substitutions</string>
 												<string key="NSKeyEquiv"/>
 												<int key="NSMnemonicLoc">2147483647</int>
 												<reference key="NSOnImage" ref="35465992"/>
@@ -646,7 +646,7 @@
 											</object>
 											<object class="NSMenuItem" id="605118523">
 												<reference key="NSMenu" ref="698887838"/>
-												<string key="NSTitle">Smart copy/paste</string>
+												<string key="NSTitle">Smart Copy/Paste</string>
 												<string key="NSKeyEquiv">f</string>
 												<int key="NSKeyEquivModMask">1048576</int>
 												<int key="NSMnemonicLoc">2147483647</int>
@@ -656,7 +656,7 @@
 											</object>
 											<object class="NSMenuItem" id="197661976">
 												<reference key="NSMenu" ref="698887838"/>
-												<string key="NSTitle">Smart quotes</string>
+												<string key="NSTitle">Smart Quotes</string>
 												<string key="NSKeyEquiv">g</string>
 												<int key="NSKeyEquivModMask">1048576</int>
 												<int key="NSMnemonicLoc">2147483647</int>
@@ -666,7 +666,7 @@
 											</object>
 											<object class="NSMenuItem" id="672708820">
 												<reference key="NSMenu" ref="698887838"/>
-												<string key="NSTitle">Smart dashes</string>
+												<string key="NSTitle">Smart Dashes</string>
 												<string key="NSKeyEquiv"/>
 												<int key="NSMnemonicLoc">2147483647</int>
 												<reference key="NSOnImage" ref="35465992"/>
@@ -674,7 +674,7 @@
 											</object>
 											<object class="NSMenuItem" id="708854459">
 												<reference key="NSMenu" ref="698887838"/>
-												<string key="NSTitle">Smart links</string>
+												<string key="NSTitle">Smart Links</string>
 												<string key="NSKeyEquiv">G</string>
 												<int key="NSKeyEquivModMask">1179648</int>
 												<int key="NSMnemonicLoc">2147483647</int>
@@ -684,7 +684,7 @@
 											</object>
 											<object class="NSMenuItem" id="537092702">
 												<reference key="NSMenu" ref="698887838"/>
-												<string key="NSTitle">Text replacement</string>
+												<string key="NSTitle">Text Replacement</string>
 												<string key="NSKeyEquiv"/>
 												<int key="NSMnemonicLoc">2147483647</int>
 												<reference key="NSOnImage" ref="35465992"/>
@@ -707,7 +707,7 @@
 											<bool key="EncodedWithXMLCoder">YES</bool>
 											<object class="NSMenuItem" id="1060694897">
 												<reference key="NSMenu" ref="579392910"/>
-												<string key="NSTitle">Make UPPER CASE</string>
+												<string key="NSTitle">Make Upper Case</string>
 												<string key="NSKeyEquiv">u</string>
 												<int key="NSKeyEquivModMask">262144</int>
 												<int key="NSMnemonicLoc">2147483647</int>
@@ -716,7 +716,7 @@
 											</object>
 											<object class="NSMenuItem" id="879586729">
 												<reference key="NSMenu" ref="579392910"/>
-												<string key="NSTitle">Make lower case</string>
+												<string key="NSTitle">Make Lower Case</string>
 												<string key="NSKeyEquiv">U</string>
 												<int key="NSKeyEquivModMask">262144</int>
 												<int key="NSMnemonicLoc">2147483647</int>
@@ -750,7 +750,7 @@
 											<bool key="EncodedWithXMLCoder">YES</bool>
 											<object class="NSMenuItem" id="731782645">
 												<reference key="NSMenu" ref="785027613"/>
-												<string key="NSTitle">Start speaking</string>
+												<string key="NSTitle">Start Speaking</string>
 												<string key="NSKeyEquiv"/>
 												<int key="NSKeyEquivModMask">1048576</int>
 												<int key="NSMnemonicLoc">2147483647</int>
@@ -759,7 +759,7 @@
 											</object>
 											<object class="NSMenuItem" id="680220178">
 												<reference key="NSMenu" ref="785027613"/>
-												<string key="NSTitle">Stop speaking</string>
+												<string key="NSTitle">Stop Speaking</string>
 												<string key="NSKeyEquiv"/>
 												<int key="NSKeyEquivModMask">1048576</int>
 												<int key="NSMnemonicLoc">2147483647</int>
@@ -787,7 +787,7 @@
 								<bool key="EncodedWithXMLCoder">YES</bool>
 								<object class="NSMenuItem" id="287245698">
 									<reference key="NSMenu" ref="466310130"/>
-									<string key="NSTitle">Reload style</string>
+									<string key="NSTitle">Reload Style</string>
 									<string key="NSKeyEquiv"/>
 									<int key="NSMnemonicLoc">2147483647</int>
 								</object>
@@ -803,14 +803,14 @@
 								</object>
 								<object class="NSMenuItem" id="139973531">
 									<reference key="NSMenu" ref="466310130"/>
-									<string key="NSTitle">Syntax mode</string>
+									<string key="NSTitle">Syntax Mode</string>
 									<string key="NSKeyEquiv"/>
 									<int key="NSMnemonicLoc">2147483647</int>
 									<reference key="NSOnImage" ref="35465992"/>
 									<reference key="NSMixedImage" ref="502551668"/>
 									<string key="NSAction">submenuAction:</string>
 									<object class="NSMenu" key="NSSubmenu" id="714431356">
-										<string key="NSTitle">Syntax mode</string>
+										<string key="NSTitle">Syntax Mode</string>
 										<object class="NSMutableArray" key="NSMenuItems">
 											<bool key="EncodedWithXMLCoder">YES</bool>
 											<object class="NSMenuItem" id="447477656">
@@ -837,7 +837,7 @@
 								</object>
 								<object class="NSMenuItem" id="102151532">
 									<reference key="NSMenu" ref="466310130"/>
-									<string key="NSTitle">Show sidebar</string>
+									<string key="NSTitle">Show Sidebar</string>
 									<string key="NSKeyEquiv">s</string>
 									<int key="NSKeyEquivModMask">1835008</int>
 									<int key="NSMnemonicLoc">2147483647</int>
@@ -847,7 +847,7 @@
 								</object>
 								<object class="NSMenuItem" id="813940980">
 									<reference key="NSMenu" ref="466310130"/>
-									<string key="NSTitle">Show status bar</string>
+									<string key="NSTitle">Show Status Bar</string>
 									<string key="NSKeyEquiv"/>
 									<int key="NSMnemonicLoc">2147483647</int>
 									<int key="NSState">1</int>
@@ -856,7 +856,7 @@
 								</object>
 								<object class="NSMenuItem" id="5278274">
 									<reference key="NSMenu" ref="466310130"/>
-									<string key="NSTitle">Show meta ruler</string>
+									<string key="NSTitle">Show Meta Ruler</string>
 									<string key="NSKeyEquiv"/>
 									<int key="NSMnemonicLoc">2147483647</int>
 									<int key="NSState">1</int>
@@ -865,7 +865,7 @@
 								</object>
 								<object class="NSMenuItem" id="904850443">
 									<reference key="NSMenu" ref="466310130"/>
-									<string key="NSTitle">Show column guide</string>
+									<string key="NSTitle">Show Column Guide</string>
 									<string key="NSKeyEquiv"/>
 									<int key="NSMnemonicLoc">2147483647</int>
 									<int key="NSState">1</int>
@@ -874,7 +874,7 @@
 								</object>
 								<object class="NSMenuItem" id="490865261">
 									<reference key="NSMenu" ref="466310130"/>
-									<string key="NSTitle">Cover background</string>
+									<string key="NSTitle">Cover Background</string>
 									<string key="NSKeyEquiv"/>
 									<int key="NSMnemonicLoc">2147483647</int>
 									<reference key="NSOnImage" ref="35465992"/>
@@ -897,7 +897,7 @@
 								<bool key="EncodedWithXMLCoder">YES</bool>
 								<object class="NSMenuItem" id="747518793">
 									<reference key="NSMenu" ref="492985390"/>
-									<string key="NSTitle">Dump attributes at cursor</string>
+									<string key="NSTitle">Dump Attributes At Cursor</string>
 									<string key="NSKeyEquiv">A</string>
 									<int key="NSKeyEquivModMask">1048576</int>
 									<int key="NSMnemonicLoc">2147483647</int>
@@ -921,7 +921,7 @@
 								<bool key="EncodedWithXMLCoder">YES</bool>
 								<object class="NSMenuItem" id="1014744354">
 									<reference key="NSMenu" ref="540694072"/>
-									<string key="NSTitle">Go to line...</string>
+									<string key="NSTitle">Go To Line...</string>
 									<string key="NSKeyEquiv">L</string>
 									<int key="NSKeyEquivModMask">1048576</int>
 									<int key="NSMnemonicLoc">2147483647</int>
@@ -975,7 +975,7 @@
 								</object>
 								<object class="NSMenuItem" id="974458582">
 									<reference key="NSMenu" ref="835318025"/>
-									<string key="NSTitle">Select next tab</string>
+									<string key="NSTitle">Select Next Tab</string>
 									<string key="NSKeyEquiv">]</string>
 									<int key="NSKeyEquivModMask">1179648</int>
 									<int key="NSMnemonicLoc">2147483647</int>
@@ -985,7 +985,7 @@
 								</object>
 								<object class="NSMenuItem" id="956456807">
 									<reference key="NSMenu" ref="835318025"/>
-									<string key="NSTitle">Select previous tab</string>
+									<string key="NSTitle">Select Previous Tab</string>
 									<string key="NSKeyEquiv">[</string>
 									<int key="NSKeyEquivModMask">1179648</int>
 									<int key="NSMnemonicLoc">2147483647</int>
@@ -1006,7 +1006,7 @@
 								</object>
 								<object class="NSMenuItem" id="625202149">
 									<reference key="NSMenu" ref="835318025"/>
-									<string key="NSTitle">Bring all to front</string>
+									<string key="NSTitle">Bring All To Front</string>
 									<string key="NSKeyEquiv"/>
 									<int key="NSKeyEquivModMask">1048576</int>
 									<int key="NSMnemonicLoc">2147483647</int>
@@ -1031,7 +1031,7 @@
 								<bool key="EncodedWithXMLCoder">YES</bool>
 								<object class="NSMenuItem" id="368082376">
 									<reference key="NSMenu" ref="992780483"/>
-									<string key="NSTitle">Terminal usage...</string>
+									<string key="NSTitle">Terminal Usage...</string>
 									<string key="NSKeyEquiv"/>
 									<int key="NSMnemonicLoc">2147483647</int>
 									<reference key="NSOnImage" ref="35465992"/>
@@ -1050,7 +1050,7 @@
 					<bool key="EncodedWithXMLCoder">YES</bool>
 					<object class="NSMenuItem" id="949594866">
 						<reference key="NSMenu" ref="47747612"/>
-						<string key="NSTitle">New window</string>
+						<string key="NSTitle">New Window</string>
 						<string key="NSKeyEquiv"/>
 						<int key="NSMnemonicLoc">2147483647</int>
 						<reference key="NSOnImage" ref="35465992"/>
@@ -1058,7 +1058,7 @@
 					</object>
 					<object class="NSMenuItem" id="939555172">
 						<reference key="NSMenu" ref="47747612"/>
-						<string key="NSTitle">Open file…</string>
+						<string key="NSTitle">Open File…</string>
 						<string key="NSKeyEquiv"/>
 						<int key="NSMnemonicLoc">2147483647</int>
 						<reference key="NSOnImage" ref="35465992"/>
