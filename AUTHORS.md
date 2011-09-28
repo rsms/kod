@@ -13,3 +13,4 @@
 - Reed Stoner <kaltekar@gmail.com>
 - Aleksandr Kostyutchenko <kossnocorp@gmail.com>
 - Edward Patel <edward.patel@gmail.com>
+- Ben Scholz <bbscholz@gmail.com>
