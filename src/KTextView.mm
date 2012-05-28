@@ -93,6 +93,60 @@ static CGFloat kColumnGuideWidth = 1.0;
 
 
 #pragma mark -
+#pragma mark Internals
+
+
+// Note(epatel) This is a very *hacked* way to print a buffer with the help of 'enscript'
+// Feel free to fix what ever you think can be improved.
+- (void)printWithEnscript_ {
+  dispatch_async(dispatch_get_main_queue(), ^ { 
+    NSAutoreleasePool *__arpool = [NSAutoreleasePool new]; 
+    NSString *tmpPath = [NSString stringWithFormat:@"/tmp/kod-printing-%@", self.document.displayName];
+    NSString *tmpPathPS = [NSString stringWithFormat:@"%@.ps", tmpPath];
+    NSString *enscriptCommand = [NSString stringWithFormat:@"enscript %@ %@ %@ %@ %@ %@ %@ %@ %@ %@ %@ %@",
+                                 @"--newline=n",
+                                 @"--tabsize=4",
+                                 @"--encoding=mac",
+                                 @"--highlight",
+                                 @"--borders",
+                                 @"--landscape",
+                                 @"--columns=2",
+                                 @"--silent",
+                                 [NSString stringWithFormat:@"--header='|%@|$D $C'", self.document.displayName],
+                                 [NSString stringWithFormat:@"--color=%d", kconf_bool(@"printing/useColors", YES) ? 1 : 0],
+                                 [NSString stringWithFormat:@"-o \"%@\"", tmpPathPS], // Out file
+                                 [NSString stringWithFormat:@"\"%@\"", tmpPath]]; // In file
+    NSString *deleteCommand = [NSString stringWithFormat:@"rm /tmp/kod-printing-*"]; // Clean any previous print files
+    NSString *openCommand = [NSString stringWithFormat:@"open \"%@\"", tmpPathPS];
+    
+    system([deleteCommand cStringUsingEncoding:NSUTF8StringEncoding]);
+
+    // Should pass buffer to stdin of enscript process...but that will need to pass content language to enscript with
+    // --highlight=LANG
+    NSData *data = [self.string dataUsingEncoding:NSMacOSRomanStringEncoding 
+                             allowLossyConversion:YES];
+    if ([data writeToFile:tmpPath atomically:NO] == NO) {
+      NSLog(@"Failed to write temp file: %@", tmpPath);
+    } else {
+      system([enscriptCommand cStringUsingEncoding:NSUTF8StringEncoding]);
+      system([openCommand cStringUsingEncoding:NSUTF8StringEncoding]);
+    }
+        
+    [__arpool drain]; 
+  });
+}
+
+
+#pragma mark -
+#pragma mark Printing
+
+
+- (void)print:(id)sender {
+  [self printWithEnscript_];
+}
+
+
+#pragma mark -
 #pragma mark Drawing
 
 
@@ -126,6 +180,7 @@ static CGFloat kColumnGuideWidth = 1.0;
     }
   }
 }
+
 
 #pragma mark -
 #pragma mark Properties
@@ -834,5 +889,6 @@ static CGFloat kColumnGuideWidth = 1.0;
                                         inText:text
                                     countLimit:100];
 }
+
 
 @end
