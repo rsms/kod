@@ -261,7 +261,6 @@
   return y;
 }
 
-
 #pragma mark -
 #pragma mark Notifications
 
@@ -433,6 +432,14 @@ willPositionSheet:(NSWindow *)sheet
   if (success) {
     // make sure the sidebar is visible
     splitView_.isCollapsed = NO;
+  }
+}
+
+- (BOOL)reopenDirectoryIfOpen {
+  NSURL *absoluteURL = ((KToolbarController *)toolbarController_).directoryURL;
+  if (absoluteURL) {
+    NSError *error = nil;
+    return [self openFileDirectoryAtURL:absoluteURL error:&error];
   }
 }
 
